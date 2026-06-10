@@ -57,7 +57,7 @@ class FanLoyaltyService
      */
     public function applySeasonEndUpdate(Game $game): void
     {
-        $deltas = config('finances.loyalty_deltas', []);
+        $deltas = config('stadium.loyalty_deltas', []);
         if (empty($deltas)) {
             return;
         }

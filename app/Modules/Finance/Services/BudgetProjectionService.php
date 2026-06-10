@@ -208,7 +208,7 @@ class BudgetProjectionService
      *   revenue = walkup_attendance × perSeatMatchRate × totalHomeMatchCount
      *           × facilities_multiplier
      *
-     * The per-seat rate (`finances.revenue_per_seat.<reputation>`) stays
+     * The per-seat rate (`stadium.revenue_per_seat.<reputation>`) stays
      * calibrated against real-world matchday revenue. A higher-fill pricing
      * preset sells more season tickets, shifting revenue from this bucket to
      * the season-ticket bucket — total roughly preserved.
@@ -222,6 +222,32 @@ class BudgetProjectionService
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
+        $factors = $this->matchdayProjectionFactors($team, $game);
+        $holders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+        $walkupAttendance = max(0, $factors['expected_attendance'] - $holders);
+
+        return (int) ($walkupAttendance * $factors['per_attendee_cents']);
+    }
+
+    /**
+     * The two inputs the matchday projection holds fixed while the user is
+     * still choosing a season-ticket preset: the baseline expected attendance
+     * and the per-attendee revenue factor (per-seat match rate × home matches
+     * × facilities multiplier). The full projection reduces to
+     * `max(0, expected_attendance − holders) × per_attendee_cents`, so the only
+     * preset-dependent input is the holder count.
+     *
+     * The stadium page hands these two numbers to the client so it can
+     * recompute the walk-up taquilla figure live as the user toggles presets —
+     * each preset's holder count already lives in client state, so no round
+     * trip is needed. calculateMatchdayRevenue() applies the same formula
+     * server-side; the two must stay in lockstep. Returns a zero factor when
+     * there are no league home matches yet, mirroring the old early return.
+     *
+     * @return array{expected_attendance: int, per_attendee_cents: float}
+     */
+    public function matchdayProjectionFactors(Team $team, Game $game): array
+    {
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
         $homeMatchCounts = GameMatch::where('game_id', $game->id)
@@ -233,24 +259,21 @@ class BudgetProjectionService
         $totalHomeMatchCount = (int) ($homeMatchCounts->total ?? 0);
 
         if ($leagueHomeMatchCount === 0) {
-            return 0;
+            return ['expected_attendance' => 0, 'per_attendee_cents' => 0.0];
         }
 
-        $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $perSeatSeasonRate = (int) config("stadium.revenue_per_seat.{$reputation}", 15_000);
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
-
-        $expectedAttendance = $this->matchAttendanceService->projectBaselineForTeam($game->id, $team);
-        $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
-        $walkupAttendance = max(0, $expectedAttendance - $seasonTicketHolders);
-
-        $total = $walkupAttendance * $perSeatMatchRate * $totalHomeMatchCount;
 
         $investment = $game->currentInvestment;
         $facilitiesMultiplier = $investment
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        return (int) ($total * $facilitiesMultiplier);
+        return [
+            'expected_attendance' => $this->matchAttendanceService->projectBaselineForTeam($game->id, $team),
+            'per_attendee_cents' => $perSeatMatchRate * $totalHomeMatchCount * $facilitiesMultiplier,
+        ];
     }
 
     /**

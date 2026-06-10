@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Game;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Stadium\Services\DemandCurveService;
 use App\Modules\Stadium\Services\GameStadiumResolver;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,5 +93,37 @@ class SeasonTicketPricingServiceTest extends TestCase
         $pricing = $this->service->apply($this->game, 'bogus');
 
         $this->assertSame(SeasonTicketPricingService::DEFAULT_PRESET, $pricing->pricing_preset);
+    }
+
+    public function test_penetration_leaves_a_walkup_gap_that_shrinks_with_loyalty(): void
+    {
+        $demand = new DemandCurveService();
+
+        // Mid-loyalty club (established, loyalty 60 from setUp): abonos must sit
+        // BELOW match demand, or there's no walk-up gate to project.
+        $midRep = TeamReputation::where('game_id', $this->game->id)->first();
+        $midDemand = $demand->projectBaseline($this->team, $midRep, 20_000);
+        $midSold = $this->service->predictForPreset($this->game, $this->team, 'standard')['total_sold'];
+        $this->assertLessThan($midDemand, $midSold);
+
+        // High-loyalty club: abonos saturate the crowd, so the gap shrinks
+        // toward zero (an elite ground sells out via season tickets).
+        $hiTeam = Team::factory()->create(['stadium_seats' => 20_000]);
+        $hiGame = Game::factory()->forTeam($hiTeam)->create(['season' => 2026, 'pre_season' => true]);
+        $hiRep = TeamReputation::create([
+            'game_id' => $hiGame->id,
+            'team_id' => $hiTeam->id,
+            'reputation_level' => 'established',
+            'base_reputation_level' => 'established',
+            'reputation_points' => TeamReputation::pointsForTier('established'),
+            'base_loyalty' => 99,
+            'loyalty_points' => 99,
+        ]);
+        $hiDemand = $demand->projectBaseline($hiTeam, $hiRep, 20_000);
+        $hiSold = $this->service->predictForPreset($hiGame, $hiTeam, 'standard')['total_sold'];
+
+        $midGapFraction = ($midDemand - $midSold) / $midDemand;
+        $hiGapFraction = ($hiDemand - $hiSold) / $hiDemand;
+        $this->assertLessThan($midGapFraction, $hiGapFraction);
     }
 }

@@ -95,6 +95,8 @@
                              x-data="seasonTicketEditor({
                                 presets: @js($ticketPresets),
                                 current: @js($currentPreset),
+                                expectedAttendance: @js($matchdayFactors['expected_attendance']),
+                                perAttendeeCents: @js($matchdayFactors['per_attendee_cents']),
                              })">
 
                             <p class="text-xs text-text-muted leading-relaxed mb-4">
@@ -139,10 +141,9 @@
                                     <div class="mt-2 space-y-1 text-[11px]">
                                         <div class="flex justify-between gap-2">
                                             <span class="text-text-muted">{{ __('club.stadium.stadium_revenue.matchday') }}</span>
-                                            <span class="text-text-body font-semibold">{{ Money::format($projectedMatchday) }}</span>
+                                            <span class="text-text-body font-semibold" x-text="formatRevenue(matchday)"></span>
                                         </div>
                                     </div>
-                                    <p class="text-[10px] text-text-muted mt-2">{{ __('club.stadium.season_tickets.matchday_recalc_notice') }}</p>
                                 </div>
                             </div>
 

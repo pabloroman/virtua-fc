@@ -255,7 +255,7 @@ class MatchAttendanceService
             $capacity,
         );
 
-        $attendance = $this->applySeasonTicketFloor($match, $game, $attendance, $capacity);
+        $attendance = $this->composeSeasonTicketAttendance($match, $game, $attendance, $capacity);
 
         return [
             'attendance' => $attendance,
@@ -264,30 +264,39 @@ class MatchAttendanceService
     }
 
     /**
-     * Bumps attendance up to a season-ticket-driven floor for the user's
-     * home games. Season ticket holders always show up (they paid up
-     * front), so the gate can never dip below that count. Adds a small
-     * walk-up jitter on top so consecutive matches don't read identically;
-     * jitter is deterministic per match so the figure is stable across
-     * page reloads.
+     * Recompose attendance for the user's home games around the season-ticket
+     * base. A configurable share of holders are no-shows: they paid up front,
+     * so an empty paid seat costs nothing and earns nothing. The rest attend,
+     * and walk-up buyers fill the demand BEYOND the abono base. So the gate is
+     * `attending holders + walk-ups`, not the raw demand-curve figure — which
+     * lets a club that sold abonos to most of its crowd still report a few
+     * empty seats, and a club with demand above its abono base still draw a
+     * walk-up gate. A small deterministic per-match jitter on the walk-up keeps
+     * consecutive fixtures from reading identically (stable across reloads, no
+     * global PRNG touch). For non-user / away fixtures holders is 0 and the
+     * demand-curve attendance passes through unchanged.
+     *
+     * `$attendance` is the demand-curve crowd (total match-going appetite).
      */
-    private function applySeasonTicketFloor(GameMatch $match, Game $game, int $attendance, int $capacity): int
+    private function composeSeasonTicketAttendance(GameMatch $match, Game $game, int $attendance, int $capacity): int
     {
         $holders = $this->seasonTicketPricingService->soldSeasonTicketsForMatch($game, $match);
         if ($holders <= 0 || $capacity <= 0) {
             return $attendance;
         }
 
-        // Deterministic walk-up jitter: −1% to +5% of capacity. Derived
-        // from the match id so the same fixture always reports the same
-        // number, without touching the global PRNG seed.
+        $noShowRate = (float) config('stadium.season_ticket_noshow_rate', 0.05);
+        $attendingHolders = (int) round($holders * (1.0 - $noShowRate));
+
+        // Walk-up = the demand beyond the abono base. Deterministic jitter
+        // (−1% to +5% of capacity) derived from the match id so the same
+        // fixture always reports the same number.
         $bucket = crc32($match->id) % 601; // 0..600 inclusive
         $jitterPercent = ($bucket - 100) / 10_000.0; // −0.01 to +0.05
         $jitterSeats = (int) round($capacity * $jitterPercent);
+        $walkup = max(0, $attendance - $holders + $jitterSeats);
 
-        $floor = $holders + $jitterSeats;
-
-        return max($attendance, min($capacity, $floor));
+        return min($capacity, $attendingHolders + $walkup);
     }
 
     /**

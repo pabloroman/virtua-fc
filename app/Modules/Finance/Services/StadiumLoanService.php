@@ -26,7 +26,7 @@ class StadiumLoanService
      */
     public function reputationLoanCap(string $reputationLevel): int
     {
-        $caps = config('finances.stadium_loan.reputation_caps', []);
+        $caps = config('stadium.stadium_loan.reputation_caps', []);
 
         return (int) ($caps[$reputationLevel] ?? 0);
     }
@@ -47,9 +47,9 @@ class StadiumLoanService
             return 0;
         }
 
-        $maxPct = (float) config('finances.stadium_loan.max_debt_service_pct', 0.25);
-        $termYears = (int) config('finances.stadium_loan.term_years', 10);
-        $rateBps = (int) config('finances.stadium_loan.interest_rate_bps', 400);
+        $maxPct = (float) config('stadium.stadium_loan.max_debt_service_pct', 0.25);
+        $termYears = (int) config('stadium.stadium_loan.term_years', 10);
+        $rateBps = (int) config('stadium.stadium_loan.interest_rate_bps', 400);
 
         $maxAnnualPayment = $finances->projected_total_revenue * $maxPct;
         $firstYearRate = (1 / $termYears) + ($rateBps / 10000);
@@ -86,9 +86,9 @@ class StadiumLoanService
      */
     public function revenueRequiredForPrincipal(int $principalCents): int
     {
-        $maxPct = (float) config('finances.stadium_loan.max_debt_service_pct', 0.25);
-        $termYears = (int) config('finances.stadium_loan.term_years', 10);
-        $rateBps = (int) config('finances.stadium_loan.interest_rate_bps', 400);
+        $maxPct = (float) config('stadium.stadium_loan.max_debt_service_pct', 0.25);
+        $termYears = (int) config('stadium.stadium_loan.term_years', 10);
+        $rateBps = (int) config('stadium.stadium_loan.interest_rate_bps', 400);
 
         $firstYearRate = (1 / $termYears) + ($rateBps / 10000);
 
@@ -128,8 +128,8 @@ class StadiumLoanService
             'game_id' => $game->id,
             'stadium_project_id' => $project->id,
             'principal_cents' => $principalCents,
-            'term_years' => (int) config('finances.stadium_loan.term_years', 10),
-            'interest_rate_bps' => (int) config('finances.stadium_loan.interest_rate_bps', 400),
+            'term_years' => (int) config('stadium.stadium_loan.term_years', 10),
+            'interest_rate_bps' => (int) config('stadium.stadium_loan.interest_rate_bps', 400),
             'remaining_principal_cents' => $principalCents,
             // First repayment is billed at the next season-close.
             'season_started' => (int) $game->season + 1,

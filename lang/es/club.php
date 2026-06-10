@@ -163,7 +163,6 @@ return [
             'baseline_price' => 'Base',
             'capacity' => 'Aforo',
             'save_button' => 'Guardar',
-            'matchday_recalc_notice' => 'La taquilla se recalcula al guardar.',
             'preset' => [
                 'accessible' => 'Accesible',
                 'standard' => 'Estándar',

@@ -144,7 +144,7 @@ class DemandCurveService
         $loyaltyFill = self::FILL_FLOOR + $normalised * self::FILL_RANGE;
 
         $reputationFloor = (float) config(
-            "finances.reputation_fill_floor.{$homeRep->reputation_level}",
+            "stadium.reputation_fill_floor.{$homeRep->reputation_level}",
             0.0,
         );
 

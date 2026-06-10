@@ -6,6 +6,7 @@ use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameStadiumProject;
 use App\Models\TeamReputation;
+use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\StadiumLoanService;
 use App\Modules\Stadium\Enums\StadiumProjectStatus;
 use App\Modules\Stadium\Enums\StadiumProjectType;
@@ -23,6 +24,7 @@ class ShowClubStadium
         private readonly StadiumUpgradeService $stadiumUpgradeService,
         private readonly StadiumLoanService $stadiumLoanService,
         private readonly NamingRightsReadService $namingRightsReadService,
+        private readonly BudgetProjectionService $budgetProjectionService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -43,7 +45,7 @@ class ShowClubStadium
         $reputationCap = $this->stadiumLoanService->reputationLoanCap($reputationLevel);
         $affordabilityCap = $this->stadiumLoanService->affordabilityLoanCap($game);
         $loanCap = min($reputationCap, $affordabilityCap);
-        $rebuildBands = (array) config('finances.stadium_costs.rebuild_per_seat_bands', []);
+        $rebuildBands = (array) config('stadium.stadium_costs.rebuild_per_seat_bands', []);
         $rebuildEntryPerSeat = (int) ($rebuildBands[0]['per_seat_cents'] ?? 1_500_000);
         $rebuildMaxCapacity = $this->stadiumUpgradeService->maxRebuildCapacityForBudget($loanCap);
         $currentCapacity = $stadium->effective_capacity;
@@ -296,10 +298,19 @@ class ShowClubStadium
 
         $historyRows = $projectHistory->map(fn (GameStadiumProject $project) => $this->buildHistoryRow($project))->all();
 
+        // The fixed inputs to the walk-up matchday projection (everything bar
+        // the season-ticket holder count, which varies per preset). Handed to
+        // the season-ticket editor so it can recompute the taquilla figure
+        // client-side as the user toggles presets — no save round-trip. Pulled
+        // from Finance here in the HTTP layer; the Stadium module itself stays
+        // free of any Finance dependency.
+        $matchdayFactors = $this->budgetProjectionService->matchdayProjectionFactors($game->team, $game);
+
         return view('club.stadium', [
             'game' => $game,
             'upgrade' => $upgrade,
             'historyRows' => $historyRows,
+            'matchdayFactors' => $matchdayFactors,
             ...$this->stadiumSummaryService->build($game),
             ...$this->namingRightsReadService->buildIdentityPanel($game),
         ]);

@@ -156,11 +156,15 @@ class SeasonSettlementProcessor implements SeasonProcessor
      * (saves that span the Phase 1a upgrade) are backfilled in place via the
      * idempotent MatchAttendanceService, so the formula sees uniform coverage.
      *
-     * Season ticket holders are subtracted from each match's attendance
-     * before the per-seat rate applies — they already paid up front via the
-     * season ticket sale, so counting them again would inflate revenue. The
-     * remainder represents walk-up / single-ticket buyers and concessions,
-     * which is what `revenue_per_seat` is calibrated to capture.
+     * Attending season-ticket holders are subtracted from each match's
+     * attendance before the per-seat rate applies — they already paid up front
+     * via the season ticket sale, so counting them again would inflate revenue.
+     * Holders attend at (1 − noshow), matching how MatchAttendanceService
+     * composes the gate (attending holders + walk-ups), so subtracting the
+     * attending count recovers exactly the walk-up buyers and keeps this in
+     * lockstep with the budget projection. The remainder represents walk-up /
+     * single-ticket buyers and concessions, which is what `revenue_per_seat` is
+     * calibrated to capture.
      *
      * `revenue_per_seat` is a per-seat per-SEASON rate. To spread it across
      * the fixture list we divide by the count of league home games — cup and
@@ -183,10 +187,16 @@ class SeasonSettlementProcessor implements SeasonProcessor
             return 0;
         }
 
-        $perSeatSeasonRate = (int) config("finances.revenue_per_seat.{$reputation}", 15_000);
+        $perSeatSeasonRate = (int) config("stadium.revenue_per_seat.{$reputation}", 15_000);
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
         $seasonTicketHolders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
+
+        // Only attending holders occupy seats that would otherwise be walk-up,
+        // so subtract that count (not the full holder count) to isolate the
+        // genuine gate. Mirrors MatchAttendanceService::composeSeasonTicketAttendance.
+        $noShowRate = (float) config('stadium.season_ticket_noshow_rate', 0.05);
+        $attendingHolders = (int) round($seasonTicketHolders * (1.0 - $noShowRate));
 
         $homeMatches = GameMatch::where('game_id', $game->id)
             ->where('home_team_id', $team->id)
@@ -200,7 +210,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
                 // Neutral-venue finals don't feed the home club's matchday revenue.
                 continue;
             }
-            $walkup = max(0, $attendance->attendance - $seasonTicketHolders);
+            $walkup = max(0, $attendance->attendance - $attendingHolders);
             $total += $walkup * $perSeatMatchRate;
         }
 

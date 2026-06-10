@@ -18,7 +18,7 @@ use Tests\TestCase;
 /**
  * Covers the special-venue resolution shared by describeForMatch() and
  * projectForMatch() (sold-out rounds, neutral venues) and the season-ticket
- * attendance floor.
+ * attendance composition (attending holders + walk-up, with no-shows).
  */
 class MatchAttendanceServiceTest extends TestCase
 {
@@ -73,7 +73,7 @@ class MatchAttendanceServiceTest extends TestCase
         $this->assertNull($this->service->projectForMatch($match, $game));
     }
 
-    public function test_season_ticket_holders_floor_the_gate(): void
+    public function test_attending_holders_floor_the_gate_minus_no_shows(): void
     {
         $home = Team::factory()->create(['stadium_seats' => 20_000]);
         $away = Team::factory()->create();
@@ -104,9 +104,46 @@ class MatchAttendanceServiceTest extends TestCase
 
         $result = $this->service->describeForMatch($match, $game);
 
-        // Holders always show up: the gate sits near 18k (± walk-up jitter),
-        // far above the ~10k the demand curve alone would produce.
-        $this->assertGreaterThan(15_000, $result['attendance']);
+        // Demand (~10k) is far below the 18k holders, so there is no walk-up:
+        // the gate is just the attending holders, i.e. 18k minus the 5%
+        // no-show = 17,100. (Pre no-show this floored at the full 18k.)
+        $this->assertSame(17_100, $result['attendance']);
+    }
+
+    public function test_walkup_fills_demand_above_the_abono_base(): void
+    {
+        $home = Team::factory()->create(['stadium_seats' => 20_000]);
+        $away = Team::factory()->create();
+        $league = Competition::factory()->create([
+            'role' => Competition::ROLE_LEAGUE,
+            'handler_type' => 'league',
+        ]);
+        $game = Game::factory()->forTeam($home)->inCompetition($league->id)->create(['season' => 2026]);
+
+        // High home loyalty → demand (~90% ≈ 18k) well above the abono base.
+        $this->seedReputation($game, $home, 'established', 90);
+        $this->seedReputation($game, $away, 'local', 50);
+
+        SeasonTicketPricing::create([
+            'game_id' => $game->id,
+            'season' => 2026,
+            'areas' => [],
+            'total_capacity' => 20_000,
+            'total_sold' => 10_000,
+            'total_revenue' => 0,
+            'pricing_preset' => 'standard',
+            'is_default' => false,
+        ]);
+
+        $match = GameMatch::factory()->forGame($game)->forCompetition($league)->between($home, $away)->create([
+            'round_name' => 'Matchday 3',
+        ]);
+
+        $result = $this->service->describeForMatch($match, $game);
+
+        // Gate = attending holders (10k − 5% = 9,500) + walk-up demand on top,
+        // so it sits well above the full holder count and never exceeds capacity.
+        $this->assertGreaterThan(10_000, $result['attendance']);
         $this->assertLessThanOrEqual(20_000, $result['attendance']);
     }
 

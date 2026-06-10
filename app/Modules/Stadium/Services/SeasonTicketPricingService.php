@@ -134,7 +134,7 @@ class SeasonTicketPricingService
      */
     public function presets(): array
     {
-        $presets = (array) config('finances.season_ticket_presets', [self::DEFAULT_PRESET => 1.0]);
+        $presets = (array) config('stadium.season_ticket_presets', [self::DEFAULT_PRESET => 1.0]);
 
         return array_map(fn ($m) => (float) $m, $presets);
     }
@@ -362,6 +362,7 @@ class SeasonTicketPricingService
     private function predictAndCompose(array $areas, float $priceMultiplier, TeamReputation $homeRep): array
     {
         $loyaltyFill = $this->loyaltyFillRate($homeRep);
+        $penetrationRatio = $this->penetrationRatio($homeRep);
 
         $totalCapacity = 0;
         $totalSold = 0;
@@ -376,7 +377,11 @@ class SeasonTicketPricingService
             // smaller, more committed audience that doesn't churn over price
             // tweaks the same way the general terraces do.
             $isPremium = $this->isPremiumArea($area);
-            $baseFill = $isPremium ? max(0.55, $loyaltyFill - 0.10) : $loyaltyFill;
+
+            // Hold abono penetration BELOW attendance demand so a walk-up gate
+            // survives — the gap is widest at low loyalty and tapers to ~0 for
+            // elites (who sell out via abonos). See penetrationRatio().
+            $baseFill = ($isPremium ? max(0.55, $loyaltyFill - 0.10) : $loyaltyFill) * $penetrationRatio;
 
             $priceFactor = $this->priceFactor($priceMultiplier, $isPremium);
             $fillRate = max(0.0, min(0.98, $baseFill * $priceFactor));
@@ -410,16 +415,38 @@ class SeasonTicketPricingService
     }
 
     /**
-     * Map loyalty (0-100) to a base season-ticket subscription rate. A
-     * club with average loyalty (~50) sells roughly 75% of capacity at
-     * baseline prices; loyalty 100 pushes near-sellout, loyalty 0 floors
-     * at 50%.
+     * Map loyalty (0-100) to the base season-ticket capture rate. This curve
+     * intentionally mirrors attendance demand (DemandCurveService::baseFillRate
+     * uses the same 0.50 + loyalty/100 × 0.45 shape); penetrationRatio() then
+     * scales it DOWN so abonos sit below total match demand and leave a walk-up
+     * gate. A club with average loyalty (~50) captures ~75% before that
+     * scaling; loyalty 100 → near-sellout, loyalty 0 → 50%.
      */
     private function loyaltyFillRate(TeamReputation $homeRep): float
     {
         $normalised = max(0, min(100, (int) $homeRep->loyalty_points)) / 100.0;
 
         return 0.50 + $normalised * 0.45;
+    }
+
+    /**
+     * Fraction of the loyalty fill that converts to season tickets, holding
+     * abono penetration BELOW attendance demand so a walk-up gate survives.
+     * The reserved gap is widest at zero loyalty (config
+     * stadium.season_ticket_walkup_reserve_max) and tapers linearly to 0 at
+     * full loyalty — elite clubs saturate via abonos and draw little walk-up,
+     * exactly as a sold-out marquee ground behaves.
+     *
+     * Without this, season-ticket demand and attendance demand share the same
+     * loyalty curve, so holders ≈ demand for every club and the projected
+     * walk-up gate (max(0, demand − holders)) collapses to ~0 across the board.
+     */
+    private function penetrationRatio(TeamReputation $homeRep): float
+    {
+        $normalised = max(0, min(100, (int) $homeRep->loyalty_points)) / 100.0;
+        $reserveMax = (float) config('stadium.season_ticket_walkup_reserve_max', 0.15);
+
+        return 1.0 - $reserveMax * (1.0 - $normalised);
     }
 
     /**

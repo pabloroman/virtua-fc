@@ -163,7 +163,6 @@ return [
             'baseline_price' => 'Baseline',
             'capacity' => 'Capacity',
             'save_button' => 'Save',
-            'matchday_recalc_notice' => 'Walk-up gate is recalculated when you save.',
             'preset' => [
                 'accessible' => 'Accessible',
                 'standard' => 'Standard',

@@ -75,47 +75,47 @@ class StadiumUpgradeService
 
     public function supplementaryCostPerSeat(): int
     {
-        return (int) config('finances.stadium_costs.supplementary_per_seat_cents', 400_000);
+        return (int) config('stadium.stadium_costs.supplementary_per_seat_cents', 400_000);
     }
 
     public function supplementaryMaxSeatsPerProject(): int
     {
-        return (int) config('finances.stadium_costs.supplementary_max_seats_per_project', 8_000);
+        return (int) config('stadium.stadium_costs.supplementary_max_seats_per_project', 8_000);
     }
 
     public function supplementaryConstructionDays(): int
     {
-        return (int) config('finances.stadium_costs.supplementary_construction_days', 30);
+        return (int) config('stadium.stadium_costs.supplementary_construction_days', 30);
     }
 
     public function standExpansionCostPerSeat(): int
     {
-        return (int) config('finances.stadium_costs.stand_expansion_per_seat_cents', 800_000);
+        return (int) config('stadium.stadium_costs.stand_expansion_per_seat_cents', 800_000);
     }
 
     public function standExpansionMinSeats(): int
     {
-        return (int) config('finances.stadium_costs.stand_expansion_min_seats', 3_000);
+        return (int) config('stadium.stadium_costs.stand_expansion_min_seats', 3_000);
     }
 
     public function standExpansionMaxSeats(): int
     {
-        return (int) config('finances.stadium_costs.stand_expansion_max_seats', 12_000);
+        return (int) config('stadium.stadium_costs.stand_expansion_max_seats', 12_000);
     }
 
     public function standExpansionConstructionDays(): int
     {
-        return (int) config('finances.stadium_costs.stand_expansion_construction_days', 270);
+        return (int) config('stadium.stadium_costs.stand_expansion_construction_days', 270);
     }
 
     public function rebuildConstructionDays(): int
     {
-        return (int) config('finances.stadium_costs.rebuild_construction_days', 540);
+        return (int) config('stadium.stadium_costs.rebuild_construction_days', 540);
     }
 
     public function uefaUpgradeConstructionDays(): int
     {
-        return (int) config('finances.stadium_costs.uefa_upgrade_construction_days', 270);
+        return (int) config('stadium.stadium_costs.uefa_upgrade_construction_days', 270);
     }
 
     /**
@@ -233,7 +233,7 @@ class StadiumUpgradeService
      */
     private function rebuildBands(): array
     {
-        $raw = config('finances.stadium_costs.rebuild_per_seat_bands');
+        $raw = config('stadium.stadium_costs.rebuild_per_seat_bands');
         if (! is_array($raw) || $raw === []) {
             // Legacy fallback: behave like a single €15k band.
             return [['up_to' => null, 'per_seat_cents' => 1_500_000]];
@@ -446,7 +446,7 @@ class StadiumUpgradeService
      */
     public function uefaUpgradeCost(int $fromLevel): int
     {
-        $bands = (array) config('finances.stadium_costs.uefa_upgrade_cost_cents', []);
+        $bands = (array) config('stadium.stadium_costs.uefa_upgrade_cost_cents', []);
 
         return (int) ($bands[$fromLevel] ?? 0);
     }
