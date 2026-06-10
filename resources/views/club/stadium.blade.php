@@ -199,7 +199,7 @@
 
             </div>
 
-            {{-- RIGHT column (1/3): Last home-match attendance --}}
+            {{-- RIGHT column (1/3): last home-match attendance + fan support --}}
             <div class="space-y-6">
                 <x-section-card :title="__('club.stadium.last_attendance')">
                     <div class="px-5 py-4">
@@ -241,6 +241,8 @@
                         @endif
                     </div>
                 </x-section-card>
+
+                <x-fan-support-card :loyalty="$loyaltyPoints" />
             </div>
         </div>
 
