@@ -160,8 +160,6 @@ return [
             'tickets_sold' => 'Tickets sold',
             'predicted_fill' => 'predicted fill',
             'predicted_fill_tooltip' => 'Pricing and your fans\' support both shape season ticket demand.',
-            'baseline_price' => 'Baseline',
-            'capacity' => 'Capacity',
             'save_button' => 'Save',
             'preset' => [
                 'accessible' => 'Accessible',
@@ -172,20 +170,6 @@ return [
                 'accessible' => 'Cheaper, fuller stadium.',
                 'standard' => 'Baseline prices.',
                 'premium' => 'Pricier, lower attendance.',
-            ],
-
-            'area' => [
-                'general'       => 'General',
-                'lateral'       => 'Lateral',
-                'lateral_alta'  => 'Lateral upper',
-                'lateral_baja'  => 'Lateral lower',
-                'tribuna'       => 'Main stand',
-                'tribuna_alta'  => 'Main stand upper',
-                'tribuna_baja'  => 'Main stand lower',
-                'fondo_norte'   => 'North end',
-                'fondo_sur'     => 'South end',
-                'vip'           => 'VIP',
-                'palco'         => 'Skybox',
             ],
         ],
 

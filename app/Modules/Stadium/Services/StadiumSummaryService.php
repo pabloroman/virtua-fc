@@ -142,9 +142,11 @@ class StadiumSummaryService
 
     /**
      * Build the payload feeding the season ticket pricing UI block. The
-     * editor offers a discrete pricing preset, so every preset's outcome
-     * (fill, sold, season-ticket revenue, per-area schematic) is precomputed
-     * here — the front end toggles between them with no server round-trip.
+     * editor offers a discrete pricing preset, so every preset's aggregate
+     * outcome (fill, sold, season-ticket revenue) is precomputed here — the
+     * front end toggles between them with no server round-trip. The per-area
+     * breakdown is intentionally omitted: prices are a single global preset,
+     * so the stand-by-stand schematic carried no user decision.
      *
      * @return array{
      *   can_edit: bool,
@@ -163,17 +165,8 @@ class StadiumSummaryService
         foreach (array_keys($this->seasonTicketPricingService->presets()) as $key) {
             $payload = $this->seasonTicketPricingService->predictForPreset($game, $game->team, $key);
 
-            // Stamp the translated area label so the client-side schematic
-            // (rendered with x-for) doesn't need to resolve translation keys.
-            $areas = array_map(function (array $area) {
-                $area['label'] = __('club.stadium.season_tickets.area.' . ($area['slug'] ?? ''));
-
-                return $area;
-            }, $payload['areas']);
-
             $presets[$key] = [
                 'key' => $key,
-                'areas' => $areas,
                 'total_sold' => $payload['total_sold'],
                 'total_capacity' => $payload['total_capacity'],
                 'total_revenue' => $payload['total_revenue'],

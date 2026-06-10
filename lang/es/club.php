@@ -160,8 +160,6 @@ return [
             'tickets_sold' => 'Abonos vendidos',
             'predicted_fill' => 'ocupación prevista',
             'predicted_fill_tooltip' => 'Los precios y el apoyo de tu afición influyen en la venta de abonos.',
-            'baseline_price' => 'Base',
-            'capacity' => 'Aforo',
             'save_button' => 'Guardar',
             'preset' => [
                 'accessible' => 'Accesible',
@@ -172,20 +170,6 @@ return [
                 'accessible' => 'Más baratos, estadio más lleno.',
                 'standard' => 'Precios de referencia.',
                 'premium' => 'Más caros, menos ocupación.',
-            ],
-
-            'area' => [
-                'general'       => 'General',
-                'lateral'       => 'Lateral',
-                'lateral_alta'  => 'Lateral alta',
-                'lateral_baja'  => 'Lateral baja',
-                'tribuna'       => 'Tribuna',
-                'tribuna_alta'  => 'Tribuna alta',
-                'tribuna_baja'  => 'Tribuna baja',
-                'fondo_norte'   => 'Fondo norte',
-                'fondo_sur'     => 'Fondo sur',
-                'vip'           => 'VIP',
-                'palco'         => 'Palco',
             ],
         ],
 

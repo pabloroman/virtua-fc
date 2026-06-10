@@ -147,28 +147,6 @@
                                 </div>
                             </div>
 
-                            {{-- Per-area schematic for the selected preset --}}
-                            <div class="mt-5 space-y-2">
-                                <template x-for="area in current.areas" :key="area.slug">
-                                    <div class="px-3.5 py-2.5 bg-surface-700/50 border border-border-default rounded-lg">
-                                        <div class="flex items-baseline justify-between gap-4">
-                                            <div class="min-w-0">
-                                                <span class="text-xs font-semibold text-text-primary uppercase tracking-wide" x-text="area.label"></span>
-                                                <span class="text-[11px] text-text-muted ml-1.5" x-text="fmt(area.capacity)"></span>
-                                            </div>
-                                            <span class="font-heading text-base font-bold text-text-primary tabular-nums leading-none shrink-0"
-                                                  x-text="formatPrice(area.price_cents)"></span>
-                                        </div>
-                                        <div class="text-[11px] tabular-nums flex items-baseline gap-1.5 mt-1.5">
-                                            <span class="text-text-body font-semibold"><span x-text="Math.round((area.fill_rate ?? 0) * 100)"></span>%</span>
-                                            <span class="text-text-muted">{{ __('club.stadium.season_tickets.predicted_fill') }}</span>
-                                            <span class="text-text-faint">·</span>
-                                            <span class="text-text-muted"><span x-text="fmt(area.sold)"></span> / <span x-text="fmt(area.capacity)"></span></span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-
                             <p class="text-[11px] text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.stadium_revenue.help') }}</p>
 
                             <p class="text-[11px] text-accent-gold mt-4">{{ __('club.stadium.season_tickets.deadline_notice') }}</p>

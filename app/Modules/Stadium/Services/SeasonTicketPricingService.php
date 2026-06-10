@@ -40,8 +40,8 @@ class SeasonTicketPricingService
      * Capacity proportions sum to 1.0; the largest area absorbs rounding
      * remainders so per-area capacities always sum to the stadium total.
      *
-     * Areas use slugs that map to translation keys under
-     * `club.stadium.season_tickets.area.<slug>`.
+     * Area slugs identify premium tiers (vip/palco) and are persisted on the
+     * pricing row as an audit trail; they are no longer surfaced in the UI.
      */
     public const TIERS = [
         // Tiny ground (Pontevedra-scale)
