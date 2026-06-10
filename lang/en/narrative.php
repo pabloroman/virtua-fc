@@ -35,18 +35,23 @@ return [
 
     'streak_win_long_v1' => ':count consecutive victories. The squad is brimming with confidence.',
     'streak_win_long_v2' => 'A remarkable run of :count straight wins. Can the streak continue?',
+    'streak_win_long_v3' => 'RED-HOT. :count wins on the spin and nobody is stopping them.',
 
     'streak_win_v1' => ':count wins in a row heading into this one.',
     'streak_win_v2' => 'Riding a :count-game winning streak. Momentum is building.',
+    'streak_win_v3' => 'ROLLING. :count straight victories and counting.',
 
     'streak_lose_v1' => ':count defeats on the bounce. The pressure is mounting.',
     'streak_lose_v2' => 'A tough spell — :count losses in a row. Time to turn it around.',
+    'streak_lose_v3' => 'FREE-FALL. :count defeats in a row and the questions are stacking up.',
 
     'unbeaten_v1' => 'Unbeaten in the last :count matches. Momentum is on your side.',
     'unbeaten_v2' => ':count games without defeat. The squad knows how to grind out results.',
+    'unbeaten_v3' => 'UNTOUCHED. :count matches without tasting defeat.',
 
     'winless_v1' => ':count matches without a win. Frustration is building.',
     'winless_v2' => 'A winless run of :count games weighs on the squad.',
+    'winless_v3' => 'STUCK. :count matches and still searching for a win.',
 
     // ── League Position & Stakes ────────────────────────────────────
 
@@ -75,18 +80,23 @@ return [
 
     'injury_crisis_v1' => ':count players ruled out through injury. A depleted squad faces a test.',
     'injury_crisis_v2' => 'The treatment room is busy — :count players unavailable through injury.',
+    'injury_crisis_v3' => 'WALKING WOUNDED. :count players out and the bench is paper-thin.',
 
     'morale_low_v1' => 'Squad morale is fragile. A good result here could lift spirits.',
     'morale_low_v2' => 'Heads are down in the dressing room. The squad needs a spark.',
+    'morale_low_v3' => 'HEADS DOWN. The dressing room mood is fragile.',
 
     'morale_high_v1' => 'Confidence is sky-high in the dressing room.',
     'morale_high_v2' => 'The squad is buzzing. High spirits across the board.',
+    'morale_high_v3' => 'FLYING HIGH. The dressing room is buzzing.',
 
     'fitness_low_v1' => 'Energy levels are concerning — rotation might be wise.',
     'fitness_low_v2' => 'The squad looks leggy. Fatigue could be a factor today.',
+    'fitness_low_v3' => 'RUNNING ON FUMES. Legs look heavy across the side.',
 
     'fitness_high_v1' => 'The squad is fresh and ready to go.',
     'fitness_high_v2' => 'High energy levels across the board. No excuses today.',
+    'fitness_high_v3' => 'FULL TANKS. Fresh legs across the eleven.',
 
     // ── Opponent Scouting ───────────────────────────────────────────
 
@@ -161,7 +171,7 @@ return [
     // ── Tournament: Opponent Context ────────────────────────────────
 
     'wc_opponent_group_leader_v1' => ':opponent lead the group. A tough test on paper.',
-    'wc_opponent_group_leader_v2' => ':opponent are top of the group. A good benchmark.',
+    'wc_opponent_group_leader_v2' => ':opponent top the group — the gold standard to topple.',
     'wc_opponent_group_leader_v3' => 'TOP DOG. :opponent sit first in the group.',
 
     'wc_opponent_group_bottom_v1' => ':opponent are bottom of the group. Still, no game at this level is straightforward.',
@@ -181,21 +191,35 @@ return [
     'wc_weather_v1' => 'High temperatures expected. The heat could be a factor.',
     'wc_weather_v2' => 'Warm conditions in North America. Fitness and hydration will matter.',
     'wc_weather_v3' => 'Humid conditions forecast. Managing energy will be important.',
+    'wc_weather_v4' => 'Air thick with heat. Tactics may need adjusting in the second half.',
+    'wc_weather_v5' => 'PRESSURE COOKER. The conditions will test legs and lungs.',
 
     'wc_fans_v1' => 'A full stadium expected. Good atmosphere anticipated.',
     'wc_fans_v2' => 'Millions watching worldwide. A big occasion for both sides.',
     'wc_fans_v3' => 'Colourful scenes expected in the stands. The World Cup draws a unique crowd.',
+    'wc_fans_v4' => 'Travelling support out in force — a wall of colour behind the goal.',
+    'wc_fans_v5' => 'The roar at kick-off will rattle the rafters.',
 
-    'wc_media_v1' => 'Plenty of media attention on this one. A high-profile fixture.',
-    'wc_media_v2' => 'International press covering the match. The spotlight is on.',
+    'wc_media_v1' => 'Cameras and microphones everywhere. A high-stakes fixture.',
+    'wc_media_v2' => 'Headlines worldwide tomorrow. The spotlight is sharp.',
+    'wc_media_v3' => 'STAGE IS SET. The world\'s media is locked in on this one.',
+    'wc_media_v4' => 'The pundits are split down the middle on this one.',
+    'wc_media_v5' => 'Front pages are reserved for the result. No hiding place.',
 
     'wc_group_color_v1' => 'Group stage is underway. Results here shape the path ahead.',
     'wc_group_color_v2' => 'Every group match counts. The knockout bracket depends on it.',
+    'wc_group_color_v3' => 'GROUP STAGE GRIND. Every point shapes what comes next.',
+    'wc_group_color_v4' => 'Permutations on every desk. A win here changes the maths.',
+    'wc_group_color_v5' => 'Group football rewards patience as much as quality.',
 
     'wc_knockout_color_v1' => 'Single-elimination format. There is no room for an off day.',
     'wc_knockout_color_v2' => 'Knockout football. The margins between advancing and going home are slim.',
+    'wc_knockout_color_v3' => 'ONE LIFE LEFT. Win or pack the bags.',
+    'wc_knockout_color_v4' => 'One bad half can end a tournament. Concentration above all.',
+    'wc_knockout_color_v5' => 'Sudden-death football. The rules are unforgiving.',
 
-    'wc_late_tournament_v1' => 'The latter stages of the tournament. The remaining teams have earned their place.',
-    'wc_late_tournament_v2' => 'Deep into the World Cup. Only a handful of teams are left.',
+    'wc_late_tournament_v1' => 'Few teams remain. Each one has earned its place at this stage.',
+    'wc_late_tournament_v2' => 'The pretenders are gone. Only contenders remain.',
+    'wc_late_tournament_v3' => 'FINAL FEW. Only the heavyweights are still standing.',
 
 ];

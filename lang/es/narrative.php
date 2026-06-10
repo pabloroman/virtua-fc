@@ -35,18 +35,23 @@ return [
 
     'streak_win_long_v1' => ':count victorias consecutivas. El vestuario rebosa confianza.',
     'streak_win_long_v2' => 'Una racha impresionante de :count triunfos seguidos. ¿Podrá continuar?',
+    'streak_win_long_v3' => 'FUEGO PURO. :count victorias seguidas y nadie las frena.',
 
     'streak_win_v1' => ':count victorias seguidas. A seguir la racha.',
     'streak_win_v2' => 'En racha con :count triunfos consecutivos. El impulso crece.',
+    'streak_win_v3' => 'EN VOLANDAS. :count victorias seguidas y subiendo.',
 
     'streak_lose_v1' => ':count derrotas seguidas. La presión aumenta.',
     'streak_lose_v2' => 'Un bache difícil — :count derrotas consecutivas. Hora de reaccionar.',
+    'streak_lose_v3' => 'EN CAÍDA LIBRE. :count derrotas seguidas y las dudas se acumulan.',
 
     'unbeaten_v1' => ':count partidos sin perder. El impulso está de vuestro lado.',
     'unbeaten_v2' => ':count encuentros invictos. El equipo sabe competir.',
+    'unbeaten_v3' => 'INTOCABLES. :count partidos sin morder el polvo.',
 
     'winless_v1' => ':count partidos sin ganar. La frustración se acumula.',
     'winless_v2' => 'Una racha de :count encuentros sin victoria pesa en el equipo.',
+    'winless_v3' => 'ATASCADOS. :count partidos buscando la primera victoria.',
 
     // ── Posición y Contexto ─────────────────────────────────────────
 
@@ -75,18 +80,23 @@ return [
 
     'injury_crisis_v1' => ':count jugadores fuera por lesión. Una plantilla mermada afronta el reto.',
     'injury_crisis_v2' => 'La enfermería está llena — :count jugadores no disponibles por lesión.',
+    'injury_crisis_v3' => 'PARTE MÉDICO LARGO. :count jugadores fuera y el banquillo justo.',
 
     'morale_low_v1' => 'La moral del equipo es frágil. Un buen resultado podría levantar el ánimo.',
     'morale_low_v2' => 'El vestuario está tocado. El equipo necesita una chispa.',
+    'morale_low_v3' => 'CABEZAS BAJAS. El ánimo del vestuario está tocado.',
 
     'morale_high_v1' => 'La confianza está por las nubes en el vestuario.',
     'morale_high_v2' => 'El equipo está enchufado. Moral alta en toda la plantilla.',
+    'morale_high_v3' => 'POR LAS NUBES. El vestuario vive un momento dulce.',
 
     'fitness_low_v1' => 'Los niveles de energía preocupan — rotaciones podrían ser necesarias.',
     'fitness_low_v2' => 'El equipo se nota cansado. La fatiga podría ser un factor hoy.',
+    'fitness_low_v3' => 'CON LA LENGUA FUERA. Las piernas pesan en toda la plantilla.',
 
     'fitness_high_v1' => 'La plantilla está fresca y preparada.',
     'fitness_high_v2' => 'Niveles de energía óptimos. Sin excusas hoy.',
+    'fitness_high_v3' => 'A TOPE. Piernas frescas en todos los puestos.',
 
     // ── Análisis del Rival ──────────────────────────────────────────
 
@@ -161,7 +171,7 @@ return [
     // ── Torneo: Contexto del Rival ──────────────────────────────────
 
     'wc_opponent_group_leader_v1' => ':opponent lidera el grupo. Un partido exigente sobre el papel.',
-    'wc_opponent_group_leader_v2' => ':opponent es el primer clasificado del grupo. Un buen termómetro.',
+    'wc_opponent_group_leader_v2' => ':opponent lidera el grupo — el listón a derribar.',
     'wc_opponent_group_leader_v3' => 'EL COCO DEL GRUPO. :opponent manda en la clasificación.',
 
     'wc_opponent_group_bottom_v1' => ':opponent es último del grupo. Aun así, a este nivel nada es sencillo.',
@@ -181,21 +191,35 @@ return [
     'wc_weather_v1' => 'Se esperan altas temperaturas. El calor podría ser un factor.',
     'wc_weather_v2' => 'Condiciones cálidas en Norteamérica. La forma física y la hidratación importarán.',
     'wc_weather_v3' => 'ALERTA POR CALOR. Previsión de humedad y temperaturas altas.',
+    'wc_weather_v4' => 'Aire denso por el calor. La táctica podría ajustarse en la segunda parte.',
+    'wc_weather_v5' => 'OLLA A PRESIÓN. Las condiciones exigirán piernas y pulmones.',
 
     'wc_fans_v1' => 'Se espera un estadio lleno. Buen ambiente previsto.',
     'wc_fans_v2' => 'Millones de espectadores en todo el mundo. Una gran cita para ambos equipos.',
     'wc_fans_v3' => 'FIESTA EN LAS GRADAS. El Mundial atrae a un público único.',
+    'wc_fans_v4' => 'Afición visitante en masa — un muro de color tras la portería.',
+    'wc_fans_v5' => 'El rugido del pitido inicial hará temblar las gradas.',
 
-    'wc_media_v1' => 'Mucha atención mediática sobre este partido. Un encuentro de alto perfil.',
-    'wc_media_v2' => 'Prensa internacional cubriendo el partido. El foco está puesto.',
+    'wc_media_v1' => 'Cámaras y micrófonos por todas partes. Un partido de máxima exigencia.',
+    'wc_media_v2' => 'Mañana, titulares en todo el mundo. El foco aprieta.',
+    'wc_media_v3' => 'ESCENARIO PREPARADO. La prensa mundial está pendiente de este partido.',
+    'wc_media_v4' => 'La opinión de los expertos está partida en dos sobre este encuentro.',
+    'wc_media_v5' => 'Las portadas esperan al resultado. No hay donde esconderse.',
 
     'wc_group_color_v1' => 'La fase de grupos está en marcha. Los resultados aquí marcan el camino.',
     'wc_group_color_v2' => 'Cada partido de grupo cuenta. El cuadro eliminatorio depende de ello.',
+    'wc_group_color_v3' => 'OFICIO DE FASE DE GRUPOS. Cada punto define el camino.',
+    'wc_group_color_v4' => 'Las cuentas en cada despacho. Una victoria aquí cambia las matemáticas.',
+    'wc_group_color_v5' => 'La fase de grupos premia tanto la paciencia como la calidad.',
 
     'wc_knockout_color_v1' => 'Formato de eliminación directa. No hay margen para un mal día.',
     'wc_knockout_color_v2' => 'Fútbol de eliminatorias. Los márgenes entre avanzar y volver a casa son mínimos.',
+    'wc_knockout_color_v3' => 'UNA SOLA VIDA. Ganar o hacer las maletas.',
+    'wc_knockout_color_v4' => 'Una mala parte puede acabar con un torneo. Concentración por encima de todo.',
+    'wc_knockout_color_v5' => 'Fútbol de muerte súbita. Las reglas no perdonan.',
 
-    'wc_late_tournament_v1' => 'Fase avanzada del torneo. Las selecciones que quedan se lo han ganado.',
-    'wc_late_tournament_v2' => 'Recta final del Mundial. Solo queda un puñado de equipos.',
+    'wc_late_tournament_v1' => 'Pocas selecciones quedan. Cada una se ha ganado estar aquí.',
+    'wc_late_tournament_v2' => 'Los pretendientes han caído. Solo quedan candidatos.',
+    'wc_late_tournament_v3' => 'LOS POCOS QUE QUEDAN. Solo los pesos pesados siguen en pie.',
 
 ];

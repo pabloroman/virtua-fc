@@ -599,7 +599,7 @@ class MatchNarrativeService
     private function pickVariant(string $baseKey, int $matchday): string
     {
         $variantCount = 0;
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             if (__("narrative.{$baseKey}_v{$i}") !== "narrative.{$baseKey}_v{$i}") {
                 $variantCount = $i;
             } else {
