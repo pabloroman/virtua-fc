@@ -891,6 +891,12 @@ class TransferService
 
         $desire = $this->squadNeedService->desireScore($buyerRoster, $player);
         $transferFee = $this->calculateOfferPrice($player, $desire, $offeringTeam->id);
+
+        // A club never opens above the buyout — it would just pay the clause instead.
+        if ($player->game->release_clauses_enabled && $player->hasReleaseClause()) {
+            $transferFee = min($transferFee, (int) $player->release_clause);
+        }
+
         $expiryDays = $offerType === TransferOffer::TYPE_LISTED
             ? self::LISTED_OFFER_EXPIRY_DAYS
             : self::UNSOLICITED_OFFER_EXPIRY_DAYS;
