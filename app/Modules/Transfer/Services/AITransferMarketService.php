@@ -409,10 +409,12 @@ class AITransferMarketService
             $contractYears = $freeAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
             $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
-            $newWage = $this->contractService->calculateAnnualWage(
+            $newWage = $this->contractService->calculateAnnualWageForPlayer(
+                $freeAgent->overall_score,
                 $freeAgent->market_value_cents,
                 $this->contractService->getDefaultMinimumWage(),
                 $freeAgent->age($game->current_date),
+                $freeAgent->position,
             );
 
             $number = $this->allocateSquadNumber($takenNumbers, $teamId);
@@ -1125,10 +1127,12 @@ class AITransferMarketService
         $contractYears = mt_rand($minContractYears, $maxContractYears);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
-        $newWage = $this->contractService->calculateAnnualWage(
+        $newWage = $this->contractService->calculateAnnualWageForPlayer(
+            $player->overall_score,
             $player->market_value_cents,
             $this->contractService->getDefaultMinimumWage(),
             $player->age($game->current_date),
+            $player->position,
         );
 
         $playerUpdates[] = [
@@ -1310,10 +1314,12 @@ class AITransferMarketService
         $contractYears = $bestAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears, 6, 30);
 
-        $newWage = $this->contractService->calculateAnnualWage(
+        $newWage = $this->contractService->calculateAnnualWageForPlayer(
+            $bestAgent->overall_score,
             $bestAgent->market_value_cents,
             $this->contractService->getDefaultMinimumWage(),
             $bestAgent->age($game->current_date),
+            $bestAgent->position,
         );
 
         $number = $this->allocateSquadNumber($takenNumbers, $teamId);

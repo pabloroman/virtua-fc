@@ -466,7 +466,7 @@ class GamePlayerTemplateService
         $position = $playerData['position'] ?? null;
         $overallScore = $this->resolveExplicitAbility($playerData['overall_score'] ?? null)
             ?? $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age, $position);
-        $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
+        $annualWage = $this->contractService->calculateAnnualWageForPlayer($overallScore, $marketValueCents, $minimumWage, $age, $position);
 
         $explicitPotential = $this->resolveExplicitPotential($playerData['potential'] ?? null, $overallScore);
         $potentialData = $explicitPotential !== null

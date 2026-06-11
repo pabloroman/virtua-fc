@@ -93,6 +93,17 @@ class ContractService
     ];
 
     /**
+     * Level normalization for the ability-anchored wage model (engaged by
+     * config `finances.wage_ability_anchor`). Anchoring to ability raises most
+     * wages above their market-value figure, so the whole model is scaled by
+     * this factor at full strength to hold the population wage bill — and thus
+     * the salary cap / budget scale — fixed. Tuned so the total bill stays
+     * ~1.00× today's; the shape changes, the scale does not. No effect at
+     * wage_ability_anchor = 0.
+     */
+    private const WAGE_ANCHOR_SCALE = 0.66;
+
+    /**
      * Calculate annual wage for a player based on market value and age.
      *
      * The age modifier accounts for contract dynamics:
@@ -118,6 +129,12 @@ class ContractService
         $ageModifier = $this->getAgeWageModifier($age);
         $baseWage = (int) ($baseWage * $ageModifier);
 
+        // Normalize the ability-anchored model back to today's total wage bill
+        // so the economy / salary-cap scale stays fixed (no-op when
+        // wage_ability_anchor = 0; the anchor + age curve only reshape who
+        // earns what, this holds the overall level).
+        $baseWage = (int) ($baseWage * $this->wageAnchorScale());
+
         if (!$deterministic) {
             // Apply ±10% variance for squad diversity
             $variance = 0.90 + (mt_rand(0, 2000) / 10000); // 0.90 to 1.10
@@ -129,6 +146,62 @@ class ContractService
 
         // Enforce minimum wage
         return max($wage, $minimumWageCents);
+    }
+
+    /**
+     * Ability-aware wage: blends the value anchor from raw market value toward
+     * the player's ability-derived wage base (PlayerValuationService::
+     * wageBaseValue) by config `finances.wage_ability_anchor`, then runs the
+     * normal wage formula. Seed/AI callers that have a player's overall_score
+     * should use this instead of calculateAnnualWage(marketValue, …) so that
+     * still-able prime/veteran players aren't priced off their age-deflated
+     * market value. At wage_ability_anchor = 0 this is identical to
+     * calculateAnnualWage(marketValue, …).
+     *
+     * @param int $overallScore Player's current overall ability
+     * @param int $marketValueCents Player's market value in cents
+     * @param int $minimumWageCents League minimum wage in cents
+     * @param int|null $age Player's age (null defaults to prime-age calculation)
+     * @param string|null $position Primary position (goalkeepers scale like market value)
+     * @return int Annual wage in cents
+     */
+    public function calculateAnnualWageForPlayer(int $overallScore, int $marketValueCents, int $minimumWageCents, ?int $age = null, ?string $position = null, bool $deterministic = false): int
+    {
+        $anchorValue = $this->blendWageAnchor($marketValueCents, $overallScore, $age, $position);
+
+        return $this->calculateAnnualWage($anchorValue, $minimumWageCents, $age, $deterministic);
+    }
+
+    /**
+     * Blend a wage value anchor from raw market value (weight 0) toward the
+     * ability-derived wage base (weight 1) by `finances.wage_ability_anchor`.
+     * Returns the market value unchanged when the knob is off or overall is
+     * unknown, so behaviour is identical to today by default.
+     */
+    private function blendWageAnchor(int $marketValueCents, int $overallScore, ?int $age, ?string $position): int
+    {
+        $weight = $this->abilityAnchorWeight();
+        if ($weight <= 0.0 || $overallScore <= 0) {
+            return $marketValueCents;
+        }
+
+        $abilityValue = $this->valuationService->wageBaseValue($overallScore, $age ?? PlayerAge::PRIME_END, $position);
+
+        return (int) round((1.0 - $weight) * $marketValueCents + $weight * $abilityValue);
+    }
+
+    /** Clamped strength of the ability-anchor correction, from config. */
+    private function abilityAnchorWeight(): float
+    {
+        return max(0.0, min(1.0, (float) config('finances.wage_ability_anchor', 0.0)));
+    }
+
+    /** Level normalization for the ability-anchored model; 1.0 when the knob is off. */
+    private function wageAnchorScale(): float
+    {
+        $weight = $this->abilityAnchorWeight();
+
+        return 1.0 - $weight + $weight * self::WAGE_ANCHOR_SCALE;
     }
 
     /**
@@ -149,7 +222,37 @@ class ContractService
             default => 'veteran',
         };
 
-        return self::AGE_WAGE_MODIFIERS[$tier];
+        $discrete = self::AGE_WAGE_MODIFIERS[$tier];
+
+        // Blend toward a smooth curve as the ability anchor engages. The
+        // discrete veteran ×5 exists to undo market-value age-deflation; once
+        // the anchor is ability-derived (which deflates far less), that step
+        // would over-pay and leaves a cliff at 35, so it ramps smoothly instead.
+        $weight = $this->abilityAnchorWeight();
+        if ($weight <= 0.0) {
+            return $discrete;
+        }
+
+        return (1.0 - $weight) * $discrete + $weight * $this->smoothAgeWageModifier($age);
+    }
+
+    /**
+     * Continuous age-wage curve engaged at full wage_ability_anchor. Keeps the
+     * young rookie discounts and the prime baseline, and for declining players
+     * un-deflates the ability anchor (≈ 1 / ageValueMultiplier) so the wage
+     * tracks ability through age — a smooth ramp replacing the veteran ×5 step.
+     */
+    private function smoothAgeWageModifier(int $age): float
+    {
+        return match (true) {
+            $age <= PlayerAge::ACADEMY_END => 0.25,
+            $age <= PlayerAge::YOUNG_END => 0.65,
+            $age <= 31 => 1.0,
+            $age <= 33 => 1.33,
+            $age <= 35 => 2.22,
+            $age <= 37 => 3.33,
+            default => 3.50,
+        };
     }
 
     /**
@@ -308,10 +411,17 @@ class ContractService
         // their age decline, and the veteran wage modifier in calculateAnnualWage()
         // (AGE_WAGE_MODIFIERS['veteran'] = 5.0) is calibrated against that depressed
         // ability value — capping by market value too would double-count the decline.
-        $anchorValue = $abilityValue;
+        $cappedAnchor = $abilityValue;
         if ($age <= PlayerAge::PRIME_END && $player->market_value_cents > 0) {
-            $anchorValue = min($abilityValue, $player->market_value_cents);
+            $cappedAnchor = min($abilityValue, $player->market_value_cents);
         }
+
+        // The wage_ability_anchor knob relaxes the market-value cap toward the
+        // pure ability value, in lock-step with the seed path, so a still-able
+        // prime/declining player's demand tracks his ability rather than his
+        // age-deflated price. At 0 this is exactly the capped value above.
+        $weight = $this->abilityAnchorWeight();
+        $anchorValue = (int) round((1.0 - $weight) * $cappedAnchor + $weight * $abilityValue);
 
         $baseWage = $this->calculateAnnualWage(
             $anchorValue,
@@ -718,8 +828,9 @@ class ContractService
      * AI wages are seeded once from real market value and were then frozen —
      * renewals only extended contract_until, so a rival's developing star kept
      * his cheap rookie wage forever. Here the wage is re-derived from the
-     * player's *current* market value via the same calculateAnnualWage() used to
-     * seed wages, so AI pay tracks the market economy. Wages move both ways (a
+     * player's *current* market value via calculateAnnualWage(), which shares the
+     * seed path's age curve and ability-anchor normalization, so AI pay tracks
+     * the market economy. Wages move both ways (a
      * developed player earns more, a declining one less); the only downstream
      * consumer is AITeamBudgetCalculator::financialPressure(), which keeps AI
      * transfer budgets balanced as wage bills shift.

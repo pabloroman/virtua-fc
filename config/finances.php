@@ -21,6 +21,22 @@ return [
     // elite/continental/established/modest/local) if tuning calls for it.
     'wage_cap_ratio' => 0.70,
 
+    // How strongly seeded/derived wages anchor to a player's ABILITY rather
+    // than to his raw (age-deflated) market value. Market value falls with age
+    // faster than skill, so a still-able 33-year-old's wage craters with his
+    // price, then a discrete veteran modifier yanks 35+ back up — a cliff. This
+    // knob blends the wage's value anchor from market value (0.0, today's
+    // behaviour) toward the ability-derived `PlayerValuationService::
+    // wageBaseValue()` (1.0), and smooths the veteran age curve in step.
+    //
+    // The blended model is normalized (see ContractService::WAGE_ANCHOR_*),
+    // so the TOTAL population wage bill stays ~unchanged at every setting — the
+    // knob reshapes who earns what (lifting under-paid prime/veteran players,
+    // trimming others) without inflating the economy or the salary cap. It is
+    // read by the shared wage path, so seeding, contract demands, and AI
+    // signings all move together. 0.0 reproduces today exactly.
+    'wage_ability_anchor' => 0.75,
+
     // Player-trading allowance ("plusvalías"). A trailing average of the club's
     // NET player-trading result (sales − purchases) over recent completed
     // seasons is added to the cap base — and ONLY the cap base, never the
