@@ -43,7 +43,6 @@ return [
             'title' => 'Stadium revenue',
             'season_tickets' => 'Season tickets',
             'matchday' => 'Matchday',
-            'help' => 'Season tickets are pre-paid up front; matchday revenue accrues per home fixture.',
         ],
 
         'upgrades' => [

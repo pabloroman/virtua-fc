@@ -90,6 +90,12 @@
                      exists and the user has no way to set prices mid-season. --}}
                 @if($pricing)
                 <x-section-card :title="__('club.stadium.season_tickets.title')">
+                    {{-- Pricing-policy help moved into a tooltip to keep the card uncluttered. --}}
+                    <x-slot:badge>
+                        @if($canEditTickets)
+                            <x-info-icon :tooltip="__('club.stadium.season_tickets.subtitle')" />
+                        @endif
+                    </x-slot:badge>
                     @if($canEditTickets)
                         <div class="px-5 py-4"
                              x-data="seasonTicketEditor({
@@ -100,10 +106,6 @@
                                 capacity: @js($capacity),
                                 noShowRate: @js($seasonTicketNoShowRate),
                              })">
-
-                            <p class="text-xs text-text-muted leading-relaxed mb-4">
-                                {{ __('club.stadium.season_tickets.subtitle') }}
-                            </p>
 
                             {{-- Pricing preset selector --}}
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -150,8 +152,6 @@
                                 </div>
                             </div>
 
-                            <p class="text-[11px] text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.stadium_revenue.help') }}</p>
-
                             <p class="text-[11px] text-accent-gold mt-4">{{ __('club.stadium.season_tickets.deadline_notice') }}</p>
 
                             <form method="POST"
@@ -190,8 +190,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <p class="text-[11px] text-text-muted mt-3 leading-relaxed">{{ __('club.stadium.stadium_revenue.help') }}</p>
                         </div>
                     @endif
                 </x-section-card>

@@ -43,7 +43,6 @@ return [
             'title' => 'Ingresos del estadio',
             'season_tickets' => 'Abonos',
             'matchday' => 'Taquilla',
-            'help' => 'Los abonos se cobran por adelantado; la taquilla se acumula en cada partido en casa.',
         ],
 
         'upgrades' => [
