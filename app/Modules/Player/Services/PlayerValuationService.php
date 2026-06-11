@@ -93,16 +93,19 @@ class PlayerValuationService
      * @param string|null $position Player's primary position; goalkeepers receive a value boost.
      * @param float|null $competenceFloor Strength of the low-value floor correction (null → config).
      * @param float|null $skillPersistence Strength of the age-decay correction (null → config).
+     * @param float|null $youthTalentCredit Strength of the young-player cap softening (null → config).
      */
     public function marketValueToOverallScore(
         int $marketValueCents,
         int $age,
         ?string $position = null,
         ?float $competenceFloor = null,
-        ?float $skillPersistence = null
+        ?float $skillPersistence = null,
+        ?float $youthTalentCredit = null
     ): int {
         $competenceFloor = $this->resolveCorrection($competenceFloor, 'competence_floor');
         $skillPersistence = $this->resolveCorrection($skillPersistence, 'skill_persistence');
+        $youthTalentCredit = $this->resolveCorrection($youthTalentCredit, 'youth_talent_credit');
 
         $effectiveValue = $this->applyPositionMultiplier($marketValueCents, $position);
 
@@ -115,7 +118,7 @@ class PlayerValuationService
         $rawFloored = $this->interpolateAbility($effectiveValue, self::COMPETENCE_FLOOR_ANCHORS);
         $rawAbility = (1.0 - $competenceFloor) * $rawProxy + $competenceFloor * $rawFloored;
 
-        $overall = $this->adjustAbilityForAge($rawAbility, $effectiveValue, $age, $skillPersistence);
+        $overall = $this->adjustAbilityForAge($rawAbility, $effectiveValue, $age, $skillPersistence, $youthTalentCredit);
 
         // Small random variance (±1) prevents identical scores for similar inputs.
         return max(40, min(99, $overall + rand(-1, 1)));
@@ -290,10 +293,13 @@ class PlayerValuationService
      *
      * Young players (< YOUNG_END) are capped by age: market value at this
      * stage signals POTENTIAL, not current ability — a 17yo worth €120M is
-     * priced for his ceiling, not for being world-class today. The extra
-     * headroom is channelled into potential by
-     * PlayerDevelopmentService::generatePotential(), not into current
-     * overall. This cap is independent of the corrections below.
+     * priced for his ceiling, not for being world-class today. Most of that
+     * headroom is still channelled into potential by
+     * PlayerDevelopmentService::generatePotential(); `youthTalentCredit`
+     * governs how much of it instead surfaces in the starting overall, letting
+     * a genuinely elite-priced prospect begin above the flat cap (0.0 keeps the
+     * hard cap, today's behaviour; 1.0 removes it entirely). Ordinary
+     * youngsters, priced below the cap, are unaffected at any setting.
      *
      * From prime onwards, the age credit blends two views of how a player's
      * market value relates to his ability as he ages, by `skillPersistence`:
@@ -302,14 +308,19 @@ class PlayerValuationService
      *  - 1.0 → a continuous slope crediting every year past 27, recovering the
      *    ability a player's falling price shed to age rather than to decline.
      */
-    private function adjustAbilityForAge(float $rawAbility, int $effectiveValueCents, int $age, float $skillPersistence): int
+    private function adjustAbilityForAge(float $rawAbility, int $effectiveValueCents, int $age, float $skillPersistence, float $youthTalentCredit): int
     {
         if ($age < PlayerAge::YOUNG_END) {
-            // Base cap increases with age: 17yo = 75, 22yo = 85. No market-
-            // value boost: the headroom flows into potential, not overall.
+            // Base cap increases with age: 17yo = 75, 22yo = 85. Soften it by
+            // crediting a fraction of the value-implied ability ABOVE the cap,
+            // so a wonderkid priced for an elite ceiling starts higher than the
+            // flat cap while the rest still flows into potential. A player whose
+            // raw ability is already below the cap gets no excess, so the min()
+            // leaves him exactly where he was.
             $ageCap = 75 + ($age - 17) * 2;
+            $softenedCap = $ageCap + $youthTalentCredit * max(0.0, $rawAbility - $ageCap);
 
-            return (int) round(min($rawAbility, (float) $ageCap));
+            return (int) round(min($rawAbility, $softenedCap));
         }
 
         $legacyBoost = $this->legacyVeteranBoost($effectiveValueCents, $age);

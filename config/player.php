@@ -80,6 +80,16 @@ return [
         // (current behaviour); 1 = skill persists, crediting the ability his
         // price shed to age rather than to decline. Does not affect youth.
         'skill_persistence' => 1.0,
+
+        // How much of a young player's (<23) value-implied ability surfaces in
+        // his STARTING overall instead of flowing entirely into potential.
+        // A teenager's price signals his ceiling, so it is normally capped
+        // (17yo→75 … 22yo→85) with the headroom routed to potential.
+        // 0 = hard cap (current behaviour): an elite-priced prospect still
+        // starts at the flat cap; 1 = no cap, his full value-implied ability is
+        // his starting overall. Only lifts wonderkids priced above the age cap;
+        // ordinary youngsters are unaffected.
+        'youth_talent_credit' => 0.5,
     ],
 
 ];
