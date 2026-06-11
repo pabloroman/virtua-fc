@@ -147,6 +147,49 @@ class MatchAttendanceServiceTest extends TestCase
         $this->assertLessThanOrEqual(20_000, $result['attendance']);
     }
 
+    public function test_occupancy_responds_to_the_pricing_preset(): void
+    {
+        // Same club, same holder count — only the preset differs. The preset's
+        // occupancy factor scales total demand, so cheaper prices draw a bigger
+        // crowd than premium pricing (which prices some fans out).
+        $premium = $this->attendanceForPreset('premium');
+        $accessible = $this->attendanceForPreset('accessible');
+
+        $this->assertGreaterThan($premium, $accessible);
+    }
+
+    private function attendanceForPreset(string $preset): int
+    {
+        $home = Team::factory()->create(['stadium_seats' => 20_000]);
+        $away = Team::factory()->create();
+        $league = Competition::factory()->create([
+            'role' => Competition::ROLE_LEAGUE,
+            'handler_type' => 'league',
+        ]);
+        $game = Game::factory()->forTeam($home)->inCompetition($league->id)->create(['season' => 2026]);
+
+        // High demand (loyalty 80) so the factor has room to move the crowd.
+        $this->seedReputation($game, $home, 'established', 80);
+        $this->seedReputation($game, $away, 'local', 50);
+
+        SeasonTicketPricing::create([
+            'game_id' => $game->id,
+            'season' => 2026,
+            'areas' => [],
+            'total_capacity' => 20_000,
+            'total_sold' => 9_000,
+            'total_revenue' => 0,
+            'pricing_preset' => $preset,
+            'is_default' => false,
+        ]);
+
+        $match = GameMatch::factory()->forGame($game)->forCompetition($league)->between($home, $away)->create([
+            'round_name' => 'Matchday 3',
+        ]);
+
+        return $this->service->describeForMatch($match, $game)['attendance'];
+    }
+
     private function seedReputation(Game $game, Team $team, string $level, int $loyalty): void
     {
         TeamReputation::create([

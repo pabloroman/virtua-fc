@@ -276,6 +276,11 @@ class MatchAttendanceService
      * global PRNG touch). For non-user / away fixtures holders is 0 and the
      * demand-curve attendance passes through unchanged.
      *
+     * The chosen preset's occupancy factor scales total demand first (cheaper
+     * prices draw a bigger crowd, premium prices some out), so the walk-up that
+     * fills in beyond the abono base — and the resulting occupancy — respond to
+     * the pricing stance, not just the abono/walk-up split.
+     *
      * `$attendance` is the demand-curve crowd (total match-going appetite).
      */
     private function composeSeasonTicketAttendance(GameMatch $match, Game $game, int $attendance, int $capacity): int
@@ -284,6 +289,8 @@ class MatchAttendanceService
         if ($holders <= 0 || $capacity <= 0) {
             return $attendance;
         }
+
+        $demand = (int) round($attendance * $this->seasonTicketPricingService->currentOccupancyFactor($game));
 
         $noShowRate = (float) config('stadium.season_ticket_noshow_rate', 0.05);
         $attendingHolders = (int) round($holders * (1.0 - $noShowRate));
@@ -294,7 +301,7 @@ class MatchAttendanceService
         $bucket = crc32($match->id) % 601; // 0..600 inclusive
         $jitterPercent = ($bucket - 100) / 10_000.0; // −0.01 to +0.05
         $jitterSeats = (int) round($capacity * $jitterPercent);
-        $walkup = max(0, $attendance - $holders + $jitterSeats);
+        $walkup = max(0, $demand - $holders + $jitterSeats);
 
         return min($capacity, $attendingHolders + $walkup);
     }

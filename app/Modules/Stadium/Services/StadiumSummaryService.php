@@ -171,6 +171,9 @@ class StadiumSummaryService
                 'total_capacity' => $payload['total_capacity'],
                 'total_revenue' => $payload['total_revenue'],
                 'overall_fill' => $payload['overall_fill_rate'],
+                // Lets the client scale demand per preset so the live occupancy
+                // and taquilla figures respond to the pricing stance.
+                'occupancy_factor' => $this->seasonTicketPricingService->occupancyFactor($key),
             ];
         }
 

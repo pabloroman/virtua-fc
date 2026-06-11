@@ -26,8 +26,15 @@ export default function seasonTicketEditor(config) {
         // are subtracted from the expected gate, and the server's (int) cast
         // matches Math.trunc here. Selling more season tickets (a fuller
         // preset) shrinks walk-up, so this falls as season-ticket revenue rises.
+        // Total match demand scaled by the preset's occupancy factor (cheaper →
+        // bigger crowd). Walk-up and occupancy both derive from this, so they
+        // respond to the pricing stance, not just the abono/walk-up split.
+        get scaledDemand() {
+            return this.expectedAttendance * (this.current.occupancy_factor ?? 1);
+        },
+
         get matchday() {
-            const walkup = Math.max(0, this.expectedAttendance - (this.current.total_sold ?? 0));
+            const walkup = Math.max(0, this.scaledDemand - (this.current.total_sold ?? 0));
             return Math.trunc(walkup * this.perAttendeeCents);
         },
 
@@ -40,7 +47,7 @@ export default function seasonTicketEditor(config) {
         get matchdayAttendance() {
             const holders = this.current.total_sold ?? 0;
             const attendingHolders = Math.round(holders * (1 - this.noShowRate));
-            const walkup = Math.max(0, this.expectedAttendance - holders);
+            const walkup = Math.max(0, this.scaledDemand - holders);
             return Math.min(this.capacity, attendingHolders + walkup);
         },
 

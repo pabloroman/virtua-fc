@@ -224,7 +224,12 @@ class BudgetProjectionService
     {
         $factors = $this->matchdayProjectionFactors($team, $game);
         $holders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
-        $walkupAttendance = max(0, $factors['expected_attendance'] - $holders);
+
+        // The chosen preset scales total demand (cheaper → bigger crowd), so the
+        // walk-up volume left after holders follows. The per-seat gate rate stays
+        // fixed, so taquilla revenue moves with attendance volume only.
+        $demand = (int) round($factors['expected_attendance'] * $this->seasonTicketPricingService->currentOccupancyFactor($game));
+        $walkupAttendance = max(0, $demand - $holders);
 
         return (int) ($walkupAttendance * $factors['per_attendee_cents']);
     }

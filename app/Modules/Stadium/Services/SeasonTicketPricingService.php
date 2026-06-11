@@ -151,6 +151,44 @@ class SeasonTicketPricingService
     }
 
     /**
+     * Per-preset price elasticity on total match-day demand (occupancy), as
+     * `key => factor`. >1 draws a bigger crowd (cheaper), <1 prices fans out
+     * (premium). Scales the demand curve before walk-up is derived — see
+     * config stadium.season_ticket_occupancy_factor.
+     *
+     * @return array<string, float>
+     */
+    public function occupancyFactors(): array
+    {
+        $factors = (array) config('stadium.season_ticket_occupancy_factor', [self::DEFAULT_PRESET => 1.0]);
+
+        return array_map(fn ($f) => (float) $f, $factors);
+    }
+
+    /**
+     * The occupancy factor for a preset, falling back to the default preset
+     * (then 1.0) for an unknown key.
+     */
+    public function occupancyFactor(string $preset): float
+    {
+        $factors = $this->occupancyFactors();
+
+        return $factors[$preset] ?? $factors[self::DEFAULT_PRESET] ?? 1.0;
+    }
+
+    /**
+     * The occupancy factor for the game's persisted preset (default preset when
+     * none is saved yet). Used by the matchday-attendance and projection paths
+     * to scale demand by the price stance the user actually chose.
+     */
+    public function currentOccupancyFactor(Game $game): float
+    {
+        $preset = $this->getCurrent($game)?->pricing_preset ?? self::DEFAULT_PRESET;
+
+        return $this->occupancyFactor($preset);
+    }
+
+    /**
      * Build the seating layout for a stadium of the given capacity.
      * Returns a list of areas with absolute capacity (proportions of the
      * stadium total) and the default price per ticket in cents.

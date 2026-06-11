@@ -24,6 +24,19 @@ return [
         'premium'    => 1.40,
     ],
 
+    // Preset price elasticity on TOTAL match-day demand (occupancy), separate
+    // from how the preset splits abonos vs walk-up. Without this, walk-up just
+    // backfills whatever abonos don't take, so the crowd ≈ loyalty demand
+    // regardless of price and the preset labels ("más lleno" / "menos ocupación")
+    // don't hold. The factor scales the demand curve before walk-up is derived:
+    // cheaper prices draw a bigger crowd, premium prices price some fans out.
+    // Walk-up VOLUME moves with it; the per-seat gate rate stays fixed.
+    'season_ticket_occupancy_factor' => [
+        'accessible' => 1.10,
+        'standard'   => 1.00,
+        'premium'    => 0.85,
+    ],
+
     // Max share of match demand left for walk-up buyers, at zero loyalty.
     // Abono penetration is scaled to (1 − reserve_max × (1 − loyalty/100)) of
     // the loyalty fill, so the walk-up gap is widest for low-loyalty clubs and
