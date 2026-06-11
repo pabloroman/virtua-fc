@@ -223,6 +223,13 @@ class BudgetProjectionService
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
         $factors = $this->matchdayProjectionFactors($team, $game);
+
+        // No league home matches scheduled yet → no gate to project. Bail before
+        // touching the ticketing services so this stays a cheap no-op pre-season.
+        if ($factors['per_attendee_cents'] <= 0.0) {
+            return 0;
+        }
+
         $holders = $this->seasonTicketPricingService->soldSeasonTicketsForGame($game);
 
         // The chosen preset scales total demand (cheaper → bigger crowd), so the
