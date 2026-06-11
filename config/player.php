@@ -50,4 +50,36 @@ return [
         'injured_floor' => 30,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Market-Value Corrections (value -> overall fallback)
+    |--------------------------------------------------------------------------
+    |
+    | PlayerValuationService::marketValueToOverallScore() reads a player's
+    | overall ability out of their market value. It is used ONLY as a fallback
+    | when a player has no imported SoFIFA score (lower leagues, European/
+    | international squads, generated players). Market value is a *biased proxy*
+    | for current ability: it over-punishes cheap players (a 10x price gap is
+    | not a huge skill gap among professionals) and it falls with age faster
+    | than skill does (price reflects resale value and contract, not ability).
+    |
+    | These two knobs each correct one of those distortions. They are NOT a
+    | "match SoFIFA" dial — SoFIFA is just one less money-distorted estimate.
+    | Each ranges 0.0 (today's raw proxy) to 1.0 (fully corrected); values in
+    | between interpolate linearly. Changing them affects future seeds only.
+    |
+    */
+    'market_value_corrections' => [
+        // Where the bottom of the ability scale sits.
+        // 0 = cheap means weak (current behaviour); 1 = every professional sits
+        // on a competent baseline (the low end of the curve is lifted).
+        'competence_floor' => 0.7,
+
+        // How much a player's skill resists the age-driven decay in his value.
+        // 0 = skill rating fades as an ageing player's market value falls
+        // (current behaviour); 1 = skill persists, crediting the ability his
+        // price shed to age rather than to decline. Does not affect youth.
+        'skill_persistence' => 1.0,
+    ],
+
 ];

@@ -43,20 +43,93 @@ class PlayerValuationService
     private const GOALKEEPER_VALUE_MULTIPLIER = 2.0;
 
     /**
+     * Second value→ability curve used ONLY by the value→overall fallback when
+     * the `competence_floor` correction is engaged. Anchor abilities are the
+     * per-bucket median SoFIFA overall for prime-age (23–29) outfielders — an
+     * empirical "this is how a player at this price actually plays" curve whose
+     * floor sits far higher than ABILITY_VALUE_ANCHORS (a €500k pro is ~67, not
+     * ~50). Blended against the economy curve by the correction strength, so a
+     * higher competence_floor lifts cheap players toward a competent baseline.
+     * Age-27 baseline; age is handled separately in adjustAbilityForAge().
+     */
+    private const COMPETENCE_FLOOR_ANCHORS = [
+        [55, 5_000_000],        // €50k
+        [62, 10_000_000],       // €100k
+        [67, 50_000_000],       // €500k
+        [69, 100_000_000],      // €1M
+        [71, 200_000_000],      // €2M
+        [73, 400_000_000],      // €4M
+        [75, 800_000_000],      // €8M
+        [77, 1_600_000_000],    // €16M
+        [80, 3_100_000_000],    // €31M
+        [84, 6_000_000_000],    // €60M
+        [88, 10_000_000_000],   // €100M
+        [92, 18_000_000_000],   // €180M (SoFIFA tops out ~91; replaces the economy curve's 95)
+    ];
+
+    /**
+     * Overall points credited per year past 27 when `skill_persistence` is
+     * fully engaged. Fitted against SoFIFA: for a fixed market value an older
+     * player rates higher, because his price (not his skill) is what fell with
+     * age. A 34-year-old recovers ~+4. Blended against the legacy veteran boost
+     * by the correction strength.
+     */
+    private const SKILL_PERSISTENCE_SLOPE = 0.60;
+
+    /** Hard ceiling on the age-based ability credit, from either mechanism. */
+    private const MAX_AGE_BOOST = 12;
+
+    /**
      * Convert market value to a single overall_score.
      *
-     * Used during initial seeding to derive ability from Transfermarkt data.
+     * Used during initial seeding to derive ability from Transfermarkt data,
+     * ONLY when a player has no imported SoFIFA score. Market value is a biased
+     * proxy for current ability; two configurable corrections (see
+     * config/player.php → market_value_corrections) counter its known
+     * distortions, each blending from 0.0 (raw proxy) to 1.0 (fully corrected).
      *
      * @param int $marketValueCents Market value in cents (e.g., 1_500_000_000 = €15M)
      * @param int $age Player's current age
      * @param string|null $position Player's primary position; goalkeepers receive a value boost.
+     * @param float|null $competenceFloor Strength of the low-value floor correction (null → config).
+     * @param float|null $skillPersistence Strength of the age-decay correction (null → config).
      */
-    public function marketValueToOverallScore(int $marketValueCents, int $age, ?string $position = null): int
-    {
-        $effectiveValue = $this->applyPositionMultiplier($marketValueCents, $position);
-        $rawAbility = $this->marketValueToRawAbility($effectiveValue);
+    public function marketValueToOverallScore(
+        int $marketValueCents,
+        int $age,
+        ?string $position = null,
+        ?float $competenceFloor = null,
+        ?float $skillPersistence = null
+    ): int {
+        $competenceFloor = $this->resolveCorrection($competenceFloor, 'competence_floor');
+        $skillPersistence = $this->resolveCorrection($skillPersistence, 'skill_persistence');
 
-        return $this->adjustAbilityForAge($rawAbility, $effectiveValue, $age);
+        $effectiveValue = $this->applyPositionMultiplier($marketValueCents, $position);
+
+        // Blend the economy's value→ability proxy with a higher-floored,
+        // SoFIFA-derived curve. At competence_floor = 0 the proxy is used
+        // unchanged (cheap means weak); at 1 the low end lifts toward a
+        // competent professional baseline. The curves converge at the top, so
+        // the correction only moves low/mid-value players.
+        $rawProxy = $this->interpolateAbility($effectiveValue, self::ABILITY_VALUE_ANCHORS);
+        $rawFloored = $this->interpolateAbility($effectiveValue, self::COMPETENCE_FLOOR_ANCHORS);
+        $rawAbility = (1.0 - $competenceFloor) * $rawProxy + $competenceFloor * $rawFloored;
+
+        $overall = $this->adjustAbilityForAge($rawAbility, $effectiveValue, $age, $skillPersistence);
+
+        // Small random variance (±1) prevents identical scores for similar inputs.
+        return max(40, min(99, $overall + rand(-1, 1)));
+    }
+
+    /**
+     * Resolve a market-value correction strength to a clamped [0,1] float,
+     * falling back to config when the caller passes null.
+     */
+    private function resolveCorrection(?float $value, string $key): float
+    {
+        $value ??= (float) config("player.market_value_corrections.{$key}", 0.0);
+
+        return max(0.0, min(1.0, $value));
     }
 
     /**
@@ -180,23 +253,22 @@ class PlayerValuationService
     }
 
     /**
-     * Convert market value to a raw ability score via log-linear interpolation.
+     * Deterministic log-linear interpolation of an ability score from a market
+     * value against the given anchor table. Returns a float so the two forward
+     * curves can be blended before rounding; the ±1 jitter is applied once by
+     * the caller.
      *
-     * Uses the same anchor points as abilityToBaseValue() but in reverse,
-     * making the forward and reverse mappings near-symmetric.
-     * Small random variance (±1) prevents identical scores for similar values.
+     * @param array<int, array{int, int}> $anchors [ability, valueCents] points, ascending.
      */
-    private function marketValueToRawAbility(int $marketValueCents): int
+    private function interpolateAbility(int $marketValueCents, array $anchors): float
     {
-        $anchors = self::ABILITY_VALUE_ANCHORS;
-
         if ($marketValueCents <= $anchors[0][1]) {
-            return max(40, $anchors[0][0] + rand(-2, 2));
+            return (float) $anchors[0][0];
         }
 
         $last = count($anchors) - 1;
         if ($marketValueCents >= $anchors[$last][1]) {
-            return min(99, $anchors[$last][0] + rand(-1, 2));
+            return (float) $anchors[$last][0];
         }
 
         for ($i = 0; $i < $last; $i++) {
@@ -205,13 +277,12 @@ class PlayerValuationService
 
             if ($marketValueCents >= $vLow && $marketValueCents <= $vHigh) {
                 $t = (log($marketValueCents) - log($vLow)) / (log($vHigh) - log($vLow));
-                $ability = $aLow + $t * ($aHigh - $aLow);
 
-                return max(40, min(99, (int) round($ability) + rand(-1, 1)));
+                return $aLow + $t * ($aHigh - $aLow);
             }
         }
 
-        return $anchors[0][0]; // @codeCoverageIgnore — unreachable, anchors are contiguous
+        return (float) $anchors[0][0]; // @codeCoverageIgnore — unreachable, anchors are contiguous
     }
 
     /**
@@ -222,29 +293,48 @@ class PlayerValuationService
      * priced for his ceiling, not for being world-class today. The extra
      * headroom is channelled into potential by
      * PlayerDevelopmentService::generatePotential(), not into current
-     * overall.
+     * overall. This cap is independent of the corrections below.
      *
-     * Veterans (PRIME_END - 2 onwards) get an ability boost when their
-     * market value proves they're still elite. Different signal: a 33yo
-     * worth €40M is staying expensive because he's still delivering at top
-     * level, so the market value does map to current ability.
+     * From prime onwards, the age credit blends two views of how a player's
+     * market value relates to his ability as he ages, by `skillPersistence`:
+     *  - 0.0 → the legacy veteran boost: only elite-for-their-age veterans
+     *    (high value relative to typical) are credited.
+     *  - 1.0 → a continuous slope crediting every year past 27, recovering the
+     *    ability a player's falling price shed to age rather than to decline.
      */
-    private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
+    private function adjustAbilityForAge(float $rawAbility, int $effectiveValueCents, int $age, float $skillPersistence): int
     {
         if ($age < PlayerAge::YOUNG_END) {
             // Base cap increases with age: 17yo = 75, 22yo = 85. No market-
             // value boost: the headroom flows into potential, not overall.
             $ageCap = 75 + ($age - 17) * 2;
 
-            return min($rawAbility, $ageCap);
+            return (int) round(min($rawAbility, (float) $ageCap));
         }
 
-        // Boost starts 3 years before official veteran age.
+        $legacyBoost = $this->legacyVeteranBoost($effectiveValueCents, $age);
+        $persistenceBoost = self::SKILL_PERSISTENCE_SLOPE * max(0, $age - 27);
+
+        $boost = min(
+            (float) self::MAX_AGE_BOOST,
+            (1.0 - $skillPersistence) * $legacyBoost + $skillPersistence * $persistenceBoost
+        );
+
+        return (int) round(min(95.0, $rawAbility + $boost));
+    }
+
+    /**
+     * Legacy veteran ability boost (the `skillPersistence = 0` endpoint):
+     * credit ability only when an ageing player stays expensive relative to a
+     * typical value for his age — proof he's still delivering at top level.
+     * Returns 0 below the veteran threshold (PRIME_END - 3).
+     */
+    private function legacyVeteranBoost(int $effectiveValueCents, int $age): int
+    {
         if ($age <= PlayerAge::PRIME_END - 3) {
-            return $rawAbility;
+            return 0;
         }
 
-        // Veterans: boost ability if market value proves they're still elite
         $typicalValueForAge = match (true) {
             $age <= 33 => 500_000_000,   // €5M
             $age <= 35 => 300_000_000,   // €3M
@@ -252,9 +342,9 @@ class PlayerValuationService
             default => 80_000_000,        // €800K
         };
 
-        $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
+        $valueRatio = $effectiveValueCents / max(1, $typicalValueForAge);
 
-        $abilityBoost = match (true) {
+        return match (true) {
             $valueRatio >= 10 => 12,
             $valueRatio >= 5 => 8,
             $valueRatio >= 3 => 5,
@@ -262,15 +352,13 @@ class PlayerValuationService
             $valueRatio >= 1 => 1,
             default => 0,
         };
-
-        return min(95, $rawAbility + $abilityBoost);
     }
 
     /**
      * Deterministic ability-to-market-value mapping via log-linear interpolation.
      *
-     * Anchor points are derived from the forward mapping tier boundaries
-     * in marketValueToRawAbility(), making this the mathematical inverse.
+     * Anchor points are the ABILITY_VALUE_ANCHORS tiers read in reverse,
+     * making this the mathematical inverse of the economy's forward curve.
      * Interpolation in log-space produces smooth exponential growth between anchors.
      *
      * @param int $ability Overall ability score
