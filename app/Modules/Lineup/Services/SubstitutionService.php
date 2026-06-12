@@ -7,6 +7,8 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
+use App\Modules\Match\Support\MinuteCoordinates;
+use App\Modules\Match\Support\StoppageDurations;
 
 class SubstitutionService
 {
@@ -66,12 +68,30 @@ class SubstitutionService
         // Pre-load all suspended player IDs for this competition (single query)
         $suspendedPlayerIds = PlayerSuspension::suspendedPlayerIdsForCompetition($match->game_id, $match->competition_id);
 
-        // Pre-load red-carded player IDs up to this minute (single query instead of N)
+        // Pre-load red-carded player IDs that have ALREADY occurred by this
+        // minute (single query instead of N). The submission `$minute` is an
+        // absolute clock minute (the live UI's currentMinute), but
+        // MatchEvent.minute is the phase-relative base minute (1-45, 46-90, …)
+        // with stoppage held separately in stoppage_minute — the two systems
+        // differ by the accumulated stoppage offset. Comparing the raw column
+        // against the absolute minute counts a not-yet-revealed red card as
+        // already shown: a 50' second-half red is absolute minute 50+fhs, so a
+        // sub at absolute 51 would wrongly see it and block with "sent off"
+        // (#1230). Convert each red to its absolute minute the same way the
+        // live feed does (MatchResimulationService::formatMatchEvents) so the
+        // server's notion of "elapsed" matches what the user has actually seen.
         $playerOutIds = array_column($newSubstitutions, 'playerOutId');
+        $stoppage = StoppageDurations::fromMatch($match);
         $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
             ->whereIn('game_player_id', $playerOutIds)
             ->where('event_type', 'red_card')
-            ->where('minute', '<=', $minute)
+            ->get(['game_player_id', 'phase', 'minute', 'stoppage_minute'])
+            ->filter(fn (MatchEvent $e) => MinuteCoordinates::toAbsoluteWith(
+                $e->phase,
+                $e->minute,
+                $e->stoppage_minute,
+                $stoppage,
+            ) <= $minute)
             ->pluck('game_player_id')
             ->all();
 
