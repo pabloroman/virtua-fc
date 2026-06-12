@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Support\SeasonData;
 use Illuminate\Console\Command;
 
 /**
@@ -46,7 +47,7 @@ class ValidateSeason extends Command
         $this->info("Validating data/{$season}...");
         $this->newLine();
 
-        foreach ($this->competitions($countryConfig) as [$code, $type]) {
+        foreach (SeasonData::competitions($countryConfig) as ['code' => $code, 'type' => $type]) {
             $dir = "{$base}/{$code}";
 
             match ($type) {
@@ -122,7 +123,7 @@ class ValidateSeason extends Command
         }
         foreach ($files as $file) {
             $data = json_decode(file_get_contents($file), true);
-            if (!is_array($data) || empty($data['image']) || $this->idFromImage($data['image']) === null) {
+            if (!is_array($data) || empty($data['image']) || SeasonData::idFromImage($data['image']) === null) {
                 $this->errors[] = "{$code}: " . basename($file) . " has no resolvable transfermarkt id (image).";
             }
         }
@@ -169,7 +170,7 @@ class ValidateSeason extends Command
         }
 
         foreach ($clubs as $club) {
-            if ($this->resolveTransfermarktId($club) === null) {
+            if (SeasonData::resolveTransfermarktId($club) === null) {
                 $name = $club['name'] ?? '(unnamed)';
                 $this->errors[] = "{$code}: club '{$name}' has no resolvable transfermarkt id.";
             }
@@ -193,72 +194,5 @@ class ValidateSeason extends Command
             return null;
         }
         return $data;
-    }
-
-    /**
-     * Resolve a club's transfermarkt id the same way the seeder does:
-     * explicit `id` / `transfermarktId`, or parsed from the crest `image` URL.
-     *
-     * @param  array<string, mixed>  $club
-     */
-    private function resolveTransfermarktId(array $club): ?string
-    {
-        if (!empty($club['id'])) {
-            return (string) $club['id'];
-        }
-        if (!empty($club['transfermarktId'])) {
-            return (string) $club['transfermarktId'];
-        }
-        return $this->idFromImage($club['image'] ?? '');
-    }
-
-    private function idFromImage(string $imageUrl): ?string
-    {
-        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $m)) {
-            return $m[1];
-        }
-        return null;
-    }
-
-    /**
-     * Enumerate every competition code with its validation type:
-     * 'league' (round-robin), 'cup'/'continental' (participant list),
-     * 'pool' (per-team files), 'none' (bare playoff, schedule only).
-     *
-     * @return array<array{0: string, 1: string}>
-     */
-    private function competitions(CountryConfig $countryConfig): array
-    {
-        $out = [];
-        $seen = [];
-
-        $add = function (string $code, string $type) use (&$out, &$seen): void {
-            if (isset($seen[$code])) {
-                return;
-            }
-            $seen[$code] = true;
-            $out[] = [$code, $type];
-        };
-
-        foreach ($countryConfig->playableCountryCodes() as $country) {
-            foreach ($countryConfig->flattenedTiers($country) as $tier) {
-                $add($tier['competition'], 'league');
-            }
-            foreach ($countryConfig->promotionPlayoffIds($country) as $playoffId) {
-                $add($playoffId, 'none');
-            }
-            foreach ($countryConfig->domesticCupIds($country) as $cupId) {
-                $add($cupId, 'cup');
-            }
-            $transferPool = $countryConfig->support($country)['transfer_pool'] ?? [];
-            foreach ($transferPool as $code => $poolConfig) {
-                $add($code, ($poolConfig['role'] ?? 'league') === 'team_pool' ? 'pool' : 'league');
-            }
-            foreach ($countryConfig->continentalSupportIds($country) as $code) {
-                $add($code, 'continental');
-            }
-        }
-
-        return $out;
     }
 }
