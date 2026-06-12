@@ -11,6 +11,7 @@ use App\Modules\Lineup\Services\AITacticsService;
 use App\Modules\Lineup\Services\LineupService;
 
 use App\Support\PitchGrid;
+use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Support\PreMatchContext;
 use App\Support\TeamColors;
@@ -100,6 +101,10 @@ class ShowLineup
                 'fitness' => $p->fitness,
                 'morale' => $p->morale,
                 'isAvailable' => $isAvailable,
+                // Position-based rank used by the client-side list sort
+                // (starters-first, then bench, then unavailable). Keeps
+                // PositionMapper as the single source of truth.
+                'sortOrder' => PositionMapper::positionSortOrder($p->position),
             ];
         })->keyBy('id')->toArray();
 

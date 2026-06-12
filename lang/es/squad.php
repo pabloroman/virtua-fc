@@ -361,6 +361,7 @@ return [
     // Lineup redesign
     'opponent_goal' => 'Portería Rival',
     'available_players' => 'Jugadores Disponibles',
+    'starting_xi' => 'Once Titular',
     'substitutes' => 'Suplentes',
     'lineup_overview' => 'Resumen de Alineación',
 
