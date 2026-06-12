@@ -255,6 +255,12 @@ class PreContractBalanceTest extends TestCase
             'annual_wage' => 1_000_000, // €10K — well below market
         ]);
 
+        // This asserts the market-premium property against the un-normalized
+        // base-wage formula below, so pin the wage-ability-anchor knob off: its
+        // scale normalization (which intentionally trims neutral players toward
+        // the wage floor) is exercised by app:diagnose-wage-divergence, not here.
+        config(['finances.wage_ability_anchor' => 0]);
+
         $marketBasedDemand = (int) (150_000_000 * 0.08 * 1.20); // baseWage × premium
         $demand = $this->contractService->calculateWageDemand($player, NegotiationScenario::PRE_CONTRACT)['wage'];
 
