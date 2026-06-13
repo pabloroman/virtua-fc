@@ -9,6 +9,7 @@ use App\Models\GameTransfer;
 use App\Models\Team;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Finance\Services\WageModelService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
@@ -99,6 +100,7 @@ class AITransferMarketService
 
     public function __construct(
         private readonly ContractService $contractService,
+        private readonly WageModelService $wageModel,
         private readonly NotificationService $notificationService,
         private readonly AITeamBudgetCalculator $budgetCalculator,
         private readonly AIExclusionList $exclusionList,
@@ -409,13 +411,10 @@ class AITransferMarketService
             $contractYears = $freeAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
             $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
-            $newWage = $this->contractService->calculateAnnualWageForPlayer(
-                $freeAgent->overall_score,
-                $freeAgent->market_value_cents,
-                $this->contractService->getDefaultMinimumWage(),
-                $freeAgent->age($game->current_date),
-                $freeAgent->position,
-            );
+            // Price the signing into the club's wage structure, floored at the
+            // default minimum (as before).
+            $minWage = $this->contractService->getDefaultMinimumWage();
+            $newWage = $this->wageModel->wageForSigning($game, $teamId, $freeAgent->overall_score, $freeAgent->market_value_cents, $freeAgent->age($game->current_date), $freeAgent->position, $minWage);
 
             $number = $this->allocateSquadNumber($takenNumbers, $teamId);
 
@@ -1127,13 +1126,10 @@ class AITransferMarketService
         $contractYears = mt_rand($minContractYears, $maxContractYears);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
-        $newWage = $this->contractService->calculateAnnualWageForPlayer(
-            $player->overall_score,
-            $player->market_value_cents,
-            $this->contractService->getDefaultMinimumWage(),
-            $player->age($game->current_date),
-            $player->position,
-        );
+        // Price the signing into the buying club's wage structure, floored at
+        // the default minimum (as before).
+        $minWage = $this->contractService->getDefaultMinimumWage();
+        $newWage = $this->wageModel->wageForSigning($game, $toTeamId, $player->overall_score, $player->market_value_cents, $player->age($game->current_date), $player->position, $minWage);
 
         $playerUpdates[] = [
             'id' => $player->id,
@@ -1314,13 +1310,10 @@ class AITransferMarketService
         $contractYears = $bestAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears, 6, 30);
 
-        $newWage = $this->contractService->calculateAnnualWageForPlayer(
-            $bestAgent->overall_score,
-            $bestAgent->market_value_cents,
-            $this->contractService->getDefaultMinimumWage(),
-            $bestAgent->age($game->current_date),
-            $bestAgent->position,
-        );
+        // Price the signing into the club's wage structure, floored at the
+        // default minimum (as before).
+        $minWage = $this->contractService->getDefaultMinimumWage();
+        $newWage = $this->wageModel->wageForSigning($game, $teamId, $bestAgent->overall_score, $bestAgent->market_value_cents, $bestAgent->age($game->current_date), $bestAgent->position, $minWage);
 
         $number = $this->allocateSquadNumber($takenNumbers, $teamId);
 

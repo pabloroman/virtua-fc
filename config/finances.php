@@ -1,14 +1,21 @@
 <?php
 
 return [
-    // Annual operating expenses by reputation level (in cents)
-    // Covers: non-playing staff, admin, travel, insurance, legal, etc.
-    'operating_expenses' => [
-        'elite'        =>  9_500_000_000, // €95M
-        'continental'  =>  5_500_000_000, // €55M
-        'established'  =>  2_700_000_000, // €27M
-        'modest'       =>  1_000_000_000, // €10M
-        'local'        =>    600_000_000, // €6M
+    // Annual operating expenses (non-playing staff, admin, travel, insurance,
+    // legal, etc.) as a fraction of the club's own projected revenue, by
+    // reputation level. Revenue-proportional rather than a flat per-tier figure:
+    // overhead grows with the club, and a lower-division side's costs fall with
+    // its (much smaller) revenue instead of being pinned to a constant that would
+    // wipe out its surplus. The fraction tapers UP from elite to local — marquee
+    // clubs run their giant revenue more efficiently, smaller clubs spend a larger
+    // share just operating — which (with the wage curve) leaves the bigger clubs a
+    // proportionally bigger transfer surplus. Read by BudgetProjectionService.
+    'opex_revenue_ratio' => [
+        'elite'        => 0.10,
+        'continental'  => 0.12,
+        'established'  => 0.13,
+        'modest'       => 0.14,
+        'local'        => 0.14,
     ],
 
     // Squad wage-bill ceiling as a fraction of projected RECURRING revenue
@@ -36,6 +43,36 @@ return [
     // read by the shared wage path, so seeding, contract demands, and AI
     // signings all move together. 0.0 reproduces today exactly.
     'wage_ability_anchor' => 0.75,
+
+    // Target squad WAGE BILL as a fraction of the club's stable revenue base
+    // (TV + commercial + solidarity — the ticketing lines are excluded as they
+    // are small and game-state-coupled). At setup, SquadWageBudgetService scales
+    // every seeded squad so its bill hits this target, preserving the formula's
+    // intra-squad distribution (stars still earn most). Anchoring the bill to the
+    // club's OWN revenue is what self-adjusts across divisions: a flat per-tier or
+    // per-reputation figure can't, because a second-division 'established' club and
+    // a La Liga one earn wildly different revenue. Tapers UP from elite to local —
+    // marquee clubs run their giant revenue a little more efficiently, smaller
+    // clubs spend a larger share on wages. All values sit under wage_cap_ratio so
+    // every club starts healthy (a club's bill never exceeds its cap at kickoff).
+    'wage_revenue_ratio' => [
+        'elite'        => 0.46,
+        'continental'  => 0.55,
+        'established'  => 0.60,
+        'modest'       => 0.62,
+        'local'        => 0.60,
+    ],
+
+    // Share of available surplus the DEFAULT budget allocation keeps as transfer
+    // budget rather than pre-spending on infrastructure. The reputation defaults
+    // (GameInvestment::DEFAULT_TIERS_BY_REPUTATION) are sized for big clubs; a
+    // smaller club whose surplus just clears its default would otherwise sink it
+    // all into infrastructure and start with almost nothing to spend — so the
+    // highest-revenue club in a division could end up with the smallest transfer
+    // budget. This reserves ~half the surplus for transfers; rich clubs are
+    // unaffected (their default is comfortably below the cap). Read by
+    // GameInvestment::defaultTiersForReputation.
+    'default_infra_transfer_reserve' => 0.45,
 
     // Player-trading allowance ("plusvalías"). A trailing average of the club's
     // NET player-trading result (sales − purchases) over recent completed
@@ -166,15 +203,6 @@ return [
         'local'        =>  24_000, // €240/seat
     ],
 
-    // Operating expense multiplier by competition tier.
-    // Tier 1 (La Liga) = full cost, lower tiers scale down to match their
-    // much smaller revenue footprint (Primera RFEF TV tops out ~€1.5M).
-    'operating_expense_tier_multiplier' => [
-        1 => 1.0,   // La Liga: full operating expenses
-        2 => 0.70,  // Segunda: 70% of base operating expenses
-        3 => 0.25,  // Primera RFEF: ~1/4 of base, keeps floors under typical revenue
-    ],
-
     // Commercial revenue multiplier by competition tier (season 1 only).
     // Reflects the sharp drop in sponsor/merchandising deals the further a club
     // sits from La Liga. Real-world Primera RFEF commercial income is typically
@@ -183,6 +211,23 @@ return [
         1 => 1.0,   // La Liga: full commercial rate
         2 => 0.75,  // Segunda: 75%
         3 => 0.25,  // Primera RFEF: 25%
+    ],
+
+    // How much of a club's reputation commercial PREMIUM survives at each tier.
+    // `commercial_tier_multiplier` scales the absolute commercial level by
+    // division; this scales the *reputation spread* on top of it — the per-seat
+    // (and brand-floor) amount a club earns ABOVE the 'local' baseline. At 1.0 a
+    // tier keeps the full premium (a 'modest' club earns its €450/seat); at 0.0
+    // reputation is ignored and every club earns the 'local' rate. Third-tier
+    // sponsorship barely rewards a relegated brand over a local side, so tier 3
+    // compresses the premium hard — without this, 'modest'+ Primera RFEF clubs
+    // carry inflated commercial and, since wages = revenue × ratio, inflated
+    // wages. 'local' clubs are unaffected at any tier (no premium to compress).
+    // Unlisted tiers default to 1.0.
+    'commercial_reputation_premium' => [
+        1 => 1.0,  // La Liga: full reputation premium
+        2 => 1.0,  // Segunda: full premium
+        3 => 0.2,  // Primera RFEF: brand premium mostly gone — near stadium-only
     ],
 
     // Brand-driven commercial floor by reputation level (in cents), expressed
@@ -234,14 +279,18 @@ return [
     // How much of AI team sale proceeds become available for purchases (0.0-1.0).
     'ai_reinvestment_rate' => 0.70,
 
-    // Estimated total annual revenue by reputation level (in cents).
-    // Used to compute AI team financial pressure (wage-to-revenue ratio).
+    // Estimated total annual revenue by reputation level (in cents). Used to
+    // compute AI team financial pressure (wage-to-revenue ratio). Calibrated to
+    // roughly the ACTUAL projected revenue per tier so that a club carrying the
+    // normalised ~45–60%-of-revenue wage bill (see SquadWageBudgetService)
+    // reads as healthy rather than over-extended — otherwise the higher realistic
+    // wages would spike AI pressure and freeze AI transfer activity.
     'ai_estimated_revenue' => [
-        'elite'       => 200_000_000_00, // €200M
-        'continental' => 100_000_000_00, // €100M
-        'established' =>  50_000_000_00, // €50M
-        'modest'      =>  25_000_000_00, // €25M
-        'local'       =>  10_000_000_00, // €10M
+        'elite'       => 400_000_000_00, // €400M
+        'continental' => 160_000_000_00, // €160M
+        'established' =>  70_000_000_00, // €70M
+        'modest'      =>  50_000_000_00, // €50M
+        'local'       =>  12_000_000_00, // €12M
     ],
 
     // Per-team transfer activity count weights by reputation (summer window).

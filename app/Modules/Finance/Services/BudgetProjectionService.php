@@ -114,11 +114,15 @@ class BudgetProjectionService
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
 
-        // Calculate operating expenses based on club reputation
+        // Operating expenses scale with the club's own projected revenue (a
+        // reputation-graded fraction), not a flat per-tier constant: bigger clubs
+        // carry proportionally bigger non-wage overheads, and a second-division
+        // club's costs fall with its revenue instead of being pinned to a figure
+        // that would swamp it. Computed on pre-subsidy revenue so a public subsidy
+        // top-up never inflates the overhead it is meant to cover.
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-        $baseOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
-        $tierMultiplier = config('finances.operating_expense_tier_multiplier.' . $league->tier, 1.0);
-        $projectedOperatingExpenses = (int) ($baseOperatingExpenses * $tierMultiplier);
+        $opexRatio = (float) config('finances.opex_revenue_ratio.' . $reputation, 0.13);
+        $projectedOperatingExpenses = (int) round($projectedTotalRevenue * $opexRatio);
 
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
@@ -193,6 +197,60 @@ class BudgetProjectionService
         $config = $league->getConfig();
 
         return $config->getTvRevenue($position);
+    }
+
+    /**
+     * Stable revenue base used to anchor a club's wage bill (TV + first-season
+     * commercial + solidarity funds). Deliberately excludes the ticketing lines
+     * (matchday + season tickets): they are small and coupled to per-game state,
+     * and leaving them out keeps wage normalisation cheap and order-independent
+     * at setup. Works for ANY team in the game's league, not just the managed
+     * one. Pass $projectedPosition to avoid recomputing league strengths per
+     * team (they are identical for every club in the league).
+     *
+     * Internal seam for {@see wageBudgetRevenueForTeam}, which adds the gate
+     * (season-ticket) line on top; callers wanting a club's wage-target revenue
+     * use that gate-inclusive method, not this base.
+     */
+    private function wageBaseRevenueForTeam(Game $game, Team $team, Competition $league, ?int $projectedPosition = null): int
+    {
+        if ($projectedPosition === null) {
+            $strengths = $this->squadService->calculateLeagueStrengths($game, $league);
+            $projectedPosition = $this->squadService->getProjectedPosition($team->id, $strengths);
+        }
+
+        $tv = $this->calculateTvRevenue($projectedPosition, $league);
+        $commercial = (int) $this->firstSeasonCommercialRevenue($game, $team, $league);
+        $solidarity = self::SOLIDARITY_FUNDS_BY_TIER[$league->tier] ?? 0;
+
+        return $tv + $commercial + $solidarity;
+    }
+
+    /**
+     * Recurring-revenue base for a club's WAGE TARGET — wage-base revenue
+     * (TV + commercial + solidarity) plus its estimated season-ticket income.
+     *
+     * Season tickets are the dominant gate line, especially at lower tiers where
+     * TV/commercial are small. Anchoring the wage target to wage-base revenue
+     * ALONE understates those clubs badly (their income is mostly gate), so the
+     * level produces sub-minimum wages and the whole squad collapses onto the
+     * league minimum. Including season tickets fixes that and aligns the wage
+     * target with the salary-cap base, which already counts gate revenue — so
+     * "target" and "cap" finally measure against the same income.
+     *
+     * Season tickets are estimated from stadium capacity + reputation via the
+     * default pricing preset, so this stays order-independent at setup (no
+     * fixtures needed). Matchday/walk-up is deliberately omitted: it is
+     * fixture-coupled (zero before fixtures exist at setup) and tiny next to
+     * season tickets.
+     */
+    public function wageBudgetRevenueForTeam(Game $game, Team $team, Competition $league, ?int $projectedPosition = null): int
+    {
+        $base = $this->wageBaseRevenueForTeam($game, $team, $league, $projectedPosition);
+        $seasonTickets = (int) ($this->seasonTicketPricingService
+            ->buildFromPreset($game, $team, SeasonTicketPricingService::DEFAULT_PRESET)['total_revenue'] ?? 0);
+
+        return $base + $seasonTickets;
     }
 
     /**
@@ -504,7 +562,7 @@ class BudgetProjectionService
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $seats = min($team->stadium_seats, self::MAX_COMMERCIAL_SEATS);
 
-        $base = $seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
+        $base = $seats * $this->effectiveCommercialPerSeat($reputation, $league);
 
         $stadiumDriven = $base * $this->commercialTierMultiplier($league);
 
@@ -531,7 +589,10 @@ class BudgetProjectionService
             return 0;
         }
 
-        return (int) ($floor * $this->commercialTierMultiplier($league));
+        // The brand floor IS a reputation premium (brand-led income above the
+        // stadium baseline), so it tapers with the reputation-premium factor too
+        // — a relegated brand's floor shrinks toward zero in the lower divisions.
+        return (int) ($floor * $this->commercialTierMultiplier($league) * $this->commercialReputationPremium($league));
     }
 
     /**
@@ -541,6 +602,34 @@ class BudgetProjectionService
     private function commercialTierMultiplier(Competition $league): float
     {
         return (float) config("finances.commercial_tier_multiplier.{$league->tier}", 1.0);
+    }
+
+    /**
+     * Fraction of a club's reputation commercial PREMIUM (its per-seat / brand
+     * income above the 'local' baseline) that survives at this competition tier.
+     * 1.0 keeps the full premium; 0.0 ignores reputation entirely. Lets lower
+     * tiers compress the brand spread so a relegated club's commercial tapers
+     * toward a local side's. See config `commercial_reputation_premium`.
+     */
+    private function commercialReputationPremium(Competition $league): float
+    {
+        return (float) config("finances.commercial_reputation_premium.{$league->tier}", 1.0);
+    }
+
+    /**
+     * Per-seat commercial rate for a reputation at this tier, with the brand
+     * premium compressed toward the 'local' baseline by the tier's
+     * reputation-premium factor. 'local' clubs are unaffected (no premium above
+     * themselves); higher reputations are pulled toward the local rate as the
+     * factor falls — so third-tier 'modest'+ clubs don't carry top-flight
+     * sponsorship spreads.
+     */
+    private function effectiveCommercialPerSeat(string $reputation, Competition $league): float
+    {
+        $local = (float) config('finances.commercial_per_seat.local', 24_000);
+        $rate = (float) config("finances.commercial_per_seat.{$reputation}", $local);
+
+        return $local + ($rate - $local) * $this->commercialReputationPremium($league);
     }
 
     /**

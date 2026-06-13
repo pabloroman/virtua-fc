@@ -11,29 +11,35 @@ class PremierLeagueConfig implements CompetitionConfig, HasSeasonGoals
 {
     /**
      * Premier League TV revenue by position (in cents).
-     * PL distributes more evenly than La Liga, with a higher floor.
+     *
+     * The real PL broadcast deal is both the largest in world football (~€3.0B
+     * total) and famously FLAT: the bottom club earns ~60% of the champion's
+     * payout (huge equal-share domestic + international pots, a comparatively
+     * small merit slice). The pool below totals ~€2.95B with a €110M floor and
+     * a €195M ceiling (110/195 ≈ 56%), matching that real-world shape — far
+     * flatter than La Liga's steep, merit-weighted curve.
      */
     private const TV_REVENUE = [
-        1 => 18_000_000_000,   // €180M
-        2 => 17_000_000_000,   // €170M
-        3 => 16_000_000_000,   // €160M
-        4 => 15_000_000_000,   // €150M
-        5 => 14_200_000_000,   // €142M
-        6 => 13_500_000_000,   // €135M
-        7 => 13_000_000_000,   // €130M
-        8 => 12_500_000_000,   // €125M
-        9 => 12_000_000_000,   // €120M
-        10 => 11_500_000_000,  // €115M
-        11 => 11_000_000_000,  // €110M
-        12 => 10_500_000_000,  // €105M
-        13 => 10_000_000_000,  // €100M
-        14 => 9_500_000_000,   // €95M
-        15 => 9_000_000_000,   // €90M
-        16 => 8_500_000_000,   // €85M
-        17 => 8_000_000_000,   // €80M
-        18 => 7_500_000_000,   // €75M
-        19 => 7_000_000_000,   // €70M
-        20 => 6_500_000_000,   // €65M
+        1 => 19_500_000_000,   // €195M
+        2 => 18_700_000_000,   // €187M
+        3 => 18_000_000_000,   // €180M
+        4 => 17_400_000_000,   // €174M
+        5 => 16_800_000_000,   // €168M
+        6 => 16_300_000_000,   // €163M
+        7 => 15_800_000_000,   // €158M
+        8 => 15_400_000_000,   // €154M
+        9 => 15_000_000_000,   // €150M
+        10 => 14_600_000_000,  // €146M
+        11 => 14_200_000_000,  // €142M
+        12 => 13_900_000_000,  // €139M
+        13 => 13_600_000_000,  // €136M
+        14 => 13_300_000_000,  // €133M
+        15 => 13_000_000_000,  // €130M
+        16 => 12_700_000_000,  // €127M
+        17 => 12_400_000_000,  // €124M
+        18 => 12_000_000_000,  // €120M
+        19 => 11_500_000_000,  // €115M
+        20 => 11_000_000_000,  // €110M
     ];
 
     private const POSITION_FACTORS = [

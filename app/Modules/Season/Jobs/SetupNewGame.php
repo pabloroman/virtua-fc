@@ -9,6 +9,7 @@ use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupPipeline;
+use App\Modules\Finance\Services\SquadWageBudgetService;
 use App\Modules\Season\Services\TeamReputationSeeder;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
@@ -129,6 +130,14 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 isInitialSeason: true,
                 metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
             );
+
+            // Assign every club's squad wage bill from its own revenue (wage =
+            // weight × clubWageLevel) before the budget projection runs, so
+            // surpluses and transfer budgets come out realistic. This is the
+            // first point at which a club's revenue — and thus the bill it can
+            // carry — is known. Idempotent — re-running on a crash-recovery pass
+            // converges (the bill is already ≈ target).
+            app(SquadWageBudgetService::class)->assignWageBudget($game->refresh());
 
             // Pipeline writes season_transition_step using stepOffset + processor index,
             // so its checkpoints continue the count after the prep phase.

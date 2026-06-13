@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\ClubProfile;
 use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Finance\Services\WageModelService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Player\Services\PlayerTierService;
@@ -43,6 +44,7 @@ class PlayerGeneratorService
 
     public function __construct(
         private readonly ContractService $contractService,
+        private readonly WageModelService $wageModel,
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerValuationService $valuationService,
         private readonly PlayerAttributeSampler $sampler,
@@ -104,8 +106,12 @@ class PlayerGeneratorService
             $potentialHigh = $potentialData['high'];
         }
 
-        // Calculate wage and contract
-        $annualWage = $this->contractService->calculateAnnualWageForPlayer($data->overallScore, $marketValue, $this->contractService->getMinimumWageForTeam($game->team), $age, $data->position);
+        // Calculate wage and contract. Price the player into his club's wage
+        // structure (weight × clubWageLevel) so a mid-game arrival sits in the
+        // same band as the leveled squad; fall back to the standalone formula
+        // when there is no club to price against (e.g. a free agent).
+        $minimumWage = $this->contractService->getMinimumWageForTeam($game->team);
+        $annualWage = $this->wageModel->wageForSigning($game, $data->teamId, $data->overallScore, $marketValue, $age, $data->position, $minimumWage);
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
@@ -208,6 +214,16 @@ class PlayerGeneratorService
         $releaseClausesEnabled = $game->release_clauses_enabled;
         $teamCountries = $releaseClausesEnabled ? $this->resolveTeamCountries($teamIds) : [];
 
+        // Per-club wage level (affordable bill ÷ squad weight), resolved once per
+        // distinct team so each generated player is priced into his club's wage
+        // structure (weight × level) rather than the un-leveled standalone
+        // formula. Null for any team that can't be priced (no league / squad /
+        // revenue); those players fall back to the standalone formula below.
+        $teamWageLevels = [];
+        foreach ($teamIds as $teamId) {
+            $teamWageLevels[$teamId] = $this->wageModel->clubWageLevelForTeam($game, $teamId);
+        }
+
         // Build the excluded-names set once; pickRandomIdentity below mutates
         // this hash directly via gameNamesCache, so subsequent iterations see
         // names added earlier in the batch without re-flipping the whole list.
@@ -242,7 +258,8 @@ class PlayerGeneratorService
                 $potentialHigh = $potentialData['high'];
             }
 
-            $annualWage = $this->contractService->calculateAnnualWageForPlayer($data->overallScore, $marketValue, $minimumWage, $age, $data->position);
+            $level = $teamWageLevels[$data->teamId] ?? null;
+            $annualWage = $this->wageModel->wageFromLevel($level, $data->overallScore, $marketValue, $age, $data->position, $minimumWage);
             $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
             $releaseClause = $releaseClausesEnabled
