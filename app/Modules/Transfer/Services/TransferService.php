@@ -892,14 +892,48 @@ class TransferService
         $desire = $this->squadNeedService->desireScore($buyerRoster, $player);
         $transferFee = $this->calculateOfferPrice($player, $desire, $offeringTeam->id);
 
-        // A club never opens above the buyout — it would just pay the clause instead.
-        if ($player->game->release_clauses_enabled && $player->hasReleaseClause()) {
-            $transferFee = min($transferFee, (int) $player->release_clause);
-        }
-
+        $game = $player->game;
         $expiryDays = $offerType === TransferOffer::TYPE_LISTED
             ? self::LISTED_OFFER_EXPIRY_DAYS
             : self::UNSOLICITED_OFFER_EXPIRY_DAYS;
+
+        // A club willing to meet (or exceed) the buyout doesn't open a negotiable
+        // bid — it pays the clause and force-buys. So when the desire-driven price
+        // reaches the clause, the spontaneous offer becomes a non-consensual forced
+        // sale, mirroring generateAIReleaseClauseTriggers: created straight at
+        // STATUS_AGREED with the clause flag set, so the user can't reject it and it
+        // completes through the normal outgoing pipeline. (The clause is below market
+        // value whenever this binds, and the buyer already cleared market-value
+        // affordability, so it can afford the buyout.)
+        if ($game->release_clauses_enabled && $player->hasReleaseClause()) {
+            $clauseCents = (int) $player->release_clause;
+
+            if ($transferFee >= $clauseCents) {
+                return DB::transaction(function () use ($game, $player, $offeringTeam, $offerType, $clauseCents, $expiryDays) {
+                    // Replicate acceptOffer's sibling-rejection so no stale pending
+                    // offer survives the forced sale.
+                    TransferOffer::where('game_player_id', $player->id)
+                        ->where('status', TransferOffer::STATUS_PENDING)
+                        ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+
+                    return TransferOffer::create([
+                        'id' => Str::uuid()->toString(),
+                        'game_id' => $player->game_id,
+                        'game_player_id' => $player->id,
+                        'offering_team_id' => $offeringTeam->id,
+                        'selling_team_id' => $player->team_id,
+                        'offer_type' => $offerType,
+                        'direction' => TransferOffer::DIRECTION_OUTGOING,
+                        'transfer_fee' => $clauseCents,
+                        'status' => TransferOffer::STATUS_AGREED,
+                        'triggered_release_clause' => true,
+                        'expires_at' => Carbon::parse($game->current_date)->addDays($expiryDays),
+                        'game_date' => $game->current_date,
+                        'resolved_at' => $game->current_date,
+                    ]);
+                });
+            }
+        }
 
         return TransferOffer::create([
             'id' => Str::uuid()->toString(),
@@ -909,8 +943,8 @@ class TransferService
             'offer_type' => $offerType,
             'transfer_fee' => $transferFee,
             'status' => TransferOffer::STATUS_PENDING,
-            'expires_at' => Carbon::parse($player->game->current_date)->addDays($expiryDays),
-            'game_date' => $player->game->current_date,
+            'expires_at' => Carbon::parse($game->current_date)->addDays($expiryDays),
+            'game_date' => $game->current_date,
         ]);
     }
 
