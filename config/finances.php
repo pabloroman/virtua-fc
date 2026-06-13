@@ -46,7 +46,7 @@ return [
 
     // Target squad WAGE BILL as a fraction of the club's stable revenue base
     // (TV + commercial + solidarity — the ticketing lines are excluded as they
-    // are small and game-state-coupled). At setup, WageNormalizationService scales
+    // are small and game-state-coupled). At setup, SquadWageBudgetService scales
     // every seeded squad so its bill hits this target, preserving the formula's
     // intra-squad distribution (stars still earn most). Anchoring the bill to the
     // club's OWN revenue is what self-adjusts across divisions: a flat per-tier or
@@ -213,6 +213,23 @@ return [
         3 => 0.25,  // Primera RFEF: 25%
     ],
 
+    // How much of a club's reputation commercial PREMIUM survives at each tier.
+    // `commercial_tier_multiplier` scales the absolute commercial level by
+    // division; this scales the *reputation spread* on top of it — the per-seat
+    // (and brand-floor) amount a club earns ABOVE the 'local' baseline. At 1.0 a
+    // tier keeps the full premium (a 'modest' club earns its €450/seat); at 0.0
+    // reputation is ignored and every club earns the 'local' rate. Third-tier
+    // sponsorship barely rewards a relegated brand over a local side, so tier 3
+    // compresses the premium hard — without this, 'modest'+ Primera RFEF clubs
+    // carry inflated commercial and, since wages = revenue × ratio, inflated
+    // wages. 'local' clubs are unaffected at any tier (no premium to compress).
+    // Unlisted tiers default to 1.0.
+    'commercial_reputation_premium' => [
+        1 => 1.0,  // La Liga: full reputation premium
+        2 => 1.0,  // Segunda: full premium
+        3 => 0.2,  // Primera RFEF: brand premium mostly gone — near stadium-only
+    ],
+
     // Brand-driven commercial floor by reputation level (in cents), expressed
     // at competition tier 1. Decouples a marquee club's commercial income from
     // its stadium size: a global brand earns sponsorship + merchandising far
@@ -265,7 +282,7 @@ return [
     // Estimated total annual revenue by reputation level (in cents). Used to
     // compute AI team financial pressure (wage-to-revenue ratio). Calibrated to
     // roughly the ACTUAL projected revenue per tier so that a club carrying the
-    // normalised ~45–60%-of-revenue wage bill (see WageNormalizationService)
+    // normalised ~45–60%-of-revenue wage bill (see SquadWageBudgetService)
     // reads as healthy rather than over-extended — otherwise the higher realistic
     // wages would spike AI pressure and freeze AI transfer activity.
     'ai_estimated_revenue' => [

@@ -173,6 +173,29 @@ class ContractService
     }
 
     /**
+     * A player's RELATIVE wage weight: the ability/age/position shape of the wage
+     * formula, with no club context. It is calculateAnnualWageForPlayer() stripped
+     * of everything whose effect is purely absolute — the WAGE_ANCHOR_SCALE level
+     * normalisation (a global constant), the ±10% variance, the round-to-€10k and
+     * the league-minimum floor — leaving just `anchor × wage% × ageModifier`.
+     *
+     * Only the proportion between players matters: WageModelService turns a weight
+     * into an actual wage by `weight × clubWageLevel`, where the level carries all
+     * the absolute scale (the club's affordable bill ÷ its squad's total weight).
+     * Because that division cancels any global factor, dropping WAGE_ANCHOR_SCALE
+     * here leaves the resulting wage unchanged — a mid-game signing priced this way
+     * lands in the same band as the club's setup-leveled squad.
+     */
+    public function playerWeight(int $overallScore, int $marketValueCents, ?int $age = null, ?string $position = null): int
+    {
+        $anchor = $this->blendWageAnchor($marketValueCents, $overallScore, $age, $position);
+        $base = $anchor * $this->getWagePercentage($anchor);
+        $base = $base * $this->getAgeWageModifier($age);
+
+        return (int) round($base);
+    }
+
+    /**
      * Blend a wage value anchor from raw market value (weight 0) toward the
      * ability-derived wage base (weight 1) by `finances.wage_ability_anchor`.
      * Returns the market value unchanged when the knob is off or overall is
