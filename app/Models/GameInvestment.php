@@ -281,10 +281,13 @@ class GameInvestment extends Model
     }
 
     /**
-     * Get default investment tiers for a reputation level, reduced if surplus is insufficient.
+     * Get default investment tiers for a reputation level, trimmed so the spend
+     * leaves a transfer-budget reserve (config `finances.default_infra_transfer_reserve`).
      *
-     * When $minTier is 0 (Primera RFEF), reduction can bottom out at tier 0
-     * using the tier-0 baseline thresholds.
+     * Starts from the reputation default and reduces the most expensive area one
+     * tier at a time until the infrastructure spend fits within the surplus minus
+     * the reserve. When $minTier is 0 (Primera RFEF), reduction can bottom out at
+     * tier 0 using the tier-0 baseline thresholds.
      */
     public static function defaultTiersForReputation(string $reputation, int $availableSurplus, int $minTier = 1): array
     {
@@ -299,23 +302,43 @@ class GameInvestment extends Model
             return self::TIER_THRESHOLDS[$area][$tier];
         };
 
+        // Reserve a share of the surplus for transfers so infrastructure can't
+        // swallow the whole budget. Without it, a club whose surplus just clears
+        // its reputation default spends it all on infrastructure and is left with
+        // almost nothing to spend — so the highest-revenue club in a division can
+        // end up with the smallest transfer budget. Reducing one area at a time
+        // (most expensive first) lets infra settle near the cap instead of
+        // collapsing all four tiers in a single step.
+        $reserve = (float) config('finances.default_infra_transfer_reserve', 0.45);
+        $infraBudget = (int) floor($availableSurplus * (1 - $reserve));
+
         while (true) {
             $totalCost = 0;
             foreach ($tiers as $area => $tier) {
                 $totalCost += $costFor($area, $tier);
             }
 
-            if ($totalCost <= $availableSurplus) {
+            if ($totalCost <= $infraBudget) {
                 return $tiers;
             }
 
-            // All already at minimum — can't reduce further
-            if (max($tiers) <= $minTier) {
+            // Trim the single most expensive area still above the floor. Once
+            // every area sits at $minTier the floor wins — minimum infra is
+            // mandatory even if it exceeds the reserve-adjusted budget.
+            $reduceArea = null;
+            $reduceCost = -1;
+            foreach ($tiers as $area => $tier) {
+                if ($tier > $minTier && $costFor($area, $tier) > $reduceCost) {
+                    $reduceArea = $area;
+                    $reduceCost = $costFor($area, $tier);
+                }
+            }
+
+            if ($reduceArea === null) {
                 return $tiers;
             }
 
-            // Uniformly reduce all tiers by 1 (minimum = $minTier)
-            $tiers = array_map(fn (int $t) => max($minTier, $t - 1), $tiers);
+            $tiers[$reduceArea]--;
         }
     }
 

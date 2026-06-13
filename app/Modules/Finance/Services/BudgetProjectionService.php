@@ -114,11 +114,15 @@ class BudgetProjectionService
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
 
-        // Calculate operating expenses based on club reputation
+        // Operating expenses scale with the club's own projected revenue (a
+        // reputation-graded fraction), not a flat per-tier constant: bigger clubs
+        // carry proportionally bigger non-wage overheads, and a second-division
+        // club's costs fall with its revenue instead of being pinned to a figure
+        // that would swamp it. Computed on pre-subsidy revenue so a public subsidy
+        // top-up never inflates the overhead it is meant to cover.
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-        $baseOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
-        $tierMultiplier = config('finances.operating_expense_tier_multiplier.' . $league->tier, 1.0);
-        $projectedOperatingExpenses = (int) ($baseOperatingExpenses * $tierMultiplier);
+        $opexRatio = (float) config('finances.opex_revenue_ratio.' . $reputation, 0.13);
+        $projectedOperatingExpenses = (int) round($projectedTotalRevenue * $opexRatio);
 
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
@@ -193,6 +197,29 @@ class BudgetProjectionService
         $config = $league->getConfig();
 
         return $config->getTvRevenue($position);
+    }
+
+    /**
+     * Stable revenue base used to anchor a club's wage bill (TV + first-season
+     * commercial + solidarity funds). Deliberately excludes the ticketing lines
+     * (matchday + season tickets): they are small and coupled to per-game state,
+     * and leaving them out keeps wage normalisation cheap and order-independent
+     * at setup. Works for ANY team in the game's league, not just the managed
+     * one. Pass $projectedPosition to avoid recomputing league strengths per
+     * team (they are identical for every club in the league).
+     */
+    public function wageBaseRevenueForTeam(Game $game, Team $team, Competition $league, ?int $projectedPosition = null): int
+    {
+        if ($projectedPosition === null) {
+            $strengths = $this->squadService->calculateLeagueStrengths($game, $league);
+            $projectedPosition = $this->squadService->getProjectedPosition($team->id, $strengths);
+        }
+
+        $tv = $this->calculateTvRevenue($projectedPosition, $league);
+        $commercial = (int) $this->firstSeasonCommercialRevenue($game, $team, $league);
+        $solidarity = self::SOLIDARITY_FUNDS_BY_TIER[$league->tier] ?? 0;
+
+        return $tv + $commercial + $solidarity;
     }
 
     /**

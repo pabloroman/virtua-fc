@@ -117,8 +117,8 @@ class AITeamBudgetCalculatorTest extends TestCase
 
     public function test_financial_pressure_zero_for_low_wage_teams(): void
     {
-        // €12.5M wages on €200M estimated revenue = 6.25% ratio → well below 40% threshold
-        $players = $this->makeRoster(25, 500_000_00);
+        // 10% wage-to-revenue ratio → well below the 40% threshold where pressure starts
+        $players = $this->rosterAtWageRatio(ClubProfile::REPUTATION_ELITE, 0.10);
 
         $pressure = $this->calculator->financialPressure($players, ClubProfile::REPUTATION_ELITE);
 
@@ -127,8 +127,8 @@ class AITeamBudgetCalculatorTest extends TestCase
 
     public function test_financial_pressure_high_for_expensive_squads(): void
     {
-        // €60M wages on €100M estimated revenue = 60% ratio → moderate pressure
-        $players = $this->makeRoster(20, 3_000_000_00);
+        // 60% wage-to-revenue ratio → moderate pressure (inside the 40%–80% band)
+        $players = $this->rosterAtWageRatio(ClubProfile::REPUTATION_CONTINENTAL, 0.60);
 
         $pressure = $this->calculator->financialPressure($players, ClubProfile::REPUTATION_CONTINENTAL);
 
@@ -138,8 +138,8 @@ class AITeamBudgetCalculatorTest extends TestCase
 
     public function test_financial_pressure_maxes_at_one(): void
     {
-        // €50M wages on €10M estimated revenue = 500% ratio → capped at 1.0
-        $players = $this->makeRoster(25, 2_000_000_00);
+        // 200% wage-to-revenue ratio → far past the 80% ceiling → capped at 1.0
+        $players = $this->rosterAtWageRatio(ClubProfile::REPUTATION_LOCAL, 2.00);
 
         $pressure = $this->calculator->financialPressure($players, ClubProfile::REPUTATION_LOCAL);
 
@@ -196,5 +196,17 @@ class AITeamBudgetCalculatorTest extends TestCase
         return collect(range(1, $count))->map(fn () => (object) [
             'annual_wage' => $annualWage,
         ]);
+    }
+
+    /**
+     * Build a roster whose total wage bill is a target fraction of the
+     * reputation tier's estimated revenue. Derives the wage from config so the
+     * test asserts the wage-to-revenue band, not a frozen revenue figure.
+     */
+    private function rosterAtWageRatio(string $reputationLevel, float $ratio, int $count = 20): Collection
+    {
+        $revenue = $this->calculator->estimatedRevenue($reputationLevel);
+
+        return $this->makeRoster($count, (int) ($revenue * $ratio / $count));
     }
 }

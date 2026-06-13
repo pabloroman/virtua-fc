@@ -9,6 +9,7 @@ use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupPipeline;
+use App\Modules\Finance\Services\WageNormalizationService;
 use App\Modules\Season\Services\TeamReputationSeeder;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
@@ -129,6 +130,12 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                 isInitialSeason: true,
                 metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
             );
+
+            // Scale every club's seeded wage bill to a realistic share of its
+            // own revenue before the budget projection runs, so surpluses and
+            // transfer budgets come out realistic. Idempotent — re-running on a
+            // crash-recovery pass converges (the bill is already ≈ target).
+            app(WageNormalizationService::class)->normalizeGame($game->refresh());
 
             // Pipeline writes season_transition_step using stepOffset + processor index,
             // so its checkpoints continue the count after the prep phase.

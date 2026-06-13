@@ -199,6 +199,21 @@ class BudgetProjectionServiceTest extends TestCase
         $this->assertSame(0, $finances->projected_trading_allowance);
     }
 
+    public function test_operating_expenses_are_a_revenue_proportional_fraction(): void
+    {
+        [$service, $game] = $this->buildScenario();
+
+        $finances = $service->generateProjections($game, freshClub: true);
+
+        // Opex is a reputation-keyed fraction of the club's own PRE-subsidy
+        // revenue (default reputation here is 'local'), not a flat per-tier
+        // constant. Reconstruct the pre-subsidy revenue the ratio is applied to.
+        $preSubsidyRevenue = $finances->projected_total_revenue - $finances->projected_subsidy_revenue;
+        $expected = (int) round($preSubsidyRevenue * config('finances.opex_revenue_ratio.local'));
+
+        $this->assertSame($expected, $finances->projected_operating_expenses);
+    }
+
     /**
      * @return array{0: BudgetProjectionService, 1: Game, 2: Team}
      */
