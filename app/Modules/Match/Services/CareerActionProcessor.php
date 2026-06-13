@@ -112,7 +112,11 @@ class CareerActionProcessor
             : self::LISTED_OFFER_CHANCE_OUTSIDE_WINDOW;
         $listedOffers = $this->transferService->generateOffersForListedPlayers($game, buyerPool: $buyerPool, offerChance: $listedOfferChance);
         foreach ($listedOffers as $offer) {
-            $this->notificationService->notifyTransferOffer($game, $offer);
+            // A listed-player offer that reached the buyout is a forced sale, not a
+            // negotiable bid — announce it as a clause loss, not a routine offer.
+            $offer->triggered_release_clause
+                ? $this->notificationService->notifyPlayerLeftViaReleaseClause($game, $offer)
+                : $this->notificationService->notifyTransferOffer($game, $offer);
         }
         $mark('listed_offers');
 
@@ -120,7 +124,11 @@ class CareerActionProcessor
         if ($game->isTransferWindowOpen()) {
             $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, buyerPool: $buyerPool);
             foreach ($unsolicitedOffers as $offer) {
-                $this->notificationService->notifyTransferOffer($game, $offer);
+                // An unsolicited offer that reached the buyout is a forced sale, not a
+                // negotiable bid — announce it as a clause loss, not a routine offer.
+                $offer->triggered_release_clause
+                    ? $this->notificationService->notifyPlayerLeftViaReleaseClause($game, $offer)
+                    : $this->notificationService->notifyTransferOffer($game, $offer);
             }
 
             // AI clubs may (rarely) trigger the release clause on one of the

@@ -9,6 +9,7 @@ return [
     'player_unlisted' => ':player retirado de la lista de fichajes.',
     'cannot_sell_same_window' => 'No se puede vender a :player — fue fichado recientemente y aún no puede ser traspasado.',
     'offer_rejected' => 'Oferta :team_de rechazada.',
+    'cannot_reject_release_clause_offer' => 'No puedes rechazar esta oferta — alcanza la cláusula de rescisión de :player, así que la venta es obligatoria.',
     'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',
     'offer_accepted_intra_window' => '¡Acuerdo cerrado! :player se marchará :team_a por :fee tras el próximo partido.',

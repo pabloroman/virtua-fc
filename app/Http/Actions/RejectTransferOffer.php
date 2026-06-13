@@ -33,6 +33,19 @@ class RejectTransferOffer
             abort(403, 'Cannot reject offers for loaned players.');
         }
 
+        // A bid that meets the release clause is a forced buyout — the user has no
+        // veto. New clause-meeting offers are created as forced sales upstream and
+        // never reach this action, but this guards any pre-existing pending offer.
+        if ($game->release_clauses_enabled
+            && $offer->gamePlayer->hasReleaseClause()
+            && $offer->transfer_fee >= (int) $offer->gamePlayer->release_clause) {
+            return redirect()
+                ->route('game.transfers.outgoing', $gameId)
+                ->with('error', __('messages.cannot_reject_release_clause_offer', [
+                    'player' => $offer->gamePlayer->name,
+                ]));
+        }
+
         $team = $offer->offeringTeam;
 
         $this->transferService->rejectOffer($offer);

@@ -9,6 +9,7 @@ return [
     'player_unlisted' => ':player removed from the transfer list.',
     'cannot_sell_same_window' => 'Cannot sell :player — they were signed recently and can\'t be transferred yet.',
     'offer_rejected' => ':team_de offer rejected.',
+    'cannot_reject_release_clause_offer' => 'You can\'t reject this offer — it meets :player\'s release clause, so the sale is mandatory.',
     'offer_accepted_sale' => ':player sold :team_a for :fee.',
     'offer_accepted_pre_contract' => 'Deal agreed! :player will sign for :team for :fee when the :window window opens.',
     'offer_accepted_intra_window' => 'Deal agreed! :player will leave for :team for :fee after the next match.',
