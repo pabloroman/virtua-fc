@@ -18,7 +18,11 @@
             "Belgium"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 90,
+          "position": "Goalkeeper",
+          "potential": 90,
+          "value": 39000000,
+          "yearly_wage": 12480000
         },
         {
           "contract": "Jun 30, 2030",
@@ -32,7 +36,11 @@
             "Ukraine"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 80,
+          "position": "Goalkeeper",
+          "potential": 83,
+          "value": 21000000,
+          "yearly_wage": 4940000
         },
         {
           "contract": "Jun 30, 2026",
@@ -46,7 +54,11 @@
             "Spain"
           ],
           "number": "26",
-          "position": "Goalkeeper"
+          "overall_score": 65,
+          "position": "Goalkeeper",
+          "potential": 82,
+          "value": 1700000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2030",
@@ -61,7 +73,11 @@
             "Netherlands"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 81,
+          "position": "Centre-Back",
+          "potential": 88,
+          "value": 47500000,
+          "yearly_wage": 6240000
         },
         {
           "contract": "Jun 30, 2028",
@@ -76,7 +92,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 84,
+          "position": "Centre-Back",
+          "potential": 86,
+          "value": 45000000,
+          "yearly_wage": 10920000
         },
         {
           "contract": "Jun 30, 2031",
@@ -90,7 +110,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 19500000,
+          "yearly_wage": 5720000
         },
         {
           "contract": "Jun 30, 2026",
@@ -105,7 +129,11 @@
             "Sierra Leone"
           ],
           "number": "22",
-          "position": "Centre-Back"
+          "overall_score": 84,
+          "position": "Centre-Back",
+          "potential": 84,
+          "value": 27500000,
+          "yearly_wage": 11440000
         },
         {
           "contract": "Jun 30, 2026",
@@ -119,7 +147,11 @@
             "Austria"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 80,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 10000000,
+          "yearly_wage": 8320000
         },
         {
           "contract": "Jun 30, 2031",
@@ -133,7 +165,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Left-Back"
+          "overall_score": 81,
+          "position": "Left-Back",
+          "potential": 87,
+          "value": 38500000,
+          "yearly_wage": 7280000
         },
         {
           "contract": "Jun 30, 2027",
@@ -147,7 +183,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Left-Back"
+          "overall_score": 77,
+          "position": "Left-Back",
+          "potential": 80,
+          "value": 13000000,
+          "yearly_wage": 5980000
         },
         {
           "contract": "Jun 30, 2028",
@@ -162,7 +202,11 @@
             "Senegal"
           ],
           "number": "23",
-          "position": "Left-Back"
+          "overall_score": 81,
+          "position": "Left-Back",
+          "potential": 81,
+          "value": 22000000,
+          "yearly_wage": 8840000
         },
         {
           "contract": "Jun 30, 2031",
@@ -176,7 +220,11 @@
             "England"
           ],
           "number": "12",
-          "position": "Right-Back"
+          "overall_score": 85,
+          "position": "Right-Back",
+          "potential": 86,
+          "value": 58000000,
+          "yearly_wage": 11960000
         },
         {
           "contract": "Jun 30, 2026",
@@ -190,7 +238,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 84,
+          "position": "Right-Back",
+          "potential": 84,
+          "value": 22000000,
+          "yearly_wage": 11440000
         },
         {
           "contract": "Jun 30, 2028",
@@ -205,7 +257,11 @@
             "Cameroon"
           ],
           "number": "14",
-          "position": "Defensive Midfield"
+          "overall_score": 84,
+          "position": "Defensive Midfield",
+          "potential": 87,
+          "value": 50500000,
+          "yearly_wage": 10400000
         },
         {
           "contract": "Jun 30, 2029",
@@ -220,7 +276,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 89,
+          "position": "Central Midfield",
+          "potential": 90,
+          "value": 120500000,
+          "yearly_wage": 17680000
         },
         {
           "contract": "Jun 30, 2029",
@@ -235,7 +295,11 @@
             "Congo"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 81,
+          "position": "Central Midfield",
+          "potential": 85,
+          "value": 37500000,
+          "yearly_wage": 7540000
         },
         {
           "contract": "Jun 30, 2027",
@@ -250,7 +314,11 @@
             "Morocco"
           ],
           "number": "45",
-          "position": "Central Midfield"
+          "overall_score": 68,
+          "position": "Central Midfield",
+          "potential": 85,
+          "value": 3000000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -264,7 +332,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 21000000,
+          "yearly_wage": 8580000
         },
         {
           "contract": "Jun 30, 2028",
@@ -278,7 +350,11 @@
             "Spain"
           ],
           "number": "28",
-          "position": "Central Midfield"
+          "overall_score": 63,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 1200000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2027",
@@ -292,7 +368,11 @@
             "Spain"
           ],
           "number": "37",
-          "position": "Central Midfield"
+          "overall_score": 64,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 1300000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2029",
@@ -307,7 +387,11 @@
             "Ireland"
           ],
           "number": "5",
-          "position": "Attacking Midfield"
+          "overall_score": 89,
+          "position": "Attacking Midfield",
+          "potential": 93,
+          "value": 150500000,
+          "yearly_wage": 15600000
         },
         {
           "contract": "Jun 30, 2029",
@@ -321,7 +405,11 @@
             "Türkiye"
           ],
           "number": "15",
-          "position": "Attacking Midfield"
+          "overall_score": 83,
+          "position": "Attacking Midfield",
+          "potential": 89,
+          "value": 56500000,
+          "yearly_wage": 7800000
         },
         {
           "contract": "Jun 30, 2027",
@@ -336,7 +424,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 89,
+          "position": "Left Winger",
+          "potential": 92,
+          "value": 141000000,
+          "yearly_wage": 16640000
         },
         {
           "contract": "Jun 30, 2028",
@@ -351,7 +443,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Right Winger"
+          "overall_score": 84,
+          "position": "Right Winger",
+          "potential": 87,
+          "value": 57500000,
+          "yearly_wage": 10920000
         },
         {
           "contract": "Jun 30, 2031",
@@ -366,7 +462,11 @@
             "Italy"
           ],
           "number": "30",
-          "position": "Right Winger"
+          "overall_score": 77,
+          "position": "Right Winger",
+          "potential": 87,
+          "value": 22000000,
+          "yearly_wage": 3432000
         },
         {
           "contract": "Jun 30, 2027",
@@ -381,7 +481,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 82,
+          "value": 31000000,
+          "yearly_wage": 8320000
         },
         {
           "contract": "Jun 30, 2029",
@@ -396,7 +500,11 @@
             "Cameroon"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 91,
+          "position": "Centre-Forward",
+          "potential": 92,
+          "value": 157000000,
+          "yearly_wage": 31720000
         },
         {
           "contract": "Jun 30, 2030",
@@ -410,7 +518,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 84,
+          "value": 9500000,
+          "yearly_wage": 4472000
         }
       ],
       "stadiumName": "Santiago Bernabéu",
@@ -433,7 +545,11 @@
             "Slovenia"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 88,
+          "position": "Goalkeeper",
+          "potential": 88,
+          "value": 45000000,
+          "yearly_wage": 4524000
         },
         {
           "contract": "Jun 30, 2028",
@@ -448,7 +564,11 @@
             "Italy"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 80,
+          "position": "Goalkeeper",
+          "potential": 80,
+          "value": 11000000,
+          "yearly_wage": 2288000
         },
         {
           "contract": "Jun 30, 2030",
@@ -462,7 +582,11 @@
             "Slovakia"
           ],
           "number": "17",
-          "position": "Centre-Back"
+          "overall_score": 83,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 35000000,
+          "yearly_wage": 4264000
         },
         {
           "contract": "Jun 30, 2030",
@@ -476,7 +600,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Centre-Back"
+          "overall_score": 80,
+          "position": "Centre-Back",
+          "potential": 87,
+          "value": 40000000,
+          "yearly_wage": 2912000
         },
         {
           "contract": "Jun 30, 2029",
@@ -491,7 +619,11 @@
             "France"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 81,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 24500000,
+          "yearly_wage": 3796000
         },
         {
           "contract": "Jun 30, 2028",
@@ -506,7 +638,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 83,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 30000000,
+          "yearly_wage": 4472000
         },
         {
           "contract": "Jun 30, 2028",
@@ -520,7 +656,11 @@
             "France"
           ],
           "number": "15",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 8500000,
+          "yearly_wage": 2860000
         },
         {
           "contract": "Jun 30, 2030",
@@ -534,7 +674,11 @@
             "Italy"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 78,
+          "position": "Left-Back",
+          "potential": 82,
+          "value": 19000000,
+          "yearly_wage": 2496000
         },
         {
           "contract": "Jun 30, 2027",
@@ -548,7 +692,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Right-Back"
+          "overall_score": 85,
+          "position": "Right-Back",
+          "potential": 85,
+          "value": 46500000,
+          "yearly_wage": 5460000
         },
         {
           "contract": "Jun 30, 2027",
@@ -562,7 +710,11 @@
             "Argentina"
           ],
           "number": "16",
-          "position": "Right-Back"
+          "overall_score": 77,
+          "position": "Right-Back",
+          "potential": 77,
+          "value": 10000000,
+          "yearly_wage": 2704000
         },
         {
           "contract": "Jun 30, 2030",
@@ -576,7 +728,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 83,
+          "position": "Central Midfield",
+          "potential": 87,
+          "value": 52500000,
+          "yearly_wage": 3900000
         },
         {
           "contract": "Jun 30, 2030",
@@ -591,7 +747,11 @@
             "Italy"
           ],
           "number": "5",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 84,
+          "value": 27500000,
+          "yearly_wage": 2912000
         },
         {
           "contract": "Jun 30, 2031",
@@ -605,7 +765,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Central Midfield"
+          "overall_score": 71,
+          "position": "Central Midfield",
+          "potential": 84,
+          "value": 4500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2030",
@@ -620,7 +784,11 @@
             "United States"
           ],
           "number": "21",
-          "position": "Central Midfield"
+          "overall_score": 72,
+          "position": "Central Midfield",
+          "potential": 83,
+          "value": 4800000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -634,7 +802,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 81,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 16000000,
+          "yearly_wage": 3952000
         },
         {
           "contract": "Jun 30, 2030",
@@ -648,7 +820,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Left Winger"
+          "overall_score": 82,
+          "position": "Left Winger",
+          "potential": 87,
+          "value": 46000000,
+          "yearly_wage": 3588000
         },
         {
           "contract": "Jun 30, 2026",
@@ -663,7 +839,11 @@
             "Italy"
           ],
           "number": "23",
-          "position": "Left Winger"
+          "overall_score": 79,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 18500000,
+          "yearly_wage": 5460000
         },
         {
           "contract": "Jun 30, 2030",
@@ -678,7 +858,11 @@
             "Italy"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 78,
+          "position": "Left Winger",
+          "potential": 83,
+          "value": 21000000,
+          "yearly_wage": 2704000
         },
         {
           "contract": "Jun 30, 2030",
@@ -693,7 +877,11 @@
             "Italy"
           ],
           "number": "20",
-          "position": "Right Winger"
+          "overall_score": 82,
+          "position": "Right Winger",
+          "potential": 86,
+          "value": 44500000,
+          "yearly_wage": 3588000
         },
         {
           "contract": "Jun 30, 2030",
@@ -708,7 +896,11 @@
             "England"
           ],
           "number": "22",
-          "position": "Second Striker"
+          "overall_score": 83,
+          "position": "Second Striker",
+          "potential": 83,
+          "value": 39500000,
+          "yearly_wage": 4940000
         },
         {
           "contract": "Jun 30, 2027",
@@ -722,7 +914,11 @@
             "France"
           ],
           "number": "7",
-          "position": "Second Striker"
+          "overall_score": 84,
+          "position": "Second Striker",
+          "potential": 84,
+          "value": 20500000,
+          "yearly_wage": 5460000
         },
         {
           "contract": "Jun 30, 2030",
@@ -737,7 +933,11 @@
             "Italy"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 86,
+          "position": "Centre-Forward",
+          "potential": 89,
+          "value": 91000000,
+          "yearly_wage": 5980000
         },
         {
           "contract": "Jun 30, 2028",
@@ -751,7 +951,11 @@
             "Norway"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 83,
+          "position": "Centre-Forward",
+          "potential": 83,
+          "value": 36500000,
+          "yearly_wage": 4940000
         }
       ],
       "stadiumName": "Riyadh Air Metropolitano",
@@ -774,7 +978,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 9500000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2028",
@@ -788,7 +996,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 77,
+          "value": 7000000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -802,7 +1014,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 71,
+          "position": "Goalkeeper",
+          "potential": 71,
+          "value": 210000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2030",
@@ -816,7 +1032,11 @@
             "Brazil"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 19000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2030",
@@ -831,7 +1051,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 84,
+          "value": 15500000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2028",
@@ -845,7 +1069,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 80,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 14500000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2027",
@@ -859,7 +1087,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2028",
@@ -874,7 +1106,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left-Back"
+          "overall_score": 74,
+          "position": "Left-Back",
+          "potential": 74,
+          "value": 3800000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -889,7 +1125,11 @@
             "Chile"
           ],
           "number": "12",
-          "position": "Left-Back"
+          "overall_score": 73,
+          "position": "Left-Back",
+          "potential": 73,
+          "value": 2100000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2029",
@@ -903,7 +1143,11 @@
             "Spain"
           ],
           "number": "40",
-          "position": "Right-Back"
+          "overall_score": 70,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 572000
         },
         {
           "contract": "Jun 30, 2028",
@@ -917,7 +1161,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 76,
+          "position": "Right-Back",
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2026",
@@ -932,7 +1180,11 @@
             "Netherlands"
           ],
           "number": "14",
-          "position": "Defensive Midfield"
+          "overall_score": 79,
+          "position": "Defensive Midfield",
+          "potential": 79,
+          "value": 15500000,
+          "yearly_wage": 2860000
         },
         {
           "contract": "Jun 30, 2029",
@@ -946,7 +1198,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Defensive Midfield"
+          "overall_score": 78,
+          "position": "Defensive Midfield",
+          "potential": 78,
+          "value": 12500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2029",
@@ -960,7 +1216,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 83,
+          "value": 15500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2030",
@@ -975,7 +1235,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 10500000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2030",
@@ -989,7 +1253,11 @@
             "Colombia"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 7500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1003,7 +1271,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 81,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 25000000,
+          "yearly_wage": 2028000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1018,7 +1290,11 @@
             "Italy"
           ],
           "number": "20",
-          "position": "Attacking Midfield"
+          "overall_score": 81,
+          "position": "Attacking Midfield",
+          "potential": 81,
+          "value": 25500000,
+          "yearly_wage": 2080000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1032,7 +1308,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Attacking Midfield"
+          "overall_score": 84,
+          "position": "Attacking Midfield",
+          "potential": 84,
+          "value": 26500000,
+          "yearly_wage": 2704000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1047,7 +1327,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Left Winger"
+          "overall_score": 80,
+          "position": "Left Winger",
+          "potential": 84,
+          "value": 30000000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1061,7 +1345,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1075,7 +1363,11 @@
             "Brazil"
           ],
           "number": "7",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 82,
+          "value": 31000000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1089,7 +1381,11 @@
             "Spain"
           ],
           "number": "52",
-          "position": "Right Winger"
+          "overall_score": 70,
+          "position": "Right Winger",
+          "potential": 83,
+          "value": 3800000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1103,7 +1399,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Right Winger"
+          "overall_score": 77,
+          "position": "Right Winger",
+          "potential": 77,
+          "value": 10500000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1118,7 +1418,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 79,
+          "position": "Centre-Forward",
+          "potential": 80,
+          "value": 21000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1133,7 +1437,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 73,
+          "position": "Centre-Forward",
+          "potential": 73,
+          "value": 2600000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1148,7 +1456,11 @@
             "France"
           ],
           "number": "11",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 2700000,
+          "yearly_wage": 1456000
         }
       ],
       "stadiumName": "La Cartuja",
@@ -1171,7 +1483,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 86,
+          "position": "Goalkeeper",
+          "potential": 89,
+          "value": 72500000,
+          "yearly_wage": 3692000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1185,7 +1501,11 @@
             "Poland"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 83,
+          "position": "Goalkeeper",
+          "potential": 83,
+          "value": 4000000,
+          "yearly_wage": 2340000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1200,7 +1520,11 @@
             "Peru"
           ],
           "number": "31",
-          "position": "Goalkeeper"
+          "overall_score": 62,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 900000,
+          "yearly_wage": 260000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1214,7 +1538,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 83,
+          "position": "Centre-Back",
+          "potential": 89,
+          "value": 48000000,
+          "yearly_wage": 3640000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1228,7 +1556,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 83,
+          "position": "Centre-Back",
+          "potential": 86,
+          "value": 44500000,
+          "yearly_wage": 4940000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1243,7 +1575,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 81,
+          "position": "Centre-Back",
+          "potential": 84,
+          "value": 30000000,
+          "yearly_wage": 4680000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1257,7 +1593,11 @@
             "Denmark"
           ],
           "number": "15",
-          "position": "Centre-Back"
+          "overall_score": 80,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 17500000,
+          "yearly_wage": 4680000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1271,7 +1611,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 83,
+          "position": "Left-Back",
+          "potential": 87,
+          "value": 49500000,
+          "yearly_wage": 4160000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1285,7 +1629,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Left-Back"
+          "overall_score": 78,
+          "position": "Left-Back",
+          "potential": 82,
+          "value": 18000000,
+          "yearly_wage": 3328000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1300,7 +1648,11 @@
             "Benin"
           ],
           "number": "23",
-          "position": "Right-Back"
+          "overall_score": 86,
+          "position": "Right-Back",
+          "potential": 87,
+          "value": 73000000,
+          "yearly_wage": 7280000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1314,7 +1666,11 @@
             "Portugal"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 84,
+          "position": "Right-Back",
+          "potential": 84,
+          "value": 30500000,
+          "yearly_wage": 3536000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1328,7 +1684,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Defensive Midfield"
+          "overall_score": 75,
+          "position": "Defensive Midfield",
+          "potential": 86,
+          "value": 11000000,
+          "yearly_wage": 2028000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1342,7 +1702,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Defensive Midfield"
+          "overall_score": 78,
+          "position": "Defensive Midfield",
+          "potential": 82,
+          "value": 18500000,
+          "yearly_wage": 2808000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1356,7 +1720,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 90,
+          "position": "Central Midfield",
+          "potential": 93,
+          "value": 165000000,
+          "yearly_wage": 9360000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1370,7 +1738,11 @@
             "Netherlands"
           ],
           "number": "21",
-          "position": "Central Midfield"
+          "overall_score": 87,
+          "position": "Central Midfield",
+          "potential": 87,
+          "value": 79500000,
+          "yearly_wage": 8840000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1384,7 +1756,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 83,
+          "position": "Central Midfield",
+          "potential": 87,
+          "value": 51000000,
+          "yearly_wage": 4420000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1398,7 +1774,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Attacking Midfield"
+          "overall_score": 83,
+          "position": "Attacking Midfield",
+          "potential": 87,
+          "value": 53000000,
+          "yearly_wage": 5200000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1412,7 +1792,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Attacking Midfield"
+          "overall_score": 84,
+          "position": "Attacking Midfield",
+          "potential": 84,
+          "value": 45000000,
+          "yearly_wage": 6760000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1427,7 +1811,11 @@
             "Italy"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 89,
+          "position": "Left Winger",
+          "potential": 89,
+          "value": 104000000,
+          "yearly_wage": 11440000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1442,7 +1830,11 @@
             "St. Kitts & Nevis"
           ],
           "number": "14",
-          "position": "Left Winger"
+          "overall_score": 82,
+          "position": "Left Winger",
+          "potential": 82,
+          "value": 32500000,
+          "yearly_wage": 5720000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1456,7 +1848,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Right Winger"
+          "overall_score": 89,
+          "position": "Right Winger",
+          "potential": 95,
+          "value": 147000000,
+          "yearly_wage": 5980000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1471,7 +1867,11 @@
             "Syria"
           ],
           "number": "19",
-          "position": "Right Winger"
+          "overall_score": 74,
+          "position": "Right Winger",
+          "potential": 85,
+          "value": 9000000,
+          "yearly_wage": 2392000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1485,7 +1885,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 84,
+          "position": "Centre-Forward",
+          "potential": 86,
+          "value": 53500000,
+          "yearly_wage": 6760000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1499,7 +1903,11 @@
             "Poland"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 86,
+          "position": "Centre-Forward",
+          "potential": 86,
+          "value": 23000000,
+          "yearly_wage": 6760000
         }
       ],
       "stadiumName": "Spotify Camp Nou",
@@ -1522,7 +1930,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 84,
+          "position": "Goalkeeper",
+          "potential": 85,
+          "value": 33500000,
+          "yearly_wage": 2288000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1537,7 +1949,11 @@
             "Spain"
           ],
           "number": "27",
-          "position": "Goalkeeper"
+          "overall_score": 69,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 2700000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2032",
@@ -1551,7 +1967,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 82,
+          "position": "Centre-Back",
+          "potential": 85,
+          "value": 36000000,
+          "yearly_wage": 2652000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1565,7 +1985,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 81,
+          "value": 16500000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1580,7 +2004,11 @@
             "France"
           ],
           "number": "14",
-          "position": "Centre-Back"
+          "overall_score": 82,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 21000000,
+          "yearly_wage": 2912000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1594,7 +2022,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 80,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 17500000,
+          "yearly_wage": 2548000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1608,7 +2040,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Centre-Back"
+          "overall_score": 70,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 3000000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1623,7 +2059,11 @@
             "Senegal"
           ],
           "number": "19",
-          "position": "Left-Back"
+          "overall_score": 73,
+          "position": "Left-Back",
+          "potential": 80,
+          "value": 6000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1638,7 +2078,11 @@
             "Algeria"
           ],
           "number": "17",
-          "position": "Left-Back"
+          "overall_score": 79,
+          "position": "Left-Back",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1652,7 +2096,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Right-Back"
+          "overall_score": 76,
+          "position": "Right-Back",
+          "potential": 78,
+          "value": 8500000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1666,7 +2114,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 76,
+          "position": "Right-Back",
+          "potential": 76,
+          "value": 7000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1680,7 +2132,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Right-Back"
+          "overall_score": 72,
+          "position": "Right-Back",
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1694,7 +2150,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Defensive Midfield"
+          "overall_score": 72,
+          "position": "Defensive Midfield",
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1708,7 +2168,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 86,
+          "value": 33500000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2031",
@@ -1722,7 +2186,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 82,
+          "value": 14500000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1736,7 +2204,11 @@
             "Spain"
           ],
           "number": "30",
-          "position": "Central Midfield"
+          "overall_score": 72,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 5000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1751,7 +2223,11 @@
             "Brazil"
           ],
           "number": "44",
-          "position": "Central Midfield"
+          "overall_score": 63,
+          "position": "Central Midfield",
+          "potential": 82,
+          "value": 1200000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1765,7 +2241,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 15000000,
+          "yearly_wage": 2548000
         },
         {
           "contract": "Jun 30, 2032",
@@ -1779,7 +2259,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Attacking Midfield"
+          "overall_score": 82,
+          "position": "Attacking Midfield",
+          "potential": 85,
+          "value": 40500000,
+          "yearly_wage": 2860000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1793,7 +2277,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Attacking Midfield"
+          "overall_score": 72,
+          "position": "Attacking Midfield",
+          "potential": 78,
+          "value": 3800000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2035",
@@ -1808,7 +2296,11 @@
             "Ghana"
           ],
           "number": "10",
-          "position": "Left Winger"
+          "overall_score": 85,
+          "position": "Left Winger",
+          "potential": 88,
+          "value": 75000000,
+          "yearly_wage": 3588000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1822,7 +2314,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 80,
+          "position": "Left Winger",
+          "potential": 80,
+          "value": 20500000,
+          "yearly_wage": 2808000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1836,7 +2332,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Left Winger"
+          "overall_score": 71,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 4200000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1851,7 +2351,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 81,
+          "value": 21500000,
+          "yearly_wage": 3016000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1865,7 +2369,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Right Winger"
+          "overall_score": 76,
+          "position": "Right Winger",
+          "potential": 82,
+          "value": 12000000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2028",
@@ -1879,7 +2387,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Centre-Forward"
+          "overall_score": 78,
+          "position": "Centre-Forward",
+          "potential": 78,
+          "value": 14500000,
+          "yearly_wage": 2444000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1894,7 +2406,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 77,
+          "value": 3600000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1908,7 +2424,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Centre-Forward"
+          "overall_score": 71,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 2500000,
+          "yearly_wage": 1300000
         }
       ],
       "stadiumName": "San Mamés",
@@ -1931,7 +2451,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 76,
+          "position": "Goalkeeper",
+          "potential": 81,
+          "value": 9000000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -1946,7 +2470,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 77,
+          "value": 5500000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2027",
@@ -1960,7 +2488,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 65,
+          "position": "Goalkeeper",
+          "potential": 67,
+          "value": 650000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2030",
@@ -1974,7 +2506,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 10500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2029",
@@ -1988,7 +2524,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 5500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2002,7 +2542,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 5500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2017,7 +2561,11 @@
             "Türkiye"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 3100000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2031,7 +2579,11 @@
             "Guinea",
             "France"
           ],
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2045,7 +2597,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Left-Back"
+          "overall_score": 77,
+          "position": "Left-Back",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2059,7 +2615,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Left-Back"
+          "overall_score": 71,
+          "position": "Left-Back",
+          "potential": 77,
+          "value": 2800000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2074,7 +2634,11 @@
             "Cape Verde"
           ],
           "number": "12",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 74,
+          "value": 4200000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2088,7 +2652,11 @@
             "Argentina"
           ],
           "number": "20",
-          "position": "Right-Back"
+          "overall_score": 72,
+          "position": "Right-Back",
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2102,7 +2670,11 @@
             "Guadeloupe",
             "France"
           ],
-          "position": "Right-Back"
+          "overall_score": 72,
+          "position": "Right-Back",
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2116,7 +2688,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2131,7 +2707,11 @@
             "Italy"
           ],
           "number": "2",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 76,
+          "value": 5000000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2145,7 +2725,11 @@
             "France"
           ],
           "number": "22",
-          "position": "Defensive Midfield"
+          "overall_score": 75,
+          "position": "Defensive Midfield",
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2159,7 +2743,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 84,
+          "value": 17000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2173,7 +2761,11 @@
             "Switzerland"
           ],
           "number": "23",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2187,7 +2779,11 @@
             "Portugal"
           ],
           "number": "10",
-          "position": "Attacking Midfield"
+          "overall_score": 74,
+          "position": "Attacking Midfield",
+          "potential": 77,
+          "value": 5500000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2202,7 +2798,11 @@
             "Burundi"
           ],
           "number": "17",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 10000000,
+          "yearly_wage": 2496000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2217,7 +2817,11 @@
             "Nigeria"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2231,7 +2835,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Right Winger"
+          "overall_score": 77,
+          "position": "Right Winger",
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2245,7 +2853,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Right Winger"
+          "overall_score": 77,
+          "position": "Right Winger",
+          "potential": 77,
+          "value": 8500000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2259,7 +2871,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Second Striker"
+          "overall_score": 74,
+          "position": "Second Striker",
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2273,7 +2889,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 77,
+          "position": "Centre-Forward",
+          "potential": 79,
+          "value": 13500000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2288,7 +2908,11 @@
             "Italy"
           ],
           "number": "15",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 79,
+          "value": 8000000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2302,7 +2926,11 @@
             "Nigeria"
           ],
           "number": "6",
-          "position": "Centre-Forward"
+          "overall_score": 76,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 7500000,
+          "yearly_wage": 1976000
         }
       ],
       "stadiumName": "Mestalla",
@@ -2326,7 +2954,11 @@
             "Germany"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 79,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 9500000,
+          "yearly_wage": 3692000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2340,7 +2972,11 @@
             "Norway"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 74,
+          "position": "Goalkeeper",
+          "potential": 74,
+          "value": 725000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2354,7 +2990,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 11000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2368,7 +3008,11 @@
             "Brazil"
           ],
           "number": "23",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2382,7 +3026,11 @@
             "Portugal"
           ],
           "number": "15",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 2900000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2396,7 +3044,11 @@
             "Spain"
           ],
           "number": "32",
-          "position": "Centre-Back"
+          "overall_score": 72,
+          "position": "Centre-Back",
+          "potential": 81,
+          "value": 4900000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2411,7 +3063,11 @@
             "Cote d'Ivoire"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 71,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2425,7 +3081,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 2800000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2440,7 +3100,11 @@
             "Italy"
           ],
           "number": "22",
-          "position": "Centre-Back"
+          "overall_score": 71,
+          "position": "Centre-Back",
+          "potential": 71,
+          "value": 1800000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2454,7 +3118,11 @@
             "Chile"
           ],
           "number": "12",
-          "position": "Left-Back"
+          "overall_score": 74,
+          "position": "Left-Back",
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2469,7 +3137,11 @@
             "Argentina"
           ],
           "number": "36",
-          "position": "Left-Back"
+          "overall_score": 72,
+          "position": "Left-Back",
+          "potential": 80,
+          "value": 5000000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2483,7 +3155,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Right-Back"
+          "overall_score": 75,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2497,7 +3173,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 77,
+          "position": "Right-Back",
+          "potential": 83,
+          "value": 15500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2512,7 +3192,11 @@
             "Cameroon"
           ],
           "number": "18",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 82,
+          "value": 11000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2527,7 +3211,11 @@
             "Guinea-Bissau"
           ],
           "number": "19",
-          "position": "Defensive Midfield"
+          "overall_score": 75,
+          "position": "Defensive Midfield",
+          "potential": 80,
+          "value": 7500000,
+          "yearly_wage": 2028000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2542,7 +3230,11 @@
             "Netherlands"
           ],
           "number": "6",
-          "position": "Defensive Midfield"
+          "overall_score": 75,
+          "position": "Defensive Midfield",
+          "potential": 75,
+          "value": 2700000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2557,7 +3249,11 @@
             "Senegal"
           ],
           "number": "20",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2571,7 +3267,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 4000000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2585,7 +3285,11 @@
             "Spain"
           ],
           "number": "28",
-          "position": "Central Midfield"
+          "overall_score": 67,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 2200000,
+          "yearly_wage": 468000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2600,7 +3304,11 @@
             "Dominican Republic"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 78,
+          "position": "Left Winger",
+          "potential": 78,
+          "value": 15500000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2614,7 +3322,11 @@
             "Nigeria"
           ],
           "number": "21",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 76,
+          "value": 8000000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2629,7 +3341,11 @@
             "Kosovo"
           ],
           "number": "24",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 73,
+          "value": 2900000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2643,7 +3359,11 @@
             "Spain"
           ],
           "number": "29",
-          "position": "Right Winger"
+          "overall_score": 64,
+          "position": "Right Winger",
+          "potential": 74,
+          "value": 1300000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2657,7 +3377,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Second Striker"
+          "overall_score": 74,
+          "position": "Second Striker",
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2671,7 +3395,11 @@
             "Chile"
           ],
           "number": "10",
-          "position": "Second Striker"
+          "overall_score": 75,
+          "position": "Second Striker",
+          "potential": 75,
+          "value": 1900000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2685,7 +3413,11 @@
             "Nigeria"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 78,
+          "value": 7500000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2699,7 +3431,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 77,
+          "value": 5500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2714,7 +3450,11 @@
             "Argentina"
           ],
           "number": "17",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 4300000,
+          "yearly_wage": 1820000
         }
       ],
       "stadiumName": "Ramón Sánchez-Pizjuán",
@@ -2737,7 +3477,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 82,
+          "position": "Goalkeeper",
+          "potential": 82,
+          "value": 20500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2751,7 +3495,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 72,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 4000000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2031",
@@ -2765,7 +3513,11 @@
             "Spain"
           ],
           "number": "31",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 86,
+          "value": 21000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2779,7 +3531,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 10000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2793,7 +3549,11 @@
             "Croatia"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -2807,7 +3567,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 2900000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2821,7 +3585,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Left-Back"
+          "overall_score": 78,
+          "position": "Left-Back",
+          "potential": 81,
+          "value": 18000000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2027",
@@ -2835,7 +3603,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 74,
+          "position": "Left-Back",
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2850,7 +3622,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 77,
+          "position": "Right-Back",
+          "potential": 83,
+          "value": 16000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2864,7 +3640,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Right-Back"
+          "overall_score": 73,
+          "position": "Right-Back",
+          "potential": 73,
+          "value": 2700000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2878,7 +3658,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Defensive Midfield"
+          "overall_score": 77,
+          "position": "Defensive Midfield",
+          "potential": 85,
+          "value": 22500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2892,7 +3676,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 82,
+          "value": 12000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2906,7 +3694,11 @@
             "Croatia"
           ],
           "number": "24",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 11500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2921,7 +3713,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Central Midfield"
+          "overall_score": 79,
+          "position": "Central Midfield",
+          "potential": 79,
+          "value": 18500000,
+          "yearly_wage": 2236000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2935,7 +3731,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 78,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 14000000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2028",
@@ -2949,7 +3749,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Attacking Midfield"
+          "overall_score": 78,
+          "position": "Attacking Midfield",
+          "potential": 78,
+          "value": 14000000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2963,7 +3767,11 @@
             "Russia"
           ],
           "number": "21",
-          "position": "Attacking Midfield"
+          "overall_score": 73,
+          "position": "Attacking Midfield",
+          "potential": 81,
+          "value": 7000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2029",
@@ -2977,7 +3785,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Attacking Midfield"
+          "overall_score": 73,
+          "position": "Attacking Midfield",
+          "potential": 82,
+          "value": 7000000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2030",
@@ -2991,7 +3803,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 78,
+          "position": "Left Winger",
+          "potential": 83,
+          "value": 21000000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3005,7 +3821,11 @@
             "Portugal"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 78,
+          "position": "Left Winger",
+          "potential": 78,
+          "value": 14000000,
+          "yearly_wage": 2236000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3019,7 +3839,11 @@
             "Brazil"
           ],
           "number": "22",
-          "position": "Left Winger"
+          "overall_score": 69,
+          "position": "Left Winger",
+          "potential": 80,
+          "value": 3100000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2029",
@@ -3033,7 +3857,11 @@
             "Japan"
           ],
           "number": "14",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 84,
+          "value": 35000000,
+          "yearly_wage": 2184000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3047,7 +3875,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 83,
+          "position": "Centre-Forward",
+          "potential": 83,
+          "value": 37000000,
+          "yearly_wage": 3380000
         },
         {
           "contract": "Jun 30, 2030",
@@ -3061,7 +3893,11 @@
             "Iceland"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 80,
+          "value": 6500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3075,7 +3911,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 67,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 2300000,
+          "yearly_wage": 676000
         }
       ],
       "stadiumName": "Reale Arena",
@@ -3098,7 +3938,11 @@
             "Serbia"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 79,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3112,7 +3956,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 65,
+          "position": "Goalkeeper",
+          "potential": 73,
+          "value": 1400000,
+          "yearly_wage": 156000
         },
         {
           "contract": "Jun 30, 2029",
@@ -3126,7 +3974,11 @@
             "Germany"
           ],
           "number": "38",
-          "position": "Centre-Back"
+          "overall_score": 71,
+          "position": "Centre-Back",
+          "potential": 81,
+          "value": 3900000,
+          "yearly_wage": 520000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3140,7 +3992,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 75,
+          "value": 4700000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3154,7 +4010,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Centre-Back"
+          "overall_score": 70,
+          "position": "Centre-Back",
+          "potential": 72,
+          "value": 1700000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3169,7 +4029,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2400000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3183,7 +4047,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Left-Back"
+          "overall_score": 79,
+          "position": "Left-Back",
+          "potential": 83,
+          "value": 23500000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3197,7 +4065,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Left-Back"
+          "overall_score": 72,
+          "position": "Left-Back",
+          "potential": 76,
+          "value": 3100000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3212,7 +4084,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Right-Back"
+          "overall_score": 75,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3226,7 +4102,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 71,
+          "position": "Right-Back",
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2030",
@@ -3240,7 +4120,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 82,
+          "value": 11000000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3255,7 +4139,11 @@
             "Switzerland"
           ],
           "number": "18",
-          "position": "Defensive Midfield"
+          "overall_score": 70,
+          "position": "Defensive Midfield",
+          "potential": 70,
+          "value": 1600000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3269,7 +4157,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 6500000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3283,7 +4175,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 10500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3297,7 +4193,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 6000000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2030",
@@ -3311,7 +4211,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 77,
+          "position": "Left Winger",
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3325,7 +4229,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 75,
+          "value": 4500000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3339,7 +4247,11 @@
             "England"
           ],
           "number": "24",
-          "position": "Right Winger"
+          "overall_score": 74,
+          "position": "Right Winger",
+          "potential": 79,
+          "value": 6500000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3354,7 +4266,11 @@
             "DR Congo"
           ],
           "number": "16",
-          "position": "Right Winger"
+          "overall_score": 72,
+          "position": "Right Winger",
+          "potential": 73,
+          "value": 2800000,
+          "yearly_wage": 2756000
         },
         {
           "contract": "Jun 30, 2029",
@@ -3368,7 +4284,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 75,
+          "value": 4000000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3382,7 +4302,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 76,
+          "value": 4200000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2031",
@@ -3396,7 +4320,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 80,
+          "value": 7000000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3410,7 +4338,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 1800000,
+          "yearly_wage": 884000
         }
       ],
       "stadiumName": "RCDE Stadium",
@@ -3433,7 +4365,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 76,
+          "position": "Goalkeeper",
+          "potential": 80,
+          "value": 8000000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2029",
@@ -3447,7 +4383,11 @@
             "Spain"
           ],
           "number": "45",
-          "position": "Goalkeeper"
+          "overall_score": 66,
+          "position": "Goalkeeper",
+          "potential": 76,
+          "value": 1700000,
+          "yearly_wage": 156000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3462,7 +4402,11 @@
             "Chile"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 76,
+          "position": "Goalkeeper",
+          "potential": 76,
+          "value": 825000,
+          "yearly_wage": 468000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3476,7 +4420,11 @@
             "Austria"
           ],
           "number": "22",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 10500000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3490,7 +4438,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 4000000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3505,7 +4457,11 @@
             "Nigeria"
           ],
           "number": "18",
-          "position": "Centre-Back"
+          "overall_score": 69,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 520000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3519,7 +4475,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2000000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3533,7 +4493,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 74,
+          "position": "Left-Back",
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3547,7 +4511,11 @@
             "France"
           ],
           "number": "21",
-          "position": "Left-Back"
+          "overall_score": 71,
+          "position": "Left-Back",
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3561,7 +4529,11 @@
             "Spain"
           ],
           "number": "39",
-          "position": "Right-Back"
+          "overall_score": 71,
+          "position": "Right-Back",
+          "potential": 83,
+          "value": 4200000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3576,7 +4548,11 @@
             "Mali"
           ],
           "number": "42",
-          "position": "Right-Back"
+          "overall_score": 65,
+          "position": "Right-Back",
+          "potential": 79,
+          "value": 1600000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2030",
@@ -3591,7 +4567,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Defensive Midfield"
+          "overall_score": 70,
+          "position": "Defensive Midfield",
+          "potential": 77,
+          "value": 3200000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3605,7 +4585,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Defensive Midfield"
+          "overall_score": 73,
+          "position": "Defensive Midfield",
+          "potential": 78,
+          "value": 4100000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3619,7 +4603,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Central Midfield"
+          "overall_score": 78,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 13500000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3633,7 +4621,11 @@
             "Portugal"
           ],
           "number": "16",
-          "position": "Central Midfield"
+          "overall_score": 72,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 5000000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3647,7 +4639,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Central Midfield"
+          "overall_score": 72,
+          "position": "Central Midfield",
+          "potential": 72,
+          "value": 2500000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3662,7 +4658,11 @@
             "Lithuania"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 80,
+          "value": 11000000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2030",
@@ -3676,7 +4676,11 @@
             "Chile"
           ],
           "number": "24",
-          "position": "Left Winger"
+          "overall_score": 72,
+          "position": "Left Winger",
+          "potential": 81,
+          "value": 5500000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3690,7 +4694,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Left Winger"
+          "overall_score": 71,
+          "position": "Left Winger",
+          "potential": 71,
+          "value": 1900000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3704,7 +4712,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 70,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 3600000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3719,7 +4731,11 @@
             "England"
           ],
           "number": "19",
-          "position": "Right Winger"
+          "overall_score": 70,
+          "position": "Right Winger",
+          "potential": 70,
+          "value": 1700000,
+          "yearly_wage": 728000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3733,7 +4749,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right Winger"
+          "overall_score": 72,
+          "position": "Right Winger",
+          "potential": 72,
+          "value": 950000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3748,7 +4768,11 @@
             "Spain"
           ],
           "number": "32",
-          "position": "Second Striker"
+          "overall_score": 62,
+          "position": "Second Striker",
+          "potential": 78,
+          "value": 1000000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2029",
@@ -3763,7 +4787,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 83,
+          "value": 5000000,
+          "yearly_wage": 728000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3777,7 +4805,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 6000000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3791,7 +4823,11 @@
             "Portugal"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 76,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 7500000,
+          "yearly_wage": 1352000
         }
       ],
       "stadiumName": "Manuel Martínez Valero",
@@ -3814,7 +4850,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 78,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 11000000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3828,7 +4868,11 @@
             "Romania"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 70,
+          "position": "Goalkeeper",
+          "potential": 72,
+          "value": 1500000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3843,7 +4887,11 @@
             "Portugal"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 5500000,
+          "yearly_wage": 2964000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3857,7 +4905,11 @@
             "Cote d'Ivoire"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 73,
+          "value": 2100000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3871,7 +4923,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 75,
+          "value": 4600000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3885,7 +4941,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Centre-Back"
+          "overall_score": 72,
+          "position": "Centre-Back",
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3899,7 +4959,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Left-Back"
+          "overall_score": 73,
+          "position": "Left-Back",
+          "potential": 79,
+          "value": 4500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2028",
@@ -3914,7 +4978,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 71,
+          "position": "Left-Back",
+          "potential": 77,
+          "value": 2800000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3928,7 +4996,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Right-Back"
+          "overall_score": 71,
+          "position": "Right-Back",
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3942,7 +5014,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Right-Back"
+          "overall_score": 69,
+          "position": "Right-Back",
+          "potential": 69,
+          "value": 1200000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3957,7 +5033,11 @@
             "Italy"
           ],
           "number": "11",
-          "position": "Defensive Midfield"
+          "overall_score": 72,
+          "position": "Defensive Midfield",
+          "potential": 72,
+          "value": 2100000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -3971,7 +5051,11 @@
             "Belgium"
           ],
           "number": "20",
-          "position": "Defensive Midfield"
+          "overall_score": 72,
+          "position": "Defensive Midfield",
+          "potential": 72,
+          "value": 2200000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -3986,7 +5070,11 @@
             "Italy"
           ],
           "number": "23",
-          "position": "Defensive Midfield"
+          "overall_score": 72,
+          "position": "Defensive Midfield",
+          "potential": 72,
+          "value": 2300000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4000,7 +5088,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 4500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4014,7 +5106,11 @@
             "Ghana"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 70,
+          "position": "Central Midfield",
+          "potential": 72,
+          "value": 1700000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4028,7 +5124,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 0,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4042,7 +5142,11 @@
             "Serbia"
           ],
           "number": "21",
-          "position": "Attacking Midfield"
+          "overall_score": 69,
+          "position": "Attacking Midfield",
+          "potential": 72,
+          "value": 1800000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4056,7 +5160,11 @@
             "Spain"
           ],
           "number": "27",
-          "position": "Attacking Midfield"
+          "overall_score": 63,
+          "position": "Attacking Midfield",
+          "potential": 81,
+          "value": 1200000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4070,7 +5178,11 @@
             "Argentina"
           ],
           "number": "15",
-          "position": "Left Winger"
+          "overall_score": 74,
+          "position": "Left Winger",
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4085,7 +5197,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 73,
+          "position": "Left Winger",
+          "potential": 76,
+          "value": 4200000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4100,7 +5216,11 @@
             "Nigeria"
           ],
           "number": "14",
-          "position": "Left Winger"
+          "overall_score": 66,
+          "position": "Left Winger",
+          "potential": 66,
+          "value": 900000,
+          "yearly_wage": 572000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4115,7 +5235,11 @@
             "France"
           ],
           "number": "10",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 79,
+          "value": 4800000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4129,7 +5253,11 @@
             "Uruguay"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4143,7 +5271,11 @@
             "Uruguay"
           ],
           "number": "17",
-          "position": "Centre-Forward"
+          "overall_score": 70,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 2500000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4157,7 +5289,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 70,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 2400000,
+          "yearly_wage": 988000
         }
       ],
       "stadiumName": "Carlos Tartiere",
@@ -4181,7 +5317,11 @@
             "Scotland"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 79,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4195,7 +5335,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 69,
+          "position": "Goalkeeper",
+          "potential": 77,
+          "value": 2700000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4209,7 +5353,11 @@
             "Argentina"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 4400000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4224,7 +5372,11 @@
             "Italy"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 70,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 3300000,
+          "yearly_wage": 520000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4238,7 +5390,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 4900000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4252,7 +5408,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 71,
+          "position": "Centre-Back",
+          "potential": 71,
+          "value": 1200000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4266,7 +5426,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left-Back"
+          "overall_score": 76,
+          "position": "Left-Back",
+          "potential": 80,
+          "value": 10000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4280,7 +5444,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Left-Back"
+          "overall_score": 69,
+          "position": "Left-Back",
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4295,7 +5463,11 @@
             "United States"
           ],
           "number": "22",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4309,7 +5481,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right-Back"
+          "overall_score": 71,
+          "position": "Right-Back",
+          "potential": 71,
+          "value": 2000000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4323,7 +5499,11 @@
             "France"
           ],
           "number": "14",
-          "position": "Defensive Midfield"
+          "overall_score": 71,
+          "position": "Defensive Midfield",
+          "potential": 81,
+          "value": 4000000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4337,7 +5517,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Defensive Midfield"
+          "overall_score": 73,
+          "position": "Defensive Midfield",
+          "potential": 73,
+          "value": 3200000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4351,7 +5535,11 @@
             "Honduras"
           ],
           "number": "16",
-          "position": "Defensive Midfield"
+          "overall_score": 74,
+          "position": "Defensive Midfield",
+          "potential": 75,
+          "value": 4300000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4365,7 +5553,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 76,
+          "value": 8000000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4379,7 +5571,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 5500000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4393,7 +5589,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Central Midfield"
+          "overall_score": 72,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 2900000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4407,7 +5607,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Attacking Midfield"
+          "overall_score": 77,
+          "position": "Attacking Midfield",
+          "potential": 83,
+          "value": 17000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4421,7 +5625,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 73,
+          "position": "Left Winger",
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4435,7 +5643,11 @@
             "Spain"
           ],
           "number": "27",
-          "position": "Left Winger"
+          "overall_score": 68,
+          "position": "Left Winger",
+          "potential": 81,
+          "value": 2800000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4450,7 +5662,11 @@
             "Nigeria"
           ],
           "number": "26",
-          "position": "Right Winger"
+          "overall_score": 68,
+          "position": "Right Winger",
+          "potential": 79,
+          "value": 2600000,
+          "yearly_wage": 520000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4465,7 +5681,11 @@
             "Spain"
           ],
           "number": "55",
-          "position": "Right Winger"
+          "overall_score": 66,
+          "position": "Right Winger",
+          "potential": 78,
+          "value": 2100000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4479,7 +5699,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Second Striker"
+          "overall_score": 72,
+          "position": "Second Striker",
+          "potential": 77,
+          "value": 3500000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4493,7 +5717,11 @@
             "Cameroon"
           ],
           "number": "21",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 84,
+          "value": 12500000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4507,7 +5735,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 80,
+          "value": 8500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4521,7 +5753,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 84,
+          "value": 12000000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4535,7 +5771,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Centre-Forward"
+          "overall_score": 73,
+          "position": "Centre-Forward",
+          "potential": 73,
+          "value": 1000000,
+          "yearly_wage": 988000
         }
       ],
       "stadiumName": "Ciutat de València",
@@ -4558,7 +5798,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 83,
+          "value": 13500000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4572,7 +5816,11 @@
             "Finland"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 68,
+          "position": "Goalkeeper",
+          "potential": 75,
+          "value": 2100000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4586,7 +5834,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 67,
+          "position": "Goalkeeper",
+          "potential": 67,
+          "value": 110000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4600,7 +5852,11 @@
             "Slovakia"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4615,7 +5871,11 @@
             "Italy"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 9000000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4629,7 +5889,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 8500000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4643,7 +5907,11 @@
             "Spain"
           ],
           "number": "27",
-          "position": "Centre-Back"
+          "overall_score": 69,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 2900000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4658,7 +5926,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Left-Back"
+          "overall_score": 77,
+          "position": "Left-Back",
+          "potential": 77,
+          "value": 7500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4672,7 +5944,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 73,
+          "position": "Left-Back",
+          "potential": 73,
+          "value": 2900000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4687,7 +5963,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Right-Back"
+          "overall_score": 78,
+          "position": "Right-Back",
+          "potential": 78,
+          "value": 13500000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4701,7 +5981,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 73,
+          "position": "Right-Back",
+          "potential": 76,
+          "value": 3700000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4715,7 +5999,11 @@
             "Portugal"
           ],
           "number": "12",
-          "position": "Defensive Midfield"
+          "overall_score": 78,
+          "position": "Defensive Midfield",
+          "potential": 82,
+          "value": 18500000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4730,7 +6018,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Defensive Midfield"
+          "overall_score": 75,
+          "position": "Defensive Midfield",
+          "potential": 75,
+          "value": 3700000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4744,7 +6036,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Central Midfield"
+          "overall_score": 79,
+          "position": "Central Midfield",
+          "potential": 79,
+          "value": 14500000,
+          "yearly_wage": 1976000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4758,7 +6054,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 73,
+          "position": "Central Midfield",
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4772,7 +6072,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 8500000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4786,7 +6090,11 @@
             "Spain"
           ],
           "number": "41",
-          "position": "Central Midfield"
+          "overall_score": 62,
+          "position": "Central Midfield",
+          "potential": 76,
+          "value": 950000,
+          "yearly_wage": 260000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4800,7 +6108,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Attacking Midfield"
+          "overall_score": 74,
+          "position": "Attacking Midfield",
+          "potential": 82,
+          "value": 9500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2030",
@@ -4814,7 +6126,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 86,
+          "value": 12000000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4828,7 +6144,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Left Winger"
+          "overall_score": 69,
+          "position": "Left Winger",
+          "potential": 76,
+          "value": 2800000,
+          "yearly_wage": 728000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4842,7 +6162,11 @@
             "Angola"
           ],
           "number": "15",
-          "position": "Right Winger"
+          "overall_score": 71,
+          "position": "Right Winger",
+          "potential": 78,
+          "value": 3800000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4856,7 +6180,11 @@
             "Japan"
           ],
           "number": "11",
-          "position": "Right Winger"
+          "overall_score": 74,
+          "position": "Right Winger",
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4871,7 +6199,11 @@
             "DR Congo"
           ],
           "number": "30",
-          "position": "Right Winger"
+          "overall_score": 65,
+          "position": "Right Winger",
+          "potential": 75,
+          "value": 1600000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2029",
@@ -4886,7 +6218,11 @@
             "Albania"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 81,
+          "position": "Centre-Forward",
+          "potential": 81,
+          "value": 22000000,
+          "yearly_wage": 2444000
         },
         {
           "contract": "Jun 30, 2026",
@@ -4901,7 +6237,11 @@
             "England"
           ],
           "number": "18",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 82,
+          "value": 5500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4915,7 +6255,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 72,
+          "value": 1900000,
+          "yearly_wage": 1248000
         }
       ],
       "stadiumName": "Mallorca Son Moix",
@@ -4938,7 +6282,11 @@
             "Romania"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 78,
+          "position": "Goalkeeper",
+          "potential": 78,
+          "value": 10000000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4952,7 +6300,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 72,
+          "position": "Goalkeeper",
+          "potential": 75,
+          "value": 2300000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4966,7 +6318,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 64,
+          "position": "Goalkeeper",
+          "potential": 68,
+          "value": 650000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2028",
@@ -4980,7 +6336,11 @@
             "Spain"
           ],
           "number": "32",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 82,
+          "value": 11000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -4994,7 +6354,11 @@
             "Sweden"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 11500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5008,7 +6372,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 4200000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5022,7 +6390,11 @@
             "Spain"
           ],
           "number": "29",
-          "position": "Centre-Back"
+          "overall_score": 71,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 3500000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5036,7 +6408,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Centre-Back"
+          "overall_score": 70,
+          "position": "Centre-Back",
+          "potential": 75,
+          "value": 2200000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5050,7 +6426,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5064,7 +6444,11 @@
             "Ghana"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 73,
+          "position": "Centre-Back",
+          "potential": 73,
+          "value": 2500000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5079,7 +6463,11 @@
             "Bosnia-Herzegovina"
           ],
           "number": "21",
-          "position": "Left-Back"
+          "overall_score": 72,
+          "position": "Left-Back",
+          "potential": 72,
+          "value": 2100000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5093,7 +6481,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Right-Back"
+          "overall_score": 80,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 22500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5107,7 +6499,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Right-Back"
+          "overall_score": 75,
+          "position": "Right-Back",
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5121,7 +6517,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Right-Back"
+          "overall_score": 76,
+          "position": "Right-Back",
+          "potential": 80,
+          "value": 10000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5135,7 +6535,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 8000000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5149,7 +6553,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 6500000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5164,7 +6572,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 78,
+          "position": "Central Midfield",
+          "potential": 83,
+          "value": 21500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5178,7 +6590,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5193,7 +6609,11 @@
             "Italy"
           ],
           "number": "15",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 76,
+          "value": 4600000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5207,7 +6627,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Attacking Midfield"
+          "overall_score": 73,
+          "position": "Attacking Midfield",
+          "potential": 82,
+          "value": 7000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5221,7 +6645,11 @@
             "Sweden"
           ],
           "number": "19",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 82,
+          "value": 11500000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5235,7 +6663,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 81,
+          "value": 9000000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5250,7 +6682,11 @@
             "Italy"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 71,
+          "position": "Left Winger",
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5265,7 +6701,11 @@
             "Norway"
           ],
           "number": "39",
-          "position": "Right Winger"
+          "overall_score": 70,
+          "position": "Right Winger",
+          "potential": 81,
+          "value": 3400000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5279,7 +6719,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 6000000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5293,7 +6737,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 78,
+          "value": 6000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5307,7 +6755,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 80,
+          "position": "Centre-Forward",
+          "potential": 80,
+          "value": 17000000,
+          "yearly_wage": 2080000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5321,7 +6773,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 82,
+          "position": "Centre-Forward",
+          "potential": 82,
+          "value": 10000000,
+          "yearly_wage": 1820000
         }
       ],
       "stadiumName": "Abanca Balaídos",
@@ -5344,7 +6800,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 79,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 8500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5358,7 +6818,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 77,
+          "value": 1800000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5373,7 +6837,11 @@
             "France"
           ],
           "number": "22",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 85,
+          "value": 25000000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5387,7 +6855,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5401,7 +6873,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 11500000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5415,7 +6891,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left-Back"
+          "overall_score": 75,
+          "position": "Left-Back",
+          "potential": 80,
+          "value": 8000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5429,7 +6909,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Left-Back"
+          "overall_score": 78,
+          "position": "Left-Back",
+          "potential": 78,
+          "value": 12000000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5443,7 +6927,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 73,
+          "position": "Left-Back",
+          "potential": 73,
+          "value": 2100000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5458,7 +6946,11 @@
             "Guadeloupe"
           ],
           "number": "19",
-          "position": "Right-Back"
+          "overall_score": 78,
+          "position": "Right-Back",
+          "potential": 78,
+          "value": 12500000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5472,7 +6964,11 @@
             "Spain"
           ],
           "number": "41",
-          "position": "Right-Back"
+          "overall_score": 63,
+          "position": "Right-Back",
+          "potential": 77,
+          "value": 1100000,
+          "yearly_wage": 260000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5486,7 +6982,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Defensive Midfield"
+          "overall_score": 77,
+          "position": "Defensive Midfield",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5500,7 +7000,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Defensive Midfield"
+          "overall_score": 71,
+          "position": "Defensive Midfield",
+          "potential": 79,
+          "value": 4200000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2031",
@@ -5514,7 +7018,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5528,7 +7036,11 @@
             "Spain"
           ],
           "number": "29",
-          "position": "Central Midfield"
+          "overall_score": 66,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 1800000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5542,7 +7054,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Attacking Midfield"
+          "overall_score": 77,
+          "position": "Attacking Midfield",
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5556,7 +7072,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Attacking Midfield"
+          "overall_score": 76,
+          "position": "Attacking Midfield",
+          "potential": 76,
+          "value": 6000000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5570,7 +7090,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Left Winger"
+          "overall_score": 78,
+          "position": "Left Winger",
+          "potential": 86,
+          "value": 31500000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2031",
@@ -5584,7 +7108,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 82,
+          "value": 11500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5598,7 +7126,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Right Winger"
+          "overall_score": 78,
+          "position": "Right Winger",
+          "potential": 78,
+          "value": 11500000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5612,7 +7144,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right Winger"
+          "overall_score": 71,
+          "position": "Right Winger",
+          "potential": 78,
+          "value": 3800000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5626,7 +7162,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5640,7 +7180,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 79,
+          "value": 6500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5654,7 +7198,11 @@
             "Croatia"
           ],
           "number": "17",
-          "position": "Centre-Forward"
+          "overall_score": 82,
+          "position": "Centre-Forward",
+          "potential": 82,
+          "value": 19500000,
+          "yearly_wage": 2756000
         }
       ],
       "stadiumName": "El Sadar",
@@ -5678,7 +7226,11 @@
             "Portugal"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 78,
+          "position": "Goalkeeper",
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5692,7 +7244,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 76,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 7500000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5706,7 +7262,11 @@
             "Spain"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 75,
+          "position": "Goalkeeper",
+          "potential": 81,
+          "value": 7000000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2032",
@@ -5721,7 +7281,11 @@
             "Cape Verde"
           ],
           "number": "12",
-          "position": "Centre-Back"
+          "overall_score": 78,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 19500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5736,7 +7300,11 @@
             "France"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 15000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5750,7 +7318,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 83,
+          "value": 14000000,
+          "yearly_wage": 3068000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5765,7 +7337,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 16000000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5780,7 +7356,11 @@
             "DR Congo"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 72,
+          "position": "Centre-Back",
+          "potential": 81,
+          "value": 4800000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5794,7 +7374,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left-Back"
+          "overall_score": 79,
+          "position": "Left-Back",
+          "potential": 82,
+          "value": 21500000,
+          "yearly_wage": 2028000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5808,7 +7392,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Left-Back"
+          "overall_score": 76,
+          "position": "Left-Back",
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5822,7 +7410,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 83,
+          "value": 8500000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5837,7 +7429,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Right-Back"
+          "overall_score": 78,
+          "position": "Right-Back",
+          "potential": 85,
+          "value": 27000000,
+          "yearly_wage": 1664000
         },
         {
           "contract": "Jun 30, 2032",
@@ -5850,7 +7446,11 @@
             "United States"
           ],
           "number": "3",
-          "position": "Right-Back"
+          "overall_score": 73,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 6500000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5864,7 +7464,11 @@
             "Ghana"
           ],
           "number": "16",
-          "position": "Defensive Midfield"
+          "overall_score": 79,
+          "position": "Defensive Midfield",
+          "potential": 79,
+          "value": 11500000,
+          "yearly_wage": 2236000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5879,7 +7483,11 @@
             "France"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 24500000,
+          "yearly_wage": 2340000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5893,7 +7501,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Central Midfield"
+          "overall_score": 79,
+          "position": "Central Midfield",
+          "potential": 79,
+          "value": 17500000,
+          "yearly_wage": 2340000
         },
         {
           "contract": "Jun 30, 2029",
@@ -5907,7 +7519,11 @@
             "Spain"
           ],
           "number": "37",
-          "position": "Central Midfield"
+          "overall_score": 62,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 1000000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5921,7 +7537,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 6500000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5936,7 +7556,11 @@
             "Cuba"
           ],
           "number": "20",
-          "position": "Left Winger"
+          "overall_score": 82,
+          "position": "Left Winger",
+          "potential": 87,
+          "value": 47000000,
+          "yearly_wage": 2028000
         },
         {
           "contract": "Jun 30, 2026",
@@ -5949,7 +7573,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Left Winger"
+          "overall_score": 75,
+          "position": "Left Winger",
+          "potential": 75,
+          "value": 6000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2027",
@@ -5961,7 +7589,11 @@
             "Spain"
           ],
           "number": "32",
-          "position": "Left Winger"
+          "overall_score": 60,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 625000,
+          "yearly_wage": 208000
         },
         {
           "contract": "Jun 30, 2030",
@@ -5976,7 +7608,11 @@
             "Jamaica"
           ],
           "number": "17",
-          "position": "Right Winger"
+          "overall_score": 76,
+          "position": "Right Winger",
+          "potential": 76,
+          "value": 8000000,
+          "yearly_wage": 1768000
         },
         {
           "contract": "Jun 30, 2028",
@@ -5991,7 +7627,11 @@
             "France"
           ],
           "number": "19",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 81,
+          "value": 25000000,
+          "yearly_wage": 2808000
         },
         {
           "contract": "Jun 30, 2031",
@@ -6006,7 +7646,11 @@
             "France"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 79,
+          "position": "Centre-Forward",
+          "potential": 83,
+          "value": 25500000,
+          "yearly_wage": 2132000
         },
         {
           "contract": "Jun 30, 2030",
@@ -6021,7 +7665,11 @@
             "Nigeria"
           ],
           "number": "21",
-          "position": "Centre-Forward"
+          "overall_score": 71,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 2500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6035,7 +7683,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Centre-Forward"
+          "overall_score": 81,
+          "position": "Centre-Forward",
+          "potential": 81,
+          "value": 22000000,
+          "yearly_wage": 2860000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6049,7 +7701,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 81,
+          "position": "Centre-Forward",
+          "potential": 81,
+          "value": 16500000,
+          "yearly_wage": 2860000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6063,7 +7719,11 @@
             "Spain"
           ],
           "number": "33",
-          "position": "Centre-Forward"
+          "overall_score": 65,
+          "position": "Centre-Forward",
+          "potential": 78,
+          "value": 1700000,
+          "yearly_wage": 416000
         }
       ],
       "stadiumName": "La Cerámica",
@@ -6086,7 +7746,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 77,
+          "position": "Goalkeeper",
+          "potential": 79,
+          "value": 9000000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6100,7 +7764,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 72,
+          "position": "Goalkeeper",
+          "potential": 72,
+          "value": 250000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6114,7 +7782,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 81,
+          "value": 8000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6128,7 +7800,11 @@
             "Finland"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 66,
+          "position": "Centre-Back",
+          "potential": 72,
+          "value": 1200000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6157,7 +7833,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 70,
+          "position": "Left-Back",
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 572000
         },
         {
           "contract": "Jun 30, 2029",
@@ -6171,7 +7851,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Left-Back"
+          "overall_score": 70,
+          "position": "Left-Back",
+          "potential": 74,
+          "value": 2100000,
+          "yearly_wage": 676000
         },
         {
           "contract": "Jun 30, 2029",
@@ -6186,7 +7870,11 @@
             "Italy"
           ],
           "number": "14",
-          "position": "Right-Back"
+          "overall_score": 77,
+          "position": "Right-Back",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6200,7 +7888,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right-Back"
+          "overall_score": 75,
+          "position": "Right-Back",
+          "potential": 75,
+          "value": 4100000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6214,7 +7906,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 81,
+          "value": 10500000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6229,7 +7925,11 @@
             "Italy"
           ],
           "number": "23",
-          "position": "Defensive Midfield"
+          "overall_score": 73,
+          "position": "Defensive Midfield",
+          "potential": 74,
+          "value": 3100000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2030",
@@ -6243,7 +7943,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Central Midfield"
+          "overall_score": 73,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2029",
@@ -6257,7 +7961,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 4500000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6271,7 +7979,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 4300000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6285,7 +7997,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 73,
+          "position": "Central Midfield",
+          "potential": 73,
+          "value": 2900000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6299,7 +8015,11 @@
             "Brazil"
           ],
           "number": "20",
-          "position": "Attacking Midfield"
+          "overall_score": 71,
+          "position": "Attacking Midfield",
+          "potential": 72,
+          "value": 2200000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6313,7 +8033,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Attacking Midfield"
+          "overall_score": 74,
+          "position": "Attacking Midfield",
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6328,7 +8052,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Left Winger"
+          "overall_score": 72,
+          "position": "Left Winger",
+          "potential": 72,
+          "value": 2600000,
+          "yearly_wage": 1092000
         },
         {
           "contract": "Jun 30, 2030",
@@ -6342,7 +8070,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Right Winger"
+          "overall_score": 70,
+          "position": "Right Winger",
+          "potential": 79,
+          "value": 3600000,
+          "yearly_wage": 728000
         },
         {
           "contract": "Jun 30, 2029",
@@ -6357,7 +8089,11 @@
             "Italy"
           ],
           "number": "15",
-          "position": "Centre-Forward"
+          "overall_score": 77,
+          "position": "Centre-Forward",
+          "potential": 77,
+          "value": 10500000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6371,7 +8107,11 @@
             "Spain"
           ],
           "number": "11",
-          "position": "Centre-Forward"
+          "overall_score": 77,
+          "position": "Centre-Forward",
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6385,7 +8125,11 @@
             "Cote d'Ivoire"
           ],
           "number": "22",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 3000000,
+          "yearly_wage": 260000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6399,7 +8143,11 @@
             "Spain"
           ],
           "number": "34",
-          "position": "Centre-Forward"
+          "overall_score": 63,
+          "position": "Centre-Forward",
+          "potential": 71,
+          "value": 1100000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6414,7 +8162,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 67,
+          "position": "Centre-Forward",
+          "potential": 67,
+          "value": 850000,
+          "yearly_wage": 676000
         }
       ],
       "stadiumName": "Mendizorroza",
@@ -6437,7 +8189,11 @@
             "Spain"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 80,
+          "position": "Goalkeeper",
+          "potential": 80,
+          "value": 10500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6451,7 +8207,11 @@
             "Czech Republic"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 69,
+          "position": "Goalkeeper",
+          "potential": 73,
+          "value": 1500000,
+          "yearly_wage": 520000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6465,7 +8225,11 @@
             "Morocco"
           ],
           "number": "3",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 4900000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6480,7 +8244,11 @@
             "Italy"
           ],
           "number": "15",
-          "position": "Centre-Back"
+          "overall_score": 72,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 3300000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6495,7 +8263,11 @@
             "Syria"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 9000000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6509,7 +8281,11 @@
             "Togo"
           ],
           "number": "2",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 77,
+          "value": 5000000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6523,7 +8299,11 @@
             "Portugal"
           ],
           "number": "22",
-          "position": "Centre-Back"
+          "overall_score": 74,
+          "position": "Centre-Back",
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6537,7 +8317,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Left-Back"
+          "overall_score": 76,
+          "position": "Left-Back",
+          "potential": 76,
+          "value": 5000000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6551,7 +8335,11 @@
             "Spain"
           ],
           "number": "26",
-          "position": "Left-Back"
+          "overall_score": 67,
+          "position": "Left-Back",
+          "potential": 81,
+          "value": 2200000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6565,7 +8353,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Right-Back"
+          "overall_score": 76,
+          "position": "Right-Back",
+          "potential": 77,
+          "value": 8000000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6579,7 +8371,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 74,
+          "value": 1500000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6594,7 +8390,11 @@
             "Spain"
           ],
           "number": "31",
-          "position": "Right-Back"
+          "overall_score": 64,
+          "position": "Right-Back",
+          "potential": 75,
+          "value": 1200000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6609,7 +8409,11 @@
             "France"
           ],
           "number": "12",
-          "position": "Right-Back"
+          "overall_score": 71,
+          "position": "Right-Back",
+          "potential": 71,
+          "value": 425000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6623,7 +8427,11 @@
             "Spain"
           ],
           "number": "6",
-          "position": "Defensive Midfield"
+          "overall_score": 74,
+          "position": "Defensive Midfield",
+          "potential": 82,
+          "value": 9500000,
+          "yearly_wage": 1040000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6638,7 +8446,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 80,
+          "position": "Central Midfield",
+          "potential": 80,
+          "value": 20500000,
+          "yearly_wage": 2236000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6652,7 +8464,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Central Midfield"
+          "overall_score": 81,
+          "position": "Central Midfield",
+          "potential": 81,
+          "value": 24500000,
+          "yearly_wage": 2392000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6666,7 +8482,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Central Midfield"
+          "overall_score": 74,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 4000000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6680,7 +8500,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Left Winger"
+          "overall_score": 72,
+          "position": "Left Winger",
+          "potential": 83,
+          "value": 5000000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6694,7 +8518,11 @@
             "Serbia"
           ],
           "number": "20",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 76,
+          "value": 8000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6708,7 +8536,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Left Winger"
+          "overall_score": 72,
+          "position": "Left Winger",
+          "potential": 72,
+          "value": 1900000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6723,7 +8555,11 @@
             "Sierra Leone"
           ],
           "number": "11",
-          "position": "Right Winger"
+          "overall_score": 68,
+          "position": "Right Winger",
+          "potential": 76,
+          "value": 2700000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6737,7 +8573,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Right Winger"
+          "overall_score": 73,
+          "position": "Right Winger",
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6751,7 +8591,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 77,
+          "position": "Centre-Forward",
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6766,7 +8610,11 @@
             "Italy"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 79,
+          "value": 8000000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6780,7 +8628,11 @@
             "Argentina"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 76,
+          "value": 3400000,
+          "yearly_wage": 1040000
         }
       ],
       "stadiumName": "Coliseum",
@@ -6804,7 +8656,11 @@
             "Italy"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 79,
+          "position": "Goalkeeper",
+          "potential": 80,
+          "value": 13500000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6818,7 +8674,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 73,
+          "position": "Goalkeeper",
+          "potential": 75,
+          "value": 2600000,
+          "yearly_wage": 624000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6833,7 +8693,11 @@
             "Guinea-Bissau"
           ],
           "number": "32",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 85,
+          "value": 11500000,
+          "yearly_wage": 832000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6848,7 +8712,11 @@
             "Nigeria"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 77,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 11000000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6863,7 +8731,11 @@
             "Brazil"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 5500000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6877,7 +8749,11 @@
             "Netherlands"
           ],
           "number": "33",
-          "position": "Centre-Back"
+          "overall_score": 68,
+          "position": "Centre-Back",
+          "potential": 78,
+          "value": 2500000,
+          "yearly_wage": 416000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6891,7 +8767,11 @@
             "France"
           ],
           "number": "24",
-          "position": "Centre-Back"
+          "overall_score": 79,
+          "position": "Centre-Back",
+          "potential": 79,
+          "value": 5500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2030",
@@ -6905,7 +8785,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left-Back"
+          "overall_score": 78,
+          "position": "Left-Back",
+          "potential": 78,
+          "value": 13500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6920,7 +8804,11 @@
             "Spain"
           ],
           "number": "22",
-          "position": "Left-Back"
+          "overall_score": 72,
+          "position": "Left-Back",
+          "potential": 72,
+          "value": 1200000,
+          "yearly_wage": 884000
         },
         {
           "contract": "Jun 30, 2030",
@@ -6935,7 +8823,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 80,
+          "position": "Right-Back",
+          "potential": 81,
+          "value": 22000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2027",
@@ -6950,7 +8842,11 @@
             "Spain"
           ],
           "number": "20",
-          "position": "Right-Back"
+          "overall_score": 75,
+          "position": "Right-Back",
+          "potential": 75,
+          "value": 2900000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6964,7 +8860,11 @@
             "Spain"
           ],
           "number": "15",
-          "position": "Defensive Midfield"
+          "overall_score": 72,
+          "position": "Defensive Midfield",
+          "potential": 72,
+          "value": 2200000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2028",
@@ -6978,7 +8878,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 6000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -6992,7 +8896,11 @@
             "Spain"
           ],
           "number": "17",
-          "position": "Central Midfield"
+          "overall_score": 76,
+          "position": "Central Midfield",
+          "potential": 76,
+          "value": 7500000,
+          "yearly_wage": 1248000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7006,7 +8914,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7020,7 +8932,11 @@
             "Senegal"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 77,
+          "value": 7500000,
+          "yearly_wage": 1300000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7033,7 +8949,11 @@
             "Spain"
           ],
           "number": "28",
-          "position": "Central Midfield"
+          "overall_score": 60,
+          "position": "Central Midfield",
+          "potential": 73,
+          "value": 575000,
+          "yearly_wage": 104000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7048,7 +8968,11 @@
             "France"
           ],
           "number": "11",
-          "position": "Attacking Midfield"
+          "overall_score": 70,
+          "position": "Attacking Midfield",
+          "potential": 70,
+          "value": 1700000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7063,7 +8987,11 @@
             "Italy"
           ],
           "number": "8",
-          "position": "Attacking Midfield"
+          "overall_score": 70,
+          "position": "Attacking Midfield",
+          "potential": 70,
+          "value": 525000,
+          "yearly_wage": 572000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7077,7 +9005,11 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Left Winger"
+          "overall_score": 70,
+          "position": "Left Winger",
+          "potential": 77,
+          "value": 3200000,
+          "yearly_wage": 1508000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7091,7 +9023,11 @@
             "Spain"
           ],
           "number": "18",
-          "position": "Left Winger"
+          "overall_score": 81,
+          "position": "Left Winger",
+          "potential": 81,
+          "value": 20500000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7106,7 +9042,11 @@
             "Spain"
           ],
           "number": "12",
-          "position": "Right Winger"
+          "overall_score": 75,
+          "position": "Right Winger",
+          "potential": 83,
+          "value": 12500000,
+          "yearly_wage": 1352000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7120,7 +9060,11 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Right Winger"
+          "overall_score": 81,
+          "position": "Right Winger",
+          "potential": 81,
+          "value": 26000000,
+          "yearly_wage": 1924000
         },
         {
           "contract": "Jun 30, 2029",
@@ -7134,7 +9078,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Right Winger"
+          "overall_score": 74,
+          "position": "Right Winger",
+          "potential": 79,
+          "value": 6500000,
+          "yearly_wage": 936000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7148,7 +9096,11 @@
             "Spain"
           ],
           "number": "7",
-          "position": "Second Striker"
+          "overall_score": 80,
+          "position": "Second Striker",
+          "potential": 80,
+          "value": 20500000,
+          "yearly_wage": 1716000
         },
         {
           "contract": "Jun 30, 2030",
@@ -7163,7 +9115,11 @@
             "Poland"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 74,
+          "position": "Centre-Forward",
+          "potential": 74,
+          "value": 4600000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7177,7 +9133,11 @@
             "Spain"
           ],
           "number": "10",
-          "position": "Centre-Forward"
+          "overall_score": 73,
+          "position": "Centre-Forward",
+          "potential": 78,
+          "value": 4700000,
+          "yearly_wage": 936000
         }
       ],
       "stadiumName": "Estadio de Vallecas",
@@ -7200,7 +9160,11 @@
             "Germany"
           ],
           "number": "22",
-          "position": "Goalkeeper"
+          "overall_score": 84,
+          "position": "Goalkeeper",
+          "potential": 84,
+          "value": 13500000,
+          "yearly_wage": 4264000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7215,7 +9179,11 @@
             "Italy"
           ],
           "number": "13",
-          "position": "Goalkeeper"
+          "overall_score": 78,
+          "position": "Goalkeeper",
+          "potential": 78,
+          "value": 4600000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7229,7 +9197,11 @@
             "Spain"
           ],
           "number": "1",
-          "position": "Goalkeeper"
+          "overall_score": 73,
+          "position": "Goalkeeper",
+          "potential": 74,
+          "value": 2300000,
+          "yearly_wage": 780000
         },
         {
           "contract": "Jun 30, 2029",
@@ -7243,7 +9215,11 @@
             "Ukraine"
           ],
           "number": "25",
-          "position": "Goalkeeper"
+          "overall_score": 64,
+          "position": "Goalkeeper",
+          "potential": 78,
+          "value": 1200000,
+          "yearly_wage": 156000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7256,7 +9232,11 @@
           "nationality": [
             "Spain"
           ],
-          "position": "Goalkeeper"
+          "overall_score": 70,
+          "position": "Goalkeeper",
+          "potential": 70,
+          "value": 180000,
+          "yearly_wage": 364000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7270,7 +9250,11 @@
             "Brazil"
           ],
           "number": "12",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 86,
+          "value": 15000000,
+          "yearly_wage": 2912000
         },
         {
           "contract": "Jun 30, 2029",
@@ -7284,7 +9268,11 @@
             "Spain"
           ],
           "number": "16",
-          "position": "Centre-Back"
+          "overall_score": 75,
+          "position": "Centre-Back",
+          "potential": 80,
+          "value": 8000000,
+          "yearly_wage": 1196000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7298,7 +9286,11 @@
             "Netherlands"
           ],
           "number": "17",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7312,7 +9304,11 @@
             "Spain"
           ],
           "number": "5",
-          "position": "Centre-Back"
+          "overall_score": 76,
+          "position": "Centre-Back",
+          "potential": 76,
+          "value": 2000000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7326,7 +9322,11 @@
             "Spain"
           ],
           "number": "24",
-          "position": "Left-Back"
+          "overall_score": 77,
+          "position": "Left-Back",
+          "potential": 77,
+          "value": 7500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7340,7 +9340,11 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Right-Back"
+          "overall_score": 78,
+          "position": "Right-Back",
+          "potential": 83,
+          "value": 20000000,
+          "yearly_wage": 1456000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7354,7 +9358,11 @@
             "Spain"
           ],
           "number": "2",
-          "position": "Right-Back"
+          "overall_score": 74,
+          "position": "Right-Back",
+          "potential": 82,
+          "value": 9000000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7369,7 +9377,11 @@
             "Martinique"
           ],
           "number": "20",
-          "position": "Defensive Midfield"
+          "overall_score": 76,
+          "position": "Defensive Midfield",
+          "potential": 76,
+          "value": 1500000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2030",
@@ -7383,7 +9395,11 @@
             "Morocco"
           ],
           "number": "18",
-          "position": "Central Midfield"
+          "overall_score": 79,
+          "position": "Central Midfield",
+          "potential": 82,
+          "value": 23000000,
+          "yearly_wage": 1820000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7397,7 +9413,11 @@
             "Spain"
           ],
           "number": "23",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 12500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2030",
@@ -7411,7 +9431,11 @@
             "Spain"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "overall_score": 77,
+          "position": "Central Midfield",
+          "potential": 78,
+          "value": 12500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7425,7 +9449,11 @@
             "Netherlands"
           ],
           "number": "6",
-          "position": "Central Midfield"
+          "overall_score": 75,
+          "position": "Central Midfield",
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2028",
@@ -7440,7 +9468,11 @@
             "Spain"
           ],
           "number": "29",
-          "position": "Central Midfield"
+          "overall_score": 65,
+          "position": "Central Midfield",
+          "potential": 74,
+          "value": 1600000,
+          "yearly_wage": 312000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7454,7 +9486,11 @@
             "Argentina"
           ],
           "number": "14",
-          "position": "Attacking Midfield"
+          "overall_score": 73,
+          "position": "Attacking Midfield",
+          "potential": 85,
+          "value": 7000000,
+          "yearly_wage": 2548000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7469,7 +9505,11 @@
             "Guadeloupe"
           ],
           "number": "11",
-          "position": "Attacking Midfield"
+          "overall_score": 77,
+          "position": "Attacking Midfield",
+          "potential": 77,
+          "value": 10500000,
+          "yearly_wage": 2964000
         },
         {
           "contract": "Jun 30, 2030",
@@ -7483,7 +9523,11 @@
             "Spain"
           ],
           "number": "21",
-          "position": "Left Winger"
+          "overall_score": 76,
+          "position": "Left Winger",
+          "potential": 79,
+          "value": 10000000,
+          "yearly_wage": 1404000
         },
         {
           "contract": "Jun 30, 2029",
@@ -7497,7 +9541,11 @@
             "Spain"
           ],
           "number": "3",
-          "position": "Left Winger"
+          "overall_score": 73,
+          "position": "Left Winger",
+          "potential": 82,
+          "value": 6500000,
+          "yearly_wage": 988000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7511,7 +9559,11 @@
             "Ukraine"
           ],
           "number": "15",
-          "position": "Right Winger"
+          "overall_score": 78,
+          "position": "Right Winger",
+          "potential": 78,
+          "value": 15000000,
+          "yearly_wage": 1872000
         },
         {
           "contract": "Jun 30, 2027",
@@ -7524,7 +9576,11 @@
           "nationality": [
             "Spain"
           ],
-          "position": "Right Winger"
+          "overall_score": 75,
+          "position": "Right Winger",
+          "potential": 75,
+          "value": 3500000,
+          "yearly_wage": 1612000
         },
         {
           "contract": "Jun 30, 2030",
@@ -7538,7 +9594,11 @@
             "Ukraine"
           ],
           "number": "19",
-          "position": "Centre-Forward"
+          "overall_score": 77,
+          "position": "Centre-Forward",
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 1560000
         },
         {
           "contract": "Jun 30, 2029",
@@ -7552,7 +9612,11 @@
             "Spain"
           ],
           "number": "9",
-          "position": "Centre-Forward"
+          "overall_score": 72,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 3100000,
+          "yearly_wage": 1144000
         },
         {
           "contract": "Jun 30, 2026",
@@ -7567,7 +9631,11 @@
             "Italy"
           ],
           "number": "7",
-          "position": "Centre-Forward"
+          "overall_score": 75,
+          "position": "Centre-Forward",
+          "potential": 75,
+          "value": 1900000,
+          "yearly_wage": 1248000
         }
       ],
       "stadiumName": "Montilivi",
