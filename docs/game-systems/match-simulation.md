@@ -22,6 +22,16 @@ The stronger team is always favored regardless of venue — home advantage is a 
 
 All base values and exponents are configurable in `config/match_simulation.php`.
 
+### Strength floor (distribution-derived rescale)
+
+Because outcomes depend on the strength **ratio** (`ratio ^ skill_dominance`) and strength is `mean(rating)/100` on a zero-baseline scale, leagues whose ratings cluster in a high, narrow band (e.g. the cash-rich, egalitarian Premier League) produce ratios near 1.0 — making matches coin flips and tables too flat. To correct this, each team's strength is rescaled by a per-match **floor** before the ratio is formed:
+
+```
+strength = (rating - floor) / (100 - floor)
+```
+
+The floor is **derived per competition** from its own rating band (`CompetitionStrengthFloorResolver`) so a high-narrow league gets a large floor and a low-wide league a small one, from a single global knob `strength_ratio_target` (R): `floor = (R·bottom - top)/(R - 1)`. Domestic-league matches use their league's floor; cups and continental matches use a global cross-band floor (which collapses toward 0, i.e. raw globally-consistent overalls, preserving genuine cross-league quality gaps). The rescale lives in `MatchOutcomeModel::applyFloor()` (a floor of 0 is a no-op) and is applied in both the full `MatchSimulator` path (via `setStrengthFloor()`, set by `FullMatchSimulationService`/`MatchResimulationService`) and the lightweight `AIMatchResolver`. Set `strength_floor_enabled => false` to disable. The `app:diagnose-strength-realism` command measures the effect and `--auto-floor` previews the production-derived floor.
+
 ## Formation & Mentality
 
 Each formation has attack and defense modifiers (multiplicative on xG). A team's attack modifier scales their own xG; their defense modifier scales the opponent's. Available formations and their modifiers are defined in `Formation` enum.
@@ -114,6 +124,8 @@ Cup competitions (`knockout_cup`), Swiss-format competitions (`swiss_format`, `g
 | File | Purpose |
 |------|---------|
 | `app/Modules/Match/Services/MatchSimulator.php` | Core simulation: xG, strength, events, extra time, penalties |
+| `app/Modules/Match/Support/MatchOutcomeModel.php` | Shared xG + Dixon-Coles math and the strength-floor rescale |
+| `app/Modules/Match/Services/CompetitionStrengthFloorResolver.php` | Per-competition / global strength floor from the rating band |
 | `app/Modules/Match/Services/EnergyCalculator.php` | Energy drain and effectiveness calculations |
 | `app/Modules/Match/Services/SyntheticLeagueResolver.php` | Lazy Poisson simulation of non-user flat leagues |
 | `app/Modules/Player/Services/PlayerConditionService.php` | Between-match recovery and energy updates |

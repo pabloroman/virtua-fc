@@ -6,6 +6,7 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\Support\MatchOutcomeModel;
 use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 
@@ -28,11 +29,8 @@ class AIMatchResolver
 {
     public function __construct(
         private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
+        private readonly CompetitionStrengthFloorResolver $floorResolver = new CompetitionStrengthFloorResolver,
     ) {}
-
-    private const DIXON_COLES_MAX_GOALS = 8;
-
-    private const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320];
 
     // Position weights for goal scoring (matches MatchSimulator)
     private const GOAL_SCORING_WEIGHTS = [
@@ -135,10 +133,18 @@ class AIMatchResolver
         $homeStrength = $this->calculateTeamStrength($homeXI);
         $awayStrength = $this->calculateTeamStrength($awayXI);
 
-        // Generate scoreline
+        // Rescale both strengths by this competition's strength floor (domestic
+        // league → its own rating band, cups/continental → global cross-band
+        // floor) so AI league tables reflect quality instead of being coin flips.
+        $floor = $this->floorResolver->floorForMatch($game, $match);
+        $homeStrength = MatchOutcomeModel::applyFloor($homeStrength, $floor);
+        $awayStrength = MatchOutcomeModel::applyFloor($awayStrength, $floor);
+
+        // Generate scoreline — same xG formula and Dixon-Coles distribution the
+        // full MatchSimulator uses, via the shared MatchOutcomeModel.
         $neutralVenue = $match->isNeutralVenue();
-        [$homeXG, $awayXG] = $this->calculateExpectedGoals($homeStrength, $awayStrength, $neutralVenue);
-        [$homeScore, $awayScore] = $this->dixonColesRandom($homeXG, $awayXG);
+        [$homeXG, $awayXG] = MatchOutcomeModel::expectedGoals($homeStrength, $awayStrength, $neutralVenue);
+        [$homeScore, $awayScore] = MatchOutcomeModel::sampleScoreline($homeXG, $awayXG);
 
         // Cap goals
         $maxGoals = (int) config('match_simulation.max_goals_cap', 6);
@@ -277,97 +283,6 @@ class AIMatchResolver
         }
 
         return ($totalStrength / 11) / 100;
-    }
-
-    /**
-     * Calculate expected goals using the same ratio-based formula as MatchSimulator.
-     */
-    private function calculateExpectedGoals(float $homeStrength, float $awayStrength, bool $neutralVenue): array
-    {
-        $baseGoals = (float) config('match_simulation.base_goals', 1.2);
-        $skillDominance = (float) config('match_simulation.skill_dominance', 2.3);
-        $homeAdvantage = $neutralVenue ? 0.0 : (float) config('match_simulation.home_advantage_goals', 0.20);
-
-        if ($awayStrength <= 0) {
-            return [$baseGoals + $homeAdvantage, $baseGoals * 0.5];
-        }
-
-        $strengthRatio = $homeStrength / $awayStrength;
-        $homeXG = pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantage;
-        $awayXG = pow(1.0 / $strengthRatio, $skillDominance) * $baseGoals;
-
-        return [$homeXG, $awayXG];
-    }
-
-    /**
-     * Dixon-Coles correlated Poisson sampling (identical to MatchSimulator).
-     */
-    private function dixonColesRandom(float $homeXG, float $awayXG): array
-    {
-        $rho = (float) config('match_simulation.dixon_coles_rho', -0.13);
-        $concentration = (float) config('match_simulation.score_concentration', 1.0);
-
-        $probabilities = [];
-
-        for ($i = 0; $i <= self::DIXON_COLES_MAX_GOALS; $i++) {
-            $pHome = $this->poissonPmf($i, $homeXG);
-            for ($j = 0; $j <= self::DIXON_COLES_MAX_GOALS; $j++) {
-                $pAway = $this->poissonPmf($j, $awayXG);
-                $tau = $this->dixonColesTau($i, $j, $homeXG, $awayXG, $rho);
-                $probabilities[] = [$i, $j, $pHome * $pAway * $tau];
-            }
-        }
-
-        if ($concentration !== 1.0) {
-            foreach ($probabilities as &$entry) {
-                $entry[2] = $entry[2] ** $concentration;
-            }
-            unset($entry);
-        }
-
-        $cumulative = 0.0;
-        foreach ($probabilities as &$entry) {
-            $cumulative += $entry[2];
-            $entry[2] = $cumulative;
-        }
-        unset($entry);
-
-        $rand = (mt_rand() / mt_getrandmax()) * $cumulative;
-
-        foreach ($probabilities as [$home, $away, $cum]) {
-            if ($rand <= $cum) {
-                return [$home, $away];
-            }
-        }
-
-        return [0, 0];
-    }
-
-    private function poissonPmf(int $k, float $lambda): float
-    {
-        if ($lambda <= 0) {
-            return $k === 0 ? 1.0 : 0.0;
-        }
-
-        return exp(-$lambda) * pow($lambda, $k) / self::FACTORIALS[$k];
-    }
-
-    private function dixonColesTau(int $homeGoals, int $awayGoals, float $homeXG, float $awayXG, float $rho): float
-    {
-        if ($homeGoals === 0 && $awayGoals === 0) {
-            return 1.0 - $homeXG * $awayXG * $rho;
-        }
-        if ($homeGoals === 1 && $awayGoals === 0) {
-            return 1.0 + $awayXG * $rho;
-        }
-        if ($homeGoals === 0 && $awayGoals === 1) {
-            return 1.0 + $homeXG * $rho;
-        }
-        if ($homeGoals === 1 && $awayGoals === 1) {
-            return 1.0 - $rho;
-        }
-
-        return 1.0;
     }
 
     /**

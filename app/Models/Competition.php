@@ -122,6 +122,20 @@ class Competition extends Model
     }
 
     /**
+     * Whether this is a domestic round-robin league (ESP1, ENG1, …) as opposed
+     * to a cup or a continental competition. Unlike isLeague(), this EXCLUDES
+     * the continental Swiss/group formats. Used to decide whether a match's
+     * strength normalization should use that league's own rating band (domestic
+     * league) or the global cross-band scale (cups, Europe, World Cup).
+     */
+    public function isDomesticLeague(): bool
+    {
+        return in_array($this->handler_type, ['league', 'league_with_playoff'], true)
+            && $this->role === self::ROLE_LEAGUE
+            && $this->scope === self::SCOPE_DOMESTIC;
+    }
+
+    /**
      * Whether this is a domestic tier league (tier >= 1).
      * Replaces the old ROLE_PRIMARY / ROLE_FOREIGN distinction.
      */
