@@ -147,6 +147,7 @@ use App\Http\Actions\SendBackReservePlayer;
 use App\Http\Actions\SendDownToReserve;
 use App\Http\Views\ShowReserveTeam;
 use App\Http\Actions\SkipMatchToEnd;
+use App\Http\Actions\DebugSeasonTransition;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
 
@@ -291,6 +292,7 @@ Route::middleware('auth')->group(function () {
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
         Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+        Route::post('/game/{gameId}/debug-season-transition', DebugSeasonTransition::class)->name('game.debug-season-transition');
 
         // Pro-manager between-seasons decision screen. Continue on
         // /season-end routes here when the user has unresolved offers; the
