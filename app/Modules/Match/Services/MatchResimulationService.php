@@ -31,6 +31,7 @@ class MatchResimulationService
         private readonly EligibilityService $eligibilityService,
         private readonly MatchEventRepository $matchEventRepository,
         private readonly MatchRatingCalculator $ratingCalculator,
+        private readonly CompetitionStrengthFloorResolver $floorResolver = new CompetitionStrengthFloorResolver,
     ) {}
 
     /**
@@ -271,6 +272,10 @@ class MatchResimulationService
         // via getMatchPerformance() when first called.
         $cachedPerformances = Cache::get("match_performances:{$match->id}", []);
         $this->matchSimulator->seedPerformance($cachedPerformances);
+
+        // Match the strength floor the initial simulation used, so the resimulated
+        // remainder stays consistent with the played first half.
+        $this->matchSimulator->setStrengthFloor($this->floorResolver->floorForMatch($game, $match));
 
         $regulationEnd = $stoppage->regulationEnd();
 
@@ -554,6 +559,9 @@ class MatchResimulationService
             // roll naturally on first call to getMatchPerformance().
             $etSeedPerformances = Cache::get("match_performances:{$match->id}", []);
             $this->matchSimulator->seedPerformance($etSeedPerformances);
+
+            // Keep the same strength floor as the rest of the match.
+            $this->matchSimulator->setStrengthFloor($this->floorResolver->floorForMatch($game, $match));
 
             $remainderResult = $this->matchSimulator->simulateExtraTime(
                 $match->homeTeam,

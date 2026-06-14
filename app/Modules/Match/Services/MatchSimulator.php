@@ -20,6 +20,7 @@ use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Match\Services\EnergyCalculator;
+use App\Modules\Match\Support\MatchOutcomeModel;
 use App\Modules\Match\Support\StoppageDurations;
 
 class MatchSimulator
@@ -58,6 +59,21 @@ class MatchSimulator
         private readonly InjuryService $injuryService = new InjuryService,
         private readonly AISubstitutionService $aiSubstitutionService = new AISubstitutionService,
     ) {}
+
+    /**
+     * Per-match strength floor (0..100 rating units) applied in
+     * calculateTeamStrength to re-expand the home/away strength ratio. 0.0 is a
+     * no-op. Resolved per match by the caller (CompetitionStrengthFloorResolver)
+     * and set before simulating, because the resim entry points
+     * (simulateRemainder / simulateExtraTime) bypass simulate(); a setter keeps
+     * every entry path consistent without threading it through their signatures.
+     */
+    private float $strengthFloor = 0.0;
+
+    public function setStrengthFloor(float $floor): void
+    {
+        $this->strengthFloor = $floor;
+    }
 
     /**
      * Match performance cache - stores per-player performance modifiers for the current match.
@@ -1362,7 +1378,11 @@ class MatchSimulator
         // Divide by full squad size (11) so that having fewer players
         // naturally reduces team strength — a red card's impact emerges
         // from the missing player's contribution to the sum.
-        return ($totalStrength / 11) / 100;
+        //
+        // Rescale against the per-match strength floor so the home/away ratio
+        // reflects relative quality rather than where the league's rating band
+        // sits on the 0..100 scale. Floor 0.0 leaves this unchanged.
+        return MatchOutcomeModel::applyFloor(($totalStrength / 11) / 100, $this->strengthFloor);
     }
 
     /**

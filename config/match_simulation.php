@@ -71,6 +71,47 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Strength Floor (Distribution-Derived Rescale)
+    |--------------------------------------------------------------------------
+    |
+    | Team strength is mean(rating)/100 on a zero-baseline 0..100 scale. Because
+    | no real squad rates below ~50, the bottom half of that scale is dead weight
+    | that squashes the home/away strength RATIO toward 1.0 — making matches coin
+    | flips and league tables too flat (champions on ~72 pts, the best squad
+    | winning the title only ~25% of seasons). Subtracting a floor re-expands the
+    | ratios:  strength = (rating - floor) / (100 - floor).
+    |
+    | The correct floor is league-specific because leagues sit on different parts
+    | of the scale: the cash-rich, egalitarian Premier League band is high and
+    | narrow (76.7→88) while La Liga is lower and wide (72.5→91.7). So the floor
+    | is DERIVED per competition from its own rating band rather than hard-coded
+    | (see CompetitionStrengthFloorResolver). Domestic-league matches use their
+    | league's floor; cups/continental matches use a global cross-band floor that
+    | collapses toward 0 (raw overalls), preserving genuine cross-league gaps.
+    |
+    | strength_ratio_target (R): the single tuning knob. It is the top:bottom
+    | strength ratio each league is stretched to. The per-league floor solving
+    | for it is F = (R·bottom - top)/(R - 1). Higher R → bigger floors → more
+    | table spread / fewer upsets.
+    |
+    |   1.25 = gentle — leagues stay fairly tight
+    |   1.34 = default — champion ~85, strongest team wins title ~45% (La Liga
+    |          floor ≈16, Premier League floor ≈44)
+    |   1.45 = aggressive — top teams pull clear, relegation strugglers crushed
+    |
+    | strength_floor_margin: keeps the derived floor at least this far below the
+    |   weakest team's rating, so its rescaled strength stays positive.
+    | strength_floor_top_n: squad depth (best-N overall_score) used to define a
+    |   team's rating for the band — matches the best-XI the engine fields.
+    |
+    */
+    'strength_floor_enabled' => true,
+    'strength_ratio_target' => 1.34,
+    'strength_floor_margin' => 3.0,
+    'strength_floor_top_n' => 11,
+
+    /*
+    |--------------------------------------------------------------------------
     | Match Performance Variance (Randomness)
     |--------------------------------------------------------------------------
     |
