@@ -69,6 +69,21 @@ return [
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
     'defensive_quality_damping' => 0.6, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
 
+    // Hard ceiling on the home/away strength ratio BEFORE it is raised to
+    // skill_dominance. The xG formula is unbounded — a ratio of 13 at exponent
+    // 2.4 is ~700× base goals. The strength floor (below) is calibrated on
+    // STATIC top-11 overall_score, so the static league ratio tops out near
+    // R≈1.34. But the live simulator applies that floor to MATCH-TIME strength
+    // (overall × form × energy × out-of-position penalty), which can erode far
+    // below the static band; as a side nears the floor its rescaled strength
+    // collapses toward applyFloor()'s 0.02 clamp and the ratio explodes,
+    // producing 13-0 / 21-0 blowouts. Clamping symmetrically to [1/max, max]
+    // caps xG at the source. 2.2 → worst case ≈ 2.2^2.4 × 1.4 ≈ 8.4 xG (a
+    // once-a-decade scoreline), while leaving genuine single-match maulings room
+    // above the static R. The clamp never binds on static AI-vs-AI matches, so
+    // the floor's league-table realism is untouched. 0 (or ≤ 1.0) disables it.
+    'max_strength_ratio' => 2.2,
+
     /*
     |--------------------------------------------------------------------------
     | Strength Floor (Distribution-Derived Rescale)

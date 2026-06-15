@@ -218,8 +218,8 @@ class MatchSimulator
             default => false,
         };
 
-        if ($aiSubsActive) {
-            return $this->simulateWithAISubstitutions(
+        $output = $aiSubsActive
+            ? $this->simulateWithAISubstitutions(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
                 $homeFormation, $awayFormation,
@@ -232,28 +232,104 @@ class MatchSimulator
                 $matchSeed,
                 $userTeamId,
                 $regulationEnd,
+            )
+            : $this->simulateRemainder(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                $homeFormation, $awayFormation,
+                $homeMentality, $awayMentality,
+                fromMinute: 0,
+                game: $game,
+                homePlayingStyle: $homePlayingStyle,
+                awayPlayingStyle: $awayPlayingStyle,
+                homePressing: $homePressing,
+                awayPressing: $awayPressing,
+                homeDefLine: $homeDefLine,
+                awayDefLine: $awayDefLine,
+                homeBenchPlayers: $homeBenchPlayers,
+                awayBenchPlayers: $awayBenchPlayers,
+                matchSeed: $matchSeed,
+                neutralVenue: $neutralVenue,
+                toMinute: $regulationEnd,
+                userTeamId: $userTeamId,
             );
+
+        // Final safety net: hard-cap the regulation match TOTAL at max_goals_cap.
+        // The per-period cap inside each simulation period bounds a single
+        // period, not the multi-period sum (substitution windows, red-card
+        // splits), so without this a runaway xG could still stack into a blow-out.
+        // With the strength-ratio clamp in place this almost never binds. Applied
+        // only here in simulate() — the unambiguous full-match-from-minute-0 entry
+        // point; resimulation and extra-time run simulateRemainder/
+        // simulateExtraTime directly and are bounded by the ratio clamp.
+        return $this->capMatchTotal($output, $homeTeam->id, $awayTeam->id);
+    }
+
+    /**
+     * Hard-cap each team's match total at max_goals_cap, trimming the surplus
+     * scoring events so the headline score and the goal/assist events stay
+     * consistent (MatchResultProcessor counts player goals/assists from the
+     * events independently of the score field).
+     *
+     * A goal credits a team when it is that team's `goal` (scored penalties are
+     * `goal` events) or the opponent's `own_goal`. Surplus goals are removed
+     * latest-minute first, along with the assist tied to each removed goal (own
+     * goals carry no assist). A cap of 0 (or scores already within it) is a no-op.
+     */
+    private function capMatchTotal(MatchSimulationOutput $output, string $homeTeamId, string $awayTeamId): MatchSimulationOutput
+    {
+        $cap = (int) config('match_simulation.max_goals_cap', 0);
+        $result = $output->result;
+
+        if ($cap <= 0 || ($result->homeScore <= $cap && $result->awayScore <= $cap)) {
+            return $output;
         }
 
-        return $this->simulateRemainder(
-            $homeTeam, $awayTeam,
-            $homePlayers, $awayPlayers,
-            $homeFormation, $awayFormation,
-            $homeMentality, $awayMentality,
-            fromMinute: 0,
-            game: $game,
-            homePlayingStyle: $homePlayingStyle,
-            awayPlayingStyle: $awayPlayingStyle,
-            homePressing: $homePressing,
-            awayPressing: $awayPressing,
-            homeDefLine: $homeDefLine,
-            awayDefLine: $awayDefLine,
-            homeBenchPlayers: $homeBenchPlayers,
-            awayBenchPlayers: $awayBenchPlayers,
-            matchSeed: $matchSeed,
-            neutralVenue: $neutralVenue,
-            toMinute: $regulationEnd,
-            userTeamId: $userTeamId,
+        $events = $result->events;
+        $toRemove = [];
+
+        foreach ([[$homeTeamId, $awayTeamId, $result->homeScore], [$awayTeamId, $homeTeamId, $result->awayScore]] as [$teamId, $opponentId, $score]) {
+            $surplus = $score - $cap;
+            if ($surplus <= 0) {
+                continue;
+            }
+
+            $surplusGoals = $events
+                ->filter(fn (MatchEventData $e) => ($e->type === 'goal' && $e->teamId === $teamId)
+                    || ($e->type === 'own_goal' && $e->teamId === $opponentId))
+                ->sortByDesc('minute')
+                ->take($surplus);
+
+            foreach ($surplusGoals as $goal) {
+                $toRemove[spl_object_id($goal)] = true;
+
+                if ($goal->type === 'goal') {
+                    $assist = $events->first(fn (MatchEventData $e) => $e->type === 'assist'
+                        && $e->teamId === $goal->teamId
+                        && $e->minute === $goal->minute
+                        && ! isset($toRemove[spl_object_id($e)]));
+                    if ($assist !== null) {
+                        $toRemove[spl_object_id($assist)] = true;
+                    }
+                }
+            }
+        }
+
+        $cappedEvents = $events
+            ->reject(fn (MatchEventData $e) => isset($toRemove[spl_object_id($e)]))
+            ->values();
+
+        return new MatchSimulationOutput(
+            new MatchResult(
+                min($result->homeScore, $cap),
+                min($result->awayScore, $cap),
+                $cappedEvents,
+                $result->homePossession,
+                $result->awayPossession,
+                $result->homeXG,
+                $result->awayXG,
+            ),
+            $output->performances,
         );
     }
 
@@ -1787,7 +1863,13 @@ class MatchSimulator
         $skillDominance = config('match_simulation.skill_dominance', 2.0);
         $homeAdvantageGoals = $neutralVenue ? 0.0 : config('match_simulation.home_advantage_goals', 0.15);
 
-        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+        // Bound the ratio before exponentiation. Match-time strength (eroded by
+        // form/energy/out-of-position) can fall far below the static band the
+        // strength floor was calibrated on, exploding the raw ratio; the clamp
+        // caps xG at the source. See MatchOutcomeModel::clampStrengthRatio.
+        $strengthRatio = $awayStrength > 0
+            ? MatchOutcomeModel::clampStrengthRatio($homeStrength / $awayStrength)
+            : 1.0;
 
         $homeXG = (pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantageGoals)
             * $homeFormation->attackModifier()
@@ -1830,6 +1912,10 @@ class MatchSimulator
         float $effectiveMinute,
         float $strengthRatio = 1.0,
     ): array {
+        // Use the same bounded ratio the xG formula uses, so the defensive
+        // attenuation below can't be driven by a runaway match-time ratio.
+        $strengthRatio = MatchOutcomeModel::clampStrengthRatio($strengthRatio);
+
         $preHomeXG = $homeXG;
         $preAwayXG = $awayXG;
 

@@ -32,6 +32,10 @@ strength = (rating - floor) / (100 - floor)
 
 The floor is **derived per competition** from its own rating band (`CompetitionStrengthFloorResolver`) so a high-narrow league gets a large floor and a low-wide league a small one, from a single global knob `strength_ratio_target` (R): `floor = (R·bottom - top)/(R - 1)`. Domestic-league matches use their league's floor; cups and continental matches use a global cross-band floor (which collapses toward 0, i.e. raw globally-consistent overalls, preserving genuine cross-league quality gaps). The rescale lives in `MatchOutcomeModel::applyFloor()` (a floor of 0 is a no-op) and is applied in both the full `MatchSimulator` path (via `setStrengthFloor()`, set by `FullMatchSimulationService`/`MatchResimulationService`) and the lightweight `AIMatchResolver`. Set `strength_floor_enabled => false` to disable. The `app:diagnose-strength-realism` command measures the effect and `--auto-floor` previews the production-derived floor.
 
+### Strength-ratio clamp (blow-out guard)
+
+The floor is calibrated on **static** top-11 `overall_score`, so the static league ratio tops out near R (~1.34). But the full simulator applies the floor to **match-time** strength — `overall × form × energy × out-of-position penalty` — which can erode far below that static band. As a side nears the floor, `applyFloor()` collapses its rescaled strength toward the `0.02` clamp while the opponent stays high, so the raw ratio explodes (e.g. 2.5×–25×) and `ratio ^ skill_dominance` produces enormous xG. (AI-vs-AI matches don't show this: `AIMatchResolver` uses static strength.) To bound it, the home/away ratio is clamped symmetrically to `[1/max, max]` via `MatchOutcomeModel::clampStrengthRatio()` **before** exponentiation — in `expectedGoals()`, `calculateBaseExpectedGoals()`, and `applyTacticalModifiers()`. The knob is `max_strength_ratio` (default 2.2; `0`/`≤1.0` disables it as a rollback escape hatch). It never binds on static AI-vs-AI matches, so the floor's league-table realism is preserved.
+
 ## Formation & Mentality
 
 Each formation has attack and defense modifiers (multiplicative on xG). A team's attack modifier scales their own xG; their defense modifier scales the opponent's. Available formations and their modifiers are defined in `Formation` enum.
@@ -77,7 +81,7 @@ Each player gets a random "form on the day" modifier using a normal distribution
 
 ## Score Generation
 
-Scores are Poisson-distributed from the final xG, capped at a maximum per team to prevent unrealistic scorelines.
+Scores are Poisson-distributed from the final xG, capped at `max_goals_cap` per team to prevent unrealistic scorelines. That cap is applied **per simulation period** (each substitution window, red-card split, etc.); because a match spans several periods, `simulate()` also enforces `max_goals_cap` on the match **total** as a final safety net (`MatchSimulator::capMatchTotal()`), trimming the surplus scoring events so the headline score stays consistent with the goal/assist events. With the strength-ratio clamp in place this total cap almost never binds.
 
 ## Match Events
 

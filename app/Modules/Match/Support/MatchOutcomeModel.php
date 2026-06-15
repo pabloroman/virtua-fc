@@ -59,11 +59,40 @@ class MatchOutcomeModel
             return [$baseGoals + $homeAdvantage, $baseGoals * 0.5];
         }
 
-        $strengthRatio = $homeStrength / $awayStrength;
+        $strengthRatio = self::clampStrengthRatio($homeStrength / $awayStrength);
         $homeXG = pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantage;
         $awayXG = pow(1.0 / $strengthRatio, $skillDominance) * $baseGoals;
 
         return [$homeXG, $awayXG];
+    }
+
+    /**
+     * Bound a home/away strength ratio before it is raised to `skill_dominance`.
+     *
+     * The xG power formula has no inherent ceiling: a ratio of 13 at exponent 2.4
+     * is ~700× base goals. The strength FLOOR is calibrated on STATIC top-11
+     * overall_score (so the static league ratio tops out near R≈1.34), but the
+     * full MatchSimulator feeds it MATCH-TIME strength — overall × form × energy ×
+     * out-of-position penalty — which can erode far below the static band the
+     * floor was derived from. As a side nears the floor, applyFloor() collapses
+     * its rescaled strength toward the 0.02 clamp while the opponent stays high,
+     * exploding the ratio and producing 13-0 / 21-0 blowouts. Clamping the ratio
+     * symmetrically to `[1/max, max]` caps xG at the source.
+     *
+     * `max_strength_ratio` ≤ 1.0 (e.g. 0) disables the clamp — a no-op escape
+     * hatch mirroring the floor's own convention. The clamp never binds on static
+     * AI-vs-AI matches (ratio ≈ R), so the league-table realism of the floor is
+     * preserved.
+     */
+    public static function clampStrengthRatio(float $ratio): float
+    {
+        $max = (float) config('match_simulation.max_strength_ratio', 2.2);
+
+        if ($max <= 1.0) {
+            return $ratio;
+        }
+
+        return min($max, max(1.0 / $max, $ratio));
     }
 
     /**
