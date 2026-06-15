@@ -105,4 +105,19 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Cache Classes
+    |--------------------------------------------------------------------------
+    |
+    | Laravel 13 hardens cache unserialization to mitigate PHP deserialization
+    | gadget chains if the APP_KEY ever leaks. We cache objects (e.g. Support
+    | Collections via the leaderboard / national-team / TeamReputation caches),
+    | so we allow all classes here to preserve pre-13 behavior. Tightening this
+    | to an explicit allow-list is a recommended security follow-up.
+    |
+    */
+
+    'serializable_classes' => true,
+
 ];

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Modules\Competition\Promotions\PromotionSlotAllocator;
 use App\Modules\Competition\Services\ReserveTeamFilter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -311,9 +312,8 @@ class PromotionSlotAllocatorTest extends TestCase
      *
      * Range tested: 0..3 reserves at random positions in 1..7. Combined
      * with the 22-team standings, this covers every plausible Spanish layout.
-     *
-     * @dataProvider randomReserveLayouts
      */
+    #[DataProvider('randomReserveLayouts')]
     public function test_direct_and_playoff_are_always_disjoint(array $reservePositions): void
     {
         $teams = $this->seedFullStandings();

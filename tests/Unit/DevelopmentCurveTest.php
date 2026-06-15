@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Player\Services\DevelopmentCurve;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class DevelopmentCurveTest extends TestCase
@@ -40,9 +41,7 @@ class DevelopmentCurveTest extends TestCase
         $this->assertSame(2, DevelopmentCurve::gapBonus(20, 70, 95));
     }
 
-    /**
-     * @dataProvider maxLifetimeGrowthCases
-     */
+    #[DataProvider('maxLifetimeGrowthCases')]
     public function test_max_lifetime_growth_matches_curve_plus_bonus(int $age, int $expected): void
     {
         $this->assertSame($expected, DevelopmentCurve::maxLifetimeGrowth($age));

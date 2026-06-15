@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\ClubProfile;
 use App\Modules\Manager\ManagerReputation;
 use App\Modules\Manager\Services\ManagerReputationService;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -86,9 +87,7 @@ class ManagerReputationServiceTest extends TestCase
         $this->assertSame(5, $delta);
     }
 
-    /**
-     * @dataProvider tierBoundaryProvider
-     */
+    #[DataProvider('tierBoundaryProvider')]
     public function test_points_map_to_the_expected_tier(int $points, string $expected): void
     {
         $this->assertSame($expected, ManagerReputation::levelFromPoints($points));

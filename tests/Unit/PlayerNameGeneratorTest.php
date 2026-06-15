@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Squad\Services\PlayerNameGenerator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PlayerNameGeneratorTest extends TestCase
@@ -92,9 +93,7 @@ class PlayerNameGeneratorTest extends TestCase
         yield 'Arabic' => ['Morocco'];
     }
 
-    /**
-     * @dataProvider nonLatinNationalityProvider
-     */
+    #[DataProvider('nonLatinNationalityProvider')]
     public function test_non_latin_script_nationality_produces_latin_only_name(string $nationality): void
     {
         for ($i = 0; $i < 30; $i++) {
@@ -136,9 +135,7 @@ class PlayerNameGeneratorTest extends TestCase
         yield 'Slovak'  => ['nationality' => 'Slovakia',       'femalePattern' => '/ová$/iu'];
     }
 
-    /**
-     * @dataProvider slavicFemaleInflectionProvider
-     */
+    #[DataProvider('slavicFemaleInflectionProvider')]
     public function test_slavic_surnames_use_male_inflection(string $nationality, string $femalePattern): void
     {
         // 80 draws is enough that the previous 50/50 male/female lastName()
@@ -199,7 +196,6 @@ class PlayerNameGeneratorTest extends TestCase
     private function poolFor(string $providerClass, string $property): array
     {
         $prop = new \ReflectionProperty($providerClass, $property);
-        $prop->setAccessible(true);
 
         return $prop->getValue();
     }

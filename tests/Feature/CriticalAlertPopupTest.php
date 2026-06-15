@@ -7,7 +7,7 @@ use App\Models\GameNotification;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Notification\Services\NotificationService;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Blade;
 use Tests\TestCase;
@@ -131,7 +131,7 @@ class CriticalAlertPopupTest extends TestCase
 
     public function test_acknowledge_route_marks_critical_notifications_read(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $critical = $this->makeNotification(GameNotification::PRIORITY_CRITICAL);
 
         $response = $this->actingAs($this->user)
@@ -145,7 +145,7 @@ class CriticalAlertPopupTest extends TestCase
     {
         // The popup groups by type and posts that type, so dismissing clears the
         // whole same-type group while criticals of other types stay pending.
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $offerA = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
         $offerB = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
         $advancement = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_COMPETITION_ADVANCEMENT);
@@ -162,7 +162,7 @@ class CriticalAlertPopupTest extends TestCase
 
     public function test_view_critical_route_clears_the_type_and_redirects_to_its_page(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $offerA = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
         $offerB = $this->makeNotification(GameNotification::PRIORITY_CRITICAL, type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED);
 
