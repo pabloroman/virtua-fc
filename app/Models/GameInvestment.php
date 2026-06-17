@@ -18,14 +18,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $medical_tier
  * @property int $scouting_amount
  * @property int $scouting_tier
- * @property int $facilities_amount
- * @property int $facilities_tier
  * @property int $transfer_budget
  * @property array<string, int>|null $staged_downgrades
  * @property-read \App\Models\Game $game
- * @property-read float $facilities_multiplier
  * @property-read string $formatted_available_surplus
- * @property-read string $formatted_facilities_amount
  * @property-read string $formatted_medical_amount
  * @property-read string $formatted_scouting_amount
  * @property-read string $formatted_total_infrastructure
@@ -36,8 +32,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereAvailableSurplus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereFacilitiesAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereFacilitiesTier($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereGameId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereMedicalAmount($value)
@@ -66,8 +60,6 @@ class GameInvestment extends Model
         'medical_tier',
         'scouting_amount',
         'scouting_tier',
-        'facilities_amount',
-        'facilities_tier',
         'transfer_budget',
         'staged_downgrades',
     ];
@@ -94,12 +86,6 @@ class GameInvestment extends Model
             3 => 400_000_000,     // €4M
             4 => 1_000_000_000,   // €10M
         ],
-        'facilities' => [
-            1 => 50_000_000,      // €500K
-            2 => 300_000_000,     // €3M
-            3 => 1_000_000_000,   // €10M
-            4 => 2_500_000_000,   // €25M
-        ],
     ];
 
     /**
@@ -112,7 +98,6 @@ class GameInvestment extends Model
         'youth_academy' => 17_000_000,  // €170K
         'medical'       =>  9_000_000,  // €90K
         'scouting'      =>  5_000_000,  // €50K
-        'facilities'    => 19_000_000,  // €190K
     ];
 
     /**
@@ -124,11 +109,11 @@ class GameInvestment extends Model
      * Default investment tiers by club reputation level.
      */
     public const DEFAULT_TIERS_BY_REPUTATION = [
-        'elite' => ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4, 'facilities' => 4],
-        'continental' => ['youth_academy' => 3, 'medical' => 3, 'scouting' => 3, 'facilities' => 3],
-        'established' => ['youth_academy' => 2, 'medical' => 3, 'scouting' => 3, 'facilities' => 2],
-        'modest' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 2],
-        'local' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
+        'elite' => ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4],
+        'continental' => ['youth_academy' => 3, 'medical' => 3, 'scouting' => 3],
+        'established' => ['youth_academy' => 2, 'medical' => 3, 'scouting' => 3],
+        'modest' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2],
+        'local' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1],
     ];
 
     /**
@@ -138,17 +123,6 @@ class GameInvestment extends Model
         'youth_academy' => 2_000_000_000,   // €20M
         'medical' => 1_000_000_000,         // €10M
         'scouting' => 1_000_000_000,        // €10M
-        'facilities' => 2_500_000_000,      // €25M
-    ];
-
-    /**
-     * Facilities multiplier by tier.
-     */
-    public const FACILITIES_MULTIPLIER = [
-        1 => 1.0,
-        2 => 1.15,
-        3 => 1.35,
-        4 => 1.6,
     ];
 
     protected $casts = [
@@ -160,8 +134,6 @@ class GameInvestment extends Model
         'medical_tier' => 'integer',
         'scouting_amount' => 'integer',
         'scouting_tier' => 'integer',
-        'facilities_amount' => 'integer',
-        'facilities_tier' => 'integer',
         'transfer_budget' => 'integer',
         'staged_downgrades' => 'array',
     ];
@@ -218,7 +190,6 @@ class GameInvestment extends Model
             'youth_academy' => self::TIER_THRESHOLDS['youth_academy'][1],
             'medical'       => self::TIER_THRESHOLDS['medical'][1],
             'scouting'      => self::TIER_THRESHOLDS['scouting'][1],
-            'facilities'    => self::TIER_THRESHOLDS['facilities'][1],
         ];
     }
 
@@ -254,22 +225,13 @@ class GameInvestment extends Model
     }
 
     /**
-     * Get facilities multiplier for matchday revenue.
-     */
-    public function getFacilitiesMultiplierAttribute(): float
-    {
-        return self::FACILITIES_MULTIPLIER[$this->facilities_tier] ?? 1.0;
-    }
-
-    /**
      * Get total infrastructure investment.
      */
     public function getTotalInfrastructureAttribute(): int
     {
         return $this->youth_academy_amount
             + $this->medical_amount
-            + $this->scouting_amount
-            + $this->facilities_amount;
+            + $this->scouting_amount;
     }
 
     /**
@@ -279,8 +241,7 @@ class GameInvestment extends Model
     {
         return $this->youth_academy_tier >= 1
             && $this->medical_tier >= 1
-            && $this->scouting_tier >= 1
-            && $this->facilities_tier >= 1;
+            && $this->scouting_tier >= 1;
     }
 
     /**
@@ -386,10 +347,5 @@ class GameInvestment extends Model
     public function getFormattedScoutingAmountAttribute(): string
     {
         return Money::format($this->scouting_amount);
-    }
-
-    public function getFormattedFacilitiesAmountAttribute(): string
-    {
-        return Money::format($this->facilities_amount);
     }
 }

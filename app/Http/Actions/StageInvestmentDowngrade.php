@@ -17,7 +17,7 @@ class StageInvestmentDowngrade
         $game = Game::findOrFail($gameId);
 
         $validated = $request->validate([
-            'area' => 'required|string|in:youth_academy,medical,scouting,facilities',
+            'area' => 'required|string|in:youth_academy,medical,scouting',
             'target_tier' => 'nullable|integer|between:0,4',
         ]);
 

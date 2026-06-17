@@ -20,7 +20,7 @@ class InvestmentStateService
     public const STATE_PRE_SEASON = 'pre_season';
     public const STATE_LOCKED = 'locked';
 
-    private const VALID_AREAS = ['youth_academy', 'medical', 'scouting', 'facilities'];
+    private const VALID_AREAS = ['youth_academy', 'medical', 'scouting'];
 
     /**
      * PRE_SEASON = free two-way editing; LOCKED = upgrade-only, downgrades staged.

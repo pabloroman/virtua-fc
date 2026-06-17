@@ -32,11 +32,11 @@ class GameInvestmentDefaultTiersTest extends TestCase
     {
         config(['finances.default_infra_transfer_reserve' => 0.45]);
 
-        // €300M surplus dwarfs the €65M elite default, so nothing is trimmed.
+        // €300M surplus dwarfs the elite default, so nothing is trimmed.
         $tiers = GameInvestment::defaultTiersForReputation('elite', 300_000_000_00);
 
         $this->assertSame(
-            ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4, 'facilities' => 4],
+            ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4],
             $tiers,
         );
     }
@@ -45,14 +45,14 @@ class GameInvestmentDefaultTiersTest extends TestCase
     {
         config(['finances.default_infra_transfer_reserve' => 0.45]);
 
-        // Depor-like: a €14.5M surplus only just clears the €14M established
-        // default, so infrastructure must be trimmed to leave a transfer reserve.
+        // Depor-like: a surplus that can't carry the full established default once
+        // the transfer reserve is applied, so infrastructure must be trimmed.
         $available = 14_500_000_00;
         $tiers = GameInvestment::defaultTiersForReputation('established', $available);
         $cost = $this->infraCost($tiers);
 
         $fullDefault = $this->infraCost([
-            'youth_academy' => 2, 'medical' => 3, 'scouting' => 3, 'facilities' => 2,
+            'youth_academy' => 2, 'medical' => 3, 'scouting' => 3,
         ]);
 
         $this->assertLessThan($fullDefault, $cost, 'infrastructure should be trimmed below the full default');
@@ -69,7 +69,7 @@ class GameInvestmentDefaultTiersTest extends TestCase
         $tiers = GameInvestment::defaultTiersForReputation('established', 1_000_000_00, 1);
 
         $this->assertSame(
-            ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
+            ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1],
             $tiers,
         );
     }

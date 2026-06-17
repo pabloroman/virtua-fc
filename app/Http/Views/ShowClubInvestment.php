@@ -11,7 +11,7 @@ use App\Support\Money;
 
 class ShowClubInvestment
 {
-    private const AREAS = ['youth_academy', 'medical', 'scouting', 'facilities'];
+    private const AREAS = ['youth_academy', 'medical', 'scouting'];
 
     public function __construct(
         private readonly BudgetAllocationService $budgetService,

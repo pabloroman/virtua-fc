@@ -12,7 +12,6 @@ use App\Models\BudgetLoan;
 use App\Models\FinancialTransaction;
 use App\Models\TeamReputation;
 use App\Models\Game;
-use App\Models\GameInvestment;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
@@ -214,12 +213,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
             $total += $walkup * $perSeatMatchRate;
         }
 
-        $investment = $game->currentInvestment;
-        $facilitiesMultiplier = $investment
-            ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
-            : 1.0;
-
-        return (int) ($total * $facilitiesMultiplier);
+        return (int) $total;
     }
 
     /**

@@ -17,7 +17,7 @@ class UpgradeInfrastructure
         $game = Game::findOrFail($gameId);
 
         $validated = $request->validate([
-            'area' => 'required|string|in:youth_academy,medical,scouting,facilities',
+            'area' => 'required|string|in:youth_academy,medical,scouting',
             'target_tier' => 'required|integer|between:1,4',
         ]);
 

@@ -36,7 +36,6 @@ class BudgetAllocationService
                 'youth_academy' => $investment->youth_academy_tier,
                 'medical' => $investment->medical_tier,
                 'scouting' => $investment->scouting_tier,
-                'facilities' => $investment->facilities_tier,
             ];
         } elseif ($previousInvestment) {
             // When promoting out of Primera RFEF, last season's tier-0 picks would
@@ -46,7 +45,6 @@ class BudgetAllocationService
                 'youth_academy' => max($minimumTier, $previousInvestment->youth_academy_tier),
                 'medical' => max($minimumTier, $previousInvestment->medical_tier),
                 'scouting' => max($minimumTier, $previousInvestment->scouting_tier),
-                'facilities' => max($minimumTier, $previousInvestment->facilities_tier),
             ];
         } else {
             // No investment row yet (defensive — the season-setup processor
@@ -56,7 +54,6 @@ class BudgetAllocationService
                 'youth_academy' => $minimumTier,
                 'medical' => $minimumTier,
                 'scouting' => $minimumTier,
-                'facilities' => $minimumTier,
             ];
         }
 
@@ -74,7 +71,7 @@ class BudgetAllocationService
     /**
      * Allocate budget from validated euro amounts.
      *
-     * @param  array<string, numeric-string>  $amountsInEuros  Keys: youth_academy, medical, scouting, facilities, transfer_budget
+     * @param  array<string, numeric-string>  $amountsInEuros  Keys: youth_academy, medical, scouting, transfer_budget
      *
      * @throws \InvalidArgumentException
      */
@@ -86,10 +83,9 @@ class BudgetAllocationService
         $youthAcademy = (int) round($amountsInEuros['youth_academy'] * 100);
         $medical = (int) round($amountsInEuros['medical'] * 100);
         $scouting = (int) round($amountsInEuros['scouting'] * 100);
-        $facilities = (int) round($amountsInEuros['facilities'] * 100);
         $transferBudget = (int) round($amountsInEuros['transfer_budget'] * 100);
 
-        $total = $youthAcademy + $medical + $scouting + $facilities + $transferBudget;
+        $total = $youthAcademy + $medical + $scouting + $transferBudget;
 
         if ($total > $availableSurplus) {
             throw new \InvalidArgumentException('messages.budget_exceeds_surplus');
@@ -102,7 +98,6 @@ class BudgetAllocationService
             $youthAcademy < $minimumAmounts['youth_academy']
             || $medical < $minimumAmounts['medical']
             || $scouting < $minimumAmounts['scouting']
-            || $facilities < $minimumAmounts['facilities']
         ) {
             throw new \InvalidArgumentException('messages.budget_minimum_tier');
         }
@@ -110,7 +105,6 @@ class BudgetAllocationService
         $youthTier = GameInvestment::calculateTier('youth_academy', $youthAcademy);
         $medicalTier = GameInvestment::calculateTier('medical', $medical);
         $scoutingTier = GameInvestment::calculateTier('scouting', $scouting);
-        $facilitiesTier = GameInvestment::calculateTier('facilities', $facilities);
 
         return GameInvestment::updateOrCreate(
             [
@@ -125,8 +119,6 @@ class BudgetAllocationService
                 'medical_tier' => $medicalTier,
                 'scouting_amount' => $scouting,
                 'scouting_tier' => $scoutingTier,
-                'facilities_amount' => $facilities,
-                'facilities_tier' => $facilitiesTier,
                 'transfer_budget' => $transferBudget,
             ]
         );
@@ -162,7 +154,6 @@ class BudgetAllocationService
                 'youth_academy' => max($minimumTier, $previousInvestment->youth_academy_tier),
                 'medical' => max($minimumTier, $previousInvestment->medical_tier),
                 'scouting' => max($minimumTier, $previousInvestment->scouting_tier),
-                'facilities' => max($minimumTier, $previousInvestment->facilities_tier),
             ];
 
             // Realise any downgrade the manager staged mid-season. A reduction
@@ -190,7 +181,6 @@ class BudgetAllocationService
                 'youth_academy' => $minimumTier,
                 'medical' => $minimumTier,
                 'scouting' => $minimumTier,
-                'facilities' => $minimumTier,
             ];
         }
 
@@ -209,7 +199,7 @@ class BudgetAllocationService
         $thresholds = GameInvestment::thresholdsForCompetitionTier($competitionTier);
 
         $amounts = [];
-        foreach (['youth_academy', 'medical', 'scouting', 'facilities'] as $area) {
+        foreach (['youth_academy', 'medical', 'scouting'] as $area) {
             $amounts[$area] = $thresholds[$area][$tiers[$area]];
         }
 
@@ -225,8 +215,6 @@ class BudgetAllocationService
                 'medical_tier' => $tiers['medical'],
                 'scouting_amount' => $amounts['scouting'],
                 'scouting_tier' => $tiers['scouting'],
-                'facilities_amount' => $amounts['facilities'],
-                'facilities_tier' => $tiers['facilities'],
                 'transfer_budget' => $transferBudget,
             ],
         );

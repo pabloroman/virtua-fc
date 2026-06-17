@@ -30,7 +30,6 @@ class SaveClubInvestment
             'youth_academy' => 'required|numeric|min:0',
             'medical' => 'required|numeric|min:0',
             'scouting' => 'required|numeric|min:0',
-            'facilities' => 'required|numeric|min:0',
             'transfer_budget' => 'required|numeric|min:0',
         ]);
 

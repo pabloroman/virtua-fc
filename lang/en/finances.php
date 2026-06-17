@@ -77,13 +77,6 @@ return [
     'scouting_tier_3' => 'International reach - fast and accurate searches',
     'scouting_tier_4' => 'Global network - maximum speed, results and accuracy',
 
-    'facilities' => 'Facilities',
-    'facilities_tier_0' => 'Minimum upkeep - base matchday revenue',
-    'facilities_tier_1' => 'Basic upgrades - 1.0x revenue',
-    'facilities_tier_2' => 'Modern facilities - 1.15x revenue',
-    'facilities_tier_3' => 'Premium experience - 1.35x revenue',
-    'facilities_tier_4' => 'World-class stadium - 1.6x revenue',
-
     // Budget flow tooltips
     'tooltip_tv_rights' => 'TV revenue distribution based on your final league position. The higher you finish, the larger your share.',
     'tooltip_commercial' => 'Sponsorship and merchandising income. Depends on your stadium capacity and club reputation.',

@@ -125,8 +125,6 @@ class FrontendSmokeTest extends TestCase
             'medical_tier' => 2,
             'scouting_amount' => 100_000_000,
             'scouting_tier' => 2,
-            'facilities_amount' => 300_000_000,
-            'facilities_tier' => 2,
         ]);
 
         // Team reputation

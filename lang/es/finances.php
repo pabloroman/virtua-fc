@@ -77,13 +77,6 @@ return [
     'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
     'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
 
-    'facilities' => 'Instalaciones',
-    'facilities_tier_0' => 'Mantenimiento mínimo - ingresos base de partido',
-    'facilities_tier_1' => 'Mejoras básicas - 1.0x ingresos',
-    'facilities_tier_2' => 'Instalaciones modernas - 1.15x ingresos',
-    'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
-    'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
-
     // Budget flow tooltips
     'tooltip_tv_rights' => 'Distribución televisiva basada en tu posición final en liga. Cuanto más alto termines, mayor será tu reparto.',
     'tooltip_commercial' => 'Ingresos por patrocinios y merchandising. Dependen del tamaño de tu estadio y la reputación del club.',
