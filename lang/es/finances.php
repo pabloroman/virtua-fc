@@ -42,8 +42,6 @@ return [
     'infrastructure_investment' => 'Inversión en Infraestructura',
     'total_infrastructure' => 'Infraestructura total',
     'available_for_upgrades' => 'Disponible para mejoras',
-    'board_starting_plan' => 'Plan inicial de la directiva',
-    'board_starting_plan_hint' => 'Preasignado para la temporada. Ajústalo cuando quieras durante la pretemporada en la página de Inversión del club.',
     'investment_state_preseason' => 'Pretemporada — ajuste libre',
     'investment_preseason_hint' => 'Configura tu plan libremente hasta que arranque la temporada. Una vez en marcha aún puedes invertir más en cualquier momento, pero las reducciones surten efecto la próxima temporada.',
     'investment_state_locked' => 'Temporada en curso',

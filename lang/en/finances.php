@@ -42,8 +42,6 @@ return [
     'infrastructure_investment' => 'Infrastructure Investment',
     'total_infrastructure' => 'Total infrastructure',
     'available_for_upgrades' => 'Available for upgrades',
-    'board_starting_plan' => "Your board's starting plan",
-    'board_starting_plan_hint' => 'Pre-applied for the season. Adjust it any time during pre-season on the Club investment page.',
     'investment_state_preseason' => 'Pre-season — adjust freely',
     'investment_preseason_hint' => "Set your plan freely until the season kicks off. Once it's underway you can still invest more at any time, but reductions take effect next season.",
     'investment_state_locked' => 'Season underway',
