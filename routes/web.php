@@ -45,9 +45,10 @@ use App\Http\Actions\AcknowledgeCriticalAlerts;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\ViewCriticalAlerts;
-use App\Http\Actions\SaveBudgetAllocation;
+use App\Http\Actions\SaveClubInvestment;
+use App\Http\Actions\StageInvestmentDowngrade;
 use App\Http\Actions\SaveSeasonTicketPricing;
-use App\Http\Views\ShowBudgetAllocation;
+use App\Http\Views\ShowClubInvestment;
 use App\Http\Actions\FinalizeMatch;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\ProcessExtraTime;
@@ -209,6 +210,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/club/commercial/seek', SeekSponsors::class)->name('game.club.commercial.seek');
         Route::post('/game/{gameId}/club/commercial/naming-rights/accept', AcceptNamingRightsDeal::class)->name('game.club.commercial.naming-rights.accept');
         Route::get('/game/{gameId}/club/reputation', ShowClubReputation::class)->name('game.club.reputation');
+        Route::get('/game/{gameId}/club/investment', ShowClubInvestment::class)->name('game.club.investment');
+        Route::post('/game/{gameId}/club/investment', SaveClubInvestment::class)->name('game.club.investment.save');
+        Route::post('/game/{gameId}/club/investment/stage-downgrade', StageInvestmentDowngrade::class)->name('game.club.investment.stage-downgrade');
         Route::get('/game/{gameId}/transfers', ShowIncomingTransfers::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowOutgoingTransfers::class)->name('game.transfers.outgoing');
         Route::get('/game/{gameId}/transfers/market', ShowTransferMarket::class)->name('game.transfers.market');
@@ -315,8 +319,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/simulate-tournament', SimulateTournament::class)->middleware('throttle:tournament-simulation')->name('game.simulate-tournament');
 
         // Budget Allocation
-        Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
-        Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
+        // Legacy budget route — investment now lives on the Club investment page.
+        Route::get('/game/{gameId}/budget', fn (string $gameId) => redirect()->route('game.club.investment', $gameId))->name('game.budget');
         Route::post('/game/{gameId}/infrastructure/upgrade', UpgradeInfrastructure::class)->name('game.infrastructure.upgrade');
         Route::post('/game/{gameId}/budget-loan', RequestBudgetLoan::class)->name('game.budget-loan');
 

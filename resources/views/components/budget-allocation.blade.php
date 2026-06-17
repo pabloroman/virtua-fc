@@ -20,7 +20,6 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     youth_academy_tier: {{ $tiers['youth_academy'] }},
     medical_tier: {{ $tiers['medical'] }},
     scouting_tier: {{ $tiers['scouting'] }},
-    facilities_tier: {{ $tiers['facilities'] }},
 
     getAmount(area, tier) {
         const areaThresholds = this.thresholds[area] || {};
@@ -30,10 +29,9 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     get youth_academy_amount() { return this.getAmount('youth_academy', parseInt(this.youth_academy_tier)); },
     get medical_amount() { return this.getAmount('medical', parseInt(this.medical_tier)); },
     get scouting_amount() { return this.getAmount('scouting', parseInt(this.scouting_tier)); },
-    get facilities_amount() { return this.getAmount('facilities', parseInt(this.facilities_tier)); },
 
     get infrastructureTotal() {
-        return this.youth_academy_amount + this.medical_amount + this.scouting_amount + this.facilities_amount;
+        return this.youth_academy_amount + this.medical_amount + this.scouting_amount;
     },
 
     get transfer_budget() {
@@ -47,8 +45,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     get meetsMinimumRequirements() {
         return parseInt(this.youth_academy_tier) >= this.minimumTier
             && parseInt(this.medical_tier) >= this.minimumTier
-            && parseInt(this.scouting_tier) >= this.minimumTier
-            && parseInt(this.facilities_tier) >= this.minimumTier;
+            && parseInt(this.scouting_tier) >= this.minimumTier;
     },
 
     fillPercent(tier) {
@@ -73,16 +70,20 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 
 }">
 
-    {{-- Allocation Summary --}}
-    <div class="mb-6 p-3 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"
-         :class="exceedsBudget ? 'bg-accent-red/10 ring-1 ring-accent-red/20' : 'bg-surface-700/50'">
-        <div class="flex items-center gap-2">
-            <span class="text-text-muted">{{ __('finances.infrastructure') }}</span>
-            <span class="font-semibold" :class="exceedsBudget ? 'text-accent-red' : 'text-text-primary'" x-text="formatMoney(infrastructureTotal)"></span>
+    {{-- Budget breakdown — one live summary (available → infrastructure → transfers),
+         so the figure isn't repeated across separate banners. --}}
+    <div class="mb-6 grid grid-cols-3 divide-x divide-border-default bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+        <div class="px-4 py-3">
+            <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.available') }}</div>
+            <div class="font-heading text-lg md:text-xl font-bold text-text-primary mt-0.5">{{ \App\Support\Money::format($availableSurplus) }}</div>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-text-muted">{{ __('finances.available_remaining') }}</span>
-            <span class="font-semibold" :class="exceedsBudget ? 'text-accent-red' : 'text-accent-green'" x-text="exceedsBudget ? '-' + formatMoney(infrastructureTotal - availableSurplus) : formatMoney(availableSurplus - infrastructureTotal)"></span>
+        <div class="px-4 py-3">
+            <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.total_infrastructure') }}</div>
+            <div class="font-heading text-lg md:text-xl font-bold mt-0.5" :class="exceedsBudget ? 'text-accent-red' : 'text-text-primary'" x-text="formatMoney(infrastructureTotal)"></div>
+        </div>
+        <div class="px-4 py-3">
+            <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('finances.transfer_budget') }}</div>
+            <div class="font-heading text-lg md:text-xl font-bold text-accent-blue mt-0.5" x-text="formatMoney(transfer_budget)"></div>
         </div>
     </div>
 
@@ -102,7 +103,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         @csrf
 
         {{-- Infrastructure Grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {{-- Youth Academy --}}
             <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -180,45 +181,10 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                 </div>
                 <input type="hidden" name="scouting" :value="scouting_amount / 100">
             </div>
-
-            {{-- Facilities --}}
-            <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.facilities') }}</h4>
-                    <div class="font-heading text-xs font-semibold" :class="getTierColor(facilities_tier)">{{ __('finances.tier_n') }} <span x-text="facilities_tier"></span></div>
-                </div>
-                <div class="font-heading text-lg font-bold text-text-primary mb-1" x-text="formatMoney(facilities_amount)"></div>
-                <div class="text-xs text-text-muted mb-2 h-4">
-                    <span x-show="facilities_tier == 0">{{ __('finances.facilities_tier_0') }}</span>
-                    <span x-show="facilities_tier == 1">{{ __('finances.facilities_tier_1') }}</span>
-                    <span x-show="facilities_tier == 2">{{ __('finances.facilities_tier_2') }}</span>
-                    <span x-show="facilities_tier == 3">{{ __('finances.facilities_tier_3') }}</span>
-                    <span x-show="facilities_tier == 4">{{ __('finances.facilities_tier_4') }}</span>
-                </div>
-                <div class="tier-range">
-                    <div class="track"></div>
-                    <div class="track-fill" :style="'width:' + fillPercent(facilities_tier) + '%'"></div>
-                    <input type="range" x-model="facilities_tier" min="{{ (int) $minimumTier }}" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
-                </div>
-                <div class="flex justify-between text-[10px] text-text-faint mt-1">
-                    @if((int) $minimumTier === 0)<span>T0</span>@endif
-                    <span>T1</span><span>T2</span><span>T3</span><span>T4</span>
-                </div>
-                <input type="hidden" name="facilities" :value="facilities_amount / 100">
-            </div>
         </div>
 
-        {{-- Transfer Budget (Auto-calculated) --}}
-        <div class="border border-accent-blue/20 rounded-lg bg-accent-blue/10 p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h4 class="font-heading text-sm font-semibold text-text-primary">{{ __('finances.transfer_budget') }}</h4>
-                    <p class="text-xs text-text-muted">{{ __('finances.remainder_after_infrastructure') }}</p>
-                </div>
-                <div class="font-heading text-xl font-bold text-accent-blue" x-text="formatMoney(transfer_budget)"></div>
-            </div>
-            <input type="hidden" name="transfer_budget" :value="transfer_budget / 100">
-        </div>
+        {{-- Transfer budget is shown live in the breakdown above; just submit the value. --}}
+        <input type="hidden" name="transfer_budget" :value="transfer_budget / 100">
 
         {{-- Warnings --}}
         <div x-show="exceedsBudget" x-cloak class="mb-6 p-3 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red text-sm">

@@ -125,8 +125,6 @@ class FrontendSmokeTest extends TestCase
             'medical_tier' => 2,
             'scouting_amount' => 100_000_000,
             'scouting_tier' => 2,
-            'facilities_amount' => 300_000_000,
-            'facilities_tier' => 2,
         ]);
 
         // Team reputation
@@ -343,14 +341,21 @@ class FrontendSmokeTest extends TestCase
     }
 
     // =============================================
-    // Budget allocation
+    // Club investment (formerly budget allocation)
     // =============================================
 
-    public function test_budget_page_loads(): void
+    public function test_investment_page_loads(): void
+    {
+        $this->actingAs($this->user)
+            ->get("/game/{$this->game->id}/club/investment")
+            ->assertOk();
+    }
+
+    public function test_legacy_budget_route_redirects_to_investment(): void
     {
         $this->actingAs($this->user)
             ->get("/game/{$this->game->id}/budget")
-            ->assertOk();
+            ->assertRedirect(route('game.club.investment', $this->game->id));
     }
 
     // =============================================

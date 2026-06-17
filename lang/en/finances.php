@@ -9,6 +9,7 @@ return [
     'squad_value' => 'Squad Value',
     'annual_wage_bill' => 'Annual Wage Bill',
     'transfer_budget' => 'Transfer Budget',
+    'total_budget' => 'Total Budget',
 
     // Projected revenue
     'projected_revenue' => 'Projected Revenue',
@@ -39,6 +40,18 @@ return [
 
     // Infrastructure investment
     'infrastructure_investment' => 'Infrastructure Investment',
+    'total_infrastructure' => 'Total infrastructure',
+    'available_for_upgrades' => 'Available for upgrades',
+    'investment_state_preseason' => 'Pre-season — adjust freely',
+    'investment_preseason_hint' => "Set your plan freely until the season kicks off. Once it's underway you can still invest more at any time, but reductions take effect next season.",
+    'investment_state_locked' => 'Season underway',
+    'investment_locked_hint' => "You can invest more in any area at any time (paid up front). A reduction takes effect at the start of next season — it isn't refunded mid-season.",
+    'save_plan' => 'Save plan',
+    'reduce' => 'Reduce',
+    'reduce_hint' => 'Takes effect next season — no refund this season.',
+    'reduce_stage' => 'Next season',
+    'staged_next_season' => 'Next season: Tier :tier',
+    'staged_cancel' => 'Cancel',
     'adjust_allocation' => 'Adjust Allocation',
 
     // Tiers
@@ -57,13 +70,6 @@ return [
     'scouting_tier_2' => 'Expanded network - domestic, more results and accuracy',
     'scouting_tier_3' => 'International reach - fast and accurate searches',
     'scouting_tier_4' => 'Global network - maximum speed, results and accuracy',
-
-    'facilities' => 'Facilities',
-    'facilities_tier_0' => 'Minimum upkeep - base matchday revenue',
-    'facilities_tier_1' => 'Basic upgrades - 1.0x revenue',
-    'facilities_tier_2' => 'Modern facilities - 1.15x revenue',
-    'facilities_tier_3' => 'Premium experience - 1.35x revenue',
-    'facilities_tier_4' => 'World-class stadium - 1.6x revenue',
 
     // Budget flow tooltips
     'tooltip_tv_rights' => 'TV revenue distribution based on your final league position. The higher you finish, the larger your share.',

@@ -264,7 +264,6 @@ class BudgetProjectionService
      * Formula:
      *   walkup_attendance = max(0, baseline_attendance − season_ticket_holders)
      *   revenue = walkup_attendance × perSeatMatchRate × totalHomeMatchCount
-     *           × facilities_multiplier
      *
      * The per-seat rate (`stadium.revenue_per_seat.<reputation>`) stays
      * calibrated against real-world matchday revenue. A higher-fill pricing
@@ -302,8 +301,8 @@ class BudgetProjectionService
     /**
      * The two inputs the matchday projection holds fixed while the user is
      * still choosing a season-ticket preset: the baseline expected attendance
-     * and the per-attendee revenue factor (per-seat match rate × home matches
-     * × facilities multiplier). The full projection reduces to
+     * and the per-attendee revenue factor (per-seat match rate × home matches).
+     * The full projection reduces to
      * `max(0, expected_attendance − holders) × per_attendee_cents`, so the only
      * preset-dependent input is the holder count.
      *
@@ -335,14 +334,9 @@ class BudgetProjectionService
         $perSeatSeasonRate = (int) config("stadium.revenue_per_seat.{$reputation}", 15_000);
         $perSeatMatchRate = $perSeatSeasonRate / $leagueHomeMatchCount;
 
-        $investment = $game->currentInvestment;
-        $facilitiesMultiplier = $investment
-            ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
-            : 1.0;
-
         return [
             'expected_attendance' => $this->matchAttendanceService->projectBaselineForTeam($game->id, $team),
-            'per_attendee_cents' => $perSeatMatchRate * $totalHomeMatchCount * $facilitiesMultiplier,
+            'per_attendee_cents' => $perSeatMatchRate * $totalHomeMatchCount,
         ];
     }
 

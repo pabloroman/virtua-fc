@@ -9,6 +9,7 @@ return [
     'squad_value' => 'Valor de la Plantilla',
     'annual_wage_bill' => 'Masa Salarial Anual',
     'transfer_budget' => 'Presupuesto de Fichajes',
+    'total_budget' => 'Presupuesto Total',
 
     // Projected revenue
     'projected_revenue' => 'Ingresos Proyectados',
@@ -39,6 +40,18 @@ return [
 
     // Infrastructure investment
     'infrastructure_investment' => 'Inversión en Infraestructura',
+    'total_infrastructure' => 'Infraestructura total',
+    'available_for_upgrades' => 'Disponible para mejoras',
+    'investment_state_preseason' => 'Pretemporada — ajuste libre',
+    'investment_preseason_hint' => 'Configura tu plan libremente hasta que arranque la temporada. Una vez en marcha aún puedes invertir más en cualquier momento, pero las reducciones surten efecto la próxima temporada.',
+    'investment_state_locked' => 'Temporada en curso',
+    'investment_locked_hint' => 'Puedes invertir más en cualquier área en cualquier momento (pago por adelantado). Una reducción surte efecto al inicio de la próxima temporada — no se reembolsa a mitad de temporada.',
+    'save_plan' => 'Guardar plan',
+    'reduce' => 'Reducir',
+    'reduce_hint' => 'Surte efecto la próxima temporada — sin reembolso esta temporada.',
+    'reduce_stage' => 'Próxima temporada',
+    'staged_next_season' => 'Próxima temporada: Nivel :tier',
+    'staged_cancel' => 'Cancelar',
     'adjust_allocation' => 'Ajustar Asignación',
 
     // Tiers
@@ -57,13 +70,6 @@ return [
     'scouting_tier_2' => 'Red ampliada - nacional, más resultados y precisión',
     'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
     'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
-
-    'facilities' => 'Instalaciones',
-    'facilities_tier_0' => 'Mantenimiento mínimo - ingresos base de partido',
-    'facilities_tier_1' => 'Mejoras básicas - 1.0x ingresos',
-    'facilities_tier_2' => 'Instalaciones modernas - 1.15x ingresos',
-    'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
-    'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
 
     // Budget flow tooltips
     'tooltip_tv_rights' => 'Distribución televisiva basada en tu posición final en liga. Cuanto más alto termines, mayor será tu reparto.',

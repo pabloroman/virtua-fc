@@ -87,6 +87,10 @@ return [
     'infrastructure_upgrade_max_tier' => 'El nivel máximo es 4.',
     'infrastructure_upgrade_insufficient_budget' => 'Presupuesto de fichajes insuficiente. La mejora cuesta :cost.',
     'investment_downgrade_not_lower' => 'Elige un nivel inferior al actual.',
+    'investment_saved' => 'Plan guardado.',
+    'investment_locked_no_edit' => 'La temporada está en curso — puedes mejorar en cualquier momento, pero el plan ya no se puede reasignar libremente.',
+    'investment_downgrade_staged' => 'Reducción programada — surte efecto la próxima temporada.',
+    'investment_downgrade_cleared' => 'Reducción programada cancelada.',
 
     // Onboarding
     'welcome_to_team' => '¡Bienvenido :team_a! Tu temporada te espera.',

@@ -495,6 +495,7 @@ return [
     // Onboarding - Squad Snapshot
     'your_squad' => 'Tu Plantilla',
     'players_count' => ':count jugadores',
+    'players' => 'jugadores',
     'avg_overall' => 'Media General',
     'avg_age' => 'Edad Media',
     'squad_size' => 'Tamaño',

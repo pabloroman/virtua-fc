@@ -5,6 +5,7 @@ return [
 
     'nav' => [
         'finances' => 'Finances',
+        'investment' => 'Personnel',
         'stadium' => 'Stadium',
         'commercial' => 'Commercial',
         'reputation' => 'Reputation',

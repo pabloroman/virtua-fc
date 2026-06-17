@@ -495,6 +495,7 @@ return [
     // Onboarding - Squad Snapshot
     'your_squad' => 'Your Squad',
     'players_count' => ':count players',
+    'players' => 'players',
     'avg_overall' => 'Avg Overall',
     'avg_age' => 'Avg Age',
     'squad_size' => 'Squad Size',

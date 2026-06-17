@@ -8,6 +8,11 @@
             'active' => $active === 'finances',
         ],
         [
+            'href' => route('game.club.investment', $game->id),
+            'label' => __('club.nav.investment'),
+            'active' => $active === 'investment',
+        ],
+        [
             'href' => route('game.club.stadium', $game->id),
             'label' => __('club.nav.stadium'),
             'active' => $active === 'stadium',

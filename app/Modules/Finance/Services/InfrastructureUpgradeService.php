@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class InfrastructureUpgradeService
 {
-    private const VALID_AREAS = ['youth_academy', 'medical', 'scouting', 'facilities'];
+    private const VALID_AREAS = ['youth_academy', 'medical', 'scouting'];
 
     /**
      * Upgrade an infrastructure area to a higher tier, deducting the cost from the transfer budget.
