@@ -7,6 +7,8 @@
     'formAction',
     'submitLabel' => null,
     'compact' => false,
+    'recommendation' => null,
+    'reputationLabel' => null,
 ])
 
 @php
@@ -21,6 +23,30 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     medical_tier: {{ $tiers['medical'] }},
     scouting_tier: {{ $tiers['scouting'] }},
     facilities_tier: {{ $tiers['facilities'] }},
+    recommendation: @js($recommendation),
+    recommendationDismissed: false,
+
+    get belowRecommendation() {
+        if (!this.recommendation) return false;
+        return parseInt(this.youth_academy_tier) < this.recommendation.youth_academy
+            || parseInt(this.medical_tier) < this.recommendation.medical
+            || parseInt(this.scouting_tier) < this.recommendation.scouting
+            || parseInt(this.facilities_tier) < this.recommendation.facilities;
+    },
+
+    get showRecommendation() {
+        return !!this.recommendation && !this.recommendationDismissed && this.belowRecommendation;
+    },
+
+    applyRecommendation() {
+        if (!this.recommendation) return;
+        // Raise each area to at least the recommended tier — never lowers an area
+        // the manager already pushed higher.
+        this.youth_academy_tier = Math.max(parseInt(this.youth_academy_tier), this.recommendation.youth_academy);
+        this.medical_tier = Math.max(parseInt(this.medical_tier), this.recommendation.medical);
+        this.scouting_tier = Math.max(parseInt(this.scouting_tier), this.recommendation.scouting);
+        this.facilities_tier = Math.max(parseInt(this.facilities_tier), this.recommendation.facilities);
+    },
 
     getAmount(area, tier) {
         const areaThresholds = this.thresholds[area] || {};
@@ -72,6 +98,35 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     },
 
 }">
+
+    {{-- Reputation-based recommendation (opt-in; clubs start at the minimum tier) --}}
+    @if(!$isLocked && $recommendation)
+    <div x-show="showRecommendation" x-collapse x-cloak class="mb-6">
+        <div class="tip-card bg-accent-blue/8 border border-accent-blue/15 rounded-xl px-4 py-3.5">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent-blue shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="text-sm font-semibold text-accent-blue">{{ __('finances.investment_recommendation_title') }}</div>
+                        <button type="button" @click="recommendationDismissed = true" class="text-xs text-text-muted hover:text-text-secondary transition-colors shrink-0">{{ __('finances.dismiss') }}</button>
+                    </div>
+                    <p class="text-sm text-text-secondary leading-relaxed mt-0.5">{{ __('finances.investment_recommendation_hint', ['reputation' => $reputationLabel]) }}</p>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-text-body">
+                        <span>{{ __('finances.youth_academy') }} <span class="font-semibold text-text-primary">{{ __('finances.tier', ['level' => $recommendation['youth_academy']]) }}</span></span>
+                        <span>{{ __('finances.medical') }} <span class="font-semibold text-text-primary">{{ __('finances.tier', ['level' => $recommendation['medical']]) }}</span></span>
+                        <span>{{ __('finances.scouting') }} <span class="font-semibold text-text-primary">{{ __('finances.tier', ['level' => $recommendation['scouting']]) }}</span></span>
+                        <span>{{ __('finances.facilities') }} <span class="font-semibold text-text-primary">{{ __('finances.tier', ['level' => $recommendation['facilities']]) }}</span></span>
+                    </div>
+                    <x-primary-button type="button" size="sm" @click="applyRecommendation()" class="mt-3">
+                        {{ __('finances.apply_recommendation') }}
+                    </x-primary-button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- Allocation Summary --}}
     <div class="mb-6 p-3 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"

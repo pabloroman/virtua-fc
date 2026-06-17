@@ -9,6 +9,8 @@
 /** @var bool $isPreSeason */
 /** @var int $availableBudget */
 /** @var array $areaData */
+/** @var array $recommendedTiers */
+/** @var string $reputationLabel */
 @endphp
 
 <x-app-layout>
@@ -60,6 +62,8 @@
                 :tiers="$tiers"
                 :tier-thresholds="$tierThresholds"
                 :minimum-tier="$minimumTier"
+                :recommendation="$recommendedTiers"
+                :reputation-label="$reputationLabel"
                 :form-action="route('game.club.investment.save', $game->id)"
                 :submit-label="__('finances.save_plan')"
             />

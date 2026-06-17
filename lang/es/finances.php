@@ -54,6 +54,12 @@ return [
     'staged_cancel' => 'Cancelar',
     'adjust_allocation' => 'Ajustar Asignación',
 
+    // Reputation-based investment recommendation
+    'investment_recommendation_title' => 'Recomendación de la directiva',
+    'investment_recommendation_hint' => 'Los clubes de tu nivel (:reputation) suelen invertir en estos niveles; el resto del superávit se destina a fichajes.',
+    'apply_recommendation' => 'Aplicar recomendación',
+    'dismiss' => 'Descartar',
+
     // Tiers
     'youth_academy' => 'Cantera',
 

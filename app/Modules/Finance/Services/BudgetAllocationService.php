@@ -49,7 +49,15 @@ class BudgetAllocationService
                 'facilities' => max($minimumTier, $previousInvestment->facilities_tier),
             ];
         } else {
-            $tiers = GameInvestment::defaultTiersForReputation($reputationLevel, $availableSurplus, $minimumTier);
+            // No investment row yet (defensive — the season-setup processor
+            // normally creates one): start the sliders at the division floor.
+            // Reputation-appropriate tiers are surfaced only as a recommendation.
+            $tiers = [
+                'youth_academy' => $minimumTier,
+                'medical' => $minimumTier,
+                'scouting' => $minimumTier,
+                'facilities' => $minimumTier,
+            ];
         }
 
         return [
@@ -171,11 +179,19 @@ class BudgetAllocationService
             // plan never produces a negative transfer budget.
             $tiers = GameInvestment::trimTiersToBudget($tiers, $availableSurplus, $minimumTier);
         } else {
-            $tiers = GameInvestment::defaultTiersForReputation(
-                TeamReputation::resolveLevel($game->id, $game->team_id),
-                $availableSurplus,
-                $minimumTier,
-            );
+            // Brand-new club (season 1): start at the division's minimum tier so
+            // the surplus lands in the transfer budget by default. The manager
+            // opts into infrastructure deliberately on the Club investment page,
+            // where a reputation-based recommendation is offered. This respects
+            // the reversibility model — upgrades can be made at any time at full
+            // cost, whereas a high starting plan would pre-commit (and lock up)
+            // money that can't be reclaimed mid-season.
+            $tiers = [
+                'youth_academy' => $minimumTier,
+                'medical' => $minimumTier,
+                'scouting' => $minimumTier,
+                'facilities' => $minimumTier,
+            ];
         }
 
         return $this->persistTiers($game, $tiers, $availableSurplus, $competitionTier);
