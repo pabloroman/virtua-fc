@@ -54,12 +54,6 @@ return [
     'staged_cancel' => 'Cancel',
     'adjust_allocation' => 'Adjust Allocation',
 
-    // Reputation-based investment recommendation
-    'investment_recommendation_title' => 'Board recommendation',
-    'investment_recommendation_hint' => 'Clubs of your standing (:reputation) typically invest at these levels — the rest of the surplus goes to transfers.',
-    'apply_recommendation' => 'Apply recommendation',
-    'dismiss' => 'Dismiss',
-
     // Tiers
     'youth_academy' => 'Youth Academy',
 

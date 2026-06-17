@@ -9,8 +9,6 @@
 /** @var bool $isPreSeason */
 /** @var int $availableBudget */
 /** @var array $areaData */
-/** @var array $recommendedTiers */
-/** @var string $reputationLabel */
 @endphp
 
 <x-app-layout>
@@ -31,30 +29,15 @@
         <x-flash-message type="error" :message="session('error')" class="mb-4" />
         <x-flash-message type="success" :message="session('success')" class="mb-4" />
 
-        {{-- State banner: explains how free editing is right now --}}
         @if($isPreSeason)
-        <div class="mb-6 border-l-4 border-l-accent-green bg-accent-green/10 rounded-r-lg px-4 py-3">
-            <div class="font-heading text-xs font-semibold text-accent-green uppercase tracking-widest mb-0.5">{{ __('finances.investment_state_preseason') }}</div>
-            <p class="text-sm text-text-secondary">{{ __('finances.investment_preseason_hint') }}</p>
-        </div>
-        @else
-        <div class="mb-6 border-l-4 border-l-accent-blue bg-accent-blue/10 rounded-r-lg px-4 py-3">
-            <div class="font-heading text-xs font-semibold text-accent-blue uppercase tracking-widest mb-0.5">{{ __('finances.investment_state_locked') }}</div>
-            <p class="text-sm text-text-secondary">{{ __('finances.investment_locked_hint') }}</p>
-        </div>
-        @endif
-
-        @if($isPreSeason)
-            {{-- Pre-season: free two-way editing, live provisional transfer budget --}}
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-5">
-                <div>
+            {{-- Pre-season: free two-way editing. Title + state pill + the one rule
+                 that matters; the live budget split lives in the allocation panel. --}}
+            <div class="mb-6">
+                <div class="flex flex-wrap items-center gap-2.5">
                     <h3 class="font-heading text-sm font-semibold text-text-secondary uppercase tracking-widest">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h3>
-                    <p class="text-sm text-text-muted mt-0.5">{{ __('game.allocate_budget_hint') }}</p>
+                    <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-green/10 text-accent-green uppercase tracking-wider">{{ __('finances.investment_state_preseason') }}</span>
                 </div>
-                <div class="md:text-right">
-                    <div class="font-heading text-2xl font-bold text-text-primary">{{ \App\Support\Money::format($availableSurplus) }}</div>
-                    <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.available') }}</div>
-                </div>
+                <p class="text-sm text-text-muted mt-1 max-w-3xl">{{ __('finances.investment_preseason_hint') }}</p>
             </div>
 
             <x-budget-allocation
@@ -62,13 +45,16 @@
                 :tiers="$tiers"
                 :tier-thresholds="$tierThresholds"
                 :minimum-tier="$minimumTier"
-                :recommendation="$recommendedTiers"
-                :reputation-label="$reputationLabel"
                 :form-action="route('game.club.investment.save', $game->id)"
                 :submit-label="__('finances.save_plan')"
             />
         @elseif($investment)
-            {{-- Locked: read-only tiers, upgrade any time (full cost), reductions staged for next season --}}
+            {{-- Season underway: read-only tiers, upgrade any time (full cost), reductions staged for next season --}}
+            <div class="mb-6 border-l-4 border-l-accent-blue bg-accent-blue/10 rounded-r-lg px-4 py-3">
+                <div class="font-heading text-xs font-semibold text-accent-blue uppercase tracking-widest mb-0.5">{{ __('finances.investment_state_locked') }}</div>
+                <p class="text-sm text-text-secondary">{{ __('finances.investment_locked_hint') }}</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
                 <x-summary-card :label="__('finances.transfer_budget')" :value="$investment->formatted_transfer_budget" value-class="text-accent-blue" />
                 <x-summary-card :label="__('finances.total_infrastructure')" :value="$investment->formatted_total_infrastructure" />

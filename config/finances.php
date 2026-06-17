@@ -63,17 +63,6 @@ return [
         'local'        => 0.60,
     ],
 
-    // Share of available surplus the DEFAULT budget allocation keeps as transfer
-    // budget rather than pre-spending on infrastructure. The reputation defaults
-    // (GameInvestment::DEFAULT_TIERS_BY_REPUTATION) are sized for big clubs; a
-    // smaller club whose surplus just clears its default would otherwise sink it
-    // all into infrastructure and start with almost nothing to spend — so the
-    // highest-revenue club in a division could end up with the smallest transfer
-    // budget. This reserves ~half the surplus for transfers; rich clubs are
-    // unaffected (their default is comfortably below the cap). Read by
-    // GameInvestment::defaultTiersForReputation.
-    'default_infra_transfer_reserve' => 0.45,
-
     // Player-trading allowance ("plusvalías"). A trailing average of the club's
     // NET player-trading result (sales − purchases) over recent completed
     // seasons is added to the cap base — and ONLY the cap base, never the

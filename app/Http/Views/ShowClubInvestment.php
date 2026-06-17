@@ -32,16 +32,6 @@ class ShowClubInvestment
             ? $investment->transfer_budget - TransferOffer::committedBudget($game->id)
             : 0;
 
-        // Stature-appropriate, budget-feasible suggestion offered as a recommendation
-        // (not auto-applied). Clubs now start at the division's minimum tier, so this
-        // is how a manager opts into the infrastructure a club of their standing would
-        // typically run. Reserves a share of the surplus for transfers.
-        $recommendedTiers = GameInvestment::defaultTiersForReputation(
-            $budgetData['reputationLevel'],
-            $budgetData['availableSurplus'],
-            $budgetData['minimumTier'],
-        );
-
         return view('club.investment', [
             ...$budgetData,
             'game' => $game,
@@ -49,8 +39,6 @@ class ShowClubInvestment
             'isPreSeason' => $this->stateService->isEditableFreely($game),
             'availableBudget' => $availableBudget,
             'areaData' => $this->buildAreaData($investment, $budgetData, $availableBudget),
-            'recommendedTiers' => $recommendedTiers,
-            'reputationLabel' => __('finances.reputation.' . $budgetData['reputationLevel']),
         ]);
     }
 
