@@ -86,6 +86,7 @@ return [
     'infrastructure_upgrade_not_higher' => 'Target tier must be higher than current tier.',
     'infrastructure_upgrade_max_tier' => 'Maximum tier is 4.',
     'infrastructure_upgrade_insufficient_budget' => 'Insufficient transfer budget. Upgrade costs :cost.',
+    'investment_downgrade_not_lower' => 'Choose a tier lower than the current one.',
 
     // Onboarding
     'welcome_to_team' => 'Welcome :team_a! Your season awaits.',

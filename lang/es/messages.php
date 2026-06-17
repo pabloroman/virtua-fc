@@ -86,6 +86,7 @@ return [
     'infrastructure_upgrade_not_higher' => 'El nivel objetivo debe ser superior al actual.',
     'infrastructure_upgrade_max_tier' => 'El nivel máximo es 4.',
     'infrastructure_upgrade_insufficient_budget' => 'Presupuesto de fichajes insuficiente. La mejora cuesta :cost.',
+    'investment_downgrade_not_lower' => 'Elige un nivel inferior al actual.',
 
     // Onboarding
     'welcome_to_team' => '¡Bienvenido :team_a! Tu temporada te espera.',

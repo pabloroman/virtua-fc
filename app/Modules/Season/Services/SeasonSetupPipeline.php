@@ -7,6 +7,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
+use App\Modules\Season\Processors\DefaultInvestmentProcessor;
 use App\Modules\Season\Processors\GenerateNamingRightsOffersProcessor;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\NewSeasonResetProcessor;
@@ -38,6 +39,7 @@ class SeasonSetupPipeline
         LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
+        DefaultInvestmentProcessor $defaultInvestment,
         ContinentalAndCupInitProcessor $competitionInitialization,
         UefaSuperCupQualificationProcessor $uefaSuperCup,
         SquadRegistrationEnforcementProcessor $squadRegistration,
@@ -54,6 +56,7 @@ class SeasonSetupPipeline
             $fixtureGeneration,
             $standingsReset,
             $budgetProjection,
+            $defaultInvestment,
             $competitionInitialization,
             $uefaSuperCup,
             $squadRegistration,

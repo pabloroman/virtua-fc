@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Jobs;
 
+use App\Events\SeasonStarted;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\FormationBiasResolver;
@@ -171,6 +172,14 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
         // Notify the user that the summer transfer window is open
         if (in_array($this->gameMode, [Game::MODE_CAREER, Game::MODE_CAREER_PRO], true)) {
             app(NotificationService::class)->notifyTransferWindowOpen($game->refresh(), 'summer');
+
+            // A season starts here for new games (season transitions fire this
+            // from ProcessSeasonTransition). The default investment was applied
+            // during the setup pipeline, so listeners that read it (academy
+            // intake) see a populated row. Fired after setup_completed_at, so a
+            // crash-recovery re-run short-circuits at the isSetupComplete() guard
+            // and never double-fires.
+            event(new SeasonStarted($game));
         }
     }
 

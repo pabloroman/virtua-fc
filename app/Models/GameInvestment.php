@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $facilities_amount
  * @property int $facilities_tier
  * @property int $transfer_budget
+ * @property array<string, int>|null $staged_downgrades
  * @property-read \App\Models\Game $game
  * @property-read float $facilities_multiplier
  * @property-read string $formatted_available_surplus
@@ -68,6 +69,7 @@ class GameInvestment extends Model
         'facilities_amount',
         'facilities_tier',
         'transfer_budget',
+        'staged_downgrades',
     ];
 
     /**
@@ -161,6 +163,7 @@ class GameInvestment extends Model
         'facilities_amount' => 'integer',
         'facilities_tier' => 'integer',
         'transfer_budget' => 'integer',
+        'staged_downgrades' => 'array',
     ];
 
     public function game(): BelongsTo
@@ -294,6 +297,31 @@ class GameInvestment extends Model
         $tiers = self::DEFAULT_TIERS_BY_REPUTATION[$reputation]
             ?? self::DEFAULT_TIERS_BY_REPUTATION['modest'];
 
+        // Reserve a share of the surplus for transfers so infrastructure can't
+        // swallow the whole budget. Without it, a club whose surplus just clears
+        // its reputation default spends it all on infrastructure and is left with
+        // almost nothing to spend — so the highest-revenue club in a division can
+        // end up with the smallest transfer budget.
+        $reserve = (float) config('finances.default_infra_transfer_reserve', 0.45);
+        $infraBudget = (int) floor($availableSurplus * (1 - $reserve));
+
+        return self::trimTiersToBudget($tiers, $infraBudget, $minTier);
+    }
+
+    /**
+     * Trim a tier selection — most expensive area first — until its total spend
+     * fits within $infraBudget, never dropping an area below $minTier. Reducing
+     * one area at a time (most expensive first) lets infra settle near the cap
+     * instead of collapsing all four tiers in a single step. Once every area
+     * sits at $minTier the floor wins: minimum infra is mandatory even if it
+     * exceeds the budget. Reused for both the reputation default and carrying
+     * last season's picks forward into a (possibly smaller) new-season surplus.
+     *
+     * @param  array<string, int>  $tiers
+     * @return array<string, int>
+     */
+    public static function trimTiersToBudget(array $tiers, int $infraBudget, int $minTier = 1): array
+    {
         $costFor = static function (string $area, int $tier): int {
             if ($tier === 0) {
                 return self::TIER_0_THRESHOLDS[$area];
@@ -301,16 +329,6 @@ class GameInvestment extends Model
 
             return self::TIER_THRESHOLDS[$area][$tier];
         };
-
-        // Reserve a share of the surplus for transfers so infrastructure can't
-        // swallow the whole budget. Without it, a club whose surplus just clears
-        // its reputation default spends it all on infrastructure and is left with
-        // almost nothing to spend — so the highest-revenue club in a division can
-        // end up with the smallest transfer budget. Reducing one area at a time
-        // (most expensive first) lets infra settle near the cap instead of
-        // collapsing all four tiers in a single step.
-        $reserve = (float) config('finances.default_infra_transfer_reserve', 0.45);
-        $infraBudget = (int) floor($availableSurplus * (1 - $reserve));
 
         while (true) {
             $totalCost = 0;
@@ -322,9 +340,6 @@ class GameInvestment extends Model
                 return $tiers;
             }
 
-            // Trim the single most expensive area still above the floor. Once
-            // every area sits at $minTier the floor wins — minimum infra is
-            // mandatory even if it exceeds the reserve-adjusted budget.
             $reduceArea = null;
             $reduceCost = -1;
             foreach ($tiers as $area => $tier) {

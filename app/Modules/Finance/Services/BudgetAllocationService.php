@@ -123,4 +123,96 @@ class BudgetAllocationService
             ]
         );
     }
+
+    /**
+     * Apply the season's default investment allocation so a GameInvestment row —
+     * and therefore a transfer budget — always exists once season setup finishes.
+     * This is what lets the new-season screen stop being a blocking budget gate:
+     * the board sets a sane starting plan automatically, and the manager refines
+     * it later, reversibly, on the Club investment page.
+     *
+     * Idempotent: if the current season already has an investment row (re-entrant
+     * setup job, or the manager already adjusted their plan) it is left untouched.
+     */
+    public function applyDefaultAllocation(Game $game): GameInvestment
+    {
+        if ($existing = $game->currentInvestment) {
+            return $existing;
+        }
+
+        $finances = $game->currentFinances ?? $this->projectionService->generateProjections($game);
+        $availableSurplus = $finances->available_surplus ?? 0;
+
+        $competitionTier = (int) ($game->competition->tier ?? 1);
+        $minimumTier = GameInvestment::minimumTierForCompetitionTier($competitionTier);
+        $previousInvestment = $game->previousSeasonInvestment();
+
+        if ($previousInvestment) {
+            // Carry last season's picks forward (clamped to the new division's
+            // floor — a promoted Primera RFEF side can't keep tier-0 picks).
+            $tiers = [
+                'youth_academy' => max($minimumTier, $previousInvestment->youth_academy_tier),
+                'medical' => max($minimumTier, $previousInvestment->medical_tier),
+                'scouting' => max($minimumTier, $previousInvestment->scouting_tier),
+                'facilities' => max($minimumTier, $previousInvestment->facilities_tier),
+            ];
+
+            // Realise any downgrade the manager staged mid-season. A reduction
+            // never clawed back committed spend; it lands here, as next season's
+            // starting point.
+            foreach (($previousInvestment->staged_downgrades ?? []) as $area => $tier) {
+                if (array_key_exists($area, $tiers)) {
+                    $tiers[$area] = max($minimumTier, (int) $tier);
+                }
+            }
+
+            // Revenue can fall (relegation), so last season's spend may no longer
+            // fit. Trim to what this season's surplus can carry so the auto-applied
+            // plan never produces a negative transfer budget.
+            $tiers = GameInvestment::trimTiersToBudget($tiers, $availableSurplus, $minimumTier);
+        } else {
+            $tiers = GameInvestment::defaultTiersForReputation(
+                TeamReputation::resolveLevel($game->id, $game->team_id),
+                $availableSurplus,
+                $minimumTier,
+            );
+        }
+
+        return $this->persistTiers($game, $tiers, $availableSurplus, $competitionTier);
+    }
+
+    /**
+     * Persist a tier selection: derive per-area amounts from the competition's
+     * threshold table, set the transfer budget to whatever surplus remains, and
+     * upsert the current season's investment row.
+     *
+     * @param  array<string, int>  $tiers
+     */
+    private function persistTiers(Game $game, array $tiers, int $availableSurplus, int $competitionTier): GameInvestment
+    {
+        $thresholds = GameInvestment::thresholdsForCompetitionTier($competitionTier);
+
+        $amounts = [];
+        foreach (['youth_academy', 'medical', 'scouting', 'facilities'] as $area) {
+            $amounts[$area] = $thresholds[$area][$tiers[$area]];
+        }
+
+        $transferBudget = max(0, $availableSurplus - array_sum($amounts));
+
+        return GameInvestment::updateOrCreate(
+            ['game_id' => $game->id, 'season' => $game->season],
+            [
+                'available_surplus' => $availableSurplus,
+                'youth_academy_amount' => $amounts['youth_academy'],
+                'youth_academy_tier' => $tiers['youth_academy'],
+                'medical_amount' => $amounts['medical'],
+                'medical_tier' => $tiers['medical'],
+                'scouting_amount' => $amounts['scouting'],
+                'scouting_tier' => $tiers['scouting'],
+                'facilities_amount' => $amounts['facilities'],
+                'facilities_tier' => $tiers['facilities'],
+                'transfer_budget' => $transferBudget,
+            ],
+        );
+    }
 }
