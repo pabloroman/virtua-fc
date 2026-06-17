@@ -9,6 +9,7 @@ return [
     'squad_value' => 'Squad Value',
     'annual_wage_bill' => 'Annual Wage Bill',
     'transfer_budget' => 'Transfer Budget',
+    'total_budget' => 'Total Budget',
 
     // Projected revenue
     'projected_revenue' => 'Projected Revenue',

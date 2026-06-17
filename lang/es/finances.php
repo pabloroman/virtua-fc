@@ -9,6 +9,7 @@ return [
     'squad_value' => 'Valor de la Plantilla',
     'annual_wage_bill' => 'Masa Salarial Anual',
     'transfer_budget' => 'Presupuesto de Fichajes',
+    'total_budget' => 'Presupuesto Total',
 
     // Projected revenue
     'projected_revenue' => 'Ingresos Proyectados',
