@@ -4,22 +4,26 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Modules\Finance\Services\BudgetAllocationService;
+use App\Modules\Finance\Services\InvestmentStateService;
 use Illuminate\Http\Request;
 
-class SaveBudgetAllocation
+class SaveClubInvestment
 {
     public function __construct(
         private BudgetAllocationService $budgetService,
+        private InvestmentStateService $stateService,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
     {
         $game = Game::findOrFail($gameId);
 
-        $finances = $game->currentFinances;
-        if (!$finances) {
-            return redirect()->route('game.budget', $gameId)
-                ->with('error', __('messages.budget_no_projections'));
+        // Free two-way re-allocation is only allowed in pre-season. Once the
+        // season is live the plan is locked to upgrade-only (the upgrade and
+        // stage-downgrade endpoints handle in-season changes).
+        if (! $this->stateService->isEditableFreely($game)) {
+            return redirect()->route('game.club.investment', $gameId)
+                ->with('error', __('messages.investment_locked_no_edit'));
         }
 
         $validated = $request->validate([
@@ -33,11 +37,11 @@ class SaveBudgetAllocation
         try {
             $this->budgetService->allocate($game, $validated);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.budget', $gameId)
+            return redirect()->route('game.club.investment', $gameId)
                 ->with('error', __($e->getMessage()));
         }
 
-        return redirect()->route('game.club.finances', $gameId)
-            ->with('success', __('messages.budget_saved'));
+        return redirect()->route('game.club.investment', $gameId)
+            ->with('success', __('messages.investment_saved'));
     }
 }

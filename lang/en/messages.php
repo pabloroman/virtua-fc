@@ -87,6 +87,10 @@ return [
     'infrastructure_upgrade_max_tier' => 'Maximum tier is 4.',
     'infrastructure_upgrade_insufficient_budget' => 'Insufficient transfer budget. Upgrade costs :cost.',
     'investment_downgrade_not_lower' => 'Choose a tier lower than the current one.',
+    'investment_saved' => 'Investment plan saved.',
+    'investment_locked_no_edit' => 'The season is underway — you can upgrade any time, but the plan can no longer be freely re-allocated.',
+    'investment_downgrade_staged' => 'Reduction staged — it takes effect next season.',
+    'investment_downgrade_cleared' => 'Staged reduction cancelled.',
 
     // Onboarding
     'welcome_to_team' => 'Welcome :team_a! Your season awaits.',

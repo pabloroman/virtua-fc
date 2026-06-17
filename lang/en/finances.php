@@ -39,6 +39,20 @@ return [
 
     // Infrastructure investment
     'infrastructure_investment' => 'Infrastructure Investment',
+    'total_infrastructure' => 'Total infrastructure',
+    'available_for_upgrades' => 'Available for upgrades',
+    'board_starting_plan' => "Your board's starting plan",
+    'board_starting_plan_hint' => 'Pre-applied for the season. Adjust it any time during pre-season on the Club investment page.',
+    'investment_state_preseason' => 'Pre-season — adjust freely',
+    'investment_preseason_hint' => "Set your plan freely until the season kicks off. Once it's underway you can still invest more at any time, but reductions take effect next season.",
+    'investment_state_locked' => 'Season underway',
+    'investment_locked_hint' => "You can invest more in any area at any time (paid up front). A reduction takes effect at the start of next season — it isn't refunded mid-season.",
+    'save_plan' => 'Save plan',
+    'reduce' => 'Reduce',
+    'reduce_hint' => 'Takes effect next season — no refund this season.',
+    'reduce_stage' => 'Next season',
+    'staged_next_season' => 'Next season: Tier :tier',
+    'staged_cancel' => 'Cancel',
     'adjust_allocation' => 'Adjust Allocation',
 
     // Tiers

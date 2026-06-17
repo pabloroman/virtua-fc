@@ -7,9 +7,7 @@ use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\SalaryCapService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
-use App\Models\GameInvestment;
 use App\Models\GamePlayer;
-use App\Models\TransferOffer;
 
 class ShowFinances
 {
@@ -77,11 +75,6 @@ class ShowFinances
             ? (int) round($salaryCap / $capBase * 100)
             : (int) round(config('finances.wage_cap_ratio', 0.70) * 100);
 
-        // Available transfer budget for infrastructure upgrades
-        $availableBudget = $investment
-            ? $investment->transfer_budget - TransferOffer::committedBudget($game->id)
-            : 0;
-
         // Transfer activity totals for budget flow breakdown (single query)
         $activityTotals = FinancialTransaction::where('game_id', $gameId)
             ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
@@ -135,8 +128,6 @@ class ShowFinances
             'salaryCapRoom' => $salaryCapRoom,
             'salaryCapStatus' => $salaryCapStatus,
             'tradingAllowanceRoom' => $tradingAllowanceRoom,
-            'tierThresholds' => GameInvestment::thresholdsForCompetitionTier((int) ($game->competition->tier ?? 1)),
-            'availableBudget' => $availableBudget,
             'initialTransferBudget' => $initialTransferBudget,
             'salesRevenue' => $salesRevenue,
             'purchaseSpending' => $purchaseSpending,

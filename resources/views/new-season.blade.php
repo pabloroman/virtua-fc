@@ -2,9 +2,8 @@
 /** @var App\Models\Game $game */
 /** @var App\Models\GameFinances $finances */
 /** @var int $availableSurplus */
-/** @var array $tiers */
-/** @var array $tierThresholds */
-/** @var int $minimumTier */
+/** @var array $startingPlan */
+/** @var int $startingTransferBudget */
 /** @var string|null $seasonGoal */
 /** @var string|null $seasonGoalLabel */
 /** @var int|null $seasonGoalTarget */
@@ -228,12 +227,12 @@
             {{-- Divider --}}
             <div class="border-t border-border-default mb-8"></div>
 
-            {{-- 5. Budget Allocation --}}
+            {{-- 5. Board's Starting Plan (read-only — adjust any time on the Club investment page) --}}
             <div class="mb-20">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-5">
                     <div>
-                        <h2 class="font-heading text-sm font-semibold text-text-secondary uppercase tracking-widest">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>
-                        <p class="text-sm text-text-muted mt-0.5">{{ __('game.allocate_budget_hint') }}</p>
+                        <h2 class="font-heading text-sm font-semibold text-text-secondary uppercase tracking-widest">{{ __('finances.board_starting_plan') }}</h2>
+                        <p class="text-sm text-text-muted mt-0.5">{{ __('finances.board_starting_plan_hint') }}</p>
                     </div>
                     <div class="md:text-right">
                         <div class="font-heading text-2xl font-bold text-text-primary">{{ \App\Support\Money::format($availableSurplus) }}</div>
@@ -241,14 +240,39 @@
                     </div>
                 </div>
 
-                <x-budget-allocation
-                    :available-surplus="$availableSurplus"
-                    :tiers="$tiers"
-                    :tier-thresholds="$tierThresholds"
-                    :minimum-tier="$minimumTier"
-                    :form-action="route('game.new-season.complete', $game->id)"
-                    :submit-label="__('game.begin_season')"
-                />
+                {{-- Infrastructure summary (read-only) --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    @foreach($startingPlan as $area)
+                    <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.' . $area['key']) }}</h4>
+                            <span class="text-xs text-text-muted">{{ \App\Support\Money::format($area['amount']) }}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            @for($i = 1; $i <= 4; $i++)
+                                <span class="w-2.5 h-2.5 rounded-full {{ $i <= $area['tier'] ? 'bg-accent-green' : 'bg-surface-600' }}"></span>
+                            @endfor
+                            <span class="text-[10px] text-text-muted ml-1">{{ __('finances.tier', ['level' => $area['tier']]) }}</span>
+                        </div>
+                        <div class="text-[10px] text-text-muted mt-1.5">{{ __('finances.' . $area['key'] . '_tier_' . $area['tier']) }}</div>
+                    </div>
+                    @endforeach
+                </div>
+
+                {{-- Transfer budget --}}
+                <div class="border border-accent-blue/20 rounded-lg bg-accent-blue/10 p-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-heading text-sm font-semibold text-text-primary">{{ __('finances.transfer_budget') }}</h4>
+                        <p class="text-xs text-text-muted">{{ __('finances.remainder_after_infrastructure') }}</p>
+                    </div>
+                    <div class="font-heading text-xl font-bold text-accent-blue">{{ \App\Support\Money::format($startingTransferBudget) }}</div>
+                </div>
+
+                {{-- Continue: the default plan stands; it can be adjusted any time on the Club investment page --}}
+                <form action="{{ route('game.new-season.complete', $game->id) }}" method="POST">
+                    @csrf
+                    <x-primary-button class="w-full uppercase">{{ __('game.begin_season') }}</x-primary-button>
+                </form>
             </div>
 
         </div>

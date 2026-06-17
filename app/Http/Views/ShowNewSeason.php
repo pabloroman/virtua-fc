@@ -51,6 +51,19 @@ class ShowNewSeason
         $budgetData = $this->budgetService->prepareBudgetData($game);
         $reputationLevel = $budgetData['reputationLevel'];
 
+        // Read-only "board's starting plan" summary: the default allocation
+        // applied during season setup. Editing now lives on the Club investment
+        // page, so this screen only shows the starting position.
+        $startingPlan = [];
+        $infraTotal = 0;
+        foreach (['youth_academy', 'medical', 'scouting', 'facilities'] as $area) {
+            $tier = $budgetData['tiers'][$area];
+            $amount = $budgetData['tierThresholds'][$area][$tier] ?? 0;
+            $infraTotal += $amount;
+            $startingPlan[] = ['key' => $area, 'tier' => $tier, 'amount' => $amount];
+        }
+        $startingTransferBudget = max(0, $budgetData['availableSurplus'] - $infraTotal);
+
         // Get season goal data
         $competition = Competition::find($game->competition_id);
         $seasonGoal = $game->season_goal;
@@ -96,6 +109,8 @@ class ShowNewSeason
             'squadSnapshot' => $squadSnapshot,
             'offseasonRecap' => $offseasonRecap,
             'stadiumCapacity' => $stadiumCapacity,
+            'startingPlan' => $startingPlan,
+            'startingTransferBudget' => $startingTransferBudget,
         ]);
     }
 
