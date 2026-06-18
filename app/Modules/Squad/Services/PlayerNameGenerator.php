@@ -131,7 +131,7 @@ class PlayerNameGenerator
     public function generate(string $nationality, ?string $region = null): string
     {
         $faker = $region !== null && isset(self::REGION_PROVIDERS[$region])
-            ? $this->fakerForRegion($region)
+            ? $this->fakerWithProvider('region:' . $region, self::REGION_PROVIDERS[$region])
             : $this->fakerFor($nationality);
 
         // Force the male surname pool. In Slavic (and a few other) Faker
@@ -188,44 +188,23 @@ class PlayerNameGenerator
         $locale = $this->localeFor($nationality);
 
         if (isset(self::CUSTOM_LOCALE_PROVIDERS[$locale])) {
-            return $this->fakerForCustomLocale($locale);
+            return $this->fakerWithProvider('locale:' . $locale, self::CUSTOM_LOCALE_PROVIDERS[$locale]);
         }
 
         return $this->generators[$locale] ??= Factory::create($locale);
     }
 
     /**
-     * Build (and cache) a Faker Generator backed by one of our custom
-     * locale-level Person providers (see {@see CUSTOM_LOCALE_PROVIDERS}).
-     * Mirrors {@see fakerForRegion()} but keyed by locale instead of region.
+     * Build (and cache) a Faker Generator backed by one of our custom Person
+     * providers — regional (Basque/Catalan) or locale-level (ar_Latn).
+     * Faker\Factory::create() can't find these because they live outside the
+     * Faker\Provider namespace, so we assemble the Generator directly and
+     * inject only the Person provider — the only one needed for firstNameMale()
+     * and lastName().
      */
-    private function fakerForCustomLocale(string $locale): Generator
+    private function fakerWithProvider(string $cacheKey, string $providerClass): Generator
     {
-        $cacheKey = 'locale:' . $locale;
-
         if (! isset($this->generators[$cacheKey])) {
-            $providerClass = self::CUSTOM_LOCALE_PROVIDERS[$locale];
-            $generator = new Generator();
-            $generator->addProvider(new $providerClass($generator));
-            $this->generators[$cacheKey] = $generator;
-        }
-
-        return $this->generators[$cacheKey];
-    }
-
-    /**
-     * Build (and cache) a Faker Generator backed by one of our custom regional
-     * Person providers. Faker\Factory::create() can't find these because they
-     * live outside the Faker\Provider namespace, so we assemble the Generator
-     * directly and inject only the Person provider — the only provider needed
-     * for firstNameMale() and lastName().
-     */
-    private function fakerForRegion(string $region): Generator
-    {
-        $cacheKey = 'region:' . $region;
-
-        if (! isset($this->generators[$cacheKey])) {
-            $providerClass = self::REGION_PROVIDERS[$region];
             $generator = new Generator();
             $generator->addProvider(new $providerClass($generator));
             $this->generators[$cacheKey] = $generator;

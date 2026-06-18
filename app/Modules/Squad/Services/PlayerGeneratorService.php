@@ -95,16 +95,8 @@ class PlayerGeneratorService
         $marketValue = max(100_000_00, $marketValue);
 
         // Determine potential
-        if ($data->potential !== null) {
-            $potential = $data->potential;
-            $potentialLow = $data->potentialLow ?? max($potential - 5, $data->overallScore);
-            $potentialHigh = $data->potentialHigh ?? min($potential + 5, 99);
-        } else {
-            $potentialData = $this->developmentService->generatePotential($age, $data->overallScore, $marketValue);
-            $potential = $potentialData['potential'];
-            $potentialLow = $potentialData['low'];
-            $potentialHigh = $potentialData['high'];
-        }
+        ['potential' => $potential, 'low' => $potentialLow, 'high' => $potentialHigh]
+            = $this->resolvePotential($data, $age, $marketValue);
 
         // Calculate wage and contract. Price the player into his club's wage
         // structure (weight × clubWageLevel) so a mid-game arrival sits in the
@@ -247,16 +239,8 @@ class PlayerGeneratorService
             $marketValue = $data->marketValueCents ?? $this->valuationService->overallScoreToMarketValue($data->overallScore, $age, null, $data->position);
             $marketValue = max(100_000_00, $marketValue);
 
-            if ($data->potential !== null) {
-                $potential = $data->potential;
-                $potentialLow = $data->potentialLow ?? max($potential - 5, $data->overallScore);
-                $potentialHigh = $data->potentialHigh ?? min($potential + 5, 99);
-            } else {
-                $potentialData = $this->developmentService->generatePotential($age, $data->overallScore, $marketValue);
-                $potential = $potentialData['potential'];
-                $potentialLow = $potentialData['low'];
-                $potentialHigh = $potentialData['high'];
-            }
+            ['potential' => $potential, 'low' => $potentialLow, 'high' => $potentialHigh]
+                = $this->resolvePotential($data, $age, $marketValue);
 
             $level = $teamWageLevels[$data->teamId] ?? null;
             $annualWage = $this->wageModel->wageFromLevel($level, $data->overallScore, $marketValue, $age, $data->position, $minimumWage);
@@ -321,6 +305,26 @@ class PlayerGeneratorService
         GamePlayerMatchState::createForPlayers($matchStateRows);
 
         return $results;
+    }
+
+    /**
+     * Resolve a player's potential triple: use the explicit values from $data
+     * when supplied (widening to a ±5 band around the point estimate), else
+     * roll one via PlayerDevelopmentService.
+     *
+     * @return array{potential: int, low: int, high: int}
+     */
+    private function resolvePotential(GeneratedPlayerData $data, int $age, int $marketValue): array
+    {
+        if ($data->potential !== null) {
+            return [
+                'potential' => $data->potential,
+                'low' => $data->potentialLow ?? max($data->potential - 5, $data->overallScore),
+                'high' => $data->potentialHigh ?? min($data->potential + 5, 99),
+            ];
+        }
+
+        return $this->developmentService->generatePotential($age, $data->overallScore, $marketValue);
     }
 
     /**

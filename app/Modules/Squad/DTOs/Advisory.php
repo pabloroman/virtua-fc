@@ -2,21 +2,17 @@
 
 namespace App\Modules\Squad\DTOs;
 
-use App\Modules\Squad\Enums\AdvisoryCategory;
 use App\Modules\Squad\Enums\AdvisorySeverity;
 
 /**
  * One bullet on the planner's Transfer Recommendations panel.
  *
- * Severity drives the visual tone and ordering; category lets the UI group
- * or filter (e.g., "show me only wage-cliff issues") without parsing the
- * message.
+ * Severity drives the visual tone and ordering.
  */
 final readonly class Advisory
 {
     public function __construct(
         public AdvisorySeverity $severity,
-        public AdvisoryCategory $category,
         public string $message,
     ) {}
 
