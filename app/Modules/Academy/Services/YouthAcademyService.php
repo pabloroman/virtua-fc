@@ -88,40 +88,49 @@ class YouthAcademyService
     ) {}
 
     /**
-     * Generate a batch of new academy prospects at season start.
+     * Roll for a single new academy prospect on one career-action tick.
      *
-     * For filial games (clubs with a reserve team), prospects are created as
-     * full GamePlayers on the reserve squad — no AcademyPlayer rows. For
-     * non-filial games, prospects land in the AcademyPlayer pool as before.
+     * Prospects arrive year-round rather than in a season-start batch: each
+     * tick we roll once with a per-tick probability calibrated so the expected
+     * number of arrivals over a season matches the academy tier's average
+     * (see perTickProspectProbability). On a hit, one prospect is generated.
      *
-     * @return Collection<int, AcademyPlayer|GamePlayer>
+     * For filial games (clubs with a reserve team), the prospect is created as
+     * a full GamePlayer on the reserve squad — no AcademyPlayer row. For
+     * non-filial games, the prospect lands in the AcademyPlayer pool.
+     *
+     * @return AcademyPlayer|GamePlayer|null The new prospect, or null if none arrived this tick
      */
-    public function generateSeasonBatch(Game $game): Collection
+    public function maybeGenerateProspect(Game $game): AcademyPlayer|GamePlayer|null
     {
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
 
-        $config = self::TIER_CONFIG[$tier];
-        [$minArrivals, $maxArrivals] = $config;
+        $probability = self::perTickProspectProbability($tier);
+        if (mt_rand(1, 10000) > (int) round($probability * 10000)) {
+            return null;
+        }
 
-        $count = rand($minArrivals, $maxArrivals);
         $teamMedianTier = $this->getTeamMedianTier($game);
         $excludedNames = $this->getExistingPlayerNames($game);
 
-        $prospects = collect();
-        $isFilial = $game->reserve_team_id !== null;
+        $traits = $this->rollProspectTraits($game, $tier, $teamMedianTier, $excludedNames);
 
-        for ($i = 0; $i < $count; $i++) {
-            $traits = $this->rollProspectTraits($game, $tier, $teamMedianTier, $excludedNames);
+        return $game->reserve_team_id !== null
+            ? $this->persistAsReservePlayer($game, $traits)
+            : $this->persistAsAcademyPlayer($game, $traits);
+    }
 
-            $prospect = $isFilial
-                ? $this->persistAsReservePlayer($game, $traits)
-                : $this->persistAsAcademyPlayer($game, $traits);
+    /**
+     * Per-tick probability that a new prospect arrives, calibrated so the
+     * expected season total equals the tier's average arrivals (mean of the
+     * TIER_CONFIG min/max), spread across the ~38 ticks of a season.
+     */
+    public static function perTickProspectProbability(int $tier): float
+    {
+        $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
+        $expectedSeasonArrivals = ($config[0] + $config[1]) / 2;
 
-            $excludedNames[] = $traits['name'];
-            $prospects->push($prospect);
-        }
-
-        return $prospects;
+        return $expectedSeasonArrivals / self::ESTIMATED_MATCHDAYS;
     }
 
     /**
