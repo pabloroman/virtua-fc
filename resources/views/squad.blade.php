@@ -37,13 +37,15 @@
             <x-flash-message type="success" :message="session('success')" class="mt-4" />
             <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
-            {{-- ===== Squad Header ===== --}}
+            {{-- ===== Squad Header (tournament only — career mode uses the section nav as the title) ===== --}}
+            @if(! $isCareerMode)
             <div class="mt-6">
-                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $isCareerMode ? __('squad.first_team') : __('squad.squad') }}</h2>
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('squad.squad') }}</h2>
             </div>
+            @endif
 
             {{-- ===== Summary Cards ===== --}}
-            <div class="flex gap-2.5 overflow-x-auto scrollbar-hide mt-4 pb-1">
+            <div class="flex gap-2.5 overflow-x-auto scrollbar-hide {{ $isCareerMode ? 'mt-6' : 'mt-4' }} pb-1">
                 <x-summary-card :label="__('squad.squad_size')" :value="$squadSize" />
                 <x-summary-card :label="__('squad.avg_age')" :value="$avgAge" />
                 <x-summary-card :label="__('squad.fitness_full')" :value="$avgFitness . '%'" x-data x-tooltip.raw="{{ __('squad.tooltip_fitness') }}" :value-class="$avgFitness >= 85 ? 'text-accent-green' : ($avgFitness >= 70 ? 'text-text-primary' : 'text-amber-500')" />
