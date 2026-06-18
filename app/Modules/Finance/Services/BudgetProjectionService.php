@@ -388,6 +388,75 @@ class BudgetProjectionService
     }
 
     /**
+     * Fold a mid-season squad change into the projected wage bill — and, to keep
+     * the surplus invariant intact, the projected surplus. Only the UNPLAYED
+     * slice of the player's annual wage moves (see remainingSeasonWageFraction):
+     * the matchdays already played were paid regardless of the move.
+     *
+     * A departure (permanent sale) lowers projected wages and lifts surplus; an
+     * arrival (purchase / free-agent signing) does the reverse. The season-start
+     * projection sums every squad wage for the WHOLE season, so without this the
+     * salaries line stays frozen at its July value all year (#1191).
+     *
+     * No-op when there is no finances row yet, the wage is zero, or the season's
+     * matchdays are spent (the prorated slice rounds to zero). Loans are
+     * intentionally left out: their wage stays on the projection (mirroring
+     * calculateProjectedWages, which still counts loaned-out players) until the
+     * loan salary-split rules land.
+     */
+    public function adjustProjectedWagesForSquadChange(Game $game, int $annualWage, bool $isArrival): void
+    {
+        $finances = $game->currentFinances;
+        if (! $finances || $annualWage === 0) {
+            return;
+        }
+
+        $proratedWage = (int) round($annualWage * $this->remainingSeasonWageFraction($game));
+        if ($proratedWage === 0) {
+            return;
+        }
+
+        $delta = $isArrival ? $proratedWage : -$proratedWage;
+
+        $finances->projected_wages = max(0, (int) $finances->projected_wages + $delta);
+        // Surplus = revenue − wages − opex, so it moves opposite to the wage bill.
+        $finances->projected_surplus = (int) $finances->projected_surplus - $delta;
+        $finances->save();
+    }
+
+    /**
+     * Season-progress fraction of an annual wage still owed after today — the
+     * share of the campaign NOT yet played, measured in the managed team's own
+     * league matchdays (total fixtures vs. those still unplayed). This naturally
+     * tracks the division's matchday count and matches the acceptance criterion
+     * `matchdays_remaining_in_season / total_matchdays_in_season`.
+     *
+     * `current_date` is forward-looking (the next match to play), so an unplayed
+     * fixture is one whose wage slice the club would still have paid — exactly
+     * the slice that shifts to the other club on a move. Returns 0 once the
+     * league fixtures are exhausted (or before they exist), making the caller's
+     * adjustment a no-op at those edges.
+     */
+    private function remainingSeasonWageFraction(Game $game): float
+    {
+        $counts = GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where(function ($q) use ($game) {
+                $q->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->selectRaw('COUNT(*) AS total, SUM(CASE WHEN played THEN 0 ELSE 1 END) AS remaining')
+            ->first();
+
+        $total = (int) ($counts->total ?? 0);
+        if ($total === 0) {
+            return 0.0;
+        }
+
+        return (int) ($counts->remaining ?? 0) / $total;
+    }
+
+    /**
      * Trailing player-trading allowance in cents — the smoothed net player-
      * trading result (sales − purchases) over the last few COMPLETED seasons,
      * floored at zero (net buyers earn nothing, but pay no penalty) and capped

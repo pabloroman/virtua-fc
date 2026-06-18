@@ -12,6 +12,7 @@ use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Models\UserSquadCareerRecord;
+use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
@@ -31,6 +32,7 @@ class TransferCompletionService
         private readonly SquadNumberService $squadNumberService,
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
+        private readonly BudgetProjectionService $budgetProjectionService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -114,10 +116,15 @@ class TransferCompletionService
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
-        // Player has left user's club permanently — drop career record.
-        // Loans preserve ownership so the record is left intact.
+        // Player has left user's club permanently — drop career record and
+        // shed the unplayed slice of their wage from the season projection.
+        // Loans preserve ownership (and their wage stays on the books), so both
+        // are left intact.
         if (! $isLoan) {
             UserSquadCareerRecord::where('game_player_id', $player->id)->delete();
+            $this->budgetProjectionService->adjustProjectedWagesForSquadChange(
+                $game, (int) $player->annual_wage, isArrival: false,
+            );
         }
     }
 
@@ -290,6 +297,12 @@ class TransferCompletionService
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
+        // Add the unplayed slice of the incoming player's (just-set) wage to the
+        // season projection — the buy-side mirror of the sale adjustment.
+        $this->budgetProjectionService->adjustProjectedWagesForSquadChange(
+            $game, (int) $player->annual_wage, isArrival: true,
+        );
+
         return true;
     }
 
@@ -343,6 +356,11 @@ class TransferCompletionService
         );
 
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        // Add the unplayed slice of the new signing's wage to the projection.
+        $this->budgetProjectionService->adjustProjectedWagesForSquadChange(
+            $game, (int) $player->annual_wage, isArrival: true,
+        );
     }
 
     /**
