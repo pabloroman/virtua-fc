@@ -8,7 +8,6 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\DTOs\Advisory;
 use App\Modules\Squad\DTOs\SquadContext;
-use App\Modules\Squad\Enums\AdvisoryCategory;
 use App\Modules\Squad\Enums\AdvisorySeverity;
 use App\Modules\Squad\Enums\PositionGroup;
 use App\Modules\Squad\Enums\SquadRole;
@@ -156,7 +155,6 @@ class SquadAdvisorService
 
             $advisories[] = new Advisory(
                 severity: $severity,
-                category: AdvisoryCategory::DEPTH,
                 message: __('planner.advisory_depth_gap', [
                     'count' => $missing,
                     'position' => $this->advisoryLabel($group),
@@ -235,7 +233,6 @@ class SquadAdvisorService
 
             $advisories[] = new Advisory(
                 severity: AdvisorySeverity::WARN,
-                category: AdvisoryCategory::QUALITY,
                 message: __('planner.advisory_quality_gap', [
                     'position' => $this->advisoryLabel($group),
                     'gap' => $gap,
@@ -277,7 +274,6 @@ class SquadAdvisorService
             if ($players->count() <= $need) {
                 $advisories[] = new Advisory(
                     severity: AdvisorySeverity::WARN,
-                    category: AdvisoryCategory::BACKUP,
                     message: __('planner.advisory_no_backup', [
                         'position' => $this->advisoryLabel($group),
                     ]),
@@ -295,7 +291,6 @@ class SquadAdvisorService
             if ($gap >= self::BACKUP_GAP_THRESHOLD) {
                 $advisories[] = new Advisory(
                     severity: AdvisorySeverity::WARN,
-                    category: AdvisoryCategory::BACKUP,
                     message: __('planner.advisory_weak_backup', [
                         'position' => $this->advisoryLabel($group),
                         'gap' => $gap,
@@ -337,7 +332,6 @@ class SquadAdvisorService
 
             $advisories[] = new Advisory(
                 severity: AdvisorySeverity::WARN,
-                category: AdvisoryCategory::OVERLOAD,
                 message: __('planner.advisory_overload', [
                     'position' => $this->advisoryLabel($group),
                     'count' => $elite->count(),
@@ -374,7 +368,6 @@ class SquadAdvisorService
             if (! $hasYouth) {
                 $advisories[] = new Advisory(
                     severity: AdvisorySeverity::WARN,
-                    category: AdvisoryCategory::AGE,
                     message: __('planner.advisory_age_gap', [
                         'position' => $group->advisoryLabel(),
                         'age' => PlayerAge::YOUNG_END,
@@ -411,7 +404,6 @@ class SquadAdvisorService
         foreach ($atRisk as $player) {
             $advisories[] = new Advisory(
                 severity: AdvisorySeverity::WARN,
-                category: AdvisoryCategory::WAGE,
                 message: __('planner.advisory_wage_cliff', [
                     'name' => $player->name,
                     'year' => $player->contract_until->year,
@@ -447,7 +439,6 @@ class SquadAdvisorService
 
         return new Advisory(
             severity: AdvisorySeverity::INFO,
-            category: AdvisoryCategory::DEVELOPMENT,
             message: __('planner.advisory_development', ['names' => $names]),
         );
     }
@@ -491,7 +482,6 @@ class SquadAdvisorService
 
         return new Advisory(
             severity: AdvisorySeverity::INFO,
-            category: AdvisoryCategory::WAGE,
             message: __('planner.advisory_wasted_wage', ['names' => $names]),
         );
     }
@@ -512,7 +502,6 @@ class SquadAdvisorService
         foreach ($impactful as $player) {
             $advisories[] = new Advisory(
                 severity: AdvisorySeverity::CRITICAL,
-                category: AdvisoryCategory::DEPARTURE,
                 message: __('planner.advisory_key_departure', [
                     'name' => $player->name,
                     'position' => $player->position_name,
