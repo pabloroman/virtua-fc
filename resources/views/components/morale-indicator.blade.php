@@ -1,4 +1,4 @@
-@props(['value'])
+@props(['value', 'showLabel' => true])
 
 @php
     $label = match(true) {
@@ -17,7 +17,10 @@
     };
 @endphp
 
-<div {{ $attributes->merge(['class' => 'flex items-center gap-1.5']) }}>
+<div {{ $attributes->merge(['class' => 'flex items-center gap-1.5']) }}
+     @if(!$showLabel) x-data x-tooltip.raw="{{ $label }}" @endif>
     <div class="morale-dot {{ $dotColor }}"></div>
-    <span class="text-[10px] text-text-secondary">{{ $label }}</span>
+    @if($showLabel)
+        <span class="text-[10px] text-text-secondary">{{ $label }}</span>
+    @endif
 </div>
