@@ -220,7 +220,7 @@ class BudgetProjectionServiceTest extends TestCase
         [$service, $game] = $this->buildScenario();
 
         // 10 league matchdays, 4 already played → 6/10 of the season unplayed.
-        $finances = $this->seedCurrentSeasonProjection($game, wages: 100_000_00, surplus: 30_000_00);
+        $finances = $this->seedCurrentSeasonProjection($game, wages: 50_000_000_00, surplus: 10_000_000_00);
         $this->seedLeagueMatchdays($game, total: 10, played: 4);
 
         // Selling a €5M/yr earner at this point removes 6/10 of his wage.
@@ -228,38 +228,38 @@ class BudgetProjectionServiceTest extends TestCase
 
         $expectedDelta = (int) round(5_000_000_00 * 0.6);
         $finances->refresh();
-        $this->assertSame(100_000_00 - $expectedDelta, $finances->projected_wages);
+        $this->assertSame(50_000_000_00 - $expectedDelta, $finances->projected_wages);
         // Surplus moves opposite to the wage bill: a wage cut lifts it.
-        $this->assertSame(30_000_00 + $expectedDelta, $finances->projected_surplus);
+        $this->assertSame(10_000_000_00 + $expectedDelta, $finances->projected_surplus);
     }
 
     public function test_mid_season_purchase_adds_the_prorated_remaining_wage_to_the_projection(): void
     {
         [$service, $game] = $this->buildScenario();
 
-        $finances = $this->seedCurrentSeasonProjection($game, wages: 100_000_00, surplus: 30_000_00);
+        $finances = $this->seedCurrentSeasonProjection($game, wages: 50_000_000_00, surplus: 10_000_000_00);
         $this->seedLeagueMatchdays($game, total: 10, played: 4);
 
         $service->adjustProjectedWagesForSquadChange($game, 5_000_000_00, isArrival: true);
 
         $expectedDelta = (int) round(5_000_000_00 * 0.6);
         $finances->refresh();
-        $this->assertSame(100_000_00 + $expectedDelta, $finances->projected_wages);
-        $this->assertSame(30_000_00 - $expectedDelta, $finances->projected_surplus);
+        $this->assertSame(50_000_000_00 + $expectedDelta, $finances->projected_wages);
+        $this->assertSame(10_000_000_00 - $expectedDelta, $finances->projected_surplus);
     }
 
     public function test_adjustment_is_a_no_op_once_the_season_matchdays_are_spent(): void
     {
         [$service, $game] = $this->buildScenario();
 
-        $finances = $this->seedCurrentSeasonProjection($game, wages: 100_000_00, surplus: 30_000_00);
+        $finances = $this->seedCurrentSeasonProjection($game, wages: 50_000_000_00, surplus: 10_000_000_00);
         $this->seedLeagueMatchdays($game, total: 10, played: 10);
 
         $service->adjustProjectedWagesForSquadChange($game, 5_000_000_00, isArrival: false);
 
         $finances->refresh();
-        $this->assertSame(100_000_00, $finances->projected_wages);
-        $this->assertSame(30_000_00, $finances->projected_surplus);
+        $this->assertSame(50_000_000_00, $finances->projected_wages);
+        $this->assertSame(10_000_000_00, $finances->projected_surplus);
     }
 
     private function seedCurrentSeasonProjection(Game $game, int $wages, int $surplus): GameFinances
