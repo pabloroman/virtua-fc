@@ -89,7 +89,7 @@ use App\Http\Actions\StopPlayerTracking;
 use App\Http\Actions\ToggleShortlist;
 use App\Http\Actions\RemoveFromShortlist;
 use App\Http\Actions\DeleteScoutSearch;
-use App\Http\Actions\SkipPreSeason;
+use App\Http\Actions\SavePreseasonOpponents;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
 use App\Http\Views\ShowOpponentAnalysis;
@@ -105,6 +105,7 @@ use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowFastMode;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowNewSeason;
+use App\Http\Views\ShowPreseasonSetup;
 use App\Http\Views\ShowWelcome;
 use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowLiveMatch;
@@ -228,7 +229,6 @@ Route::middleware('auth')->group(function () {
 
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
-        Route::post('/game/{gameId}/skip-pre-season', SkipPreSeason::class)->name('game.skip-pre-season');
 
         // Fast mode (assistant coach)
         Route::get('/game/{gameId}/fast-mode', ShowFastMode::class)->name('game.fast-mode');
@@ -331,6 +331,10 @@ Route::middleware('auth')->group(function () {
         // New Season (season budget allocation)
         Route::get('/game/{gameId}/new-season', ShowNewSeason::class)->name('game.new-season');
         Route::post('/game/{gameId}/new-season', CompleteNewSeason::class)->name('game.new-season.complete');
+
+        // Pre-Season opponent selection (mandatory at season start)
+        Route::get('/game/{gameId}/preseason-setup', ShowPreseasonSetup::class)->name('game.preseason-setup');
+        Route::post('/game/{gameId}/preseason-setup', SavePreseasonOpponents::class)->name('game.preseason-setup.save');
 
         // Squad Selection (Tournament mode new-season setup)
         Route::get('/game/{gameId}/squad-selection', ShowSquadSelection::class)->name('game.squad-selection');
