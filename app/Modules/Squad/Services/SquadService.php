@@ -108,6 +108,10 @@ class SquadService
         $midfielders = ($grouped->get('midfielders') ?? collect())->sortByDesc('overall_score')->values();
         $forwards = ($grouped->get('forwards') ?? collect())->sortByDesc('overall_score')->values();
 
+        // Single flat list in position-then-rating order. This is the squad table's
+        // default ordering; client-side column sorting reorders it from here.
+        $squadPlayers = $goalkeepers->concat($defenders)->concat($midfielders)->concat($forwards)->values();
+
         // --- Squad Dashboard KPIs ---
         $squadSize = $allPlayers->count();
         $avgAge = $squadSize > 0 ? round($allPlayers->avg(fn ($p) => $p->age($game->current_date)), 1) : 0;
@@ -201,6 +205,7 @@ class SquadService
             'defenders' => $defenders,
             'midfielders' => $midfielders,
             'forwards' => $forwards,
+            'squadPlayers' => $squadPlayers,
             'allPlayers' => $allPlayers,
             'seasonEndDate' => $seasonEndDate,
             // Dashboard KPIs
