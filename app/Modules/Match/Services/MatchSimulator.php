@@ -608,7 +608,7 @@ class MatchSimulator
         $allHomePlayers = $this->buildAllPlayersSeen($initialHomePlayers, $initialHomeBench, $allEvents, $homeTeam->id);
         $allAwayPlayers = $this->buildAllPlayersSeen($initialAwayPlayers, $initialAwayBench, $allEvents, $awayTeam->id);
         $allEvents = $this->reassignEventsFromUnavailablePlayers(
-            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id
+            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id, $existingYellowPlayerIds
         );
 
         // Apply xG adjustment using accumulated totals from all periods
@@ -1137,7 +1137,7 @@ class MatchSimulator
         $allHomePlayers = $this->buildAllPlayersSeen($initialHomePlayers, $initialHomeBench, $allEvents, $homeTeam->id);
         $allAwayPlayers = $this->buildAllPlayersSeen($initialAwayPlayers, $initialAwayBench, $allEvents, $awayTeam->id);
         $allEvents = $this->reassignEventsFromUnavailablePlayers(
-            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id
+            $allEvents, $allHomePlayers, $allAwayPlayers, $homeTeam->id, $awayTeam->id, $existingYellowPlayerIds
         );
 
         // Apply xG adjustment using accumulated totals from all periods
@@ -1186,6 +1186,7 @@ class MatchSimulator
         Collection $awayPlayers,
         string $homeTeamId,
         string $awayTeamId,
+        array $existingYellowPlayerIds = [],
     ): Collection {
         // Track sub-outs and red cards separately so that a red_card event doesn't
         // treat itself as the reason to reassign itself. Red cards still exclude
@@ -1195,6 +1196,14 @@ class MatchSimulator
         $redRemovedAt = [];
         // Build map of player_id => minute they entered (substituted in)
         $enteredAt = [];
+        // Track which players already have a yellow card. Seeded from
+        // prior-period yellows so a reassignment that lands on an already-booked
+        // player can be converted into a second-yellow red instead of silently
+        // producing two yellow cards on the same player.
+        $yellowedAt = [];
+        foreach ($existingYellowPlayerIds as $priorYellowPlayerId) {
+            $yellowedAt[$priorYellowPlayerId] = 0;
+        }
 
         foreach ($events as $event) {
             if ($event->type === 'substitution') {
@@ -1210,6 +1219,11 @@ class MatchSimulator
                 $playerId = $event->gamePlayerId;
                 if (! isset($redRemovedAt[$playerId]) || $event->minute < $redRemovedAt[$playerId]) {
                     $redRemovedAt[$playerId] = $event->minute;
+                }
+            } elseif ($event->type === 'yellow_card') {
+                $playerId = $event->gamePlayerId;
+                if (! isset($yellowedAt[$playerId]) || $event->minute < $yellowedAt[$playerId]) {
+                    $yellowedAt[$playerId] = $event->minute;
                 }
             }
         }
@@ -1230,7 +1244,7 @@ class MatchSimulator
 
         $reassignableTypes = ['goal', 'assist', 'yellow_card', 'red_card', 'own_goal', 'penalty_missed'];
 
-        return $events->map(function (MatchEventData $event) use ($subRemovedAt, $redRemovedAt, $removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId, $reassignableTypes) {
+        return $events->map(function (MatchEventData $event) use ($subRemovedAt, &$redRemovedAt, &$removedAt, $enteredAt, &$yellowedAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId, $reassignableTypes) {
             if (! in_array($event->type, $reassignableTypes)) {
                 return $event;
             }
@@ -1301,6 +1315,30 @@ class MatchSimulator
                 // attributed to a player who wasn't on the pitch. Returning null
                 // is filtered out after the map.
                 return null;
+            }
+
+            // A reassigned yellow that lands on a player who already has a
+            // yellow earlier in this match must be logged as a second-yellow
+            // red — otherwise the player would silently accumulate two yellows
+            // and stay on the pitch.
+            if ($event->type === 'yellow_card'
+                && isset($yellowedAt[$replacement->id])
+                && $yellowedAt[$replacement->id] < $event->minute
+            ) {
+                if (! isset($redRemovedAt[$replacement->id]) || $event->minute < $redRemovedAt[$replacement->id]) {
+                    $redRemovedAt[$replacement->id] = $event->minute;
+                }
+                if (! isset($removedAt[$replacement->id]) || $event->minute < $removedAt[$replacement->id]) {
+                    $removedAt[$replacement->id] = $event->minute;
+                }
+
+                return MatchEventData::redCard($event->teamId, $replacement->id, $event->minute, true);
+            }
+
+            if ($event->type === 'yellow_card') {
+                if (! isset($yellowedAt[$replacement->id]) || $event->minute < $yellowedAt[$replacement->id]) {
+                    $yellowedAt[$replacement->id] = $event->minute;
+                }
             }
 
             return match ($event->type) {
@@ -2329,7 +2367,7 @@ class MatchSimulator
             );
 
             $events = $this->reassignEventsFromUnavailablePlayers(
-                $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
+                $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id, $existingYellowPlayerIds
             );
         } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
             // One team has no players (e.g. lower-division cup opponent).
