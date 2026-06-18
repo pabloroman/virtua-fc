@@ -106,13 +106,63 @@
                 </div>
             </div>
 
+            {{-- ===== Mobile sort strip (lg:hidden — desktop sorts via the table header) =====
+                 Columns must stay in sync with the desktop header above (search "sort-header"). --}}
+            <div class="lg:hidden mt-3 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                <span class="shrink-0 text-[10px] uppercase tracking-widest font-semibold text-text-muted">{{ __('transfers.sort_by') }}</span>
+                <x-squad.sort-pill col="number">#</x-squad.sort-pill>
+                <x-squad.sort-pill col="name">{{ __('squad.player') }}</x-squad.sort-pill>
+                <x-squad.sort-pill col="pos">{{ __('squad.pos') }}</x-squad.sort-pill>
+                <x-squad.sort-pill col="age">{{ __('app.age') }}</x-squad.sort-pill>
+                <x-squad.sort-pill col="ovr">{{ __('squad.overall') }}</x-squad.sort-pill>
+
+                {{-- Tactical --}}
+                <template x-if="viewMode === 'tactical'">
+                    <span class="contents">
+                        <x-squad.sort-pill col="fitness">{{ __('squad.fitness_full') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="morale">{{ __('squad.morale_full') }}</x-squad.sort-pill>
+                        @if($isCareerMode)
+                        <x-squad.sort-pill col="value">{{ $squadUsesClauses ? __('transfers.clause_short') : __('app.value') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="wage">{{ __('app.wage') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="contract">{{ __('app.contract') }}</x-squad.sort-pill>
+                        @endif
+                    </span>
+                </template>
+
+                {{-- Planning (career only) --}}
+                @if($isCareerMode)
+                <template x-if="viewMode === 'planning'">
+                    <span class="contents">
+                        <x-squad.sort-pill col="potential">{{ __('squad.potential') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="value">{{ $squadUsesClauses ? __('transfers.clause_short') : __('app.value') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="wage">{{ __('app.wage') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="contract">{{ __('app.contract') }}</x-squad.sort-pill>
+                    </span>
+                </template>
+                @endif
+
+                {{-- Stats --}}
+                <template x-if="viewMode === 'stats'">
+                    <span class="contents">
+                        <x-squad.sort-pill col="apps">{{ __('squad.apps') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="goals">{{ __('squad.goals') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="assists">{{ __('squad.assists') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="mvp">{{ __('squad.mvp') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="clean">{{ __('squad.clean_sheets') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="gpg">{{ __('squad.goals_per_game') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="own">{{ __('squad.own_goals') }}</x-squad.sort-pill>
+                        <x-squad.sort-pill col="cards">{{ __('squad.cards') }}</x-squad.sort-pill>
+                    </span>
+                </template>
+            </div>
+
             {{-- ===== MAIN CONTENT: Player List + Sidebar ===== --}}
             <div class="mt-4 flex gap-6">
                 {{-- LEFT: Player List --}}
                 <div class="flex-1 min-w-0">
                     <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
 
-                        {{-- Desktop table header --}}
+                        {{-- Desktop table header. Columns must stay in sync with the mobile sort strip above. --}}
                         <div class="hidden lg:block">
                             <div class="grid items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold"
                                  :class="{

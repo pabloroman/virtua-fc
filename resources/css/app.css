@@ -318,13 +318,20 @@ input[type="radio"]:checked {
 
 @utility player-row {
   /* Player row hover */
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease;
   &:hover {
     background: rgba(59, 130, 246, 0.05);
   }
   &:hover .rating-badge {
     transform: scale(1.08);
   }
+}
+
+/* While client-side sorting reorders rows, the row under a stationary cursor
+   changes; without this its hover-background would fade and the whole list
+   appears to "animate" into place. Transitions are restored right after. */
+.reordering .player-row {
+  transition: none;
 }
 
 @utility fitness-bar {

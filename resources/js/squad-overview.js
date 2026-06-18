@@ -63,21 +63,30 @@ export default function squadOverview() {
         },
 
         applySort() {
-            const rows = this.$refs.rows ? Array.from(this.$refs.rows.querySelectorAll('.player-row')) : [];
-            if (!this.sortCol) {
+            const container = this.$refs.rows;
+            if (!container) return;
+            const rows = Array.from(container.querySelectorAll('.player-row'));
+            // Disable row transitions while we reorder, so the hover background of
+            // the row under the cursor doesn't fade as rows shuffle past it.
+            container.classList.add('reordering');
+            if (this.sortCol) {
+                const col = this.sortCol;
+                const isText = this.textCols.includes(col);
+                const dir = this.sortDir === 'asc' ? 1 : -1;
+                const sorted = rows.slice().sort((a, b) => {
+                    const av = a.dataset['sort' + col.charAt(0).toUpperCase() + col.slice(1)] ?? '';
+                    const bv = b.dataset['sort' + col.charAt(0).toUpperCase() + col.slice(1)] ?? '';
+                    if (isText) return dir * String(av).localeCompare(String(bv));
+                    return dir * ((parseFloat(av) || 0) - (parseFloat(bv) || 0));
+                });
+                sorted.forEach((el, i) => { el.style.order = i; });
+            } else {
                 rows.forEach((el) => { el.style.order = ''; });
-                return;
             }
-            const col = this.sortCol;
-            const isText = this.textCols.includes(col);
-            const dir = this.sortDir === 'asc' ? 1 : -1;
-            const sorted = rows.slice().sort((a, b) => {
-                const av = a.dataset['sort' + col.charAt(0).toUpperCase() + col.slice(1)] ?? '';
-                const bv = b.dataset['sort' + col.charAt(0).toUpperCase() + col.slice(1)] ?? '';
-                if (isText) return dir * String(av).localeCompare(String(bv));
-                return dir * ((parseFloat(av) || 0) - (parseFloat(bv) || 0));
-            });
-            sorted.forEach((el, i) => { el.style.order = i; });
+            // Commit the reflow (new order + hover state) with transitions off,
+            // then re-enable them so future genuine hovers still animate.
+            void container.offsetHeight;
+            container.classList.remove('reordering');
         },
 
         isVisible(group, available, status) {
