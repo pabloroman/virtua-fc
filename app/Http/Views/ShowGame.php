@@ -56,6 +56,14 @@ class ShowGame
             ]);
         }
 
+        // Mandatory pre-season setup: the player must choose their friendlies
+        // before reaching the dashboard. Fires once the season transition has
+        // finished (so the game is fully built) — after "Begin Season" for
+        // transitions, and right after the welcome tutorial for new careers.
+        if ($game->needsPreseasonOpponentSelection()) {
+            return redirect()->route('game.preseason-setup', $gameId);
+        }
+
         // Consume a completed matchday advance before any background-job
         // loading screens. When the user just advanced into a live match,
         // remaining AI batches and career actions often process in the

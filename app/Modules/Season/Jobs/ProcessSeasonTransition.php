@@ -131,11 +131,22 @@ class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
 
         // Finalize: set current date and clear transition flag + checkpoint
         $game->refresh()->setRelations([]);
-        $firstMatch = $game->getFirstCompetitiveMatch();
-        $fallbackDate = ((int) $game->season) . '-08-15';
+
+        // While pre-season opponents are still pending there are no fixtures
+        // yet, so getFirstCompetitiveMatch() would jump current_date to the
+        // first league match in August. Keep it at the July 1 pre-season start
+        // (set by ContinentalAndCupInitProcessor) until the player picks their
+        // friendlies — the setup screen advances the date on confirmation.
+        if ($game->preseason_opponents_pending) {
+            $currentDate = $game->current_date;
+        } else {
+            $firstMatch = $game->getFirstCompetitiveMatch();
+            $fallbackDate = ((int) $game->season) . '-08-15';
+            $currentDate = $firstMatch?->scheduled_date ?? $fallbackDate;
+        }
 
         $game->update([
-            'current_date' => $firstMatch?->scheduled_date ?? $fallbackDate,
+            'current_date' => $currentDate,
             'season_transitioning_at' => null,
             'season_transition_step' => null,
             'season_transition_data' => null,

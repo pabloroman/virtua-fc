@@ -549,8 +549,20 @@ return [
     'pre_season_friendly' => 'Friendly',
     'pre_season_banner_title' => 'Pre-Season',
     'pre_season_banner_desc' => 'Season starts :date. Use this time to set up your squad, play friendlies and sign players.',
-    'pre_season_skip' => 'Skip Pre-Season',
-    'pre_season_skipped' => 'Pre-season skipped. The season has begun.',
+    'pre_season_ready' => 'Pre-season set. Good luck this season!',
+    // Pre-season opponent selection screen
+    'preseason_setup_title' => 'Plan Your Pre-Season',
+    'preseason_setup_subtitle' => 'Arrange up to four friendlies before the season kicks off.',
+    'preseason_setup_fixture' => 'Friendly :number',
+    'preseason_setup_home' => 'Home',
+    'preseason_setup_away' => 'Away',
+    'preseason_setup_confirm' => 'Confirm Pre-Season',
+    'preseason_setup_no_opponents' => 'No suitable opponents are available — confirm to start the season.',
+    'preseason_setup_choose_opponent' => 'Choose opponent',
+    'preseason_setup_modal_title' => 'Choose an opponent',
+    'preseason_setup_search_placeholder' => 'Search teams…',
+    'preseason_setup_no_results' => 'No teams found.',
+    'preseason_setup_clear' => 'Clear',
 
     // MVP
     'mvp' => 'MVP',

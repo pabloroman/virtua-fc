@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property bool $needs_new_season_setup
  * @property bool $needs_welcome
  * @property bool $pre_season
+ * @property bool $preseason_opponents_pending
  * @property bool $squad_registration_enabled
  * @property bool $release_clauses_enabled
  * @property string|null $season_goal
@@ -124,6 +125,7 @@ class Game extends Model
         'needs_new_season_setup',
         'needs_welcome',
         'pre_season',
+        'preseason_opponents_pending',
         'squad_registration_enabled',
         'release_clauses_enabled',
         'fast_mode_entered_on',
@@ -148,6 +150,7 @@ class Game extends Model
         'needs_new_season_setup' => 'boolean',
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
+        'preseason_opponents_pending' => 'boolean',
         'squad_registration_enabled' => 'boolean',
         'release_clauses_enabled' => 'boolean',
         'fast_mode_entered_on' => 'date',
@@ -873,6 +876,16 @@ class Game extends Model
     public function isInPreSeason(): bool
     {
         return $this->pre_season ?? false;
+    }
+
+    /**
+     * Whether the player still needs to choose their pre-season opponents.
+     * Gates the dashboard behind the mandatory pre-season setup screen at the
+     * start of every career-mode season (initial and transitions).
+     */
+    public function needsPreseasonOpponentSelection(): bool
+    {
+        return $this->isInPreSeason() && ($this->preseason_opponents_pending ?? false);
     }
 
     public function requiresSquadEnrollment(): bool

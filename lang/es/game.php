@@ -549,8 +549,20 @@ return [
     'pre_season_friendly' => 'Amistoso',
     'pre_season_banner_title' => 'Pretemporada',
     'pre_season_banner_desc' => 'La temporada comienza el :date. Aprovecha para configurar tu plantilla, jugar amistosos y fichar jugadores.',
-    'pre_season_skip' => 'Saltar Pretemporada',
-    'pre_season_skipped' => 'Pretemporada saltada. La temporada ha comenzado.',
+    'pre_season_ready' => 'Pretemporada lista. ¡Buena suerte esta temporada!',
+    // Pantalla de selección de rivales de pretemporada
+    'preseason_setup_title' => 'Planifica tu Pretemporada',
+    'preseason_setup_subtitle' => 'Organiza hasta cuatro amistosos antes de que arranque la temporada.',
+    'preseason_setup_fixture' => 'Amistoso :number',
+    'preseason_setup_home' => 'Local',
+    'preseason_setup_away' => 'Visitante',
+    'preseason_setup_confirm' => 'Confirmar Pretemporada',
+    'preseason_setup_no_opponents' => 'No hay rivales adecuados disponibles: confirma para comenzar la temporada.',
+    'preseason_setup_choose_opponent' => 'Elegir rival',
+    'preseason_setup_modal_title' => 'Elige un rival',
+    'preseason_setup_search_placeholder' => 'Buscar equipos…',
+    'preseason_setup_no_results' => 'No se encontraron equipos.',
+    'preseason_setup_clear' => 'Quitar',
 
     // MVP
     'mvp' => 'MVP',

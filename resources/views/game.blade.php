@@ -28,26 +28,12 @@
         <x-status-banner color="blue"
             :title="__('game.pre_season_banner_title')"
             :description="__('game.pre_season_banner_desc', ['date' => isset($seasonStartDate) ? $seasonStartDate->locale(app()->getLocale())->translatedFormat('d M Y') : ''])"
-            class="mt-6" x-data="{ confirmSkip: false }">
+            class="mt-6">
             <x-slot name="icon">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
             </x-slot>
-            <x-primary-button color="teal" size="sm" type="button" @click="confirmSkip = true" x-show="!confirmSkip">
-                {{ __('game.pre_season_skip') }}
-            </x-primary-button>
-            <div x-show="confirmSkip" x-cloak class="flex items-center gap-2">
-                <form action="{{ route('game.skip-pre-season', $game->id) }}" method="POST" class="inline">
-                    @csrf
-                    <x-primary-button color="teal" size="sm">
-                        {{ __('app.confirm') }}
-                    </x-primary-button>
-                </form>
-                <x-secondary-button size="sm" @click="confirmSkip = false">
-                    {{ __('app.cancel') }}
-                </x-secondary-button>
-            </div>
         </x-status-banner>
         @endif
 

@@ -4,33 +4,20 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Models\ClubProfile;
-use App\Models\CompetitionEntry;
 use App\Models\Game;
-use App\Models\GameMatch;
-use App\Models\Team;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 /**
- * Generates pre-season fixtures for career mode games.
- * Creates 4 friendlies against foreign teams of similar reputation,
- * scheduled every ~10 days from mid-July to mid-August.
+ * Flags career-mode games as needing pre-season opponent selection.
  *
- * Priority: 108 (after ContinentalAndCupInitProcessor at 106)
+ * The friendlies themselves are no longer generated here: the player chooses
+ * their own opponents (and home/away) on the mandatory pre-season setup screen,
+ * which materialises the fixtures via PreseasonOpponentService::confirmSelections.
+ *
+ * Priority: 108 (after ContinentalAndCupInitProcessor at 106, which sets
+ * pre_season = true and current_date to July 1).
  */
 class PreSeasonFixtureProcessor implements SeasonProcessor
 {
-    private const PRESEASON_COMPETITION_ID = 'PRESEASON';
-    private const NUM_MATCHES = 4;
-
-    private const PRESEASON_SCHEDULE = [
-        ['day' => 12, 'month' => 7, 'home' => true],
-        ['day' => 22, 'month' => 7, 'home' => false],
-        ['day' => 2,  'month' => 8, 'home' => true],
-        ['day' => 10, 'month' => 8, 'home' => false],
-    ];
-
     public function priority(): int
     {
         return 108;
@@ -42,87 +29,8 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
             return $data;
         }
 
-        $seasonYear = (int) $data->newSeason;
-        $opponents = $this->selectOpponents($game);
-
-        foreach (self::PRESEASON_SCHEDULE as $i => $schedule) {
-            if (! isset($opponents[$i])) {
-                break;
-            }
-
-            $date = Carbon::createFromDate($seasonYear, $schedule['month'], $schedule['day']);
-
-            GameMatch::create([
-                'id' => Str::uuid()->toString(),
-                'game_id' => $game->id,
-                'competition_id' => self::PRESEASON_COMPETITION_ID,
-                'home_team_id' => $schedule['home'] ? $game->team_id : $opponents[$i]->id,
-                'away_team_id' => $schedule['home'] ? $opponents[$i]->id : $game->team_id,
-                'scheduled_date' => $date->toDateString(),
-                'round_number' => $i + 1,
-                'played' => false,
-            ]);
-        }
+        $game->update(['preseason_opponents_pending' => true]);
 
         return $data;
-    }
-
-    /**
-     * Select foreign teams of similar reputation as pre-season opponents.
-     *
-     * Primera RFEF sides (ESP3A/ESP3B) wouldn't realistically tour against
-     * foreign clubs, so they instead draw random Segunda (ESP2) opponents.
-     *
-     * @return \Illuminate\Support\Collection<Team>
-     */
-    private function selectOpponents(Game $game): \Illuminate\Support\Collection
-    {
-        if (in_array($game->competition_id, ['ESP3A', 'ESP3B'], true)) {
-            return $this->selectSegundaOpponents($game);
-        }
-
-        $userProfile = ClubProfile::where('team_id', $game->team_id)->first();
-        $userTierIndex = $userProfile
-            ? ClubProfile::getReputationTierIndex($userProfile->reputation_level)
-            : 3;
-
-        // Get reputation levels within ±1 tier
-        $tiers = ClubProfile::REPUTATION_TIERS;
-        $validLevels = [];
-        for ($i = max(0, $userTierIndex - 1); $i <= min(count($tiers) - 1, $userTierIndex + 1); $i++) {
-            $validLevels[] = $tiers[$i];
-        }
-
-        $userCountry = $game->country ?? 'ES';
-
-        // Find foreign clubs with matching reputation. transferMarketEligible
-        // also excludes cup-only teams (e.g. Segunda Federación regional sides
-        // loaded from data/<year>/ESPCUP) which have a ClubProfile but no
-        // generated squad.
-        return Team::transferMarketEligible()
-            ->where('country', '!=', $userCountry)
-            ->whereHas('clubProfile', function ($query) use ($validLevels) {
-                $query->whereIn('reputation_level', $validLevels);
-            })
-            ->inRandomOrder()
-            ->limit(self::NUM_MATCHES)
-            ->get();
-    }
-
-    /**
-     * @return \Illuminate\Support\Collection<Team>
-     */
-    private function selectSegundaOpponents(Game $game): \Illuminate\Support\Collection
-    {
-        $segundaTeamIds = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', 'ESP2')
-            ->where('team_id', '!=', $game->team_id)
-            ->pluck('team_id');
-
-        return Team::transferMarketEligible()
-            ->whereIn('id', $segundaTeamIds)
-            ->inRandomOrder()
-            ->limit(self::NUM_MATCHES)
-            ->get();
     }
 }
