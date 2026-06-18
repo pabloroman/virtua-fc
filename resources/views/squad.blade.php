@@ -292,8 +292,8 @@
                                     {{-- ===== MOBILE ROW ===== --}}
                                     <div class="lg:hidden px-4 py-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
                                         <div class="flex items-center gap-2.5">
-                                            {{-- Avatar --}}
-                                            <x-player-avatar :name="$gp->name" :position-group="$groupKey" :number="$gp->number" size="sm" />
+                                            {{-- Squad number --}}
+                                            <span class="w-6 text-center font-heading tabular-nums text-sm text-text-muted shrink-0">{{ $gp->number }}</span>
 
                                             {{-- Name + details --}}
                                             <div class="flex-1 min-w-0">
