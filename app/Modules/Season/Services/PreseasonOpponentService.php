@@ -2,13 +2,13 @@
 
 namespace App\Modules\Season\Services;
 
-use App\Models\ClubProfile;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\Team;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Jobs\ProcessCareerActions;
+use App\Support\CountryCodeMapper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -28,9 +28,6 @@ class PreseasonOpponentService
     public const PRESEASON_COMPETITION_ID = 'PRESEASON';
 
     public const NUM_SLOTS = 4;
-
-    /** Largest candidate pool offered to the player in the picker. */
-    private const POOL_SIZE = 24;
 
     /** Fixed fixture dates (day/month) for the four pre-season slots. */
     private const SCHEDULE = [
@@ -58,73 +55,56 @@ class PreseasonOpponentService
     }
 
     /**
-     * Candidate opponents the player can choose from.
-     *
-     * Foreign clubs of similar reputation (±1 tier), excluding cup-only and
-     * national sides. Primera RFEF sides (ESP3A/ESP3B) wouldn't realistically
-     * tour against foreign clubs, so they instead draw from the domestic
-     * Segunda (ESP2) pool. Sorted by name for a stable picker.
+     * Candidate opponents the player can choose from: every team in this game
+     * that has a generated squad — the same universe as the transfer market /
+     * explore. transferMarketEligible() drops national, reserve, and cup-only
+     * (squad-less) sides; the user's own teams are excluded so you can't play
+     * yourself. Sorted by name for a stable picker.
      *
      * @return Collection<int, Team>
      */
     public function candidatePool(Game $game): Collection
     {
-        if (in_array($game->competition_id, ['ESP3A', 'ESP3B'], true)) {
-            $pool = $this->segundaPool($game);
-        } else {
-            $pool = $this->foreignPool($game);
-        }
-
-        return $pool->sortBy('name')->values();
-    }
-
-    /**
-     * @return Collection<int, Team>
-     */
-    private function foreignPool(Game $game): Collection
-    {
-        $userProfile = ClubProfile::where('team_id', $game->team_id)->first();
-        $userTierIndex = $userProfile
-            ? ClubProfile::getReputationTierIndex($userProfile->reputation_level)
-            : 3;
-
-        // Reputation levels within ±1 tier of the user's club.
-        $tiers = ClubProfile::REPUTATION_TIERS;
-        $validLevels = [];
-        for ($i = max(0, $userTierIndex - 1); $i <= min(count($tiers) - 1, $userTierIndex + 1); $i++) {
-            $validLevels[] = $tiers[$i];
-        }
-
-        $userCountry = $game->country ?? 'ES';
-
-        // transferMarketEligible also excludes cup-only teams (e.g. Segunda
-        // Federación regional sides loaded from data/<year>/ESPCUP) which have a
-        // ClubProfile but no generated squad.
-        return Team::transferMarketEligible()
-            ->where('country', '!=', $userCountry)
-            ->whereHas('clubProfile', function ($query) use ($validLevels) {
-                $query->whereIn('reputation_level', $validLevels);
-            })
-            ->inRandomOrder()
-            ->limit(self::POOL_SIZE)
-            ->get();
-    }
-
-    /**
-     * @return Collection<int, Team>
-     */
-    private function segundaPool(Game $game): Collection
-    {
-        $segundaTeamIds = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', 'ESP2')
-            ->where('team_id', '!=', $game->team_id)
+        $teamIds = CompetitionEntry::where('game_id', $game->id)
+            ->distinct()
             ->pluck('team_id');
 
         return Team::transferMarketEligible()
-            ->whereIn('id', $segundaTeamIds)
-            ->inRandomOrder()
-            ->limit(self::POOL_SIZE)
+            ->whereIn('id', $teamIds)
+            ->whereNotIn('id', $game->userTeamIds())
+            ->orderBy('name')
             ->get();
+    }
+
+    /**
+     * The candidate pool grouped by country for the picker modal. Mirrors the
+     * shape Explore's pool mode consumes:
+     * {code, name, flag, teams: [{id, name, image}]}.
+     *
+     * @return Collection<int, array{code: string, name: string, flag: string, teams: array}>
+     */
+    public function candidateTeamsGroupedByCountry(Game $game): Collection
+    {
+        return $this->candidatePool($game)
+            ->groupBy('country')
+            ->map(function (Collection $teams, ?string $countryCode) {
+                $code = strtolower((string) $countryCode);
+                $englishName = CountryCodeMapper::toName((string) $countryCode) ?? $countryCode;
+
+                return [
+                    'code' => $code,
+                    'name' => __("countries.{$englishName}"),
+                    // The Team flag accessor handles the EN -> gb-eng case.
+                    'flag' => $teams->first()->flag,
+                    'teams' => $teams->map(fn (Team $team) => [
+                        'id' => $team->id,
+                        'name' => $team->name,
+                        'image' => $team->image,
+                    ])->values()->all(),
+                ];
+            })
+            ->sortBy('name')
+            ->values();
     }
 
     /**
@@ -179,7 +159,8 @@ class PreseasonOpponentService
 
     /**
      * Validate and normalise raw selections: drop blanks, clamp to valid slots
-     * and pool members, and enforce uniqueness of slots and teams.
+     * and pool members, and enforce one fixture per slot (two friendlies can't
+     * share a date). The same opponent may be picked in multiple slots.
      *
      * @param  array<int, array{slot?:mixed, team_id?:mixed, is_home?:mixed}>  $selections
      * @return array<int, array{slot:int, team_id:string, is_home:bool}>
@@ -190,7 +171,6 @@ class PreseasonOpponentService
 
         $clean = [];
         $usedSlots = [];
-        $usedTeams = [];
 
         foreach ($selections as $selection) {
             $slot = (int) ($selection['slot'] ?? -1);
@@ -202,12 +182,11 @@ class PreseasonOpponentService
             if (! is_string($teamId) || ! $validTeamIds->has($teamId)) {
                 continue;
             }
-            if (isset($usedSlots[$slot]) || isset($usedTeams[$teamId])) {
+            if (isset($usedSlots[$slot])) {
                 continue;
             }
 
             $usedSlots[$slot] = true;
-            $usedTeams[$teamId] = true;
 
             $clean[] = [
                 'slot' => $slot,

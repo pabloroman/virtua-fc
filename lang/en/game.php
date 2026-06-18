@@ -553,13 +553,16 @@ return [
     // Pre-season opponent selection screen
     'preseason_setup_title' => 'Plan Your Pre-Season',
     'preseason_setup_subtitle' => 'Arrange up to four friendlies before the season kicks off.',
-    'preseason_setup_intro' => 'Pick an opponent and venue for each date. Leave a date empty to skip that friendly — you can play as few as you like.',
     'preseason_setup_fixture' => 'Friendly :number',
-    'preseason_setup_no_match' => 'No match',
     'preseason_setup_home' => 'Home',
     'preseason_setup_away' => 'Away',
     'preseason_setup_confirm' => 'Confirm Pre-Season',
     'preseason_setup_no_opponents' => 'No suitable opponents are available — confirm to start the season.',
+    'preseason_setup_choose_opponent' => 'Choose opponent',
+    'preseason_setup_modal_title' => 'Choose an opponent',
+    'preseason_setup_search_placeholder' => 'Search teams…',
+    'preseason_setup_no_results' => 'No teams found.',
+    'preseason_setup_clear' => 'Clear',
 
     // MVP
     'mvp' => 'MVP',

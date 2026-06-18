@@ -25,12 +25,12 @@ class ShowPreseasonSetup
             return redirect()->route('show-game', $gameId);
         }
 
-        $candidates = $this->opponentService->candidatePool($game);
+        $teams = $this->opponentService->candidateTeamsGroupedByCountry($game);
         $slots = $this->opponentService->fixtureSlots($game);
 
         return view('preseason-setup', [
             'game' => $game,
-            'candidates' => $candidates,
+            'teams' => $teams,
             'slots' => $slots,
         ]);
     }

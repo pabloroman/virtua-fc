@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -58,8 +59,11 @@ class PreSeasonTest extends TestCase
     }
 
     /**
-     * Create an eligible (league-registered) team in the given country with a
-     * matching reputation, so it surfaces in the candidate pool.
+     * Create a team registered in the given competition both as reference data
+     * (competition_teams, so transferMarketEligible() passes) and in this game
+     * (competition_entries, so it surfaces in the candidate pool). Reputation is
+     * retained for the few tests that still set it, though the pool no longer
+     * filters on it.
      */
     private function eligibleTeam(string $name, string $country, string $reputation, string $competitionId): Team
     {
@@ -75,6 +79,13 @@ class PreSeasonTest extends TestCase
             'competition_id' => $comp->id,
             'team_id' => $team->id,
             'season' => '2025',
+            'entry_round' => 1,
+        ]);
+
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => $comp->id,
+            'team_id' => $team->id,
             'entry_round' => 1,
         ]);
 
@@ -107,17 +118,49 @@ class PreSeasonTest extends TestCase
         $response->assertRedirect(route('game.preseason-setup', $this->game->id));
     }
 
-    public function test_candidate_pool_includes_eligible_foreign_teams_and_excludes_others(): void
+    public function test_candidate_pool_includes_all_game_teams_and_excludes_own_team(): void
     {
-        $foreignMatch = $this->eligibleTeam('Foreign Match', 'GB', ClubProfile::REPUTATION_ESTABLISHED, 'ENG1');
-        $domestic = $this->eligibleTeam('Domestic Side', 'ES', ClubProfile::REPUTATION_ESTABLISHED, 'ESP2');
-        $foreignOutOfTier = $this->eligibleTeam('Foreign Giant', 'GB', ClubProfile::REPUTATION_ELITE, 'ENG2');
+        // The pool is now every game team with a squad — foreign and domestic,
+        // regardless of reputation — minus the user's own team.
+        $foreign = $this->eligibleTeam('Foreign Match', 'GB', ClubProfile::REPUTATION_ESTABLISHED, 'ENG1');
+        $domestic = $this->eligibleTeam('Domestic Side', 'ES', ClubProfile::REPUTATION_MODEST, 'ESP2');
+
+        // Register the player's own team in the game too — it must still be excluded.
+        CompetitionTeam::create([
+            'competition_id' => 'ESP1',
+            'team_id' => $this->playerTeam->id,
+            'season' => '2025',
+            'entry_round' => 1,
+        ]);
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESP1',
+            'team_id' => $this->playerTeam->id,
+            'entry_round' => 1,
+        ]);
 
         $pool = app(PreseasonOpponentService::class)->candidatePool($this->game)->pluck('id');
 
-        $this->assertContains($foreignMatch->id, $pool);
-        $this->assertNotContains($domestic->id, $pool, 'Same-country teams are excluded');
-        $this->assertNotContains($foreignOutOfTier->id, $pool, 'Out-of-tier teams are excluded');
+        $this->assertContains($foreign->id, $pool);
+        $this->assertContains($domestic->id, $pool, 'Same-country teams are now included');
+        $this->assertNotContains($this->playerTeam->id, $pool, 'You cannot play yourself');
+    }
+
+    public function test_candidate_teams_grouped_by_country(): void
+    {
+        $this->eligibleTeam('Foreign A', 'GB', ClubProfile::REPUTATION_ESTABLISHED, 'ENG1');
+        $this->eligibleTeam('Foreign B', 'FR', ClubProfile::REPUTATION_MODEST, 'FRA1');
+
+        $groups = app(PreseasonOpponentService::class)->candidateTeamsGroupedByCountry($this->game);
+
+        $codes = $groups->pluck('code')->all();
+        $this->assertContains('gb', $codes);
+        $this->assertContains('fr', $codes);
+
+        $gb = $groups->firstWhere('code', 'gb');
+        $this->assertCount(1, $gb['teams']);
+        $this->assertSame('Foreign A', $gb['teams'][0]['name']);
+        $this->assertArrayHasKey('image', $gb['teams'][0]);
     }
 
     public function test_confirm_selections_creates_chosen_friendlies(): void

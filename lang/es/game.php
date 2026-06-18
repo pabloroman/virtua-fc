@@ -553,13 +553,16 @@ return [
     // Pantalla de selección de rivales de pretemporada
     'preseason_setup_title' => 'Planifica tu Pretemporada',
     'preseason_setup_subtitle' => 'Organiza hasta cuatro amistosos antes de que arranque la temporada.',
-    'preseason_setup_intro' => 'Elige un rival y la sede para cada fecha. Deja una fecha vacía para saltarte ese amistoso: puedes jugar tan pocos como quieras.',
     'preseason_setup_fixture' => 'Amistoso :number',
-    'preseason_setup_no_match' => 'Sin partido',
     'preseason_setup_home' => 'Local',
     'preseason_setup_away' => 'Visitante',
     'preseason_setup_confirm' => 'Confirmar Pretemporada',
     'preseason_setup_no_opponents' => 'No hay rivales adecuados disponibles: confirma para comenzar la temporada.',
+    'preseason_setup_choose_opponent' => 'Elegir rival',
+    'preseason_setup_modal_title' => 'Elige un rival',
+    'preseason_setup_search_placeholder' => 'Buscar equipos…',
+    'preseason_setup_no_results' => 'No se encontraron equipos.',
+    'preseason_setup_clear' => 'Quitar',
 
     // MVP
     'mvp' => 'MVP',
