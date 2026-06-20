@@ -547,8 +547,6 @@ return [
     // Pre-season
     'pre_season' => 'Pre-Season',
     'pre_season_friendly' => 'Friendly',
-    'pre_season_banner_title' => 'Pre-Season',
-    'pre_season_banner_desc' => 'Season starts :date. Use this time to set up your squad, play friendlies and sign players.',
     'pre_season_ready' => 'Pre-season set. Good luck this season!',
     // Pre-season opponent selection screen
     'preseason_setup_title' => 'Plan Your Pre-Season',

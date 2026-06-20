@@ -280,6 +280,5 @@ class PreSeasonTest extends TestCase
 
         $response->assertOk();
         $response->assertViewHas('isPreSeason', true);
-        $response->assertViewHas('seasonStartDate');
     }
 }

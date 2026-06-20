@@ -547,8 +547,6 @@ return [
     // Pre-season
     'pre_season' => 'Pretemporada',
     'pre_season_friendly' => 'Amistoso',
-    'pre_season_banner_title' => 'Pretemporada',
-    'pre_season_banner_desc' => 'La temporada comienza el :date. Aprovecha para configurar tu plantilla, jugar amistosos y fichar jugadores.',
     'pre_season_ready' => 'Pretemporada lista. ¡Buena suerte esta temporada!',
     // Pantalla de selección de rivales de pretemporada
     'preseason_setup_title' => 'Planifica tu Pretemporada',
