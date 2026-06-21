@@ -459,13 +459,17 @@ class GamePlayerTemplateService
 
         $age = (int) $dateOfBirth->diffInYears($referenceDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
-        // Transfermarkt occasionally lists fringe / youth squad players with
-        // no quoted value — floor those at €100K so they still get a usable
-        // ability baseline and a non-zero transfer price.
-        $marketValueForOverall = $marketValueCents > 0 ? $marketValueCents : 10_000_000;
+        // Transfermarkt occasionally lists fringe / youth squad players with no
+        // quoted value. Floor those at €100K so they get a usable ability
+        // baseline, a non-zero transfer price, and don't render as "Free" in the
+        // market. Flooring the persisted value (not just an ability-only local)
+        // keeps stored market value, wage, release clause and tier consistent.
+        if ($marketValueCents <= 0) {
+            $marketValueCents = 10_000_000; // €100K, matches PlayerGeneratorService floor
+        }
         $position = $playerData['position'] ?? null;
         $overallScore = $this->resolveExplicitAbility($playerData['overall_score'] ?? null)
-            ?? $this->valuationService->marketValueToOverallScore($marketValueForOverall, $age, $position);
+            ?? $this->valuationService->marketValueToOverallScore($marketValueCents, $age, $position);
         $annualWage = $this->contractService->calculateAnnualWageForPlayer($overallScore, $marketValueCents, $minimumWage, $age, $position);
 
         $explicitPotential = $this->resolveExplicitPotential($playerData['potential'] ?? null, $overallScore);
