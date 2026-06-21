@@ -7,6 +7,7 @@ use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
+use App\Models\GamePlayer;
 use App\Models\Team;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\StadiumLoanService;
@@ -30,11 +31,17 @@ class BudgetProjectionServiceTest extends TestCase
     use RefreshDatabase;
 
     private const PREV_SEASON = 2025;
+
     private const CUR_SEASON = '2026';
+
     private const ACTUAL_SURPLUS = 10_000_000_00;
+
     private const CARRIED_SURPLUS = 2_000_000_00;
+
     private const ACTUAL_COMMERCIAL_REVENUE = 50_000_000_00;
+
     private const ACTUAL_TOTAL_REVENUE = 200_000_000_00;
+
     private const LOAN_REPAYMENT = 5_000_000_00;
 
     public function test_fresh_club_skips_carry_overs_and_uses_stadium_commercial_baseline(): void
@@ -212,6 +219,74 @@ class BudgetProjectionServiceTest extends TestCase
         $expected = (int) round($preSubsidyRevenue * config('finances.opex_revenue_ratio.local'));
 
         $this->assertSame($expected, $finances->projected_operating_expenses);
+    }
+
+    public function test_recompute_restates_projected_wages_from_the_current_squad(): void
+    {
+        [$service, $game, $team] = $this->buildScenario();
+
+        $finances = GameFinances::create([
+            'game_id' => $game->id,
+            'season' => (int) $game->season,
+            'projected_wages' => 50_000_000_00,
+            'projected_surplus' => 10_000_000_00,
+        ]);
+
+        // Current squad totals €30M/yr — €20M below the €50M season-start
+        // snapshot, as if a high earner left during the window.
+        GamePlayer::factory()->forGame($game)->forTeam($team)->create(['annual_wage' => 20_000_000_00]);
+        GamePlayer::factory()->forGame($game)->forTeam($team)->create(['annual_wage' => 10_000_000_00]);
+
+        $service->recomputeWageProjection($game);
+
+        $finances->refresh();
+        $this->assertSame(30_000_000_00, $finances->projected_wages);
+        // The €20M wage saving lifts projected surplus by the same amount.
+        $this->assertSame(10_000_000_00 + 20_000_000_00, $finances->projected_surplus);
+    }
+
+    public function test_recompute_is_idempotent_and_tracks_a_later_sale(): void
+    {
+        [$service, $game, $team] = $this->buildScenario();
+
+        $finances = GameFinances::create([
+            'game_id' => $game->id,
+            'season' => (int) $game->season,
+            'projected_wages' => 30_000_000_00,
+            'projected_surplus' => 10_000_000_00,
+        ]);
+
+        GamePlayer::factory()->forGame($game)->forTeam($team)->create(['annual_wage' => 20_000_000_00]);
+        $leaver = GamePlayer::factory()->forGame($game)->forTeam($team)->create(['annual_wage' => 10_000_000_00]);
+
+        // First run already matches the seeded snapshot exactly → no-op.
+        $service->recomputeWageProjection($game);
+        $finances->refresh();
+        $this->assertSame(30_000_000_00, $finances->projected_wages);
+        $this->assertSame(10_000_000_00, $finances->projected_surplus);
+
+        // Sell the €10M earner to another club, then recompute again.
+        $leaver->update(['team_id' => Team::factory()->create()->id]);
+        $service->recomputeWageProjection($game);
+        $finances->refresh();
+        $this->assertSame(20_000_000_00, $finances->projected_wages);
+        $this->assertSame(20_000_000_00, $finances->projected_surplus);
+    }
+
+    public function test_recompute_is_a_no_op_without_a_current_finances_row(): void
+    {
+        [$service, $game, $team] = $this->buildScenario();
+
+        GamePlayer::factory()->forGame($game)->forTeam($team)->create(['annual_wage' => 20_000_000_00]);
+
+        // buildScenario only seeds the PREVIOUS season's finances, so there is no
+        // current-season row — the recompute must not create or touch anything.
+        $service->recomputeWageProjection($game);
+
+        $this->assertDatabaseMissing('game_finances', [
+            'game_id' => $game->id,
+            'season' => (int) $game->season,
+        ]);
     }
 
     /**

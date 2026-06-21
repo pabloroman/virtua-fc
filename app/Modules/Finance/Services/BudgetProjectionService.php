@@ -3,7 +3,6 @@
 namespace App\Modules\Finance\Services;
 
 use App\Models\BudgetLoan;
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -17,7 +16,6 @@ use App\Modules\Squad\Services\SquadService;
 use App\Modules\Stadium\Services\MatchAttendanceService;
 use App\Modules\Stadium\Services\NamingRightsService;
 use App\Modules\Stadium\Services\SeasonTicketPricingService;
-use App\Modules\Finance\Services\StadiumLoanService;
 use Carbon\Carbon;
 
 class BudgetProjectionService
@@ -29,6 +27,7 @@ class BudgetProjectionService
         private readonly StadiumLoanService $stadiumLoanService,
         private readonly NamingRightsService $namingRightsService,
     ) {}
+
     /**
      * UEFA / RFEF solidarity funds by competition tier (in cents).
      * Segunda receives the full €1M pool; Primera RFEF gets a trimmed €250K share
@@ -36,7 +35,7 @@ class BudgetProjectionService
      */
     private const SOLIDARITY_FUNDS_BY_TIER = [
         2 => 100_000_000, // €1M — Segunda
-        3 =>  25_000_000, // €250K — Primera RFEF
+        3 => 25_000_000, // €250K — Primera RFEF
     ];
 
     /**
@@ -46,7 +45,7 @@ class BudgetProjectionService
     private const MINIMUM_TRANSFER_BUDGET_BY_TIER = [
         1 => 100_000_000, // €1M — La Liga
         2 => 100_000_000, // €1M — Segunda
-        3 =>  20_000_000, // €200K — Primera RFEF
+        3 => 20_000_000, // €200K — Primera RFEF
     ];
 
     private const MINIMUM_TRANSFER_BUDGET_DEFAULT = 100_000_000; // €1M in cents
@@ -121,7 +120,7 @@ class BudgetProjectionService
         // that would swamp it. Computed on pre-subsidy revenue so a public subsidy
         // top-up never inflates the overhead it is meant to cover.
         $reputation = TeamReputation::resolveLevel($game->id, $team->id);
-        $opexRatio = (float) config('finances.opex_revenue_ratio.' . $reputation, 0.13);
+        $opexRatio = (float) config('finances.opex_revenue_ratio.'.$reputation, 0.13);
         $projectedOperatingExpenses = (int) round($projectedTotalRevenue * $opexRatio);
 
         // Calculate projected surplus
@@ -388,6 +387,41 @@ class BudgetProjectionService
     }
 
     /**
+     * Restate the persisted wage projection against the CURRENT squad, then move
+     * projected surplus by the same delta so the revenue − wages − opex invariant
+     * (and the available_surplus derived from it) stays intact. Called once when a
+     * transfer window closes (see RecomputeWageProjectionOnWindowClose) so the
+     * season budget reflects the window's net ins and outs instead of staying
+     * frozen at its season-start squad (#1191).
+     *
+     * Stateless and idempotent: the bill is recomputed wholesale from the current
+     * squad via calculateProjectedWages (which already excludes loaned-in players
+     * and counts loaned-out ones), so sales, purchases and free-agent signings are
+     * reflected uniformly with no per-transfer bookkeeping. A second run finds a
+     * zero delta and no-ops. No-op too when there is no finances row yet. The
+     * actual wage bill is reconciled independently at season-end settlement; this
+     * only keeps the in-season forecast honest.
+     */
+    public function recomputeWageProjection(Game $game): void
+    {
+        $finances = $game->currentFinances;
+        if (! $finances) {
+            return;
+        }
+
+        $newWages = $this->calculateProjectedWages($game);
+        $delta = $newWages - (int) $finances->projected_wages;
+        if ($delta === 0) {
+            return;
+        }
+
+        $finances->projected_wages = $newWages;
+        // Surplus = revenue − wages − opex, so it moves opposite the wage bill.
+        $finances->projected_surplus = (int) $finances->projected_surplus - $delta;
+        $finances->save();
+    }
+
+    /**
      * Trailing player-trading allowance in cents — the smoothed net player-
      * trading result (sales − purchases) over the last few COMPLETED seasons,
      * floored at zero (net buyers earn nothing, but pay no penalty) and capped
@@ -476,7 +510,7 @@ class BudgetProjectionService
             ->where('season', $previousSeason)
             ->first();
 
-        if (!$previousFinances || $previousFinances->actual_surplus === 0 && $previousFinances->actual_total_revenue === 0) {
+        if (! $previousFinances || $previousFinances->actual_surplus === 0 && $previousFinances->actual_total_revenue === 0) {
             return 0;
         }
 

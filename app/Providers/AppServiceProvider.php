@@ -2,39 +2,44 @@
 
 namespace App\Providers;
 
-use App\Http\View\Composers\TacticalGuideComposer;
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
 use App\Events\TournamentEnded;
+use App\Http\View\Composers\TacticalGuideComposer;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
+use App\Modules\Competition\Services\CompetitionHandlerResolver;
+use App\Modules\Finance\Listeners\ActivateCompletedStadiumProjects;
+use App\Modules\Finance\Listeners\RecomputeWageProjectionOnWindowClose;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Events\LeaguePhaseCompleted;
 use App\Modules\Match\Events\MatchFinalized;
-use App\Modules\Match\Handlers\PreSeasonHandler;
 use App\Modules\Match\Handlers\GroupStageCupHandler;
 use App\Modules\Match\Handlers\KnockoutCupHandler;
 use App\Modules\Match\Handlers\LeagueHandler;
 use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
+use App\Modules\Match\Handlers\PreSeasonHandler;
 use App\Modules\Match\Handlers\SwissFormatHandler;
 use App\Modules\Match\Listeners\AwardCupPrizeMoney;
 use App\Modules\Match\Listeners\AwardLeaguePhaseBonus;
 use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
 use App\Modules\Match\Listeners\EnsureMatchAttendance;
+use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
+use App\Modules\Match\Listeners\UpdateLeagueStandings;
+use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosed;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosing;
 use App\Modules\Notification\Listeners\NotifyTransferWindowOpen;
 use App\Modules\Notification\Listeners\NotifyUnenrolledPlayersBeforeWindowClose;
-use App\Modules\Notification\Listeners\SendCupTieNotifications;
 use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
+use App\Modules\Notification\Listeners\SendCupTieNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
-use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
-use App\Modules\Match\Listeners\UpdateLeagueStandings;
-use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Report\Listeners\CreateTournamentSnapshot;
 use App\Modules\Season\Listeners\GrantCareerAccessToChampion;
+use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\RecordTournamentCompletedActivation;
+use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Season\Listeners\SoftDeleteCompletedTournamentGame;
 use App\Modules\Squad\Listeners\CheckRecoveredPlayers;
 use App\Modules\Squad\Listeners\EnforceSquadRegistration;
@@ -44,20 +49,17 @@ use App\Modules\Transfer\Listeners\CompleteAgreedTransfersOnWindowOpen;
 use App\Modules\Transfer\Listeners\ProcessTransferWindowClose;
 use App\Modules\Transfer\Listeners\RollAIContractRenewals;
 use App\Modules\Transfer\Listeners\RollSalaryUnhappiness;
-use App\Modules\Finance\Listeners\ActivateCompletedStadiumProjects;
-use App\Modules\Season\Listeners\RecordSeasonCompleted;
-use App\Modules\Season\Listeners\SimulateOtherLeagues;
-use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -74,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register competition handler resolver as singleton
         $this->app->singleton(CompetitionHandlerResolver::class, function ($app) {
-            $resolver = new CompetitionHandlerResolver();
+            $resolver = new CompetitionHandlerResolver;
 
             // Register handlers
             $resolver->register($app->make(LeagueHandler::class));
@@ -97,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin;
         });
 
-        \Illuminate\Support\Number::useLocale(config('app.locale'));
+        Number::useLocale(config('app.locale'));
 
         // Static reference data for the tactical-guide modal — composed lazily
         // so view actions that include the partial don't rebuild it on every
@@ -149,6 +151,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosing::class);
         Event::listen(GameDateAdvanced::class, NotifyUnenrolledPlayersBeforeWindowClose::class);
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
+        Event::listen(GameDateAdvanced::class, RecomputeWageProjectionOnWindowClose::class);
         Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);
         Event::listen(GameDateAdvanced::class, RollSalaryUnhappiness::class);
