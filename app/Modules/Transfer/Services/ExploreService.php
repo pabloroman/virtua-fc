@@ -466,16 +466,6 @@ class ExploreService
     }
 
     /**
-     * Count free agents in a game.
-     */
-    public function getFreeAgentCount(string $gameId): int
-    {
-        return GamePlayer::where('game_id', $gameId)
-            ->whereNull('team_id')
-            ->count();
-    }
-
-    /**
      * Get shortlisted player IDs from a set of player IDs.
      *
      * @return array<string>

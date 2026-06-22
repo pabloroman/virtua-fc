@@ -150,11 +150,6 @@ return [
     'player_released_message' => ':player has been released from your squad. Severance paid: :severance.',
     'player_released_message_free' => ':player has been released from your squad.',
 
-    // Tracking intel
-    'tracking_intel_title' => 'Intel on :player ready',
-    'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',
-    'tracking_deep_intel_ready' => 'Your scout has completed deep intel on :player — transfer willingness and rival interest revealed.',
-
     // Emergency signings
     'emergency_signing_title' => 'Emergency squad reinforcement',
     'emergency_signing_message' => 'Your squad was critically low. :count free agents have been signed to ensure you can field a team: :players.',

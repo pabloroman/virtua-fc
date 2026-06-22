@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     @php
-                        $transfersRoutes = ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.scouting.results', 'game.explore', 'game.explore.teams', 'game.explore.squad', 'game.explore.pool-teams', 'game.explore.free-agents', 'game.transfers.market'];
+                        $transfersRoutes = ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.scouting.results', 'game.explore', 'game.explore.teams', 'game.explore.squad', 'game.explore.pool-teams', 'game.transfers.market'];
                         $transfersActive = in_array(Route::currentRouteName(), $transfersRoutes);
                     @endphp
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">

@@ -7,8 +7,6 @@ use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Modules\Transfer\Services\ScoutingService;
-use App\Support\Money;
-use App\Support\PositionMapper;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 
@@ -81,26 +79,15 @@ class ToggleShortlist
 
             return redirect()->back()->with('error', $message);
         } else {
-            $intelLevel = $request->input('source') === 'scout_report'
-                ? ShortlistedPlayer::INTEL_REPORT
-                : ShortlistedPlayer::INTEL_SURFACE;
-
             try {
-                $entry = ShortlistedPlayer::create([
+                ShortlistedPlayer::create([
                     'game_id' => $gameId,
                     'game_player_id' => $playerId,
                     'added_at' => $game->current_date,
-                    'intel_level' => $intelLevel,
                 ]);
-
-                // Auto-track if slots available
-                $this->scoutingService->startTracking($entry, $game);
             } catch (UniqueConstraintViolationException $e) {
                 // Concurrent toggle (e.g. double-click) — another request already
-                // created the row. Treat as success and reuse the winning row.
-                $entry = ShortlistedPlayer::where('game_id', $gameId)
-                    ->where('game_player_id', $playerId)
-                    ->firstOrFail();
+                // created the row. Treat as success.
             }
 
             $message = __('messages.shortlist_added', ['player' => $gamePlayer->name]);
@@ -111,57 +98,15 @@ class ToggleShortlist
             $data = ['success' => true, 'message' => $message, 'action' => $action, 'playerId' => $playerId];
 
             if ($action === 'added') {
-                $entry->refresh();
                 $gamePlayer->load(['team']);
-                $positionDisplay = PositionMapper::getPositionDisplay($gamePlayer->position);
-
-                $data['player'] = [
-                    'id' => $gamePlayer->id,
-                    'name' => $gamePlayer->name,
-                    'position' => $gamePlayer->position,
-                    'positionAbbr' => $positionDisplay['abbreviation'],
-                    'positionBg' => $positionDisplay['bg'],
-                    'positionText' => $positionDisplay['text'],
-                    'age' => $gamePlayer->age($game->current_date),
-                    'teamName' => $gamePlayer->team?->name,
-                    'teamImage' => $gamePlayer->team?->image,
-                    'isExpiring' => $gamePlayer->contract_until && $gamePlayer->contract_until <= $game->getSeasonEndDate(),
-                    'contractYear' => $gamePlayer->contract_until?->format('Y'),
-                    'marketValue' => $gamePlayer->market_value_cents,
-                    'formattedMarketValue' => Money::format($gamePlayer->market_value_cents),
-                    'intelLevel' => $entry->intel_level ?? ShortlistedPlayer::INTEL_SURFACE,
-                    'isTracking' => (bool) $entry->is_tracking,
-                    'matchdaysTracked' => $entry->matchdays_tracked ?? 0,
-                    'hasExistingOffer' => false,
-                    'overallRange' => null,
-                    'formattedAskingPrice' => null,
-                    'askingPrice' => null,
-                    'canAffordFee' => false,
-                    'canAffordLoan' => false,
-                    'wageDemand' => null,
-                    'formattedWageDemand' => null,
-                    'bidEuros' => 0,
-                    'wageEuros' => 0,
-                    'willingness' => null,
-                    'willingnessLabel' => null,
-                    'rivalInterest' => false,
-                ];
-
-                if ($entry->hasReportLevel()) {
-                    $detail = $this->scoutingService->getPlayerScoutingDetail($gamePlayer, $game);
-                    $data['player']['overallRange'] = $detail['overall_range'];
-                    $data['player']['formattedAskingPrice'] = $detail['formatted_asking_price'];
-                    $data['player']['askingPrice'] = $detail['asking_price'];
-                    $data['player']['canAffordFee'] = $detail['can_afford_fee'];
-                    $data['player']['canAffordLoan'] = $detail['can_afford_loan'];
-                    $data['player']['wageDemand'] = $detail['wage_demand'];
-                    $data['player']['formattedWageDemand'] = $detail['formatted_wage_demand'];
-                    $data['player']['bidEuros'] = (int) ($detail['asking_price'] / 100);
-                    $data['player']['wageEuros'] = (int) ($detail['wage_demand'] / 100);
-                }
+                // A freshly-starred target carries the same full dossier as one
+                // rendered on page load — no offer yet, so pass a null status.
+                $data['player'] = $this->scoutingService->buildTargetData(
+                    $gamePlayer,
+                    $game,
+                    null,
+                );
             }
-
-            $data['trackingCapacity'] = $this->scoutingService->getTrackingCapacity($game);
 
             return response()->json($data);
         }

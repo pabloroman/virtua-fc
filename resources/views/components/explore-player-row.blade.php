@@ -8,6 +8,10 @@
     'askingPrice' => null,
     'showAskingPrice' => null,
     'teamPlacement' => 'column', // 'column' | 'inline'
+    // Optional scouting detail array (from ScoutingService::getPlayerScoutingDetail,
+    // augmented with willingness/offer-status). When present the dossier modal
+    // gains the scout intel sections; absent on transfer-market/explore.
+    'scoutingDetail' => null,
 ])
 
 @php
@@ -37,9 +41,46 @@ $showContract = $showContract ?? !$showTeam;
 // When rendering alongside listings, the asking-price cell must always be
 // rendered to keep column alignment stable — free agents show a placeholder.
 $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
+
+// Clicking the row opens the shared dossier modal — only meaningful for players
+// the user doesn't already own (those have no offer/shortlist actions).
+$canOpenDossier = !$isUserOwned;
+if ($canOpenDossier) {
+    $dossierDetail = $scoutingDetail ?? [];
+    // Carry the listing's asking price into the dossier even without a full
+    // scouting detail (transfer-market rows).
+    if ($askingPrice !== null && !isset($dossierDetail['formatted_asking_price'])) {
+        $dossierDetail['formatted_asking_price'] = \App\Support\Money::format($askingPrice);
+    }
+    $dossierPayload = \Illuminate\Support\Js::from(
+        \App\Support\PlayerDossierPresenter::build($player, $game, $dossierDetail)
+    );
+}
+
+// data-sort-* values for the client-side sortable table (resources/js/sortable-table.js).
+// Emitted unconditionally on the row — harmless for columns a given table hides.
+$sortName = \Illuminate\Support\Str::lower($player->name);
+$sortTeam = \Illuminate\Support\Str::lower($player->team?->name ?? '');
+$sortPos = \App\Support\PositionMapper::positionSortOrder($player->position);
+$sortContract = $isFreeAgent ? 0 : ($player->contract_until?->year ?? 0);
+// Free agents ("Free" asking) sort to one end via the -1 sentinel rather than
+// interleaving with priced listings.
+$sortAsking = $askingPrice ?? -1;
 @endphp
 
-<tr class="border-b border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]">
+<tr @class([
+        'border-b border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]',
+        'cursor-pointer' => $canOpenDossier,
+    ])
+    data-sort-name="{{ $sortName }}"
+    data-sort-team="{{ $sortTeam }}"
+    data-sort-pos="{{ $sortPos }}"
+    data-sort-age="{{ $player->age($game->current_date) }}"
+    data-sort-ovr="{{ $player->effective_rating }}"
+    data-sort-value="{{ $player->market_value_cents }}"
+    data-sort-contract="{{ $sortContract }}"
+    data-sort-asking="{{ $sortAsking }}"
+    @if($canOpenDossier) x-data x-on:click="$dispatch('open-player-dossier', {{ $dossierPayload }})" @endif>
     {{-- Position badge --}}
     <td class="py-2 pl-4">
         <x-position-badge :position="$player->position" size="sm" />
@@ -173,7 +214,7 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
             <x-icon-button
                 size="sm"
                 x-data
-                x-on:click.prevent="$dispatch('open-negotiation', {{ $offerPayload }})"
+                x-on:click.prevent.stop="$dispatch('open-negotiation', {{ $offerPayload }})"
                 class="rounded-full text-text-body hover:text-accent-blue"
                 title="{{ __('transfers.explore_make_offer') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +242,7 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
             <x-icon-button
                 size="sm"
                 x-data
-                x-on:click.prevent="$dispatch('open-negotiation', {{ $freeAgentPayload }})"
+                x-on:click.prevent.stop="$dispatch('open-negotiation', {{ $freeAgentPayload }})"
                 class="rounded-full text-text-body hover:text-accent-green"
                 title="{{ __('transfers.explore_negotiate') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,6 +286,9 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
                     const data = await response.json();
                     if (data.success) {
                         this.isShortlisted = data.action === 'added';
+                        // Keep the scouting hub board + any other star for this
+                        // player in sync (live-add/remove the shortlist card).
+                        window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } }));
                     } else if (data.message) {
                         alert(data.message);
                     }
@@ -252,8 +296,9 @@ $showAskingPrice = $showAskingPrice ?? ($askingPrice !== null);
                     this.inFlight = false;
                 }
             }
-        }">
-        <x-icon-button @click.prevent="toggle()"
+        }"
+        @shortlist-toggled.window="if ($event.detail.playerId === '{{ $player->id }}') isShortlisted = $event.detail.action === 'added'">
+        <x-icon-button @click.prevent.stop="toggle()"
                 size="sm"
                 class="rounded-full"
                 x-bind:class="isShortlisted ? 'text-accent-gold hover:text-amber-400' : 'text-text-body hover:text-accent-gold'"

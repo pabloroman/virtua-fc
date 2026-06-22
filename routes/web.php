@@ -84,8 +84,6 @@ use App\Http\Views\ShowSquadRegistration;
 use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
 use App\Http\Actions\SubmitPreContractOffer;
-use App\Http\Actions\StartPlayerTracking;
-use App\Http\Actions\StopPlayerTracking;
 use App\Http\Actions\ToggleShortlist;
 use App\Http\Actions\RemoveFromShortlist;
 use App\Http\Actions\DeleteScoutSearch;
@@ -117,7 +115,6 @@ use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowExplore;
 use App\Http\Views\ExploreTeams;
 use App\Http\Views\ExplorePoolTeams;
-use App\Http\Views\ExploreFreeAgents;
 use App\Http\Views\ExploreSquad;
 use App\Http\Views\ShowManagerCareer;
 use App\Http\Views\ShowSeasonEnd;
@@ -272,8 +269,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/shortlist/{playerId}', ToggleShortlist::class)->name('game.scouting.shortlist.toggle');
         Route::post('/game/{gameId}/scouting/shortlist/{playerId}/remove', RemoveFromShortlist::class)->name('game.scouting.shortlist.remove');
-        Route::post('/game/{gameId}/scouting/track/{playerId}/start', StartPlayerTracking::class)->name('game.scouting.track.start');
-        Route::post('/game/{gameId}/scouting/track/{playerId}/stop', StopPlayerTracking::class)->name('game.scouting.track.stop');
         Route::delete('/game/{gameId}/scouting/{reportId}', DeleteScoutSearch::class)->name('game.scouting.delete');
 
         // Explorer
@@ -281,7 +276,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/explore/teams/{competitionId}', ExploreTeams::class)->name('game.explore.teams');
         Route::get('/game/{gameId}/explore/squad/{teamId}', ExploreSquad::class)->name('game.explore.squad');
         Route::get('/game/{gameId}/explore/pool-teams/{poolId}', ExplorePoolTeams::class)->name('game.explore.pool-teams');
-        Route::get('/game/{gameId}/explore/free-agents', ExploreFreeAgents::class)->name('game.explore.free-agents');
         Route::get('/game/{gameId}/explore/team/{slug}', ShowExplore::class)->name('game.explore.team');
 
         // Loans (redirect old URL to transfers)

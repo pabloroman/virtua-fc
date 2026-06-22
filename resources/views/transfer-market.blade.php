@@ -45,39 +45,51 @@
                     <p class="text-text-secondary text-sm">{{ __('transfers.market_empty') }}</p>
                 </div>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="text-left border-b border-border-default">
-                                <th class="py-2.5 pl-4 w-12"></th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_overall') }}</th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
-                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-right hidden md:table-cell">{{ __('transfers.market_asking_price') }}</th>
-                                <th class="py-2.5 w-10"></th>
-                                <th class="py-2.5 pr-4 w-10"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($rows as $row)
-                                <x-explore-player-row
-                                    :player="$row['gamePlayer']"
-                                    :game="$game"
-                                    :show-team="true"
-                                    team-placement="inline"
-                                    :show-ovr="true"
-                                    :show-contract="true"
-                                    :asking-price="$row['askingPrice']"
-                                    :show-asking-price="true" />
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div x-data="sortableTable()">
+                    <x-sortable-pills :columns="[
+                        ['col' => 'pos', 'label' => __('squad.pos')],
+                        ['col' => 'name', 'label' => __('squad.player')],
+                        ['col' => 'age', 'label' => __('transfers.explore_age')],
+                        ['col' => 'ovr', 'label' => __('transfers.explore_overall')],
+                        ['col' => 'value', 'label' => __('transfers.explore_value')],
+                        ['col' => 'contract', 'label' => __('transfers.explore_contract_year')],
+                        ['col' => 'asking', 'label' => __('transfers.market_asking_price')],
+                    ]" />
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left border-b border-border-default">
+                                    <th class="py-2.5 pl-4 w-12"></th>
+                                    <x-sortable-th col="name" align="left">{{ __('squad.player') }}</x-sortable-th>
+                                    <x-sortable-th col="age" class="hidden md:table-cell">{{ __('transfers.explore_age') }}</x-sortable-th>
+                                    <x-sortable-th col="ovr" class="hidden md:table-cell">{{ __('transfers.explore_overall') }}</x-sortable-th>
+                                    <x-sortable-th col="value" align="left" class="hidden md:table-cell">{{ __('transfers.explore_value') }}</x-sortable-th>
+                                    <x-sortable-th col="contract" class="hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</x-sortable-th>
+                                    <x-sortable-th col="asking" align="right" class="hidden md:table-cell">{{ __('transfers.market_asking_price') }}</x-sortable-th>
+                                    <th class="py-2.5 w-10"></th>
+                                    <th class="py-2.5 pr-4 w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-sortable>
+                                @foreach($rows as $row)
+                                    <x-explore-player-row
+                                        :player="$row['gamePlayer']"
+                                        :game="$game"
+                                        :show-team="true"
+                                        team-placement="inline"
+                                        :show-ovr="true"
+                                        :show-contract="true"
+                                        :asking-price="$row['askingPrice']"
+                                        :show-asking-price="true" />
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             @endif
         </div>
     </div>
 
     <x-negotiation-chat-modal />
+    <x-player-dossier-modal />
 </x-app-layout>

@@ -92,7 +92,7 @@ return [
     'recent_signings' => 'Recent Signings',
 
     // Scouting
-    'scout_search_desc' => 'Your scouts return players likely to join your club. For a broader view of the market, use :explore.',
+    'scout_search_desc' => 'Your scouts return players likely to join your club.<br>For a broader view of the market, use :explore.',
     'position_required' => 'Position *',
     'select_position' => 'Select position...',
     'specific_positions' => 'Specific Positions',
@@ -195,6 +195,14 @@ return [
     'sort_ability' => 'Ability',
     'sort_price' => 'Price',
 
+    // Scouting hub board (shortlist + operations strip)
+    'shortlist' => 'Shortlist',
+    'ops_title' => 'Scouting network',
+    'ops_scope_domestic' => 'Domestic only',
+    'ops_scope_international' => 'Domestic + international',
+    'ops_expand_network' => 'Expand network',
+    'board_shortlist_hint' => 'Star players ★ from your results to add them to your shortlist.',
+
     // Empty states
     'no_outgoing_activity' => 'No outgoing activity',
     'no_incoming_activity' => 'No incoming activity',
@@ -291,13 +299,7 @@ return [
     'explore_age' => 'Age',
     'explore_overall' => 'Overall',
     'explore_value' => 'Value',
-    'explore_free_agents' => 'Free Agents',
-    'explore_free_agents_hint' => 'Browse available free agents. Free agents can be signed at any time, even outside transfer windows.',
-    'explore_free_agents_empty' => 'No free agents available.',
     'explore_filter_all' => 'All',
-    'explore_free_agent_willing' => 'Interested',
-    'explore_free_agent_reluctant' => 'Difficult',
-    'explore_free_agent_unwilling' => 'Not interested',
     'explore_search_placeholder' => 'Search player by name...',
     'explore_search_results_title' => 'Search Results',
     'explore_search_no_results' => 'No players found.',
@@ -333,7 +335,6 @@ return [
     'explore_empty_scout_cta' => 'Send your scouts to look for this profile',
     'scouting_link_to_explore' => 'Explore',
     'scouting_empty_explore_cta' => 'Browse the full market in Explore',
-    'scout_filtered_by_three_pass_hint' => 'Your scouts only surface players who would improve the squad, grouped by how realistic a move is.',
     'scouting_empty_three_pass_hint' => 'No player matched your search on all the important axes: upgrading the squad, being within budget (or close to it), and willing to move. Try widening the criteria.',
     'scout_bucket_primary_title' => 'Realistic targets',
     'scout_bucket_primary_description' => 'Would improve the squad, fit within your budget, and are willing to join.',
@@ -349,16 +350,6 @@ return [
     'chat_free_agent_accepted' => ':player has signed! Welcome to the team.',
     'chat_free_agent_rejected' => ':player\'s agent has walked away. No deal.',
 
-    // Tracking
-    'tracking_slots' => ':used/:max tracking slots',
-    'start_tracking' => 'Track',
-    'stop_tracking' => 'Stop',
-    'track_to_unlock' => 'Track to unlock intel',
-    'track_to_unlock_desc' => 'Assign your scout to track this player. Intel unlocks over matchdays.',
-    'tracking_in_progress_title' => 'Scout tracking active',
-    'tracking_in_progress_desc' => 'Your scout is tracking this player. Intel will unlock on the next matchday.',
-    'tracking_in_progress' => 'Tracking...',
-    'no_tracking_slots' => 'No tracking slots available',
     'willingness' => 'Willingness',
     'rival_interest' => 'Other clubs interested',
     'willingness_very_interested' => 'Very interested',

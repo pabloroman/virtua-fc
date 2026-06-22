@@ -181,6 +181,8 @@ class TransferCompletionService
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
+        // Remove from shortlist to free up scouting slot
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
     /**

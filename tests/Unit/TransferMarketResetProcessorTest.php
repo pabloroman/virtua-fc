@@ -68,7 +68,7 @@ class TransferMarketResetProcessorTest extends TestCase
         $this->assertSame(1, ScoutReport::where('game_id', $otherGame->id)->count());
     }
 
-    public function test_resets_shortlisted_players_intel_for_game(): void
+    public function test_preserves_shortlisted_players(): void
     {
         $game = Game::factory()->create();
         $otherGame = Game::factory()->create();
@@ -78,51 +78,17 @@ class TransferMarketResetProcessorTest extends TestCase
         $player2 = GamePlayer::factory()->forGame($game)->forTeam($team)->create();
         $player3 = GamePlayer::factory()->forGame($otherGame)->forTeam($team)->create();
 
-        ShortlistedPlayer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player1->id,
-            'added_at' => '2025-01-15',
-            'intel_level' => ShortlistedPlayer::INTEL_DEEP,
-            'is_tracking' => true,
-            'matchdays_tracked' => 5,
-        ]);
-
-        ShortlistedPlayer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player2->id,
-            'added_at' => '2025-02-20',
-            'intel_level' => ShortlistedPlayer::INTEL_REPORT,
-            'is_tracking' => true,
-            'matchdays_tracked' => 3,
-        ]);
-
-        ShortlistedPlayer::create([
-            'game_id' => $otherGame->id,
-            'game_player_id' => $player3->id,
-            'added_at' => '2025-01-10',
-            'intel_level' => ShortlistedPlayer::INTEL_DEEP,
-            'is_tracking' => true,
-            'matchdays_tracked' => 8,
-        ]);
+        ShortlistedPlayer::create(['game_id' => $game->id, 'game_player_id' => $player1->id, 'added_at' => '2025-01-15']);
+        ShortlistedPlayer::create(['game_id' => $game->id, 'game_player_id' => $player2->id, 'added_at' => '2025-02-20']);
+        ShortlistedPlayer::create(['game_id' => $otherGame->id, 'game_player_id' => $player3->id, 'added_at' => '2025-01-10']);
 
         $data = new SeasonTransitionData(oldSeason: '2025', newSeason: '2026', competitionId: $game->competition_id);
 
         $this->processor->process($game, $data);
 
+        // The shortlist is intentionally carried across the season transition.
         $this->assertSame(2, ShortlistedPlayer::where('game_id', $game->id)->count());
         $this->assertSame(1, ShortlistedPlayer::where('game_id', $otherGame->id)->count());
-
-        $shortlisted = ShortlistedPlayer::where('game_id', $game->id)->get();
-        foreach ($shortlisted as $entry) {
-            $this->assertSame(ShortlistedPlayer::INTEL_SURFACE, $entry->intel_level);
-            $this->assertFalse($entry->is_tracking);
-            $this->assertSame(0, $entry->matchdays_tracked);
-        }
-
-        $otherEntry = ShortlistedPlayer::where('game_id', $otherGame->id)->first();
-        $this->assertSame(ShortlistedPlayer::INTEL_DEEP, $otherEntry->intel_level);
-        $this->assertTrue($otherEntry->is_tracking);
-        $this->assertSame(8, $otherEntry->matchdays_tracked);
     }
 
     public function test_deletes_all_transfer_offers_for_game(): void

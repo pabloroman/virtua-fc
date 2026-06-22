@@ -8,11 +8,8 @@ export default function explore(config) {
     return {
         competitions: config.competitions || [],
         pools: config.pools || [],
-        freeAgentCount: config.freeAgentCount || 0,
-        freeAgentsLabel: config.labels.freeAgents,
         leagueKindLabel: config.labels.leagueKind,
         poolKindLabel: config.labels.poolKind,
-        freeAgentsKindLabel: config.labels.freeAgentsKind,
         searchKindLabel: config.labels.searchKind,
         searchScopeLabel: config.labels.searchScope,
         assetUrl: config.assetUrl || '',
@@ -27,20 +24,11 @@ export default function explore(config) {
         squadHtml: '',
         loadingTeams: false,
         loadingSquad: false,
-        loadingFreeAgents: false,
         loadingPool: false,
         poolGroups: [],
         searchQuery: initialFilters.name || '',
         searching: false,
         mobileView: 'teams',
-        selectedPositionFilter: 'all',
-        positionFilters: [
-            { key: 'all', label: config.labels.positionAll },
-            { key: 'gk', label: config.labels.positionGk },
-            { key: 'def', label: config.labels.positionDef },
-            { key: 'mid', label: config.labels.positionMid },
-            { key: 'fwd', label: config.labels.positionFwd },
-        ],
         filtersOpen: searchMode,
         filters: {
             position: initialFilters.position || '',
@@ -320,16 +308,6 @@ export default function explore(config) {
                     };
                 }
             }
-            if (this.viewMode === 'freeAgents') {
-                return {
-                    kindLabel: this.freeAgentsKindLabel,
-                    label: this.freeAgentsLabel,
-                    flag: null,
-                    emoji: null,
-                    icon: null,
-                    count: this.freeAgentCount,
-                };
-            }
             if (this.viewMode === 'search') {
                 return {
                     kindLabel: this.searchKindLabel,
@@ -347,34 +325,5 @@ export default function explore(config) {
                 : { kindLabel: '', label: '—', flag: null, emoji: null, icon: null, count: 0 };
         },
 
-        selectFreeAgents() {
-            this.viewMode = 'freeAgents';
-            this.selectedCompetition = null;
-            this.selectedPositionFilter = 'all';
-            this.mobileView = 'teams';
-            this._syncUrl(`/game/${this.gameId}/explore`);
-            this.loadFreeAgents('all');
-        },
-
-        selectPositionFilter(position) {
-            this.selectedPositionFilter = position;
-            this.mobileView = 'squad';
-            this.loadFreeAgents(position);
-        },
-
-        async loadFreeAgents(position) {
-            this.loadingFreeAgents = true;
-
-            try {
-                const response = await fetch(`/game/${this.gameId}/explore/free-agents?position=${position}`);
-                const html = await response.text();
-                this.$refs.freeAgentPanel.innerHTML = html;
-                this.$nextTick(() => window.Alpine.initTree(this.$refs.freeAgentPanel));
-            } catch (e) {
-                if (this.$refs.freeAgentPanel) this.$refs.freeAgentPanel.innerHTML = '';
-            } finally {
-                this.loadingFreeAgents = false;
-            }
-        },
     };
 }

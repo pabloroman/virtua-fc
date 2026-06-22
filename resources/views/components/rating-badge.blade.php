@@ -1,13 +1,7 @@
 @props(['value', 'size' => 'md'])
 
 @php
-    $ratingClass = match(true) {
-        $value >= 80 => 'rating-elite',
-        $value >= 70 => 'rating-good',
-        $value >= 60 => 'rating-average',
-        $value >= 50 => 'rating-below',
-        default => 'rating-poor',
-    };
+    $ratingClass = \App\Support\RatingPalette::classFor($value);
 
     $sizeClasses = match($size) {
         'sm' => 'w-7 h-7 rounded-md text-xs',

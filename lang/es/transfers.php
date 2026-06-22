@@ -92,7 +92,7 @@ return [
     'recent_signings' => 'Entradas Recientes',
 
     // Scouting
-    'scout_search_desc' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club. Para una visión más amplia del mercado, usa :explore.',
+    'scout_search_desc' => 'Tus ojeadores devuelven jugadores con alta probabilidad de fichar por tu club.<br>Para una visión más amplia del mercado, usa :explore.',
     'position_required' => 'Posición *',
     'select_position' => 'Seleccionar posición...',
     'specific_positions' => 'Posiciones Específicas',
@@ -200,6 +200,13 @@ return [
     'shortlisted' => 'Seguido',
     'shortlist_players_count' => ':count jugador(es)',
 
+    // Scouting hub board (shortlist + operations strip)
+    'ops_title' => 'Red de ojeadores',
+    'ops_scope_domestic' => 'Solo nacional',
+    'ops_scope_international' => 'Nacional + internacional',
+    'ops_expand_network' => 'Ampliar red',
+    'board_shortlist_hint' => 'Marca jugadores con ★ en tus resultados para añadirlos a tu lista.',
+
     // Empty states
     'no_outgoing_activity' => 'No hay actividad de salida',
     'no_incoming_activity' => 'Sin actividad de fichajes',
@@ -296,13 +303,7 @@ return [
     'explore_age' => 'Edad',
     'explore_overall' => 'Media',
     'explore_value' => 'Valor',
-    'explore_free_agents' => 'Agentes Libres',
-    'explore_free_agents_hint' => 'Explora agentes libres disponibles. Los agentes libres se pueden fichar en cualquier momento, incluso fuera de las ventanas de fichajes.',
-    'explore_free_agents_empty' => 'No hay agentes libres disponibles.',
     'explore_filter_all' => 'Todos',
-    'explore_free_agent_willing' => 'Interesado',
-    'explore_free_agent_reluctant' => 'Difícil',
-    'explore_free_agent_unwilling' => 'Sin interés',
     'explore_search_placeholder' => 'Buscar jugador por nombre...',
     'explore_search_results_title' => 'Resultados de búsqueda',
     'explore_search_no_results' => 'No se encontraron jugadores.',
@@ -338,7 +339,6 @@ return [
     'explore_empty_scout_cta' => 'Envía a tus ojeadores a buscar este perfil',
     'scouting_link_to_explore' => 'Explorar',
     'scouting_empty_explore_cta' => 'Explora todo el mercado en Explorar',
-    'scout_filtered_by_three_pass_hint' => 'Tus ojeadores sólo muestran jugadores que mejorarían la plantilla, agrupados por lo realista del fichaje.',
     'scouting_empty_three_pass_hint' => 'Ningún jugador cumple los criterios importantes: mejorar la plantilla, encajar en el presupuesto (o acercarse) y estar dispuesto a fichar. Prueba a ampliar la búsqueda.',
     'scout_bucket_primary_title' => 'Objetivos realistas',
     'scout_bucket_primary_description' => 'Mejoran la plantilla, entran en tu presupuesto y están dispuestos a fichar.',
@@ -354,16 +354,6 @@ return [
     'chat_free_agent_accepted' => '¡:player ha firmado! Bienvenido al equipo.',
     'chat_free_agent_rejected' => 'El agente de :player se ha marchado. No hay acuerdo.',
 
-    // Tracking
-    'tracking_slots' => ':used/:max seguimientos',
-    'start_tracking' => 'Seguir',
-    'stop_tracking' => 'Parar',
-    'track_to_unlock' => 'Rastrea para desbloquear intel',
-    'track_to_unlock_desc' => 'Asigna a tu ojeador para rastrear a este jugador. La información se desbloquea cada jornada.',
-    'tracking_in_progress_title' => 'Ojeador rastreando',
-    'tracking_in_progress_desc' => 'Tu ojeador está rastreando a este jugador. La información se desbloqueará en la próxima jornada.',
-    'tracking_in_progress' => 'Rastreando...',
-    'no_tracking_slots' => 'Sin seguimientos disponibles',
     'willingness' => 'Disposición',
     'rival_interest' => 'Otros clubes interesados',
     'willingness_very_interested' => 'Muy interesado',

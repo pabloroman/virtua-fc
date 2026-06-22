@@ -143,11 +143,6 @@ return [
     'action_required' => 'Hay acciones pendientes que debes resolver antes de continuar.',
     'action_required_short' => 'Acción Requerida',
 
-    // Tracking
-    'tracking_started' => 'Ahora rastreando a :player.',
-    'tracking_stopped' => 'Se dejó de rastrear a :player.',
-    'tracking_slots_full' => 'Todos los seguimientos están en uso. Deja de rastrear a otro jugador primero.',
-
     // Tactical presets
     'preset_saved' => 'Táctica guardada.',
     'preset_updated' => 'Táctica actualizada.',

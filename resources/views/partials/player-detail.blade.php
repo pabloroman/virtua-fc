@@ -22,8 +22,6 @@
     $isTransferWindow = $isCareerMode && $game->isTransferWindowOpen();
     $showActions = $isCareerMode && ($isListed || $canManage);
 
-    $positionDisplay = $gamePlayer->position_display;
-    $nationalityFlag = $gamePlayer->nationality_flag;
     $devStatus = $gamePlayer->developmentStatus($game->current_date);
 
     $devLabels = [
@@ -32,12 +30,17 @@
         'declining' => __('squad.declining'),
     ];
 
-    $overallColor = match(true) {
-        $gamePlayer->effective_rating >= 80 => 'bg-accent-green',
-        $gamePlayer->effective_rating >= 70 => 'bg-lime-500',
-        $gamePlayer->effective_rating >= 60 => 'bg-accent-gold',
-        default => 'bg-surface-600',
-    };
+    // Status chips for the shared <x-player-banner>.
+    $statusChips = [];
+    if ($gamePlayer->isInjured()) {
+        $statusChips[] = ['text' => __('game.injured'), 'class' => 'bg-accent-red/10 text-accent-red'];
+    }
+    if ($gamePlayer->isRetiring()) {
+        $statusChips[] = ['text' => __('squad.retiring'), 'class' => 'bg-accent-orange/10 text-accent-orange'];
+    }
+    if ($isListed) {
+        $statusChips[] = ['text' => __('squad.listed'), 'class' => 'bg-accent-blue/10 text-accent-blue'];
+    }
 @endphp
 
 {{-- Header --}}
@@ -74,56 +77,7 @@
 @endif
 
 {{-- Player Banner --}}
-<div class="px-5 py-4 bg-surface-900/50 border-b border-border-default">
-    <div class="flex items-center gap-4">
-        {{-- Avatar --}}
-        <div class="relative shrink-0">
-            <img src="{{ Storage::disk('assets')->url('img/default-player.jpg') }}" class="h-20 w-auto md:h-24 rounded-lg border border-border-default bg-surface-700" alt="">
-        </div>
-
-        {{-- Info --}}
-        <div class="flex-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted">
-                @if($nationalityFlag)
-                    <span class="inline-flex items-center gap-1.5">
-                        <img src="{{ Storage::disk('assets')->url('flags/' . $nationalityFlag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs">
-                        {{ __('countries.' . $nationalityFlag['name']) }}
-                    </span>
-                @endif
-                @if($gamePlayer->team && $isCareerMode)
-                    <span class="inline-flex items-center gap-1.5">
-                        <x-team-crest :team="$gamePlayer->team" class="w-4 h-4" />
-                        {{ $gamePlayer->team->name }}
-                    </span>
-                @endif
-                <span>{{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}@if($gamePlayer->height) · {{ $gamePlayer->height }}@endif</span>
-            </div>
-            <div class="text-[11px] text-text-faint mt-1">
-                @foreach($gamePlayer->positions as $pos)
-                    <span class="text-text-secondary">{{ \App\Support\PositionMapper::toDisplayName($pos) }}</span>@if(!$loop->last)<span class="text-text-faint/60">·</span>@endif
-                @endforeach
-            </div>
-
-            {{-- Status badges --}}
-            <div class="flex flex-wrap items-center gap-1.5 mt-2">
-                @if($gamePlayer->isInjured())
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-accent-red/10 text-accent-red">{{ __('game.injured') }}</span>
-                @endif
-                @if($gamePlayer->isRetiring())
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-accent-orange/10 text-accent-orange">{{ __('squad.retiring') }}</span>
-                @endif
-                @if($isListed)
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-accent-blue/10 text-accent-blue">{{ __('squad.listed') }}</span>
-                @endif
-            </div>
-        </div>
-
-        {{-- Overall score --}}
-        <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl {{ $overallColor }} flex items-center justify-center shrink-0">
-            <span class="text-xl md:text-2xl font-bold text-white">{{ $gamePlayer->effective_rating }}</span>
-        </div>
-    </div>
-</div>
+<x-player-banner :game="$game" :player="$gamePlayer" :status-chips="$statusChips" />
 
 {{-- Content Grid --}}
 <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-default">

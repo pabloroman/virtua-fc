@@ -40,26 +40,36 @@
         <p class="text-sm text-text-secondary text-center py-8">{{ __('transfers.explore_advanced_criteria_hint') }}</p>
     @endif
 @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="text-left border-b border-border-default">
-                    <th class="py-2.5 pl-4 w-12"></th>
-                    <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
-                    <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_search_team') }}</th>
-                    <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
-                    <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_overall') }}</th>
-                    <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
-                    <th class="py-2.5 w-10"></th>
-                    <th class="py-2.5 pr-4 w-10"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($players as $player)
-                <x-explore-player-row :player="$player" :game="$game" :show-team="true" :show-ovr="true" :is-own-team="$game->ownsTeam($player->team_id)" />
-                @endforeach
-            </tbody>
-        </table>
+    <div x-data="sortableTable()">
+        <x-sortable-pills :columns="[
+            ['col' => 'pos', 'label' => __('squad.pos')],
+            ['col' => 'name', 'label' => __('squad.player')],
+            ['col' => 'team', 'label' => __('transfers.explore_search_team')],
+            ['col' => 'age', 'label' => __('transfers.explore_age')],
+            ['col' => 'ovr', 'label' => __('transfers.explore_overall')],
+            ['col' => 'value', 'label' => __('transfers.explore_value')],
+        ]" />
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left border-b border-border-default">
+                        <th class="py-2.5 pl-4 w-12"></th>
+                        <x-sortable-th col="name" align="left">{{ __('squad.player') }}</x-sortable-th>
+                        <x-sortable-th col="team" align="left" class="hidden md:table-cell">{{ __('transfers.explore_search_team') }}</x-sortable-th>
+                        <x-sortable-th col="age" class="hidden md:table-cell">{{ __('transfers.explore_age') }}</x-sortable-th>
+                        <x-sortable-th col="ovr" class="hidden md:table-cell">{{ __('transfers.explore_overall') }}</x-sortable-th>
+                        <x-sortable-th col="value" align="left" class="hidden md:table-cell">{{ __('transfers.explore_value') }}</x-sortable-th>
+                        <th class="py-2.5 w-10"></th>
+                        <th class="py-2.5 pr-4 w-10"></th>
+                    </tr>
+                </thead>
+                <tbody data-sortable>
+                    @foreach($players as $player)
+                    <x-explore-player-row :player="$player" :game="$game" :show-team="true" :show-ovr="true" :is-own-team="$game->ownsTeam($player->team_id)" />
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if(!empty($truncated))

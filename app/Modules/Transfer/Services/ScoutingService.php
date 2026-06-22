@@ -10,6 +10,7 @@ use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
+use App\Support\PlayerDossierPresenter;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -22,34 +23,35 @@ class ScoutingService
 
     /**
      * Scouting tier effects on searches.
-     * [weeks_reduction, extra_results, ability_fuzz_reduction]
+     * [weeks_reduction, extra_results]
      */
     private const SCOUTING_TIER_EFFECTS = [
-        0 => [0, 0, 0],   // No scouting department
-        1 => [0, 0, 0],   // Basic - domestic only, baseline
-        2 => [0, 1, 2],   // Good - domestic only, 1 extra result, 2 less fuzz
-        3 => [1, 2, 4],   // Excellent - international, 1 week faster, 2 extra results, 4 less fuzz
-        4 => [1, 3, 6],   // World-class - international, 1 week faster, 3 extra results, 6 less fuzz
+        0 => [0, 0],   // No scouting department
+        1 => [0, 0],   // Basic - domestic only, baseline
+        2 => [0, 1],   // Good - domestic only, 1 extra result
+        3 => [1, 2],   // Excellent - international, 1 week faster, 2 extra results
+        4 => [1, 3],   // World-class - international, 1 week faster, 3 extra results
     ];
 
     /** Minimum scouting tier required for international searches. */
     private const INTERNATIONAL_SEARCH_MIN_TIER = 3;
 
     /**
-     * Flat willingness threshold (0-100) for a candidate to count as
-     * "willing" — the willingness axis of the three-pass selection. Anything
-     * at or above this bar is classed as willing; anything between
+     * Willingness threshold (0-100) for a candidate to count as "willing" — the
+     * willingness axis of the three-pass selection. Pinned to the "open" label
+     * boundary so a willing candidate is exactly one labelled "open" or better
+     * in the dossier (never "undecided"); anything between
      * PERSUASION_WILLINGNESS_MIN and this bar is classed as persuadable.
      */
-    public const WILLINGNESS_THRESHOLD = 45;
+    public const WILLINGNESS_THRESHOLD = DispositionService::WILLINGNESS_OPEN_MIN;
 
     /**
-     * Lower bound of the persuasion bucket. Candidates below this score are
-     * too uninterested to be worth chasing and are dropped entirely rather
-     * than presented as long shots — the "not_interested" / lower "reluctant"
-     * band is a waste of the user's time.
+     * Lower bound of the persuasion bucket. Pinned to the "reluctant" label
+     * boundary: candidates below it are "not_interested" — too uninterested to
+     * be worth chasing — and are dropped rather than presented as long shots.
+     * So the persuasion bucket holds exactly the "undecided" + "reluctant" band.
      */
-    private const PERSUASION_WILLINGNESS_MIN = 15;
+    private const PERSUASION_WILLINGNESS_MIN = DispositionService::WILLINGNESS_RELUCTANT_MIN;
 
     /**
      * Max asking-price-to-available-budget ratio for the ambitious bucket.
@@ -63,16 +65,12 @@ class ScoutingService
     private const BUCKET_CAP = 5;
 
     /**
-     * Tracking tier configuration.
-     * [max_concurrent_slots, matchdays_to_level_1, matchdays_to_level_2]
+     * Desirability cut-off (0-1) above which rival clubs are shown as interested.
+     * A deterministic threshold on the same ability/importance signal, so the
+     * "other clubs interested" flag is a stable property of the player rather
+     * than a coin flip re-rolled on every dossier render.
      */
-    private const TRACKING_TIER_CONFIG = [
-        0 => [0, 0, 0],
-        1 => [1, 1, 3],
-        2 => [2, 1, 2],
-        3 => [3, 1, 2],
-        4 => [4, 1, 1],
-    ];
+    private const RIVAL_INTEREST_THRESHOLD = 0.45;
 
     /** Maximum players on the shortlist at any time. */
     public const MAX_SHORTLIST_SIZE = 20;
@@ -837,14 +835,6 @@ class ScoutingService
         $canAffordFee = $askingPrice <= $availableBudget;
         $canAffordLoan = $isFreeAgent || $wageDemand <= $availableBudget;
 
-        // Fuzzy ability range - higher scouting tier = more accurate
-        $overallAbility = $player->overall_score;
-
-        $tier = $game->currentInvestment->scouting_tier ?? 1;
-        $fuzzReduction = self::SCOUTING_TIER_EFFECTS[$tier][2] ?? 0;
-        $baseFuzz = rand(3, 7);
-        $fuzz = max(1, $baseFuzz - $fuzzReduction);
-
         return [
             'player' => $player,
             'is_free_agent' => $isFreeAgent,
@@ -860,34 +850,46 @@ class ScoutingService
             'available_budget' => $availableBudget,
             'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
-            'overall_range' => [max(1, $overallAbility - $fuzz), min(99, $overallAbility + $fuzz)],
         ];
     }
 
-    // =========================================
-    // PLAYER TRACKING
-    // =========================================
-
     /**
-     * Get tracking capacity info for a game.
+     * Assemble the self-contained dossier payload for a shortlisted target. The
+     * payload is the same shape produced for every other surface (see {@see
+     * PlayerDossierPresenter}), so a shortlist card opens the shared
+     * <x-player-dossier-modal>; the scouting-only intel (willingness, finances,
+     * rival interest) and the shortlist remove action are overlaid here. Shared
+     * by the scouting hub (page load, in bulk) and the shortlist toggle (single
+     * add) so a freshly-starred card renders identically to one rendered on page load.
      *
-     * @return array{max_slots: int, used_slots: int, available_slots: int}
+     * @param  array<string, mixed>|null  $offerStatus  This player's row from TransferOffer::getOfferStatusesForPlayers(), or null.
+     * @param  Collection<int, GamePlayer>|null  $teammates  Pre-loaded squad of the player's team (avoids an N+1 in importance).
+     * @return array<string, mixed>
      */
-    public function getTrackingCapacity(Game $game): array
-    {
-        $tier = $game->currentInvestment->scouting_tier ?? 0;
-        $config = self::TRACKING_TIER_CONFIG[$tier] ?? self::TRACKING_TIER_CONFIG[0];
-        $maxSlots = $config[0];
+    public function buildTargetData(
+        GamePlayer $gp,
+        Game $game,
+        ?array $offerStatus,
+        ?Collection $teammates = null,
+    ): array {
+        $detail = $this->getPlayerScoutingDetail($gp, $game);
+        $importance = $this->calculatePlayerImportance($gp, $teammates);
+        $willingness = $this->calculateWillingness($gp, $game, $importance);
 
-        $usedSlots = ShortlistedPlayer::where('game_id', $game->id)
-            ->where('is_tracking', true)
-            ->count();
-
-        return [
-            'max_slots' => $maxSlots,
-            'used_slots' => $usedSlots,
-            'available_slots' => max(0, $maxSlots - $usedSlots),
+        // Overlay scouting-only intel + offer state + the shortlist remove action
+        // onto the base scouting detail, then build the shared dossier payload.
+        $scouting = $detail + [
+            'has_existing_offer' => ($offerStatus['status'] ?? null) !== null,
+            'offer_status' => $offerStatus['status'] ?? null,
+            'offer_is_counter' => $offerStatus['isCounter'] ?? false,
+            'on_cooldown' => $offerStatus['onCooldown'] ?? false,
+            'willingness_label' => $willingness['label'],
+            'rival_interest' => $this->calculateRivalInterest($gp, $importance),
+            'is_shortlisted' => true,
+            'remove_url' => route('game.scouting.shortlist.remove', [$game->id, $gp->id]),
         ];
+
+        return PlayerDossierPresenter::build($gp, $game, $scouting);
     }
 
     /**
@@ -899,25 +901,6 @@ class ScoutingService
     }
 
     /**
-     * Start tracking a shortlisted player.
-     */
-    public function startTracking(ShortlistedPlayer $entry, Game $game): bool
-    {
-        if ($entry->is_tracking) {
-            return false;
-        }
-
-        $capacity = $this->getTrackingCapacity($game);
-        if ($capacity['available_slots'] <= 0) {
-            return false;
-        }
-
-        $entry->update(['is_tracking' => true]);
-
-        return true;
-    }
-
-    /**
      * Check if the search history is full.
      */
     public function isSearchHistoryFull(Game $game): bool
@@ -925,57 +908,6 @@ class ScoutingService
         return ScoutReport::where('game_id', $game->id)
             ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
             ->count() >= self::MAX_SEARCH_HISTORY;
-    }
-
-    /**
-     * Stop tracking a shortlisted player (retains gathered intel).
-     */
-    public function stopTracking(ShortlistedPlayer $entry): void
-    {
-        $entry->update(['is_tracking' => false]);
-    }
-
-    /**
-     * Tick tracking progress for all tracked players. Called each matchday.
-     * Returns entries that leveled up.
-     */
-    public function tickTracking(Game $game): Collection
-    {
-        $tier = $game->currentInvestment->scouting_tier ?? 0;
-        $config = self::TRACKING_TIER_CONFIG[$tier] ?? self::TRACKING_TIER_CONFIG[0];
-        $matchdaysToL1 = $config[1];
-        $matchdaysToL2 = $config[1] + $config[2]; // cumulative
-
-        $trackedEntries = ShortlistedPlayer::where('game_id', $game->id)
-            ->where('is_tracking', true)
-            ->where('intel_level', '<', ShortlistedPlayer::INTEL_DEEP)
-            ->with('gamePlayer')
-            ->get();
-
-        $leveledUp = collect();
-
-        foreach ($trackedEntries as $entry) {
-            $newMatchdays = $entry->matchdays_tracked + 1;
-            $oldLevel = $entry->intel_level;
-
-            if ($newMatchdays >= $matchdaysToL2 && $oldLevel < ShortlistedPlayer::INTEL_DEEP) {
-                $entry->update(['matchdays_tracked' => $newMatchdays, 'intel_level' => ShortlistedPlayer::INTEL_DEEP, 'is_tracking' => false]);
-                $leveledUp->push($entry);
-            } elseif ($newMatchdays >= $matchdaysToL1 && $oldLevel < ShortlistedPlayer::INTEL_REPORT) {
-                // If one more matchday would also reach deep intel, skip straight to deep
-                // to avoid two notifications firing across consecutive ticks in the same batch
-                if (($newMatchdays + 1) >= $matchdaysToL2) {
-                    $entry->update(['matchdays_tracked' => $newMatchdays, 'intel_level' => ShortlistedPlayer::INTEL_DEEP, 'is_tracking' => false]);
-                } else {
-                    $entry->update(['matchdays_tracked' => $newMatchdays, 'intel_level' => ShortlistedPlayer::INTEL_REPORT]);
-                }
-                $leveledUp->push($entry);
-            } else {
-                $entry->update(['matchdays_tracked' => $newMatchdays]);
-            }
-        }
-
-        return $leveledUp;
     }
 
     /**
@@ -996,9 +928,9 @@ class ScoutingService
         $overallAbility = $player->overall_score;
         $importance ??= $this->calculatePlayerImportance($player);
 
-        // Higher ability + lower importance = more likely rivals want them
-        $chance = ($overallAbility / 99) * 0.4 + (1.0 - $importance) * 0.3;
+        // Higher ability + lower importance = more desirable to rivals.
+        $desirability = ($overallAbility / 99) * 0.4 + (1.0 - $importance) * 0.3;
 
-        return rand(1, 100) <= (int) ($chance * 100);
+        return $desirability >= self::RIVAL_INTEREST_THRESHOLD;
     }
 }

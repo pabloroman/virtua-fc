@@ -31,24 +31,16 @@
                              searchMode: @js((bool) $searchMode),
                              competitions: @js($competitions),
                              pools: @js($pools),
-                             freeAgentCount: @js((int) $freeAgentCount),
                              assetUrl: @js(rtrim(Storage::disk('assets')->url(''), '/')),
                              gameId: @js($game->id),
                              initialTeam: @js($initialTeam ?? null),
                              initialCompetitionId: @js($initialCompetitionId ?? null),
                              initialPoolId: @js($initialPoolId ?? null),
                              labels: {
-                                 freeAgents: @js(__('transfers.explore_free_agents')),
                                  leagueKind: @js(__('transfers.league')),
                                  poolKind: @js(__('transfers.explore_pool_picker_label')),
-                                 freeAgentsKind: @js(__('transfers.explore_free_agents')),
                                  searchKind: @js(__('transfers.explore_search_scope_label')),
                                  searchScope: @js(__('transfers.explore_search_scope_label')),
-                                 positionAll: @js(__('transfers.explore_filter_all')),
-                                 positionGk: @js(__('transfers.explore_goalkeepers')),
-                                 positionDef: @js(__('transfers.explore_defenders')),
-                                 positionMid: @js(__('transfers.explore_midfielders')),
-                                 positionFwd: @js(__('transfers.explore_forwards')),
                              },
                          })">
 
@@ -59,21 +51,20 @@
                                      pill bar, which became too wide once foreign
                                      leagues + EUR + INT were included. The selected
                                      scope is summarised in a single trigger button;
-                                     the panel groups leagues, transfer pools, and
-                                     free agents so users can see every option at
-                                     once instead of scrolling. --}}
+                                     the panel groups leagues and transfer pools so
+                                     users can see every option at once instead of
+                                     scrolling. --}}
                                 <div class="relative w-full sm:w-72 shrink-0" @click.outside="scopePickerOpen = false" @keydown.escape.window="scopePickerOpen = false">
                                     <button type="button"
                                             @click="scopePickerOpen = !scopePickerOpen"
                                             :class="{
                                                 'border-accent-blue/40': viewMode === 'competition' && scopePickerOpen,
                                                 'border-accent-gold/40': viewMode === 'pool' && scopePickerOpen,
-                                                'border-accent-green/40': viewMode === 'freeAgents' && scopePickerOpen,
                                                 'border-border-strong': scopePickerOpen,
                                                 'border-border-default hover:border-border-strong': !scopePickerOpen,
                                             }"
                                             class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-surface-800 text-left min-h-[44px] transition-colors">
-                                        {{-- Glyph priority: search (search mode) > emoji (INT pool) > flag (leagues + EUR) > free-agents icon --}}
+                                        {{-- Glyph priority: search (search mode) > emoji (INT pool) > flag (leagues + EUR) > fallback icon --}}
                                         <template x-if="activeScope.icon === 'search'">
                                             <svg class="w-5 h-5 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -146,24 +137,6 @@
                                         </div>
                                         @endif
 
-                                        {{-- Free agents --}}
-                                        @if($freeAgentCount > 0)
-                                        <div class="border-t border-border-default py-1">
-                                            <div class="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">{{ __('transfers.explore_free_agents') }}</div>
-                                            <button type="button"
-                                                    @click="selectFreeAgents(); scopePickerOpen = false"
-                                                    :class="viewMode === 'freeAgents'
-                                                        ? 'bg-accent-green/10 text-accent-green'
-                                                        : 'text-text-primary hover:bg-surface-700/60'"
-                                                    class="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors min-h-[44px]">
-                                                <svg class="w-5 h-5 shrink-0" :class="viewMode === 'freeAgents' ? 'text-accent-green' : 'text-text-muted'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                </svg>
-                                                <span class="flex-1 text-sm truncate">{{ __('transfers.explore_free_agents') }}</span>
-                                                <span class="text-xs px-1.5 py-0.5 rounded-full bg-surface-700 text-text-muted shrink-0">{{ $freeAgentCount }}</span>
-                                            </button>
-                                        </div>
-                                        @endif
                                     </div>
                                 </div>
 
@@ -525,60 +498,10 @@
                             </div>
                         @endif
 
-                        {{-- Free Agents mode: Two-column layout with position filters --}}
-                        <div x-show="viewMode === 'freeAgents'" class="flex flex-col md:flex-row gap-6">
-
-                            {{-- Mobile tab toggle --}}
-                            <div class="flex md:hidden border-b border-border-strong mb-2">
-                                <x-tab-button @click="mobileView = 'teams'"
-                                        x-bind:class="mobileView === 'teams' ? 'border-accent-green text-accent-green' : 'border-transparent text-text-muted'"
-                                        class="flex-1 text-center min-h-[44px]">
-                                    {{ __('transfers.explore_filter_all') }}
-                                </x-tab-button>
-                                <x-tab-button @click="mobileView = 'squad'"
-                                        x-bind:class="mobileView === 'squad' ? 'border-accent-green text-accent-green' : 'border-transparent text-text-muted'"
-                                        class="flex-1 text-center min-h-[44px]">
-                                    {{ __('app.players') }}
-                                </x-tab-button>
-                            </div>
-
-                            {{-- Left column: Position filters --}}
-                            <div class="md:w-1/3 md:pr-2"
-                                 :class="{ 'hidden md:block': mobileView === 'squad' }">
-                                <div class="space-y-1">
-                                    <template x-for="filter in positionFilters" :key="filter.key">
-                                        <button @click="selectPositionFilter(filter.key)"
-                                                :class="selectedPositionFilter === filter.key
-                                                    ? 'bg-accent-green/10 border-accent-green/20 ring-1 ring-accent-green/20'
-                                                    : 'bg-surface-700 border-border-strong hover:bg-surface-600/50'"
-                                                class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
-                                            <span class="text-sm font-medium text-text-primary" x-text="filter.label"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-
-                            {{-- Right column: Free agents list --}}
-                            <div class="md:w-2/3 md:border-l md:border-border-default md:pl-6"
-                                 :class="{ 'hidden md:block': mobileView === 'teams' }">
-
-                                {{-- Loading state --}}
-                                <template x-if="loadingFreeAgents">
-                                    <div class="flex items-center justify-center py-12">
-                                        <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </div>
-                                </template>
-
-                                {{-- Free agents content (server-rendered HTML) --}}
-                                <div x-show="!loadingFreeAgents" x-ref="freeAgentPanel"></div>
-                            </div>
-                        </div>
                     </div>
     </div>
 
     <x-negotiation-chat-modal />
+    <x-player-dossier-modal />
 
 </x-app-layout>

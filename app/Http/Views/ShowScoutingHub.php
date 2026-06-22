@@ -6,11 +6,8 @@ use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
-use App\Support\Money;
-use App\Support\PositionMapper;
 use Illuminate\Http\Request;
 
 class ShowScoutingHub
@@ -31,143 +28,50 @@ class ShowScoutingHub
 
         $headerData = $this->headerService->getHeaderData($game);
 
-        // Tracking capacity
-        $trackingCapacity = $this->scoutingService->getTrackingCapacity($game);
-
-        // Shortlisted players with intel-gated data
-        $shortlistedEntries = ShortlistedPlayer::where('game_id', $gameId)
+        // Shortlisted targets (skip any that have since become user-owned).
+        $shortlistedPlayers = ShortlistedPlayer::where('game_id', $gameId)
             ->with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
-            ->get();
+            ->get()
+            ->map(fn (ShortlistedPlayer $entry) => $entry->gamePlayer)
+            ->filter(fn (?GamePlayer $gp) => $gp && $gp->team_id !== $game->team_id)
+            ->values();
 
-        $shortlistedPlayers = [];
-        $shortlistedPlayerIds = [];
-        foreach ($shortlistedEntries as $entry) {
-            $gp = $entry->gamePlayer;
-            if (!$gp || $gp->team_id === $game->team_id) {
-                continue;
-            }
-            $shortlistedPlayers[] = [
-                'entry' => $entry,
-                'gamePlayer' => $gp,
-            ];
-            $shortlistedPlayerIds[] = $gp->id;
-        }
+        $shortlistedPlayerIds = $shortlistedPlayers->pluck('id')->all();
 
-        // Check existing offers for shortlisted players (map player_id => status details)
+        // Bulk-load offer statuses once so buildTargetData doesn't query per row.
         $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds, $game->current_date);
 
-        // Players currently tied to an active loan can't be transferred — the
-        // parent club retains authority. Bulk-load once so the per-player
-        // template doesn't issue an exists() query each iteration.
-        $loanedPlayerIds = Loan::where('game_id', $gameId)
-            ->whereIn('game_player_id', $shortlistedPlayerIds)
-            ->active()
-            ->pluck('game_player_id')
-            ->all();
-
-        // Pre-load team rosters for all shortlisted players' teams (avoids N+1 in calculatePlayerImportance)
-        $teamIds = collect($shortlistedPlayers)->pluck('gamePlayer.team_id')->filter()->unique();
+        // Pre-load each target's squad once (avoids an N+1 in player importance).
+        $teamIds = $shortlistedPlayers->pluck('team_id')->filter()->unique();
         $teamRosters = GamePlayer::where('game_id', $gameId)
             ->whereIn('team_id', $teamIds)
             ->get()
             ->groupBy('team_id');
 
-        // Build JSON-serializable shortlist data for Alpine.js
-        $shortlistData = [];
-        foreach ($shortlistedPlayers as $item) {
-            $gp = $item['gamePlayer'];
-            $entry = $item['entry'];
-            $positionDisplay = PositionMapper::getPositionDisplay($gp->position);
-
-            $playerData = [
-                'id' => $gp->id,
-                'name' => $gp->name,
-                'position' => $gp->position,
-                'positionAbbr' => $positionDisplay['abbreviation'],
-                'positionBg' => $positionDisplay['bg'],
-                'positionText' => $positionDisplay['text'],
-                'positions' => collect($gp->positions)
-                    ->map(fn ($pos) => PositionMapper::getPositionDisplay($pos))
-                    ->values()
-                    ->all(),
-                'age' => $gp->age($game->current_date),
-                'teamName' => $gp->team?->name,
-                'teamImage' => $gp->team?->image,
-                'isFreeAgent' => $gp->team_id === null,
-                'isExpiring' => $gp->team_id !== null && $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
-                'contractYear' => $gp->contract_until?->format('Y'),
-                // `marketValue` (cents) drives client-side sorting and
-                // `formattedMarketValue` feeds the negotiation modal — both stay
-                // the TRUE market value. The shortlist's displayed figure uses
-                // `marketReference`, which swaps to the release clause where that
-                // is the market reference (mandatory-clause clubs, e.g. Spain).
-                'marketValue' => $gp->market_value_cents,
-                'formattedMarketValue' => Money::format($gp->market_value_cents),
-                'marketReference' => $gp->marketReferenceValue($game),
-                'showsClause' => $gp->displaysReleaseClauseAsMarketReference($game),
-                'intelLevel' => $entry->intel_level,
-                'isTracking' => $entry->is_tracking,
-                'matchdaysTracked' => $entry->matchdays_tracked,
-                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]) && ($existingOfferStatuses[$gp->id]['status'] ?? null) !== null,
-                'offerStatus' => $existingOfferStatuses[$gp->id]['status'] ?? null,
-                'offerIsCounter' => $existingOfferStatuses[$gp->id]['isCounter'] ?? false,
-                'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
-                'onCooldown' => $existingOfferStatuses[$gp->id]['onCooldown'] ?? false,
-                'isOnLoan' => in_array($gp->id, $loanedPlayerIds, true),
-                // Locked by default — populated below if intel level warrants it
-                'overallRange' => null,
-                'formattedAskingPrice' => null,
-                'askingPrice' => null,
-                'canAffordFee' => false,
-                'canAffordLoan' => false,
-                'availableBudget' => 0,
-                'wageDemand' => null,
-                'formattedWageDemand' => null,
-                'bidEuros' => 0,
-                'wageEuros' => 0,
-                'willingness' => null,
-                'willingnessLabel' => null,
-                'rivalInterest' => false,
-            ];
-
-            // Level 1+: unlock full scouting detail
-            if ($entry->hasReportLevel()) {
-                $detail = $this->scoutingService->getPlayerScoutingDetail($gp, $game);
-                $playerData['overallRange'] = $detail['overall_range'];
-                $playerData['formattedAskingPrice'] = $detail['formatted_asking_price'];
-                $playerData['askingPrice'] = $detail['asking_price'];
-                $playerData['canAffordFee'] = $detail['can_afford_fee'];
-                $playerData['canAffordLoan'] = $detail['can_afford_loan'];
-                $playerData['availableBudget'] = (int) ($detail['available_budget'] / 100);
-                $playerData['wageDemand'] = $detail['wage_demand'];
-                $playerData['formattedWageDemand'] = $detail['formatted_wage_demand'];
-                $playerData['bidEuros'] = (int) ($detail['asking_price'] / 100);
-                $playerData['wageEuros'] = (int) ($detail['wage_demand'] / 100);
-            }
-
-            // Level 2: unlock willingness and rival interest
-            if ($entry->hasDeepIntel()) {
-                $teammates = $teamRosters->get($gp->team_id, collect());
-                $importance = $this->scoutingService->calculatePlayerImportance($gp, $teammates);
-                $willingness = $this->scoutingService->calculateWillingness($gp, $game, $importance);
-                $playerData['willingness'] = $willingness['label'];
-                $playerData['willingnessLabel'] = __('transfers.willingness_' . $willingness['label']);
-                $playerData['rivalInterest'] = $this->scoutingService->calculateRivalInterest($gp, $importance);
-            }
-
-            $shortlistData[] = $playerData;
-        }
-
         $isPreContractPeriod = $game->isPreContractPeriod();
+
+        // Build JSON-serializable shortlist data for Alpine.js. Every target now
+        // carries its full dossier — there is no per-player intel gating.
+        $shortlistData = $shortlistedPlayers
+            ->map(fn (GamePlayer $gp) => $this->scoutingService->buildTargetData(
+                $gp,
+                $game,
+                $existingOfferStatuses[$gp->id] ?? null,
+                $teamRosters->get($gp->team_id, collect()),
+            ))
+            ->all();
 
         return view('scouting-hub', [
             'game' => $game,
             'searchingReport' => $searchingReport,
             'searchHistory' => $searchHistory,
+            // Most recent completed search — its results are surfaced inline at
+            // the top of the hub (the "fresh catch" the user just searched for).
+            'latestReport' => $searchHistory->first(),
             'canSearchInternationally' => $canSearchInternationally,
             'isPreContractPeriod' => $isPreContractPeriod,
             'shortlistData' => $shortlistData,
-            'trackingCapacity' => $trackingCapacity,
+            'scoutingTier' => $game->currentInvestment?->scouting_tier ?? 0,
             ...$headerData,
         ]);
     }

@@ -57,6 +57,9 @@ class ShowScoutReportResults
             $playerIdList = $players->pluck('id')->toArray();
             $offerStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $playerIdList, $game->current_date);
             $preContractStatuses = TransferOffer::getUserPreContractStatuses($gameId, $game->team_id, $playerIdList);
+            $shortlistedIds = ShortlistedPlayer::where('game_id', $gameId)
+                ->pluck('game_player_id')
+                ->all();
 
             foreach ($players as $player) {
                 $detail = $this->scoutingService->getPlayerScoutingDetail($player, $game);
@@ -73,6 +76,15 @@ class ShowScoutReportResults
                 $willingness = $this->scoutingService->calculateWillingness($player, $game, $importance);
                 $detail['willingness_label'] = $willingness['label'];
 
+                // Annotate the model with the display attributes <x-explore-player-row>
+                // reads (mirrors ExploreService). Scout results are always external
+                // targets, so they're never user-owned / loaned-in.
+                $player->is_on_loan = $detail['is_on_loan'];
+                $player->is_loaned_in = false;
+                $player->is_user_owned = false;
+                $player->is_shortlisted = in_array($player->id, $shortlistedIds, true);
+                $player->user_pre_contract_status = $preContractStatuses[$player->id] ?? null;
+
                 $playerDetails[$player->id] = $detail;
             }
 
@@ -86,10 +98,6 @@ class ShowScoutReportResults
         $scopeLabel = isset($filters['scope']) && count($filters['scope']) === 1
             ? (in_array('domestic', $filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international'))
             : __('transfers.scope_domestic') . ' + ' . __('transfers.scope_international');
-
-        $shortlistedPlayerIds = ShortlistedPlayer::where('game_id', $gameId)
-            ->pluck('game_player_id')
-            ->toArray();
 
         $totalResults = $buckets['primary']->count()
             + $buckets['ambitious']->count()
@@ -106,7 +114,8 @@ class ShowScoutReportResults
             'scopeLabel' => $scopeLabel,
             'isTransferWindow' => $game->isTransferWindowOpen(),
             'isPreContractPeriod' => $game->isPreContractPeriod(),
-            'shortlistedPlayerIds' => $shortlistedPlayerIds,
+            // Inline render (scouting hub) drops the modal close button.
+            'inline' => request()->boolean('inline'),
         ]);
     }
 

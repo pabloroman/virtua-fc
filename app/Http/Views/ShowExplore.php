@@ -36,7 +36,6 @@ class ShowExplore
         }
 
         $competitions = $this->exploreService->getCompetitionsWithTeamCounts($gameId);
-        $freeAgentCount = $this->exploreService->getFreeAgentCount($gameId);
         $pools = $this->buildTransferPools($gameId, $game->country ?? 'ES');
         $nationalities = $this->exploreService->getDistinctNationalities($gameId);
 
@@ -79,7 +78,6 @@ class ShowExplore
         return view('explore', [
             'game' => $game,
             'competitions' => $competitions,
-            'freeAgentCount' => $freeAgentCount,
             'pools' => $pools,
             'nationalities' => $nationalities,
             'shortlistedIds' => $shortlistedIds,

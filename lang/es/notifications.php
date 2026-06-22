@@ -150,11 +150,6 @@ return [
     'player_released_message' => ':player ha sido liberado de tu plantilla. Indemnización pagada: :severance.',
     'player_released_message_free' => ':player ha sido liberado de tu plantilla.',
 
-    // Tracking intel
-    'tracking_intel_title' => 'Intel sobre :player lista',
-    'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',
-    'tracking_deep_intel_ready' => 'Tu ojeador ha completado la intel profunda de :player — disposición a salir e interés de rivales revelados.',
-
     // Fichajes de emergencia
     'emergency_signing_title' => 'Refuerzo de emergencia',
     'emergency_signing_message' => 'Tu plantilla estaba en niveles críticos. Se han fichado :count agentes libres para asegurar que puedas alinear un equipo: :players.',

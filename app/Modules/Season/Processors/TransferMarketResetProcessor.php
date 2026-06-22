@@ -3,7 +3,6 @@
 namespace App\Modules\Season\Processors;
 
 use App\Models\ScoutReport;
-use App\Models\ShortlistedPlayer;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Modules\Season\Contracts\SeasonProcessor;
@@ -24,12 +23,6 @@ class TransferMarketResetProcessor implements SeasonProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         ScoutReport::where('game_id', $game->id)->delete();
-
-        ShortlistedPlayer::where('game_id', $game->id)->update([
-            'intel_level' => ShortlistedPlayer::INTEL_SURFACE,
-            'is_tracking' => false,
-            'matchdays_tracked' => 0,
-        ]);
 
         TransferOffer::where('game_id', $game->id)->delete();
 

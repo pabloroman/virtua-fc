@@ -143,11 +143,6 @@ return [
     'action_required' => 'There are pending actions you must resolve before continuing.',
     'action_required_short' => 'Action Required',
 
-    // Tracking
-    'tracking_started' => 'Now tracking :player.',
-    'tracking_stopped' => 'Stopped tracking :player.',
-    'tracking_slots_full' => 'All tracking slots are in use. Stop tracking another player first.',
-
     // Tactical presets
     'preset_saved' => 'Tactic saved.',
     'preset_updated' => 'Tactic updated.',

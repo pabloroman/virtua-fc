@@ -50,6 +50,19 @@ class DispositionService
     private const AMBITION_PENALTY_PER_TIER_GAP = 0.12;
 
     /**
+     * Lower bounds of each transfer-willingness band on the 0-100 score (see
+     * {@see playerTransferWillingness}). These are the single source of truth
+     * for where one willingness label ends and the next begins, so anything
+     * that buckets candidates by willingness (e.g. ScoutingService's
+     * realistic/persuasion split) can pin its cut-points to the same lines and
+     * never drift out of sync with the label shown in the dossier.
+     */
+    public const WILLINGNESS_VERY_INTERESTED_MIN = 80;
+    public const WILLINGNESS_OPEN_MIN = 60;
+    public const WILLINGNESS_UNDECIDED_MIN = 40;
+    public const WILLINGNESS_RELUCTANT_MIN = 20;
+
+    /**
      * Minimum years remaining on a contract before a content player shows
      * reluctance to renegotiate. Players with fewer years left always engage.
      */
@@ -522,13 +535,17 @@ class DispositionService
             }
         }
 
-        $score = min(100, max(0, $score + rand(-5, 5)));
+        // Deterministic: willingness is a pure function of the player's situation
+        // (importance, contract, age, reputation gap). It's both shown in the
+        // dossier and used to bucket scout results, so it must be stable across
+        // renders and identical between the bucketing pass and the displayed label.
+        $score = min(100, max(0, $score));
 
         $label = match (true) {
-            $score >= 80 => 'very_interested',
-            $score >= 60 => 'open',
-            $score >= 40 => 'undecided',
-            $score >= 20 => 'reluctant',
+            $score >= self::WILLINGNESS_VERY_INTERESTED_MIN => 'very_interested',
+            $score >= self::WILLINGNESS_OPEN_MIN => 'open',
+            $score >= self::WILLINGNESS_UNDECIDED_MIN => 'undecided',
+            $score >= self::WILLINGNESS_RELUCTANT_MIN => 'reluctant',
             default => 'not_interested',
         };
 

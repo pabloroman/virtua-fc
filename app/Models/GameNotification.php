@@ -67,7 +67,6 @@ class GameNotification extends Model
     public const TYPE_AI_TRANSFER_ACTIVITY = 'ai_transfer_activity';
     public const TYPE_TRANSFER_WINDOW_OPEN = 'transfer_window_open';
     public const TYPE_PLAYER_RELEASED = 'player_released';
-    public const TYPE_TRACKING_INTEL_READY = 'tracking_intel_ready';
     public const TYPE_EMERGENCY_SIGNING = 'emergency_signing';
     public const TYPE_MATCH_FORFEIT = 'match_forfeit';
     public const TYPE_BUDGET_LOAN = 'budget_loan';
@@ -113,7 +112,6 @@ class GameNotification extends Model
         self::TYPE_AI_TRANSFER_ACTIVITY => 'transfer-activity',
         self::TYPE_TRANSFER_WINDOW_OPEN => 'scouting',
         self::TYPE_PLAYER_RELEASED => 'squad',
-        self::TYPE_TRACKING_INTEL_READY => 'scouting',
         self::TYPE_EMERGENCY_SIGNING => 'squad',
         self::TYPE_MATCH_FORFEIT => 'squad',
         self::TYPE_BUDGET_LOAN => 'finances',
@@ -405,11 +403,6 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
                 'dot' => 'bg-red-500',
-            ],
-            self::TYPE_TRACKING_INTEL_READY => [
-                'icon_bg' => 'bg-teal-500/10',
-                'icon_text' => 'text-teal-500',
-                'dot' => 'bg-teal-500',
             ],
             self::TYPE_EMERGENCY_SIGNING => [
                 'icon_bg' => 'bg-orange-500/10',
