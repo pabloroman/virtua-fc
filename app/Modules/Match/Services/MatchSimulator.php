@@ -25,7 +25,7 @@ use App\Modules\Match\Support\StoppageDurations;
 
 class MatchSimulator
 {
-    /** Upper bound for Dixon-Coles probability table (above config max_goals_cap for tail coverage). */
+    /** Upper bound (per period) for the Dixon-Coles probability table — the most goals a single sampled period can yield. */
     private const DIXON_COLES_MAX_GOALS = 8;
 
     /**
@@ -254,99 +254,7 @@ class MatchSimulator
                 userTeamId: $userTeamId,
             );
 
-        // Final safety net: hard-cap the regulation match TOTAL at max_goals_cap.
-        // The per-period cap inside each simulation period bounds a single
-        // period, not the multi-period sum (substitution windows, red-card
-        // splits), so without this a runaway xG could still stack into a blow-out.
-        // With the strength-ratio clamp in place this almost never binds. Applied
-        // only here in simulate() — the unambiguous full-match-from-minute-0 entry
-        // point; resimulation and extra-time run simulateRemainder/
-        // simulateExtraTime directly and are bounded by the ratio clamp.
-        return $this->capMatchTotal($output, $homeTeam->id, $awayTeam->id);
-    }
-
-    /**
-     * Hard-cap each team's match total at max_goals_cap, trimming the surplus
-     * scoring events so the headline score and the goal/assist events stay
-     * consistent (MatchResultProcessor counts player goals/assists from the
-     * events independently of the score field).
-     *
-     * A goal credits a team when it is that team's `goal` (scored penalties are
-     * `goal` events) or the opponent's `own_goal`. Surplus goals are removed
-     * latest-minute first, along with the assist tied to each removed goal (own
-     * goals carry no assist). A cap of 0 (or scores already within it) is a no-op.
-     */
-    private function capMatchTotal(MatchSimulationOutput $output, string $homeTeamId, string $awayTeamId): MatchSimulationOutput
-    {
-        $cap = (int) config('match_simulation.max_goals_cap', 0);
-        $result = $output->result;
-
-        if ($cap <= 0 || ($result->homeScore <= $cap && $result->awayScore <= $cap)) {
-            return $output;
-        }
-
-        $events = $this->trimGoalsToTarget($result->events, $homeTeamId, $awayTeamId, $cap);
-        $events = $this->trimGoalsToTarget($events, $awayTeamId, $homeTeamId, $cap);
-
-        return new MatchSimulationOutput(
-            new MatchResult(
-                min($result->homeScore, $cap),
-                min($result->awayScore, $cap),
-                $events,
-                $result->homePossession,
-                $result->awayPossession,
-                $result->homeXG,
-                $result->awayXG,
-            ),
-            $output->performances,
-        );
-    }
-
-    /**
-     * Trim a team's scoring events down to at most `$target` goals so the
-     * headline score stays consistent with the events (MatchResultProcessor
-     * counts player goals/assists from the events, independently of the score
-     * field). A goal credits `$teamId` when it is that team's `goal` (scored
-     * penalties are tagged `goal` events) or the opponent's `own_goal`. The
-     * latest-minute surplus goals are dropped along with the assist tied to each
-     * (own goals carry no assist). Returns the collection unchanged when the
-     * team is already within `$target`.
-     *
-     * @param  Collection<MatchEventData>  $events
-     * @return Collection<MatchEventData>
-     */
-    private function trimGoalsToTarget(Collection $events, string $teamId, string $opponentId, int $target): Collection
-    {
-        $crediting = $events
-            ->filter(fn (MatchEventData $e) => ($e->type === 'goal' && $e->teamId === $teamId)
-                || ($e->type === 'own_goal' && $e->teamId === $opponentId))
-            ->sortByDesc('minute')
-            ->values();
-
-        $surplus = $crediting->count() - $target;
-        if ($surplus <= 0) {
-            return $events;
-        }
-
-        $toRemove = [];
-
-        foreach ($crediting->take($surplus) as $goal) {
-            $toRemove[spl_object_id($goal)] = true;
-
-            if ($goal->type === 'goal') {
-                $assist = $events->first(fn (MatchEventData $e) => $e->type === 'assist'
-                    && $e->teamId === $goal->teamId
-                    && $e->minute === $goal->minute
-                    && ! isset($toRemove[spl_object_id($e)]));
-                if ($assist !== null) {
-                    $toRemove[spl_object_id($assist)] = true;
-                }
-            }
-        }
-
-        return $events
-            ->reject(fn (MatchEventData $e) => isset($toRemove[spl_object_id($e)]))
-            ->values();
+        return $output;
     }
 
     /**
@@ -1431,25 +1339,40 @@ class MatchSimulator
 
         $totalStrength = 0;
         foreach ($lineup as $player) {
-            $performance = $this->getMatchPerformance($player);
+            // Static ability baseline on the 0..100 rating scale, BEFORE any
+            // match-time erosion. Ability-dominant (morale lightly weighted);
+            // fitness has no separate weight — it flows through the energy
+            // effectiveness modifier below (fitness = starting energy).
+            $staticAbility = ($player->overall_score * $wOverall) +
+                             ($player->morale * $wMorale);
 
-            $effectiveOverall = $player->overall_score * $performance;
-            $morale = $player->morale;
+            // Rescale against the per-match strength floor on STATIC ability —
+            // BEFORE the match-time modifiers below, not after. The floor is
+            // calibrated on static top-11 overall_score and derived to sit at
+            // least strength_floor_margin below the weakest squad, so static
+            // ability never reaches applyFloor()'s 0.02 collapse. The old code
+            // applied the floor to already-eroded match-time strength (overall ×
+            // form × out-of-position × fatigue); a tired or out-of-position side
+            // would fall through the floor, collapse toward 0.02, and explode the
+            // home/away ratio into 13-0 / 21-0 blow-outs. Flooring static ability
+            // and applying the modifiers as multipliers afterwards keeps the ratio
+            // anchored to the calibrated band. This mirrors AIMatchResolver, which
+            // floors static strength and never had the blow-out. Floor 0.0 (no
+            // resolved floor) leaves this an exact no-op.
+            $playerStrength = MatchOutcomeModel::applyFloor($staticAbility / 100, $this->strengthFloor);
 
-            // Weighted contribution — ability-dominant so team quality differences are wide.
-            // Fitness has no separate weight; it flows through the energy effectiveness
-            // modifier below (fitness = starting energy in the unified model).
-            $playerStrength = ($effectiveOverall * $wOverall) +
-                              ($morale * $wMorale);
+            // Match-time modifiers applied AFTER the floor, as multipliers on the
+            // floored baseline: form on the day, out-of-position penalty, fatigue.
+            $playerStrength *= $this->getMatchPerformance($player);
 
-            // Apply out-of-position penalty (flat 25% reduction)
+            // Out-of-position penalty (flat reduction)
             if (isset($playerSlotMap[$player->id])) {
                 $playerStrength *= PositionSlotMapper::getSimulationMultiplier(
                     $player->position, $player->secondary_positions, $playerSlotMap[$player->id]
                 );
             }
 
-            // Apply energy modifier — fitness IS starting energy in the unified model
+            // Energy modifier — fitness IS starting energy in the unified model
             $entryMinute = $playerEntryMinutes[$player->id] ?? 0;
             $isGK = $player->position === 'Goalkeeper';
             $avgEnergy = EnergyCalculator::averageEnergy(
@@ -1467,14 +1390,11 @@ class MatchSimulator
             $totalStrength += $playerStrength;
         }
 
-        // Divide by full squad size (11) so that having fewer players
-        // naturally reduces team strength — a red card's impact emerges
-        // from the missing player's contribution to the sum.
-        //
-        // Rescale against the per-match strength floor so the home/away ratio
-        // reflects relative quality rather than where the league's rating band
-        // sits on the 0..100 scale. Floor 0.0 leaves this unchanged.
-        return MatchOutcomeModel::applyFloor(($totalStrength / 11) / 100, $this->strengthFloor);
+        // Divide by full squad size (11) so that having fewer players naturally
+        // reduces team strength — a red card's impact emerges from the missing
+        // player's contribution to the sum. Each contribution is already floored
+        // and in the 0..1 strength space, so no further rescaling is needed.
+        return $totalStrength / 11;
     }
 
     /**
@@ -2303,12 +2223,6 @@ class MatchSimulator
                 $events = $events->merge($goalEvents);
             } else {
                 // No red cards: single-period goal generation (existing path)
-                $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
-                if ($maxGoalsCap > 0) {
-                    $homeScore = min($homeScore, $maxGoalsCap);
-                    $awayScore = min($awayScore, $maxGoalsCap);
-                }
-
                 $homeGoalEvents = $this->generateGoalEventsInRange(
                     $homeScore, $homeTeam->id, $awayTeam->id,
                     $homePlayers, $awayPlayers, $fromMinute + 1, $toMinute
@@ -2508,20 +2422,12 @@ class MatchSimulator
             ->merge($this->generateGoalEventsInRange($homeScore2, $homeTeam->id, $awayTeam->id, $homePlayers2, $awayPlayers2, $splitMinute + 1, $toMinute))
             ->merge($this->generateGoalEventsInRange($awayScore2, $awayTeam->id, $homeTeam->id, $awayPlayers2, $homePlayers2, $splitMinute + 1, $toMinute));
 
-        // Combine scores and apply cap. Trim the goal events to the capped score
-        // too — the two periods generate events for the uncapped sample, so
-        // without this the events would outnumber the capped score and credit
-        // phantom goals to player stats (the score field and events must agree).
+        // Combine the two periods' scores. Each period samples its own xG from
+        // the (ratio-clamped) strength ratio scaled by the period's match
+        // fraction, so the periods sum back to a bounded full-match total — the
+        // events and the score stay in agreement without any post-hoc trimming.
         $homeScore = $homeScore1 + $homeScore2;
         $awayScore = $awayScore1 + $awayScore2;
-
-        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
-        if ($maxGoalsCap > 0) {
-            $homeScore = min($homeScore, $maxGoalsCap);
-            $awayScore = min($awayScore, $maxGoalsCap);
-            $goalEvents = $this->trimGoalsToTarget($goalEvents, $homeTeam->id, $awayTeam->id, $homeScore);
-            $goalEvents = $this->trimGoalsToTarget($goalEvents, $awayTeam->id, $homeTeam->id, $awayScore);
-        }
 
         return [$homeScore, $awayScore, $goalEvents];
     }
@@ -2624,7 +2530,6 @@ class MatchSimulator
 
     /**
      * Generate goal events when only one team has players (the other squad is empty).
-     * Applies max_goals_cap and returns updated scores alongside the events.
      *
      * @return array{0: int, 1: int, 2: Collection<MatchEventData>} [homeScore, awayScore, goalEvents]
      */
@@ -2643,16 +2548,6 @@ class MatchSimulator
         $scoringTeamId = $homeHasPlayers ? $homeTeam->id : $awayTeam->id;
         $concedingTeamId = $homeHasPlayers ? $awayTeam->id : $homeTeam->id;
         $goalCount = $homeHasPlayers ? $homeScore : $awayScore;
-
-        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
-        if ($maxGoalsCap > 0) {
-            $goalCount = min($goalCount, $maxGoalsCap);
-            if ($homeHasPlayers) {
-                $homeScore = $goalCount;
-            } else {
-                $awayScore = $goalCount;
-            }
-        }
 
         $events = $this->generateGoalEventsInRange(
             $goalCount, $scoringTeamId, $concedingTeamId,

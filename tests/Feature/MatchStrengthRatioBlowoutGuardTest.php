@@ -12,19 +12,27 @@ use Tests\Traits\CreatesLineups;
 
 /**
  * Guards against the exploding scorelines (13-0, 21-0, 0-15) that the
- * distribution-derived strength floor introduced (#1281).
+ * distribution-derived strength floor introduced (#1281, #1283).
  *
- * The floor is calibrated on STATIC top-11 overall_score, but the live
- * simulator applies it to MATCH-TIME strength (eroded by form, energy and
- * out-of-position penalties), which can fall far below the static band the
- * floor was derived from. As a side nears the floor, applyFloor() collapses its
- * rescaled strength toward the 0.02 clamp while the opponent stays high, so the
- * home/away ratio explodes and `ratio^skill_dominance` produces enormous xG.
+ * Root cause: the floor is calibrated on STATIC top-11 overall_score, but the
+ * full simulator used to apply it to MATCH-TIME strength (overall × form ×
+ * energy × out-of-position penalty). A fatigued or out-of-position side would
+ * erode below the floor, collapse toward applyFloor()'s 0.02 clamp while the
+ * opponent stayed high, and explode the home/away ratio — pinning xG at the
+ * ratio-clamp ceiling on essentially every match. A post-hoc goal cap papered
+ * over the result, but it was wired into simulate() only, so the live
+ * resimulation path (a substitution or "Skip to end" in a played match) still
+ * blew up.
  *
- * The fix bounds the ratio before exponentiation (max_strength_ratio) and
- * hard-caps the match total (max_goals_cap) with event-consistent trimming.
- * Pre-fix, the multi-period scenario below blows past max_goals_cap; post-fix it
- * stays within it, and the headline score always matches the scoring events.
+ * The fix floors STATIC ability and applies the match-time modifiers as
+ * multipliers afterwards — calculateTeamStrength now mirrors AIMatchResolver, so
+ * the ratio stays anchored to the calibrated band on every path and the goal cap
+ * is gone entirely. The ratio clamp (max_strength_ratio) remains as the single
+ * model bound for genuine cross-league mismatches.
+ *
+ * These tests cover the ratio clamp (MatchOutcomeModel) and the floor-ordering
+ * fix via the full simulate path; the live resimulation path shares the same
+ * calculateTeamStrength, so it inherits the fix with no path-specific code.
  */
 class MatchStrengthRatioBlowoutGuardTest extends TestCase
 {
@@ -87,43 +95,41 @@ class MatchStrengthRatioBlowoutGuardTest extends TestCase
         $this->assertGreaterThan(100.0, $homeXG);
     }
 
-    public function test_full_match_total_never_exceeds_cap_for_extreme_mismatch(): void
+    public function test_match_time_fatigue_does_not_explode_an_equal_ability_matchup(): void
     {
-        $cap = (int) config('match_simulation.max_goals_cap', 6);
-        $this->assertGreaterThan(0, $cap, 'This guard test requires max_goals_cap > 0');
+        // Two squads of IDENTICAL static ability; the only difference is that the
+        // away side is exhausted (low fitness → heavy energy erosion). Flooring
+        // STATIC ability keeps their pre-modifier strengths equal, so the most
+        // fatigue can do is scale the away side down by the energy modifier — it
+        // can no longer drag them through the floor into the 0.02 collapse that
+        // used to pin xG at the ratio-clamp ceiling. The floor sits well below
+        // both squads, standing in for a normal league band.
+        config(['match_simulation.max_strength_ratio' => 2.2]);
 
         $game = Game::factory()->create(['current_date' => '2025-10-01']);
         $homeTeam = Team::factory()->create();
         $awayTeam = Team::factory()->create();
 
-        // Strong fresh home vs a much weaker away. A high floor stands in for the
-        // match-time strength erosion (form/energy/out-of-position) that pushes a
-        // side toward the floor in real matches — it is what explodes the ratio.
-        $homePlayers = $this->createLineup($game, $homeTeam, 11, 88);
-        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 70);
-        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 85);
-        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 66);
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 78);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 78);
+        // Exhaust the away side. Pre-fix this collapsed their match-time strength
+        // below the floor and exploded the ratio; post-fix it is just a multiplier
+        // on a floored-static baseline that stays equal to the home side's.
+        $awayPlayers->each(fn ($p) => $p->fitness = 10);
 
-        // Benches enable AI substitution windows → multiple simulation periods.
-        // Pre-fix each period caps at max_goals_cap but the TOTAL stacks past it.
-        $this->simulator->setStrengthFloor(60.0);
+        $this->simulator->setStrengthFloor(45.0);
 
-        for ($i = 0; $i < 30; $i++) {
-            $output = $this->simulator->simulate(
+        $iterations = 12;
+        $totalHomeXG = 0.0;
+        for ($i = 0; $i < $iterations; $i++) {
+            $result = $this->simulator->simulate(
                 $homeTeam, $awayTeam,
                 $homePlayers, $awayPlayers,
                 game: $game,
-                homeBenchPlayers: $homeBench,
-                awayBenchPlayers: $awayBench,
-            );
+            )->result;
 
-            $result = $output->result;
-
-            $this->assertLessThanOrEqual($cap, $result->homeScore, "home total exceeded cap (iter {$i})");
-            $this->assertLessThanOrEqual($cap, $result->awayScore, "away total exceeded cap (iter {$i})");
-
-            // Score must stay consistent with the events after trimming: a team's
-            // score = its own goals + the opponent's own goals.
+            // With nothing trimmed post-hoc, the headline score must always equal
+            // the scoring events: a team's score = its goals + opponent own goals.
             $homeScoringEvents = $result->events
                 ->filter(fn ($e) => ($e->type === 'goal' && $e->teamId === $homeTeam->id)
                     || ($e->type === 'own_goal' && $e->teamId === $awayTeam->id))
@@ -132,9 +138,20 @@ class MatchStrengthRatioBlowoutGuardTest extends TestCase
                 ->filter(fn ($e) => ($e->type === 'goal' && $e->teamId === $awayTeam->id)
                     || ($e->type === 'own_goal' && $e->teamId === $homeTeam->id))
                 ->count();
-
             $this->assertSame($result->homeScore, $homeScoringEvents, "home score/event mismatch (iter {$i})");
             $this->assertSame($result->awayScore, $awayScoringEvents, "away score/event mismatch (iter {$i})");
+
+            $totalHomeXG += $result->homeXG;
         }
+
+        // Pre-fix the collapse pinned the ratio at the clamp (2.2), giving
+        // homeXG ≈ 2.2^2.4 × 1.4 ≈ 9.5 every match. Post-fix the equal static
+        // ability holds the ratio near the fatigue gap (~1.7), so homeXG sits far
+        // below the ceiling (~4). The threshold is comfortably between the two
+        // regimes; if it trips, the floor is being applied to match-time strength
+        // again.
+        $meanHomeXG = $totalHomeXG / $iterations;
+        $this->assertLessThan(6.0, $meanHomeXG,
+            "equal-ability fatigue matchup is exploding home xG (mean {$meanHomeXG}) — strength floor is being applied to match-time strength again");
     }
 }

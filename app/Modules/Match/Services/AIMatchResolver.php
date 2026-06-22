@@ -146,13 +146,6 @@ class AIMatchResolver
         [$homeXG, $awayXG] = MatchOutcomeModel::expectedGoals($homeStrength, $awayStrength, $neutralVenue);
         [$homeScore, $awayScore] = MatchOutcomeModel::sampleScoreline($homeXG, $awayXG);
 
-        // Cap goals
-        $maxGoals = (int) config('match_simulation.max_goals_cap', 6);
-        if ($maxGoals > 0) {
-            $homeScore = min($homeScore, $maxGoals);
-            $awayScore = min($awayScore, $maxGoals);
-        }
-
         // Generate match events (goals, assists, cards, injuries)
         $events = $this->generateEvents(
             $homeXI, $awayXI,

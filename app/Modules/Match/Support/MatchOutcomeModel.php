@@ -70,19 +70,19 @@ class MatchOutcomeModel
      * Bound a home/away strength ratio before it is raised to `skill_dominance`.
      *
      * The xG power formula has no inherent ceiling: a ratio of 13 at exponent 2.4
-     * is ~700× base goals. The strength FLOOR is calibrated on STATIC top-11
-     * overall_score (so the static league ratio tops out near R≈1.34), but the
-     * full MatchSimulator feeds it MATCH-TIME strength — overall × form × energy ×
-     * out-of-position penalty — which can erode far below the static band the
-     * floor was derived from. As a side nears the floor, applyFloor() collapses
-     * its rescaled strength toward the 0.02 clamp while the opponent stays high,
-     * exploding the ratio and producing 13-0 / 21-0 blowouts. Clamping the ratio
-     * symmetrically to `[1/max, max]` caps xG at the source.
+     * is ~700× base goals. Team strength is floored on STATIC ability (see
+     * {@see applyFloor} and MatchSimulator::calculateTeamStrength), so within a
+     * league the ratio stays anchored to the floor's calibrated band (R≈1.34) and
+     * this clamp does not bind there. Its job is genuine CROSS-LEAGUE mismatches —
+     * a top-flight side vs a lower-league team in a cup tie, whose static ratio
+     * legitimately runs higher — where it keeps a single match from running away
+     * (`max_strength_ratio` → worst-case xG ≈ max^skill_dominance × base_goals).
      *
-     * `max_strength_ratio` ≤ 1.0 (e.g. 0) disables the clamp — a no-op escape
-     * hatch mirroring the floor's own convention. The clamp never binds on static
-     * AI-vs-AI matches (ratio ≈ R), so the league-table realism of the floor is
-     * preserved.
+     * Clamping symmetrically to `[1/max, max]` is the model's single ratio bound,
+     * applied uniformly wherever xG is computed — so every code path (full
+     * simulator, live resimulation, extra time, AI-vs-AI) inherits it from one
+     * place. `max_strength_ratio` ≤ 1.0 (e.g. 0) disables the clamp — a no-op
+     * escape hatch mirroring the floor's own convention.
      */
     public static function clampStrengthRatio(float $ratio): float
     {
@@ -107,6 +107,14 @@ class MatchOutcomeModel
      * makes matches coin flips; subtracting a floor stretches the relative gaps
      * back out. Apply the SAME floor to both teams in a match before forming
      * their strength ratio.
+     *
+     * Apply this to STATIC ability, not to match-time-eroded strength. The floor
+     * is calibrated on static top-11 overall_score and derived to sit at least
+     * strength_floor_margin below the weakest squad, so static ability never
+     * reaches the 0.02 clamp below. Feeding it strength already eroded by form,
+     * fatigue or out-of-position penalties (the pre-#1283 behaviour) let a side
+     * fall through the floor and explode the ratio; callers apply match-time
+     * modifiers as multipliers AFTER flooring instead.
      *
      * A floor of 0 (or an out-of-range floor) is an exact no-op, so callers that
      * don't resolve a floor keep the original behaviour.
