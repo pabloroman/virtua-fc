@@ -7,6 +7,8 @@
 
     $isCareerMode = $game->isCareerMode();
     $nationalityFlag = $player->nationality_flag;
+    $defaultPhoto = Storage::disk('assets')->url('img/default-player.jpg');
+    $photo = $player->image_url ?? $defaultPhoto;
     $overall = $player->effective_rating;
     $overallColor = match (true) {
         $overall >= 80 => 'bg-accent-green',
@@ -23,7 +25,12 @@
     <div class="flex items-center gap-4">
         {{-- Avatar --}}
         <div class="relative shrink-0">
-            <img src="{{ Storage::disk('assets')->url('img/default-player.jpg') }}" class="h-20 w-auto md:h-24 rounded-lg border border-border-default bg-surface-700" alt="">
+            {{-- Falls back to the default avatar when the CDN has no photo for this
+                 player (no Sofascore ID, or the .webp 404s). The onerror handler
+                 survives the dossier modal's x-html injection. --}}
+            <img src="{{ $photo }}"
+                 @if($photo !== $defaultPhoto) onerror="this.onerror=null;this.src='{{ $defaultPhoto }}'" @endif
+                 class="h-20 w-auto md:h-24 rounded-lg border border-border-default bg-surface-700" alt="">
         </div>
 
         {{-- Info --}}

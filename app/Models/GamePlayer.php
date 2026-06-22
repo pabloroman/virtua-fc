@@ -9,6 +9,7 @@ use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $player_id
  * @property string $team_id
  * @property string $position
+ * @property string|null $sofascore_id
+ * @property-read string|null $image_url
  * @property string|null $market_value
  * @property int $market_value_cents
  * @property \Illuminate\Support\Carbon|null $contract_until
@@ -1059,6 +1062,25 @@ class GamePlayer extends Model
             'name' => $nationalities[0],
             'code' => $code,
         ];
+    }
+
+    /**
+     * Public CDN URL for this player's photo, or null when we have no Sofascore
+     * ID to resolve one. Photos are keyed by `sofascore_id` and stored on the
+     * assets CDN as `players/{sofascore_id}.webp`. Reuses the `assets` disk (the
+     * same source as flags and the default avatar) so the base URL follows
+     * `CDN_URL`. The file is not guaranteed to exist for every player — generated
+     * youth never have a Sofascore ID, and not every real player has an uploaded
+     * photo — so callers should render the default avatar as the `onerror`
+     * fallback for the case where the CDN returns a 404.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->sofascore_id === null) {
+            return null;
+        }
+
+        return Storage::disk('assets')->url('players/' . $this->sofascore_id . '.webp');
     }
 
     // ==========================================================================
