@@ -19,6 +19,9 @@ class GamePlayerTemplateService
     /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
     private ?array $secondaryPositionsMap = null;
 
+    /** @var array<string, array<string, string>> Season → (Transfermarkt ID → Sofascore ID) */
+    private array $sofascoreIdMaps = [];
+
     public function __construct(
         private ContractService $contractService,
         private PlayerDevelopmentService $developmentService,
@@ -494,6 +497,7 @@ class GamePlayerTemplateService
             // copies templates into game_players.
             'player_id' => self::playerIdFor((string) $playerData['id']),
             'transfermarkt_id' => (string) $playerData['id'],
+            'sofascore_id' => $this->getSofascoreId($season, (string) $playerData['id']),
             'name' => $playerData['name'] ?? null,
             'date_of_birth' => $dateOfBirth->toDateString(),
             'nationality' => isset($playerData['nationality']) ? json_encode($playerData['nationality']) : null,
@@ -634,5 +638,35 @@ class GamePlayerTemplateService
         }
 
         return $map;
+    }
+
+    /**
+     * Resolve a player's Sofascore ID from the Transfermarkt→Sofascore crosswalk.
+     * Returns null when the player isn't covered by the crosswalk.
+     */
+    private function getSofascoreId(string $season, string $transfermarktId): ?string
+    {
+        if (!isset($this->sofascoreIdMaps[$season])) {
+            $this->sofascoreIdMaps[$season] = $this->loadSofascoreIdMap($season);
+        }
+
+        return $this->sofascoreIdMaps[$season][$transfermarktId] ?? null;
+    }
+
+    /**
+     * Load the Transfermarkt→Sofascore map for a season, keyed by Transfermarkt ID.
+     * The file is built by `app:build-sofascore-id-map` from people.csv; a missing
+     * file is non-fatal (all players keep a null sofascore_id).
+     *
+     * @return array<string, string>
+     */
+    private function loadSofascoreIdMap(string $season): array
+    {
+        $path = base_path("data/{$season}/sofascore_ids.json");
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        return json_decode(file_get_contents($path), true) ?: [];
     }
 }

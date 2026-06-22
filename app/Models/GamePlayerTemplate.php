@@ -15,6 +15,7 @@ class GamePlayerTemplate extends Model
         'season',
         'player_id',
         'transfermarkt_id',
+        'sofascore_id',
         'name',
         'date_of_birth',
         'nationality',
