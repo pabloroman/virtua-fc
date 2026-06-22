@@ -87,6 +87,7 @@
                             <p class="text-xs text-text-faint">
                                 &copy; {{ date('Y') }} Pablo Román &middot; <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-text-muted transition-colors">Proyecto Open Source</a>
                             </p>
+                            <x-sofifa-credit />
                             <x-theme-toggle />
                         </div>
                     </div>
