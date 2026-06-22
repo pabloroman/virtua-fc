@@ -8,24 +8,8 @@
     price, wage demand, your budget, rival interest) renders only when the producing surface
     supplies it; the shortlist remove control shows only when the player is shortlisted.
 --}}
-<div x-data="{
-        detail: null,
-        removing: false,
-        removeFromShortlist() {
-            if (this.removing || !this.detail || !this.detail.removeUrl) return;
-            this.removing = true;
-            const playerId = this.detail.id;
-            fetch(this.detail.removeUrl, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            }).then(r => r.json()).then(() => {
-                window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: 'removed', playerId } }));
-                this.$dispatch('close-modal', 'player-dossier');
-                this.removing = false;
-            }).catch(() => { this.removing = false; });
-        }
-     }"
-     @open-player-dossier.window="detail = $event.detail; $dispatch('open-modal', 'player-dossier')">
+<div x-data="playerDossier()"
+     @open-player-dossier.window="open($event.detail)">
     <x-modal name="player-dossier" maxWidth="lg">
         <template x-if="detail">
             <div>

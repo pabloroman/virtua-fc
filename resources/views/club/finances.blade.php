@@ -348,7 +348,7 @@
                                 $loanMax = $maxLoanAmount / 100;
                                 $loanInterestRate = config('finances.loan.interest_rate', 1500);
                             @endphp
-                            <div x-data="{ amount: {{ $loanMax }}, showForm: false, interestRate: {{ $loanInterestRate }} }">
+                            <div x-data="loanRequestForm({ loanMax: @js($loanMax), interestRate: @js($loanInterestRate) })">
                                 <p class="text-sm text-text-secondary mb-3">{{ __('finances.loan_description') }}</p>
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-1">{{ __('finances.loan_max_available') }} <x-info-icon :tooltip="__('finances.tooltip_loan_max')" /></span>
@@ -373,11 +373,11 @@
                                             <div class="bg-surface-700/30 rounded-lg p-3 space-y-1.5">
                                                 <div class="flex items-center justify-between text-[11px]">
                                                     <span class="text-text-muted">{{ __('finances.loan_interest_rate') }}</span>
-                                                    <span class="text-text-secondary font-medium" x-text="(interestRate / 100) + '%'"></span>
+                                                    <span class="text-text-secondary font-medium" x-text="interestPercent"></span>
                                                 </div>
                                                 <div class="flex items-center justify-between text-[11px]">
                                                     <span class="text-text-muted">{{ __('finances.loan_total_repayment') }}</span>
-                                                    <span class="text-accent-red font-semibold" x-text="'€' + Math.round(amount * (1 + interestRate / 10000)).toLocaleString('es-ES')"></span>
+                                                    <span class="text-accent-red font-semibold" x-text="repaymentTotal"></span>
                                                 </div>
                                             </div>
                                             <p class="text-[10px] text-accent-gold">{{ __('finances.loan_warning') }}</p>

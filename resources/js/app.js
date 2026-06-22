@@ -15,6 +15,14 @@ import seasonSummary from './season-summary';
 import squadRegistration from './squad-registration';
 import explore from './explore';
 import seasonTicketEditor from './season-ticket-editor';
+import preseasonSetup from './preseason-setup';
+import scoutingBoard from './scouting-board';
+import fragmentLoader from './fragment-loader';
+import playerDossier from './player-dossier';
+import shortlistStar from './shortlist-star';
+import budgetAllocation from './budget-allocation';
+import preMatchLoader from './pre-match-loader';
+import loanRequestForm from './loan-request-form';
 
 Alpine.plugin(Collapse);
 Alpine.plugin(Tooltip);
@@ -36,6 +44,14 @@ Alpine.data('tournamentSummary', tournamentSummary);
 Alpine.data('seasonSummary', seasonSummary);
 Alpine.data('explore', explore);
 Alpine.data('seasonTicketEditor', seasonTicketEditor);
+Alpine.data('preseasonSetup', preseasonSetup);
+Alpine.data('scoutingBoard', scoutingBoard);
+Alpine.data('fragmentLoader', fragmentLoader);
+Alpine.data('playerDossier', playerDossier);
+Alpine.data('shortlistStar', shortlistStar);
+Alpine.data('budgetAllocation', budgetAllocation);
+Alpine.data('preMatchLoader', preMatchLoader);
+Alpine.data('loanRequestForm', loanRequestForm);
 
 window.Alpine = Alpine;
 

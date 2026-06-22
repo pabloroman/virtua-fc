@@ -268,36 +268,12 @@ $sortAsking = $askingPrice ?? -1;
     </td>
     @else
     <td class="py-2 pr-4 text-center"
-        x-data="{
-            isShortlisted: {{ $player->is_shortlisted ? 'true' : 'false' }},
-            inFlight: false,
-            async toggle() {
-                if (this.inFlight) return;
-                this.inFlight = true;
-                try {
-                    const response = await fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json',
-                        },
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        this.isShortlisted = data.action === 'added';
-                        // Keep the scouting hub board + any other star for this
-                        // player in sync (live-add/remove the shortlist card).
-                        window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } }));
-                    } else if (data.message) {
-                        alert(data.message);
-                    }
-                } catch (e) {} finally {
-                    this.inFlight = false;
-                }
-            }
-        }"
-        @shortlist-toggled.window="if ($event.detail.playerId === '{{ $player->id }}') isShortlisted = $event.detail.action === 'added'">
+        x-data="shortlistStar({
+            isShortlisted: @js((bool) $player->is_shortlisted),
+            toggleUrl: @js(route('game.scouting.shortlist.toggle', [$game->id, $player->id])),
+            playerId: @js($player->id),
+        })"
+        @shortlist-toggled.window="syncFromEvent($event.detail)">
         <x-icon-button @click.prevent.stop="toggle()"
                 size="sm"
                 class="rounded-full"

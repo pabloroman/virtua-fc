@@ -68,23 +68,7 @@
         {{-- SCOUTING DESK — shortlisted targets + the latest search results --}}
         {{-- ============================================================= --}}
         <div class="mt-6"
-             x-data="{
-                players: {{ Js::from($shortlistData) }},
-                handleToggle(detail) {
-                    if (detail.action === 'added' && detail.player) {
-                        if (!this.players.find(p => p.id === detail.player.id)) {
-                            this.players.unshift(detail.player);
-                        }
-                    } else if (detail.action === 'removed') {
-                        this.players = this.players.filter(p => p.id !== detail.playerId);
-                    }
-                },
-                openDetail(player) {
-                    // Open the shared dossier modal — the target object already
-                    // carries the full self-contained payload (from buildTargetData).
-                    this.$dispatch('open-player-dossier', player);
-                },
-             }"
+             x-data="scoutingBoard({ players: @js($shortlistData) })"
              @shortlist-toggled.window="handleToggle($event.detail)">
 
             {{-- Operations status strip --}}
@@ -191,10 +175,7 @@
                  results partial (same as the modal) so the hub stays fast; ★-ing a player live-adds them to the board above. --}}
             @if($latestReport)
                 <div class="mt-4 border border-border-default rounded-xl overflow-hidden bg-surface-800"
-                     x-data="{ loading: true, content: '' }"
-                     x-init="fetch('{{ route('game.scouting.results', [$game->id, $latestReport->id]) }}?inline=1', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                        .then(r => r.text()).then(html => { content = html; loading = false; })
-                        .catch(() => { loading = false; })">
+                     x-data="fragmentLoader({ url: @js(route('game.scouting.results', [$game->id, $latestReport->id]).'?inline=1') })">
                     <div x-show="loading" class="p-8 flex items-center justify-center">
                         <svg class="animate-spin h-7 w-7 text-text-secondary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

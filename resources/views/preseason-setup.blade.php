@@ -7,30 +7,11 @@ $assetUrl = rtrim(Storage::disk('assets')->url(''), '/');
 
 <x-app-layout :hide-footer="true">
     <div class="min-h-screen py-12 md:py-16"
-         x-data="{
+         x-data="preseasonSetup({
             teams: @js($teams),
             assetUrl: @js($assetUrl),
-            selections: Array.from({ length: {{ count($slots) }} }, () => ({ teamId: null, teamName: '', teamImage: '', isHome: true })),
-            openSlot: null,
-            searchQuery: '',
-            get filteredGroups() {
-                const q = this.searchQuery.trim().toLowerCase();
-                if (! q) return this.teams;
-                return this.teams
-                    .map(g => ({ ...g, teams: g.teams.filter(t => t.name.toLowerCase().includes(q)) }))
-                    .filter(g => g.teams.length > 0);
-            },
-            choose(team) {
-                const s = this.selections[this.openSlot];
-                s.teamId = team.id; s.teamName = team.name; s.teamImage = team.image;
-                this.closeModal();
-            },
-            clear(i) {
-                const s = this.selections[i];
-                s.teamId = null; s.teamName = ''; s.teamImage = ''; s.isHome = true;
-            },
-            closeModal() { this.openSlot = null; this.searchQuery = ''; },
-         }">
+            slotCount: @js(count($slots)),
+         })">
         <div class="max-w-2xl mx-auto px-4 sm:px-6">
 
             {{-- Hero --}}

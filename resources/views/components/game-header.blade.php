@@ -240,38 +240,7 @@
 
     {{-- Pre-Match Confirmation Modal --}}
     @if($nextMatch && !$game->hasPendingActions() && !$continueToHome)
-    <div x-data="{
-        loading: false,
-        submitting: false,
-        content: '',
-        loadPreMatch(url) {
-            if (this.submitting) return;
-            if (localStorage.getItem('autoLineup') === '1') {
-                this.submitting = true;
-                window.dispatchEvent(new CustomEvent('matchday-advance-starting'));
-                this.$refs.autoAdvanceForm.submit();
-                return;
-            }
-            this.content = '';
-            this.loading = true;
-            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(r => {
-                    const contentType = r.headers.get('content-type') || '';
-                    if (contentType.includes('application/json')) {
-                        return r.json().then(data => {
-                            if (data.lineupReady && !this.submitting) {
-                                this.submitting = true;
-                                window.dispatchEvent(new CustomEvent('matchday-advance-starting'));
-                                this.$refs.autoAdvanceForm.submit();
-                            }
-                        });
-                    }
-                    this.$dispatch('open-modal', 'pre-match');
-                    return r.text().then(html => { this.content = html; this.loading = false; });
-                })
-                .catch(() => { this.loading = false; });
-        }
-    }" x-on:show-pre-match.window="loadPreMatch($event.detail)">
+    <div x-data="preMatchLoader()" x-on:show-pre-match.window="loadPreMatch($event.detail)">
         <form x-ref="autoAdvanceForm" method="POST" action="{{ route('game.advance', $game->id) }}" class="hidden">
             @csrf
         </form>
