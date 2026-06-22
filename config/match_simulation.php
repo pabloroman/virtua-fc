@@ -69,19 +69,19 @@ return [
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
     'defensive_quality_damping' => 0.6, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
 
-    // Hard ceiling on the home/away strength ratio BEFORE it is raised to
-    // skill_dominance. The xG formula is unbounded — a ratio of 13 at exponent
-    // 2.4 is ~700× base goals. The strength floor (below) is calibrated on
-    // STATIC top-11 overall_score, so the static league ratio tops out near
-    // R≈1.34. But the live simulator applies that floor to MATCH-TIME strength
-    // (overall × form × energy × out-of-position penalty), which can erode far
-    // below the static band; as a side nears the floor its rescaled strength
-    // collapses toward applyFloor()'s 0.02 clamp and the ratio explodes,
-    // producing 13-0 / 21-0 blowouts. Clamping symmetrically to [1/max, max]
-    // caps xG at the source. 2.2 → worst case ≈ 2.2^2.4 × 1.4 ≈ 8.4 xG (a
-    // once-a-decade scoreline), while leaving genuine single-match maulings room
-    // above the static R. The clamp never binds on static AI-vs-AI matches, so
-    // the floor's league-table realism is untouched. 0 (or ≤ 1.0) disables it.
+    // The model's single bound on the home/away strength ratio BEFORE it is
+    // raised to skill_dominance. The xG power formula is otherwise unbounded — a
+    // ratio of 13 at exponent 2.4 is ~700× base goals. Strength is floored on
+    // STATIC ability (see strength floor below + calculateTeamStrength), so an
+    // in-league ratio tops out near the floor's calibrated band (R≈1.34) and this
+    // clamp never binds there. It exists for genuine cross-league mismatches —
+    // e.g. a top-flight side vs a lower-league team in the Copa del Rey, whose
+    // static ratio legitimately runs higher — keeping a single match from running
+    // away: 2.2 → worst case ≈ 2.2^2.4 × 1.4 ≈ 8.4 xG (a total-domination
+    // scoreline), still leaving room for genuine maulings. Applied uniformly on
+    // every path via MatchOutcomeModel::clampStrengthRatio (full simulator, live
+    // resimulation, extra time and AI-vs-AI), so there is no path it can miss.
+    // 0 (or ≤ 1.0) disables it.
     'max_strength_ratio' => 2.2,
 
     /*
@@ -179,10 +179,6 @@ return [
     |   decreasing 1-0 and 0-1 results. This matches the real-world pattern
     |   where teams "cancel each other out" more often than Poisson predicts.
     |
-    | max_goals_cap: Maximum goals a team can score (prevents 10-0 results)
-    |   - 0 = no cap
-    |   - 7 = realistic cap (historical max in La Liga is 9-0)
-    |
     | score_concentration: How tightly results cluster around the most likely
     |   scoreline. Raises each probability to this power, then renormalizes.
     |   This is an inverse-temperature transform on the Dixon-Coles distribution.
@@ -198,7 +194,6 @@ return [
     |
     */
     'dixon_coles_rho' => -0.05,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
-    'max_goals_cap' => 6,
     'score_concentration' => 1.4,       // 1.0 = standard, >1 = results cluster closer to xG mode
 
     /*
