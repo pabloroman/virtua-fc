@@ -28,7 +28,6 @@ class FullMatchSimulationService
         private readonly NotificationService $notificationService,
         private readonly AIMatchResolver $aiMatchResolver = new AIMatchResolver,
         private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
-        private readonly CompetitionStrengthFloorResolver $floorResolver = new CompetitionStrengthFloorResolver,
     ) {}
 
     /**
@@ -166,10 +165,6 @@ class FullMatchSimulationService
         // both teams, same as if the user had clicked "Skip to end" from
         // minute 0. Tactics stay intact above.
         $simulatorUserTeamId = ($isUserMatch && ! $fastForward) ? $game->team_id : null;
-
-        // Rescale team strengths by this competition's distribution-derived floor
-        // (domestic league) or the global cross-band floor (cups/continental).
-        $this->matchSimulator->setStrengthFloor($this->floorResolver->floorForMatch($game, $match));
 
         $output = $this->matchSimulator->simulate(
             $match->homeTeam,

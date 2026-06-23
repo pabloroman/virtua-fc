@@ -29,7 +29,6 @@ class AIMatchResolver
 {
     public function __construct(
         private readonly StoppageCalculator $stoppageCalculator = new StoppageCalculator,
-        private readonly CompetitionStrengthFloorResolver $floorResolver = new CompetitionStrengthFloorResolver,
     ) {}
 
     // Position weights for goal scoring (matches MatchSimulator)
@@ -133,15 +132,8 @@ class AIMatchResolver
         $homeStrength = $this->calculateTeamStrength($homeXI);
         $awayStrength = $this->calculateTeamStrength($awayXI);
 
-        // Rescale both strengths by this competition's strength floor (domestic
-        // league → its own rating band, cups/continental → global cross-band
-        // floor) so AI league tables reflect quality instead of being coin flips.
-        $floor = $this->floorResolver->floorForMatch($game, $match);
-        $homeStrength = MatchOutcomeModel::applyFloor($homeStrength, $floor);
-        $awayStrength = MatchOutcomeModel::applyFloor($awayStrength, $floor);
-
-        // Generate scoreline — same xG formula and Dixon-Coles distribution the
-        // full MatchSimulator uses, via the shared MatchOutcomeModel.
+        // Generate scoreline — same difference-based xG formula and Dixon-Coles
+        // distribution the full MatchSimulator uses, via the shared MatchOutcomeModel.
         $neutralVenue = $match->isNeutralVenue();
         [$homeXG, $awayXG] = MatchOutcomeModel::expectedGoals($homeStrength, $awayStrength, $neutralVenue);
         [$homeScore, $awayScore] = MatchOutcomeModel::sampleScoreline($homeXG, $awayXG);

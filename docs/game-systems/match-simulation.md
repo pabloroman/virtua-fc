@@ -4,39 +4,26 @@ How match results are simulated in VirtuaFC.
 
 ## Overview
 
-Match simulation calculates **expected goals (xG)** for each team using a ratio-based formula, then generates actual scores via **Poisson distribution**. The xG is influenced by team strength, formation, mentality, home advantage, and a striker quality bonus. During matches, players lose energy over time, affecting their contribution.
+Match simulation calculates **expected goals (xG)** for each team using a difference-based goal-supremacy formula, then generates actual scores via the **Dixon-Coles correlated Poisson** distribution. The xG is influenced by team strength, formation, mentality, home advantage, and a striker quality bonus. During matches, players lose energy over time, affecting their contribution.
 
 ## xG Formula
 
-```
-homeXG = (strengthRatio ^ exponent) × baseGoals + homeAdvantage
-         × formation modifiers × mentality modifiers × matchFraction
-
-awayXG = ((1/strengthRatio) ^ exponent) × baseGoals
-         × formation modifiers × mentality modifiers × matchFraction
-```
-
-The stronger team is always favored regardless of venue — home advantage is a modest additive bonus on top.
-
-**Team strength** is calculated from the 11-player lineup with ability-dominant weights (overall_score 95%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`.
-
-All base values and exponents are configurable in `config/match_simulation.php`.
-
-### Strength floor (distribution-derived rescale)
-
-Because outcomes depend on the strength **ratio** (`ratio ^ skill_dominance`) and strength is `mean(rating)/100` on a zero-baseline scale, leagues whose ratings cluster in a high, narrow band (e.g. the cash-rich, egalitarian Premier League) produce ratios near 1.0 — making matches coin flips and tables too flat. To correct this, each team's strength is rescaled by a per-match **floor** before the ratio is formed:
+xG is driven by the **difference** in team strength, not a ratio:
 
 ```
-strength = (rating - floor) / (100 - floor)
+d         = (homeStrength − awayStrength) × 100      // rating-point gap
+supremacy = d / goal_supremacy_scale                 // goals of home edge
+homeXG    = (base_goals + supremacy/2 + homeAdvantage) × formation × mentality × matchFraction
+awayXG    = (base_goals − supremacy/2)               × formation × mentality × matchFraction
 ```
 
-The floor is **derived per competition** from its own rating band (`CompetitionStrengthFloorResolver`) so a high-narrow league gets a large floor and a low-wide league a small one, from a single global knob `strength_ratio_target` (R): `floor = (R·bottom - top)/(R - 1)`. Domestic-league matches use their league's floor; cups and continental matches use a global cross-band floor (which collapses toward 0, i.e. raw globally-consistent overalls, preserving genuine cross-league quality gaps). The rescale lives in `MatchOutcomeModel::applyFloor()` (a floor of 0 is a no-op) and is applied in both the full `MatchSimulator` path (via `setStrengthFloor()`, set by `FullMatchSimulationService`/`MatchResimulationService`) and the lightweight `AIMatchResolver`. Set `strength_floor_enabled => false` to disable. The `app:diagnose-strength-realism` command measures the effect and `--auto-floor` previews the production-derived floor.
+When teams are evenly matched (`d = 0`) both sides get `base_goals`; the stronger team is favored regardless of venue, with home advantage as a modest additive bonus. Each side's xG is floored at a small minimum so the Poisson stays well-formed.
 
-The floor is calibrated on **static** top-11 `overall_score`, so it is applied to a team's **static** ability *before* the match-time modifiers (form, energy, out-of-position penalty), which are then applied as multipliers on the floored baseline. This ordering is load-bearing: the floor is derived to sit at least `strength_floor_margin` below the weakest squad, so static ability never reaches `applyFloor()`'s `0.02` clamp. The pre-#1283 code applied the floor to already-eroded match-time strength, which let a fatigued or out-of-position side fall through the floor, collapse toward `0.02`, and explode the home/away ratio into 13-0 / 21-0 blow-outs. `calculateTeamStrength()` now mirrors `AIMatchResolver`, which floors static strength and never had the blow-out.
+**Why a difference and not a ratio:** an `overall_score` has no true zero (no real squad rates below ~50), so ratios of ratings are meaningless near the top of the scale. A difference is immune to where the zero sits — `90` vs `78` is a 12-point edge regardless — so there is **no per-league floor, no band query, no outlier sensitivity, and no ratio clamp**. A genuinely dominant squad keeps pulling clear (supremacy grows linearly with the gap) instead of being renormalised back toward the field. The mapping is also correct cross-league for free: a top-flight side really is N points stronger than a lower-league team in a cup.
 
-### Strength-ratio clamp (cross-league bound)
+**Team strength** is calculated from the 11-player lineup with ability-dominant weights (overall_score 95%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`. Match-time erosion (form, fatigue, out-of-position) simply narrows or reverses the strength gap — there is no ratio to explode.
 
-Because outcomes use `ratio ^ skill_dominance`, the xG formula is otherwise unbounded. Within a league the floored static ratio stays anchored to the calibrated band (~R), so the clamp does not bind there. It exists for genuine **cross-league** mismatches — e.g. a top-flight side vs a lower-league team in a cup tie — where the static ratio legitimately runs higher and a single match could otherwise run away. The home/away ratio is clamped symmetrically to `[1/max, max]` via `MatchOutcomeModel::clampStrengthRatio()` **before** exponentiation, in `expectedGoals()`, `calculateBaseExpectedGoals()`, and `applyTacticalModifiers()` — so every code path (full simulator, live resimulation, extra time, AI-vs-AI) inherits the same bound from one place. The knob is `max_strength_ratio` (default 2.2 → worst-case xG ≈ `2.2 ^ skill_dominance × base_goals`; `0`/`≤1.0` disables it as a rollback escape hatch).
+The single calibration knob is **`goal_supremacy_scale`** (rating points per goal of supremacy; lower → quality matters more, fewer upsets). All values live in `config/match_simulation.php`. The kernel lives in exactly one place — `MatchOutcomeModel::expectedGoals()` — which both `AIMatchResolver` and `MatchSimulator::calculateBaseExpectedGoals()` call. The `app:diagnose-strength-realism` command measures league realism and `--scale` previews a different scale before committing it to config.
 
 ## Formation & Mentality
 
@@ -130,8 +117,7 @@ Cup competitions (`knockout_cup`), Swiss-format competitions (`swiss_format`, `g
 | File | Purpose |
 |------|---------|
 | `app/Modules/Match/Services/MatchSimulator.php` | Core simulation: xG, strength, events, extra time, penalties |
-| `app/Modules/Match/Support/MatchOutcomeModel.php` | Shared xG + Dixon-Coles math and the strength-floor rescale |
-| `app/Modules/Match/Services/CompetitionStrengthFloorResolver.php` | Per-competition / global strength floor from the rating band |
+| `app/Modules/Match/Support/MatchOutcomeModel.php` | Shared difference-based xG + Dixon-Coles math (single kernel) |
 | `app/Modules/Match/Services/EnergyCalculator.php` | Energy drain and effectiveness calculations |
 | `app/Modules/Match/Services/SyntheticLeagueResolver.php` | Lazy Poisson simulation of non-user flat leagues |
 | `app/Modules/Player/Services/PlayerConditionService.php` | Between-match recovery and energy updates |

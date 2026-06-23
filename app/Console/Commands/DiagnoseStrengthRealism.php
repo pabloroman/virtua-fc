@@ -6,7 +6,6 @@ use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
-use App\Modules\Match\Services\CompetitionStrengthFloorResolver;
 use App\Modules\Match\Support\MatchOutcomeModel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -19,21 +18,21 @@ use Illuminate\Support\Collection;
  *
  * Read-only. It computes each team's strength with the SAME definition the match
  * engine uses (mean of the best XI's `overall·0.95 + morale·0.05`, /100) and
- * drives the SAME outcome math (xG power-law + Dixon-Coles) via the shared
- * {@see MatchOutcomeModel}, so the numbers reflect production behaviour, not a
- * re-implementation.
+ * drives the SAME outcome math (difference-based goal supremacy + Dixon-Coles)
+ * via the shared {@see MatchOutcomeModel}, so the numbers reflect production
+ * behaviour, not a re-implementation.
  *
  * Note: the AI-vs-AI league (the tables forming around the user) is resolved by
  * AIMatchResolver, which omits per-player "form on the day" variance — so AI
- * league realism is governed ONLY by strength ratios + skill_dominance +
+ * league realism is governed ONLY by the strength gap + goal_supremacy_scale +
  * Dixon-Coles. The analytical sections model that exactly. `--std-dev` lets you
  * additionally approximate the user's own MatchSimulator matches, which DO carry
  * per-player variance.
  *
- * The `--floor`, `--skill-dominance` and `--std-dev` flags preview tuning levers
- * without touching config or code, turning this into the calibration instrument
- * for the data-driven mitigation pass (favoured lever: the strength-floor
- * rescale `(rating - floor)/(100 - floor)`, previewed via `--floor`).
+ * The `--scale` and `--std-dev` flags preview tuning levers without touching
+ * config or code, making this the calibration instrument for the model's single
+ * knob: goal_supremacy_scale (rating points per goal of supremacy), previewed
+ * via `--scale`. Lower scale → quality matters more / fewer upsets.
  */
 class DiagnoseStrengthRealism extends Command
 {
@@ -41,9 +40,7 @@ class DiagnoseStrengthRealism extends Command
         {game? : Game id (defaults to the most recently created game)}
         {--league= : Competition code, e.g. ESP1 (defaults to the game\'s own league)}
         {--runs=2000 : Number of Monte-Carlo seasons for the distribution section}
-        {--floor= : Preview the strength-floor rescale: strength = (rating - floor)/(100 - floor)}
-        {--auto-floor : Derive & apply the league floor via the production CompetitionStrengthFloorResolver}
-        {--skill-dominance= : Preview a different skill_dominance exponent}
+        {--scale= : Preview a different goal_supremacy_scale (rating points per goal of supremacy)}
         {--std-dev= : Add per-match team form noise (models user MatchSimulator matches; AI league uses none)}
         {--neutral : Ignore home advantage in every matchup}
         {--json= : Also write the full metric set as JSON to this path}';
@@ -66,7 +63,7 @@ class DiagnoseStrengthRealism extends Command
 
     private bool $neutral = false;
 
-    private ?float $skillDominance = null;
+    private ?float $scale = null;
 
     private ?float $stdDev = null;
 
@@ -79,15 +76,10 @@ class DiagnoseStrengthRealism extends Command
 
         $league = (string) ($this->option('league') ?: $game->competition_id);
         $this->neutral = (bool) $this->option('neutral');
-        $this->skillDominance = $this->option('skill-dominance') !== null
-            ? (float) $this->option('skill-dominance') : null;
+        $this->scale = $this->option('scale') !== null
+            ? (float) $this->option('scale') : null;
         $this->stdDev = $this->option('std-dev') !== null
             ? (float) $this->option('std-dev') : null;
-        $floor = $this->option('floor') !== null ? (float) $this->option('floor') : null;
-        if ($this->option('auto-floor')) {
-            // Mirror production: the floor the live engine would use for this league.
-            $floor = (new CompetitionStrengthFloorResolver)->leagueFloor($game, $league);
-        }
         $runs = max(1, (int) $this->option('runs'));
 
         $teamIds = CompetitionEntry::query()
@@ -116,7 +108,7 @@ class DiagnoseStrengthRealism extends Command
         foreach ($teamIds as $tid) {
             $xi = $this->bestEleven($playersByTeam->get($tid, collect()));
             $rating[$tid] = $this->weightedRating($xi);
-            $strength[$tid] = $this->toStrength($rating[$tid], $xi->count(), $floor);
+            $strength[$tid] = $this->toStrength($rating[$tid], $xi->count());
         }
 
         // Rank teams by strength descending → strengthRank[teamId] = 1..n.
@@ -127,7 +119,7 @@ class DiagnoseStrengthRealism extends Command
             $strengthRank[$tid] = $idx + 1;
         }
 
-        $this->printContext($game, $league, count($teamIds), $floor, $runs);
+        $this->printContext($game, $league, count($teamIds), $runs);
         $this->sectionInputSpread($ranked, $names, $rating, $strength);
 
         // Precompute the analytical outcome for every ordered fixture once. With
@@ -141,7 +133,7 @@ class DiagnoseStrengthRealism extends Command
         $this->sectionVerdict($mc);
 
         if ($this->option('json')) {
-            $this->dumpJson($game, $league, $floor, $runs, $names, $strengthRank, $rating, $strength, $xTable, $mc);
+            $this->dumpJson($game, $league, $runs, $names, $strengthRank, $rating, $strength, $xTable, $mc);
         }
 
         return self::SUCCESS;
@@ -233,19 +225,17 @@ class DiagnoseStrengthRealism extends Command
     }
 
     /**
-     * Convert a 0..100 rating to the engine's normalized strength. Without
-     * --floor this is the production `rating/100` (zero baseline). With --floor
-     * it previews the rescale `(rating - floor)/(100 - floor)`, which re-expands
-     * the ratio between teams because no real squad rates below ~50.
+     * Convert a 0..100 rating to the engine's normalized strength — the
+     * production `rating/100`. The outcome model takes the DIFFERENCE of these
+     * strengths, so no floor/rescale is involved.
      */
-    private function toStrength(float $rating, int $xiCount, ?float $floor): float
+    private function toStrength(float $rating, int $xiCount): float
     {
         if ($xiCount < 7) {
             return 0.30; // matches the engine's depleted-lineup fallback
         }
 
-        // Same rescale the production engines apply (floor 0/null = no-op).
-        return MatchOutcomeModel::applyFloor($rating / 100.0, $floor ?? 0.0);
+        return $rating / 100.0;
     }
 
     /**
@@ -276,22 +266,22 @@ class DiagnoseStrengthRealism extends Command
         return [$probs, $matrices];
     }
 
-    /** @return array{skill_dominance?: float} */
+    /** @return array{goal_supremacy_scale?: float} */
     private function overrides(): array
     {
-        return $this->skillDominance !== null ? ['skill_dominance' => $this->skillDominance] : [];
+        return $this->scale !== null ? ['goal_supremacy_scale' => $this->scale] : [];
     }
 
-    private function printContext(Game $game, string $league, int $teams, ?float $floor, int $runs): void
+    private function printContext(Game $game, string $league, int $teams, int $runs): void
     {
-        $dom = $this->skillDominance ?? (float) config('match_simulation.skill_dominance', 2.4);
+        $scale = $this->scale ?? (float) config('match_simulation.goal_supremacy_scale', 10.0);
         $this->line('');
         $this->info('=== Squad-strength realism diagnostic ===');
         $this->line("game: {$game->id}   league: {$league}   teams: {$teams}   season: {$game->season}");
-        $this->line("skill_dominance: {$dom}" . ($this->skillDominance !== null ? ' (override)' : '')
+        $this->line("goal_supremacy_scale: {$scale}" . ($this->scale !== null ? ' (override)' : '')
             . '   base_goals: ' . config('match_simulation.base_goals')
             . '   home_advantage: ' . ($this->neutral ? '0 (neutral)' : config('match_simulation.home_advantage_goals')));
-        $this->line('strength floor: ' . ($floor === null ? 'none (rating/100)' : "{$floor}  →  (rating-{$floor})/(100-{$floor})")
+        $this->line('strength: rating/100 (difference-based)'
             . '   form noise (std-dev): ' . ($this->stdDev === null ? 'none — AI league path' : $this->stdDev . ' (user-match approximation)'));
         $this->line("monte-carlo seasons: {$runs}");
     }
@@ -329,12 +319,14 @@ class DiagnoseStrengthRealism extends Command
         $cov = $mean > 0 ? sqrt($variance / count($strengths)) / $mean : 0.0;
         $ratio = $bottom > 0 ? $top / $bottom : INF;
 
+        $scale = $this->scale ?? (float) config('match_simulation.goal_supremacy_scale', 10.0);
+        $gapPts = ($top - $bottom) * 100.0;
         $this->line(sprintf(
-            '  top strength %.3f  /  bottom strength %.3f  →  top:bottom ratio %.3f',
-            $top, $bottom, $ratio
+            '  top strength %.3f  /  bottom strength %.3f  →  top:bottom ratio %.3f  /  gap %.1f rating pts',
+            $top, $bottom, $ratio, $gapPts
         ));
-        $this->line(sprintf('  coefficient of variation: %.1f%%   (xG gap of top vs bottom scales as ratio^(2·skill_dominance))', $cov * 100));
-        $this->line('  ↳ the closer this ratio is to 1.000, the more every match tends toward a coin flip.');
+        $this->line(sprintf('  coefficient of variation: %.1f%%   (top-vs-bottom supremacy ≈ %.2f goals at scale %.1f)', $cov * 100, $scale > 0 ? $gapPts / $scale : 0.0, $scale));
+        $this->line('  ↳ the smaller this rating-point gap, the more every match tends toward a coin flip.');
     }
 
     /**
@@ -564,7 +556,7 @@ class DiagnoseStrengthRealism extends Command
         ];
         $this->table(['Metric', 'Simulated', 'Reference', 'Flag'], $rows);
         $this->line('  Bands are loose realism targets (≈ La Liga), not hard rules. ⚠ on the gap/ρ rows is the signature of strength flattening.');
-        $this->line('  ↳ Re-run with --floor=45 or --floor=50 to preview how the strength-floor rescale widens the spread and lifts ρ.');
+        $this->line('  ↳ Re-run with --scale=8 or --scale=12 to preview how goal_supremacy_scale widens or tightens the spread (lower = more spread).');
     }
 
     /**
@@ -665,7 +657,7 @@ class DiagnoseStrengthRealism extends Command
      * @param  array<int, array{team: string, name: string, xpts: float, strengthRank: int}>  $xTable
      * @param  array<string, mixed>  $mc
      */
-    private function dumpJson(Game $game, string $league, ?float $floor, int $runs, array $names, array $strengthRank, array $rating, array $strength, array $xTable, array $mc): void
+    private function dumpJson(Game $game, string $league, int $runs, array $names, array $strengthRank, array $rating, array $strength, array $xTable, array $mc): void
     {
         $path = (string) $this->option('json');
 
@@ -685,8 +677,7 @@ class DiagnoseStrengthRealism extends Command
             'league' => $league,
             'season' => $game->season,
             'config' => [
-                'skill_dominance' => $this->skillDominance ?? (float) config('match_simulation.skill_dominance', 2.4),
-                'floor' => $floor,
+                'goal_supremacy_scale' => $this->scale ?? (float) config('match_simulation.goal_supremacy_scale', 10.0),
                 'std_dev' => $this->stdDev,
                 'neutral' => $this->neutral,
                 'runs' => $runs,

@@ -34,96 +34,46 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Expected Goals (Ratio-Based Formula)
+    | Expected Goals (Difference-Based Goal Supremacy)
     |--------------------------------------------------------------------------
     |
-    | The xG formula uses strength RATIOS rather than shares:
+    | xG is driven by the DIFFERENCE in team strength, not a ratio. Team strength
+    | is mean(rating)/100 on the 0..100 overall scale, so the difference is read
+    | back in rating points and mapped to a goal "supremacy" (home xG minus away
+    | xG):
     |
-    |   homeXG = (strengthRatio ^ skill_dominance) × baseGoals + homeAdvantage
-    |   awayXG = (1/strengthRatio ^ skill_dominance) × baseGoals
+    |   d         = (homeStrength − awayStrength) × 100      // rating-point gap
+    |   supremacy = d / goal_supremacy_scale                 // goals of edge
+    |   homeXG    = base_goals + supremacy/2 + homeAdvantage
+    |   awayXG    = base_goals − supremacy/2
     |
-    | When teams are equal (ratio=1.0), both get base_goals (1.3 xG).
-    | The stronger team is ALWAYS favored regardless of venue.
+    | Why a difference and not a ratio: a rating has no true zero (no real squad
+    | rates below ~50), so ratios of ratings are meaningless near the top of the
+    | scale and need a per-league "floor" to rescue them. A difference is immune
+    | to where the zero sits — 90-vs-78 is a 12-point edge whether the floor is 0
+    | or 50 — so no floor, no per-league band, no outlier sensitivity, and no
+    | ratio clamp are needed. A genuinely dominant squad keeps pulling clear
+    | (supremacy grows linearly with the gap) instead of being renormalised back
+    | toward the field. The same mapping is correct cross-league for free: a
+    | top-flight side really is N points better than a lower-league team in a cup.
     |
-    | Real-world La Liga average: ~2.5 goals per match
+    | base_goals: per-team xG when evenly matched (supremacy 0 → both get this).
+    | goal_supremacy_scale (D): rating points per goal of home-minus-away edge.
+    |   Lower D → quality matters more (bigger gaps, fewer upsets); higher D →
+    |   flatter, more upsets. Calibrated so the season-1 La Liga distribution
+    |   keeps a realistic spread (champion ~85, strongest squad wins ~45%); verify
+    |   with `php artisan app:diagnose-strength-realism`.
     |
-    | skill_dominance: Controls how much team quality determines match outcomes.
-    | Higher values widen the xG gap between strong and weak teams, meaning
-    | the better team wins more often. Lower values compress the gap, leading
-    | to more upsets and tighter leagues.
-    |
-    |   1.0 = linear, minimal skill advantage → frequent upsets (~60/40 skill/luck)
-    |   1.5 = moderate, noticeable quality gap → some upsets (~70/30)
-    |   2.3 = default, strong quality gap → realistic La Liga feel (~80/20)
-    |   3.0 = high, dominant teams rarely lose (~90/10)
-    |   4.0 = extreme, top teams almost never drop points (~95/5)
-    |
-    | Example with elite (str 0.72) vs bottom (str 0.55), ratio ≈ 1.31:
-    |   skill_dominance 1.0 → xG: 1.70 vs 0.99 (upset ~25% of the time)
-    |   skill_dominance 2.3 → xG: 2.36 vs 0.72 (upset ~10% of the time)
-    |   skill_dominance 4.0 → xG: 3.53 vs 0.48 (upset ~2% of the time)
+    | Example (base_goals 1.4, D 10, neutral):
+    |   gap  4 pts → supremacy 0.4 → xG 1.6 vs 1.2  (slight edge, frequent draws)
+    |   gap 12 pts → supremacy 1.2 → xG 2.0 vs 0.8  (clear favourite — pulls clear)
+    |   gap 20 pts → supremacy 2.0 → xG 2.4 vs 0.4  (rout)
     |
     */
-    'base_goals' => 1.4,                // avg xG per team when evenly matched (~2.6 total)
-    'skill_dominance' => 2.4,           // how much team quality widens the xG gap (see above)
+    'base_goals' => 1.4,                // per-team xG when evenly matched (~2.8 total)
+    'goal_supremacy_scale' => 10.0,     // rating points per goal of home-minus-away supremacy
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
     'defensive_quality_damping' => 0.6, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
-
-    // The model's single bound on the home/away strength ratio BEFORE it is
-    // raised to skill_dominance. The xG power formula is otherwise unbounded — a
-    // ratio of 13 at exponent 2.4 is ~700× base goals. Strength is floored on
-    // STATIC ability (see strength floor below + calculateTeamStrength), so an
-    // in-league ratio tops out near the floor's calibrated band (R≈1.34) and this
-    // clamp never binds there. It exists for genuine cross-league mismatches —
-    // e.g. a top-flight side vs a lower-league team in the Copa del Rey, whose
-    // static ratio legitimately runs higher — keeping a single match from running
-    // away: 2.2 → worst case ≈ 2.2^2.4 × 1.4 ≈ 8.4 xG (a total-domination
-    // scoreline), still leaving room for genuine maulings. Applied uniformly on
-    // every path via MatchOutcomeModel::clampStrengthRatio (full simulator, live
-    // resimulation, extra time and AI-vs-AI), so there is no path it can miss.
-    // 0 (or ≤ 1.0) disables it.
-    'max_strength_ratio' => 2.2,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Strength Floor (Distribution-Derived Rescale)
-    |--------------------------------------------------------------------------
-    |
-    | Team strength is mean(rating)/100 on a zero-baseline 0..100 scale. Because
-    | no real squad rates below ~50, the bottom half of that scale is dead weight
-    | that squashes the home/away strength RATIO toward 1.0 — making matches coin
-    | flips and league tables too flat (champions on ~72 pts, the best squad
-    | winning the title only ~25% of seasons). Subtracting a floor re-expands the
-    | ratios:  strength = (rating - floor) / (100 - floor).
-    |
-    | The correct floor is league-specific because leagues sit on different parts
-    | of the scale: the cash-rich, egalitarian Premier League band is high and
-    | narrow (76.7→88) while La Liga is lower and wide (72.5→91.7). So the floor
-    | is DERIVED per competition from its own rating band rather than hard-coded
-    | (see CompetitionStrengthFloorResolver). Domestic-league matches use their
-    | league's floor; cups/continental matches use a global cross-band floor that
-    | collapses toward 0 (raw overalls), preserving genuine cross-league gaps.
-    |
-    | strength_ratio_target (R): the single tuning knob. It is the top:bottom
-    | strength ratio each league is stretched to. The per-league floor solving
-    | for it is F = (R·bottom - top)/(R - 1). Higher R → bigger floors → more
-    | table spread / fewer upsets.
-    |
-    |   1.25 = gentle — leagues stay fairly tight
-    |   1.34 = default — champion ~85, strongest team wins title ~45% (La Liga
-    |          floor ≈16, Premier League floor ≈44)
-    |   1.45 = aggressive — top teams pull clear, relegation strugglers crushed
-    |
-    | strength_floor_margin: keeps the derived floor at least this far below the
-    |   weakest team's rating, so its rescaled strength stays positive.
-    | strength_floor_top_n: squad depth (best-N overall_score) used to define a
-    |   team's rating for the band — matches the best-XI the engine fields.
-    |
-    */
-    'strength_floor_enabled' => true,
-    'strength_ratio_target' => 1.34,
-    'strength_floor_margin' => 3.0,
-    'strength_floor_top_n' => 11,
 
     /*
     |--------------------------------------------------------------------------

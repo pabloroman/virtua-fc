@@ -61,21 +61,6 @@ class MatchSimulator
     ) {}
 
     /**
-     * Per-match strength floor (0..100 rating units) applied in
-     * calculateTeamStrength to re-expand the home/away strength ratio. 0.0 is a
-     * no-op. Resolved per match by the caller (CompetitionStrengthFloorResolver)
-     * and set before simulating, because the resim entry points
-     * (simulateRemainder / simulateExtraTime) bypass simulate(); a setter keeps
-     * every entry path consistent without threading it through their signatures.
-     */
-    private float $strengthFloor = 0.0;
-
-    public function setStrengthFloor(float $floor): void
-    {
-        $this->strengthFloor = $floor;
-    }
-
-    /**
      * Match performance cache - stores per-player performance modifiers for the current match.
      * Each player gets a random "form on the day" that affects their contribution.
      * Range: 0.75 to 1.25 (25% variance from their base ability)
@@ -1340,29 +1325,18 @@ class MatchSimulator
         $totalStrength = 0;
         foreach ($lineup as $player) {
             // Static ability baseline on the 0..100 rating scale, BEFORE any
-            // match-time erosion. Ability-dominant (morale lightly weighted);
-            // fitness has no separate weight — it flows through the energy
-            // effectiveness modifier below (fitness = starting energy).
-            $staticAbility = ($player->overall_score * $wOverall) +
-                             ($player->morale * $wMorale);
+            // match-time erosion, normalized to the 0..1 strength space.
+            // Ability-dominant (morale lightly weighted); fitness has no separate
+            // weight — it flows through the energy effectiveness modifier below
+            // (fitness = starting energy).
+            $playerStrength = (($player->overall_score * $wOverall) +
+                               ($player->morale * $wMorale)) / 100;
 
-            // Rescale against the per-match strength floor on STATIC ability —
-            // BEFORE the match-time modifiers below, not after. The floor is
-            // calibrated on static top-11 overall_score and derived to sit at
-            // least strength_floor_margin below the weakest squad, so static
-            // ability never reaches applyFloor()'s 0.02 collapse. The old code
-            // applied the floor to already-eroded match-time strength (overall ×
-            // form × out-of-position × fatigue); a tired or out-of-position side
-            // would fall through the floor, collapse toward 0.02, and explode the
-            // home/away ratio into 13-0 / 21-0 blow-outs. Flooring static ability
-            // and applying the modifiers as multipliers afterwards keeps the ratio
-            // anchored to the calibrated band. This mirrors AIMatchResolver, which
-            // floors static strength and never had the blow-out. Floor 0.0 (no
-            // resolved floor) leaves this an exact no-op.
-            $playerStrength = MatchOutcomeModel::applyFloor($staticAbility / 100, $this->strengthFloor);
-
-            // Match-time modifiers applied AFTER the floor, as multipliers on the
-            // floored baseline: form on the day, out-of-position penalty, fatigue.
+            // Match-time modifiers applied as multipliers on the static baseline:
+            // form on the day, out-of-position penalty, fatigue. The outcome model
+            // takes the DIFFERENCE of team strengths, so an eroded side simply
+            // narrows (or reverses) the gap — there is no ratio to explode and no
+            // floor to fall through.
             $playerStrength *= $this->getMatchPerformance($player);
 
             // Out-of-position penalty (flat reduction)
@@ -1796,25 +1770,25 @@ class MatchSimulator
         float $matchFraction,
         bool $neutralVenue = false,
     ): array {
-        $skillDominance = config('match_simulation.skill_dominance', 2.0);
-        $homeAdvantageGoals = $neutralVenue ? 0.0 : config('match_simulation.home_advantage_goals', 0.15);
+        // Base xG from the shared difference-based kernel (single source of the
+        // outcome math), then layer this period's tactical modifiers and the
+        // per-minute match fraction on top. `$baseGoals` carries the per-period
+        // even-match baseline (extra time passes a reduced value).
+        [$homeXG, $awayXG] = MatchOutcomeModel::expectedGoals(
+            $homeStrength,
+            $awayStrength,
+            $neutralVenue,
+            ['base_goals' => $baseGoals],
+        );
 
-        // Bound the ratio before exponentiation. Match-time strength (eroded by
-        // form/energy/out-of-position) can fall far below the static band the
-        // strength floor was calibrated on, exploding the raw ratio; the clamp
-        // caps xG at the source. See MatchOutcomeModel::clampStrengthRatio.
-        $strengthRatio = $awayStrength > 0
-            ? MatchOutcomeModel::clampStrengthRatio($homeStrength / $awayStrength)
-            : 1.0;
-
-        $homeXG = (pow($strengthRatio, $skillDominance) * $baseGoals + $homeAdvantageGoals)
+        $homeXG = $homeXG
             * $homeFormation->attackModifier()
             * $awayFormation->defenseModifier()
             * $homeMentality->ownGoalsModifier()
             * $awayMentality->opponentGoalsModifier()
             * $matchFraction;
 
-        $awayXG = (pow(1 / $strengthRatio, $skillDominance) * $baseGoals)
+        $awayXG = $awayXG
             * $awayFormation->attackModifier()
             * $homeFormation->defenseModifier()
             * $awayMentality->ownGoalsModifier()
@@ -1848,10 +1822,10 @@ class MatchSimulator
         float $effectiveMinute,
         float $strengthRatio = 1.0,
     ): array {
-        // Use the same bounded ratio the xG formula uses, so the defensive
-        // attenuation below can't be driven by a runaway match-time ratio.
-        $strengthRatio = MatchOutcomeModel::clampStrengthRatio($strengthRatio);
-
+        // The raw home/away effective-strength ratio is used only to attenuate the
+        // defensive modifiers below (the xG itself comes from the difference-based
+        // kernel). Effective strengths sit in ~0.3..0.95, so this ratio is
+        // naturally bounded and needs no clamp.
         $preHomeXG = $homeXG;
         $preAwayXG = $awayXG;
 

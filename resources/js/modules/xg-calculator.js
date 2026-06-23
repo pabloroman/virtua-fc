@@ -71,11 +71,17 @@ export function calculateXgPreview({
     const homeDefLn = isHome ? userDefLine : oppDefLn;
     const awayDefLn = isHome ? oppDefLn : userDefLine;
 
-    // --- Base xG from strength ratio ---
-    const strengthRatio = awayStrength > 0 ? homeStrength / awayStrength : 1.0;
-    const skillDominance = cfg.skill_dominance;
+    // --- Base xG from the strength DIFFERENCE (goal-supremacy model) ---
+    // Mirrors MatchOutcomeModel::expectedGoals: a rating-point gap maps to a goal
+    // supremacy split evenly around the even-match baseline. No ratio, no floor.
     const baseGoals = cfg.base_goals;
     const homeAdv = cfg.home_advantage_goals;
+    const scale = cfg.goal_supremacy_scale;
+    const MIN_TEAM_XG = 0.15;
+
+    const supremacy = scale > 0 ? ((homeStrength - awayStrength) * 100) / scale : 0;
+    const baseHomeXG = Math.max(MIN_TEAM_XG, baseGoals + supremacy / 2 + homeAdv);
+    const baseAwayXG = Math.max(MIN_TEAM_XG, baseGoals - supremacy / 2);
 
     const getFmMods = (fm) => formationModifiers[fm] || { attack: 1.0, defense: 1.0 };
     const homeFmMods = getFmMods(homeFm);
@@ -84,13 +90,13 @@ export function calculateXgPreview({
     const homeMentMods = cfg.mentalities[homeMent] || { own_goals: 1.0, opponent_goals: 1.0 };
     const awayMentMods = cfg.mentalities[awayMent] || { own_goals: 1.0, opponent_goals: 1.0 };
 
-    let homeXG = (Math.pow(strengthRatio, skillDominance) * baseGoals + homeAdv)
+    let homeXG = baseHomeXG
         * homeFmMods.attack
         * awayFmMods.defense
         * homeMentMods.own_goals
         * awayMentMods.opponent_goals;
 
-    let awayXG = (Math.pow(1 / strengthRatio, skillDominance) * baseGoals)
+    let awayXG = baseAwayXG
         * awayFmMods.attack
         * homeFmMods.defense
         * awayMentMods.own_goals
