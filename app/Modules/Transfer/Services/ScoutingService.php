@@ -631,21 +631,37 @@ class ScoutingService
     }
 
     /**
-     * Counter-offer willingness premium curve, applied to market value:
-     *   desire 0.0 → 0.95× MV  (no need: rejects premium counters, settles just below market)
-     *   desire 1.0 → 1.50× MV  (clear need/upgrade: pays a real premium)
+     * Counter-offer willingness premium curve, applied to market value. Desire is
+     * driven by SquadNeedService::desireScore, whose upgrade term scales with how
+     * much the player improves *the buyer's* squad — so a clear upgrade gets chased
+     * harder (relative quality, not raw rating):
+     *   desire 0.0 → 0.95× MV  (no need: only a small premium over market)
+     *   desire 1.0 → 1.60× MV  (clear need/upgrade: pays a real premium)
+     * The resulting willingness is then floored at the club's own current bid (and
+     * at market value when affordable) — see evaluateCounterOffer.
      */
     private const COUNTER_PREMIUM_FLOOR = 0.95;
-    private const COUNTER_PREMIUM_CEIL = 1.50;
+    private const COUNTER_PREMIUM_CEIL = 1.60;
 
     /** Reproducible ±band variance on the premium, seeded from the offer uuid. */
-    private const COUNTER_PREMIUM_JITTER = 0.05;
-
-    /** Below this desire, the buyer won't floor its willingness at its current bid. */
-    private const COUNTER_FLOOR_DESIRE_THRESHOLD = 0.40;
+    private const COUNTER_PREMIUM_JITTER = 0.10;
 
     /** A club won't spend more than this fraction of its squad value on one player. */
     private const COUNTER_SQUAD_VALUE_RATIO = 0.25;
+
+    /** Asks at or below this fraction of max willingness are accepted outright. */
+    private const COUNTER_ACCEPT_RATIO = 0.95;
+
+    /** Base walk-away multiple: asks beyond this fraction of max willingness are rejected. */
+    private const COUNTER_REJECT_RATIO = 1.15;
+
+    /**
+     * Reproducible one-sided spread added on top of the walk-away multiple, seeded per
+     * offer (0..this, never negative). Keeps the exact threshold from being reverse-
+     * engineered while never dipping below the base ratio, so the bid floor's guarantee
+     * (the club never withdraws below paying a little over its own bid) always holds.
+     */
+    private const COUNTER_REJECT_JITTER = 0.10;
 
     /**
      * Evaluate the user's counter-offer from the AI buyer's perspective.
@@ -654,12 +670,16 @@ class ScoutingService
      * The AI club evaluates whether to accept, counter, or walk away.
      *
      * The buyer's max willingness is market_value × a premium that scales with
-     * how badly it wants the player (SquadNeedService::desireScore), clamped by
-     * an affordability ceiling. A club that needs the player and is upgrading
-     * pays a real premium; a deep-squad club with no need won't be talked up to
-     * (or even back up to) market value — so a countered offer no longer always
-     * beats market. This is the buyer-side counterpart to calculateAskingPrice's
-     * seller-side reluctance model; keep the two axes separate.
+     * how badly it wants the player (SquadNeedService::desireScore), clamped by an
+     * affordability ceiling. A club that needs the player and is upgrading pays a
+     * real premium. Crucially, a club that has already tabled a bid has revealed it
+     * values the player at — and can afford — at least that bid, so willingness is
+     * always floored at its own current bid (and at market value when the squad-value
+     * ceiling can afford it). The buyer therefore never withdraws rather than
+     * negotiate modestly up from its own anchor; only a genuinely cash-constrained
+     * club (ceiling below market value) settles below market. This is the buyer-side
+     * counterpart to calculateAskingPrice's seller-side reluctance model; keep the
+     * two axes separate.
      *
      * @return array{result: string, counter_amount: int|null}
      */
@@ -682,23 +702,40 @@ class ScoutingService
         $premium += $this->squadNeedService->jitter($offer->id, self::COUNTER_PREMIUM_JITTER);
         $premium = max(self::COUNTER_PREMIUM_FLOOR - self::COUNTER_PREMIUM_JITTER, $premium);
 
-        $maxWillingness = min($squadValueCeiling, (int) ($marketValue * $premium));
+        $desiredWillingness = (int) ($marketValue * $premium);
 
-        // Only floor at the club's current bid when it genuinely wants the
-        // player. This lets a low-desire buyer settle below its own (possibly
-        // pre-change) opening bid rather than being forced above market.
-        if ($desire >= self::COUNTER_FLOOR_DESIRE_THRESHOLD) {
-            $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+        // A club that already tabled a bid has revealed it can afford that bid, so
+        // the affordability ceiling must never cut willingness below a bid the club
+        // itself made.
+        $affordabilityCeiling = max($squadValueCeiling, $offer->transfer_fee);
+
+        $maxWillingness = min($affordabilityCeiling, $desiredWillingness);
+
+        // Always floor willingness at the club's own anchor — never withdraw rather
+        // than negotiate modestly up from a bid already on the table. Reach up to
+        // market value only when the squad-value ceiling can actually afford it, so a
+        // genuinely cash-poor club still settles below market.
+        $maxWillingness = max($maxWillingness, $offer->transfer_fee);
+        if ($affordabilityCeiling >= $marketValue) {
+            $maxWillingness = max($maxWillingness, $marketValue);
         }
 
-        if ($userAskingPrice <= (int) ($maxWillingness * 0.95)) {
+        if ($userAskingPrice <= (int) ($maxWillingness * self::COUNTER_ACCEPT_RATIO)) {
             return [
                 'result' => 'accepted',
                 'counter_amount' => null,
             ];
         }
 
-        if ($userAskingPrice <= (int) ($maxWillingness * 1.15)) {
+        // The walk-away point carries a reproducible per-offer wobble so the exact
+        // threshold can't be reverse-engineered. The wobble is one-sided (abs): it
+        // only ever makes the buyer *more* generous, never below the base ratio — so
+        // the bid floor above still guarantees a modest over-bid counter is
+        // negotiated, not refused, regardless of the offer's seed.
+        $rejectRatio = self::COUNTER_REJECT_RATIO
+            + abs($this->squadNeedService->jitter($offer->id . 'reject', self::COUNTER_REJECT_JITTER));
+
+        if ($userAskingPrice <= (int) ($maxWillingness * $rejectRatio)) {
             // Counter with midpoint of user's ask and AI's current bid
             $counterAmount = (int) (($userAskingPrice + $offer->transfer_fee) / 2);
             $counterAmount = Money::roundPrice($counterAmount);
