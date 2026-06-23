@@ -78,6 +78,7 @@ class SaveSquadSelection
                 'player_id' => $template->player_id,
                 'transfermarkt_id' => $template->transfermarkt_id,
                 'sofascore_id' => $template->sofascore_id,
+                'fc26_id' => $template->fc26_id,
                 'name' => $template->name,
                 'date_of_birth' => $template->date_of_birth?->toDateString(),
                 'nationality' => $template->nationality !== null ? json_encode($template->nationality) : null,

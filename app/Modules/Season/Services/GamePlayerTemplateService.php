@@ -22,6 +22,9 @@ class GamePlayerTemplateService
     /** @var array<string, array<string, string>> Season → (Transfermarkt ID → Sofascore ID) */
     private array $sofascoreIdMaps = [];
 
+    /** @var array<string, array<string, string>> Season → (Transfermarkt ID → FC26 ID) */
+    private array $fc26IdMaps = [];
+
     public function __construct(
         private ContractService $contractService,
         private PlayerDevelopmentService $developmentService,
@@ -498,6 +501,7 @@ class GamePlayerTemplateService
             'player_id' => self::playerIdFor((string) $playerData['id']),
             'transfermarkt_id' => (string) $playerData['id'],
             'sofascore_id' => $this->getSofascoreId($season, (string) $playerData['id']),
+            'fc26_id' => $this->getFc26Id($season, (string) $playerData['id']),
             'name' => $playerData['name'] ?? null,
             'date_of_birth' => $dateOfBirth->toDateString(),
             'nationality' => isset($playerData['nationality']) ? json_encode($playerData['nationality']) : null,
@@ -663,6 +667,36 @@ class GamePlayerTemplateService
     private function loadSofascoreIdMap(string $season): array
     {
         $path = base_path("data/{$season}/sofascore_ids.json");
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        return json_decode(file_get_contents($path), true) ?: [];
+    }
+
+    /**
+     * Resolve a player's FC26 ID from the Transfermarkt→FC26 fuzzy-match map.
+     * Returns null when the player isn't covered by the map.
+     */
+    private function getFc26Id(string $season, string $transfermarktId): ?string
+    {
+        if (!isset($this->fc26IdMaps[$season])) {
+            $this->fc26IdMaps[$season] = $this->loadFc26IdMap($season);
+        }
+
+        return $this->fc26IdMaps[$season][$transfermarktId] ?? null;
+    }
+
+    /**
+     * Load the Transfermarkt→FC26 map for a season, keyed by Transfermarkt ID.
+     * The file is built by `app:build-fc26-id-map` from the FC26 player export;
+     * a missing file is non-fatal (all players keep a null fc26_id).
+     *
+     * @return array<string, string>
+     */
+    private function loadFc26IdMap(string $season): array
+    {
+        $path = base_path("data/{$season}/fc26_ids.json");
         if (!file_exists($path)) {
             return [];
         }

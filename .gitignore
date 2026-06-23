@@ -32,4 +32,4 @@ frankenphp-worker.php
 
 # Raw Transfermarkt→external-id crosswalk source (large). The slim, committed
 # data/{season}/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
-data/*/people.csv
+data/*/raw/*

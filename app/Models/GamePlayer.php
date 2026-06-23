@@ -124,6 +124,7 @@ class GamePlayer extends Model
         'player_id',
         'transfermarkt_id',
         'sofascore_id',
+        'fc26_id',
         'name',
         'date_of_birth',
         'nationality',
