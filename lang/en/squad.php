@@ -361,6 +361,7 @@ return [
     // Lineup redesign
     'opponent_goal' => 'Opponent Goal',
     'available_players' => 'Available Players',
+    'starting_xi' => 'Starting XI',
     'substitutes' => 'Substitutes',
     'lineup_overview' => 'Lineup Overview',
 
