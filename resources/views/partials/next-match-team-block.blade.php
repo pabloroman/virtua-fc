@@ -8,8 +8,8 @@
     $ordinal = $position === 1 ? 'st' : ($position === 2 ? 'nd' : ($position === 3 ? 'rd' : 'th'));
 @endphp
 <div class="flex-1 flex flex-col items-center text-center min-w-0">
-    <x-team-crest :team="$team" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
-    <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $team->name }}</h4>
+    <x-team-crest :team="$team" class="w-14 h-14 md:w-16 md:h-16 mb-2" />
+    <h4 class="text-sm md:text-lg font-semibold text-text-primary truncate max-w-full">{{ $team->name }}</h4>
 
     @if($showStanding)
         <div class="text-xs text-text-muted mt-1.5">

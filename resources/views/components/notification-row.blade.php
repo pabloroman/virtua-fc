@@ -13,13 +13,13 @@
             <x-notification-icon :icon="$notification->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
 
             <div class="flex-1 min-w-0">
-                <p class="text-xs font-medium text-text-primary">{{ $notification->title }}</p>
+                <p class="text-sm font-medium text-text-primary">{{ $notification->title }}</p>
                 @if($notification->message)
-                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">{{ $notification->message }}</p>
+                <p class="text-xs text-text-muted mt-0.5 leading-relaxed">{{ $notification->message }}</p>
                 @endif
                 <div class="flex items-center gap-2 mt-1">
                     @if($notification->game_date)
-                    <span class="text-[9px] text-text-faint">{{ $notification->game_date->format('j M') }}</span>
+                    <span class="text-[10px] text-text-muted">{{ $notification->game_date->format('j M') }}</span>
                     @endif
                     @if($badge)
                     <span class="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide rounded-full {{ $badge['bg'] }} {{ $badge['text'] }}">
