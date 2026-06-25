@@ -42,10 +42,17 @@ class CheckRecoveredPlayers
             ->toArray();
 
         foreach ($recoveredPlayers as $player) {
+            // Capture the return date before clearInjury() wipes it. current_date is
+            // forward-looking (the next match), which can be days past the real return
+            // date — e.g. across the pre-season → first-league-match gap — so the
+            // recovery notice must be dated to injury_until to stay consistent with the
+            // "out until X" date the injury notice promised.
+            $recoveredOn = $player->injury_until?->copy();
+
             $this->eligibilityService->clearInjury($player);
 
             if (! in_array($player->id, $recentNotificationPlayerIds)) {
-                $this->notificationService->notifyRecovery($game, $player);
+                $this->notificationService->notifyRecovery($game, $player, $recoveredOn);
             }
         }
     }
