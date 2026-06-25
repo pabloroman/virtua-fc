@@ -34,7 +34,7 @@
             ])
 
             <div class="flex flex-col items-center justify-center pt-4 md:pt-6 shrink-0">
-                <span class="text-lg md:text-2xl font-black text-text-body tracking-tight">{{ __('game.vs') }}</span>
+                <span class="text-base md:text-xl font-semibold text-text-body tracking-tight">{{ __('game.vs') }}</span>
                 @if($firstLegScore)
                     <div class="mt-2 md:mt-3 text-center">
                         <div class="text-[10px] font-semibold text-text-muted uppercase tracking-wider">{{ __('cup.first_leg') }}</div>

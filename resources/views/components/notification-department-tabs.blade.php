@@ -14,14 +14,14 @@
     <button type="button"
         @click="dept = 'all'"
         :class="dept === 'all' ? 'bg-accent-blue/10 text-accent-blue' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700'"
-        class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors whitespace-nowrap">
+        class="shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap">
         {{ __('notifications.dept_all') }}
     </button>
     @foreach($summary as $department)
     <button type="button"
         @click="dept = @js($department['key'])"
         :class="dept === @js($department['key']) ? 'bg-accent-blue/10 text-accent-blue' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700'"
-        class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors whitespace-nowrap">
+        class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap">
         {{ __('notifications.dept_' . $department['key']) }}
         @if($department['unread'] > 0)
         <span class="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-accent-blue text-white text-[9px] font-bold leading-none">{{ $department['unread'] }}</span>
