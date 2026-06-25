@@ -172,7 +172,6 @@ class GameNotification extends Model
         // Scouting
         self::TYPE_SCOUT_REPORT_COMPLETE => self::DEPARTMENT_SCOUTING,
         self::TYPE_LOAN_REQUEST_RESULT => self::DEPARTMENT_SCOUTING,
-        self::TYPE_TRACKING_INTEL_READY => self::DEPARTMENT_SCOUTING,
         // Academy
         self::TYPE_ACADEMY_PROSPECT => self::DEPARTMENT_ACADEMY,
         self::TYPE_ACADEMY_BATCH => self::DEPARTMENT_ACADEMY,
