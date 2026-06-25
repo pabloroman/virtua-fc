@@ -211,13 +211,28 @@ class SubstitutionService
         // and is not updated by subsequent resimulations. Filtering by minute ensures
         // the reconstructed lineup matches the actual state at $minute — any sub events
         // at minute > $minute will be reverted by doResimulate() anyway.
-        $opponentSubEventsQuery = MatchEvent::where('game_match_id', $match->id)
+        //
+        // Order by phase tuple, not raw minute: a stoppage-time sub (e.g. 90+2',
+        // stored as minute=90 with stoppage held separately) is ambiguous by minute
+        // alone. When $minute is given, filter in PHP on the absolute (phase-aware)
+        // minute for the same reason the red-card filter above does — a raw
+        // `minute <= $minute` would misclassify stoppage-time subs.
+        $opponentSubEvents = MatchEvent::where('game_match_id', $match->id)
             ->where('team_id', $opponentTeamId)
-            ->where('event_type', 'substitution');
+            ->where('event_type', 'substitution')
+            ->orderedChronologically()
+            ->get();
         if ($minute !== null) {
-            $opponentSubEventsQuery->where('minute', '<=', $minute);
+            $stoppage = StoppageDurations::fromMatch($match);
+            $opponentSubEvents = $opponentSubEvents
+                ->filter(fn (MatchEvent $e) => MinuteCoordinates::toAbsoluteWith(
+                    $e->phase,
+                    $e->minute,
+                    $e->stoppage_minute,
+                    $stoppage,
+                ) <= $minute)
+                ->values();
         }
-        $opponentSubEvents = $opponentSubEventsQuery->orderBy('minute')->get();
 
         // Track subbed-out players explicitly so they are excluded from the bench.
         // Without this, a starter who was subbed out ends up back on the bench
