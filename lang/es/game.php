@@ -213,7 +213,7 @@ return [
     'welcome_step_matches' => 'Juega los partidos',
     'welcome_step_matches_desc' => 'Elige tu alineación, formación y mentalidad antes de cada partido. Observa el partido en directo y haz sustituciones tácticas.',
     'welcome_step_squad' => 'Gestiona tu plantilla',
-    'welcome_step_squad_desc' => 'Controla la forma física, el desarrollo y la moral de tus jugadores. La cantera produce jóvenes talentos cada temporada.',
+    'welcome_step_squad_desc' => 'Controla la forma física, el desarrollo y la moral de tus jugadores. La cantera produce jóvenes talentos a lo largo de la temporada.',
     'welcome_step_transfers' => 'Ficha y vende jugadores',
     'welcome_step_transfers_desc' => 'Usa ojeadores para encontrar talento, negocia fichajes en las ventanas de verano e invierno, y gestiona las cesiones.',
     'welcome_step_finances' => 'Administra las finanzas',

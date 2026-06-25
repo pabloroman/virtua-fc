@@ -100,8 +100,8 @@ return [
     'trophy_won_title' => ':competition champions!',
 
     // Academy
-    'academy_batch_title' => 'New academy prospects',
-    'academy_batch_message' => ':count new players have arrived at the academy.',
+    'academy_prospect_title' => 'New academy prospect',
+    'academy_prospect_message' => ':player has arrived at the academy.',
     'academy_overage_promoted_title' => 'Academy graduates',
     'academy_overage_promoted_message' => ':count academy players aged 21+ have been promoted to the first team.',
     'academy_gap_promoted_title' => 'Academy players promoted',

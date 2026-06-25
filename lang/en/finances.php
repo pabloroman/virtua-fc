@@ -54,6 +54,21 @@ return [
     'staged_cancel' => 'Cancel',
     'adjust_allocation' => 'Adjust Allocation',
 
+    // Investment-area nudge banners (shown on the pages each area affects)
+    'invest_notice_cta' => 'Set investment level',
+    'invest_notice_youth_academy_title' => 'Grow your academy',
+    'invest_notice_youth_academy_body' => 'Higher academy investment brings more prospects — and better ones — throughout the season.',
+    'invest_notice_youth_academy_maxed_title' => 'World-class academy',
+    'invest_notice_youth_academy_maxed_body' => 'Your academy is fully funded — top prospects arrive throughout the season.',
+    'invest_notice_medical_title' => 'Strengthen your medical team',
+    'invest_notice_medical_body' => 'Higher medical investment speeds up injury recovery and lowers how often players get hurt.',
+    'invest_notice_medical_maxed_title' => 'World-class medical team',
+    'invest_notice_medical_maxed_body' => 'Your medical team is fully funded — fastest recovery and active injury prevention.',
+    'invest_notice_scouting_title' => 'Expand your scouting network',
+    'invest_notice_scouting_body' => 'Higher scouting investment widens your reach and returns more — and more accurate — player reports.',
+    'invest_notice_scouting_maxed_title' => 'Global scouting network',
+    'invest_notice_scouting_maxed_body' => 'Your scouting network is fully funded — global reach with the fastest, most accurate searches.',
+
     // Tiers
     'youth_academy' => 'Youth Academy',
 
