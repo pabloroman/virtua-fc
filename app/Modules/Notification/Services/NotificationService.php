@@ -31,7 +31,8 @@ class NotificationService
         ?string $message = null,
         string $priority = GameNotification::PRIORITY_INFO,
         array $metadata = [],
-        ?string $icon = null
+        ?string $icon = null,
+        ?Carbon $gameDate = null
     ): GameNotification {
         return GameNotification::create([
             'id' => Str::uuid()->toString(),
@@ -42,7 +43,12 @@ class NotificationService
             'icon' => $icon ?? $this->getDefaultIcon($type),
             'priority' => $priority,
             'metadata' => $metadata,
-            'game_date' => $game->current_date,
+            // Defaults to current_date, but callers may pass the date the event
+            // actually occurred. current_date is forward-looking (the next match),
+            // so for events detected on date-advance — e.g. an injury recovery that
+            // fell in the gap before the next match — stamping current_date would
+            // misdate them. See notifyRecovery().
+            'game_date' => $gameDate ?? $game->current_date,
         ]);
     }
 
@@ -221,8 +227,16 @@ class NotificationService
 
     /**
      * Create a player recovered notification.
+     *
+     * @param  Carbon|null  $recoveredOn  The date the player actually returned (their
+     *                                    former injury_until). Recovery is detected on
+     *                                    date-advance, so current_date — the next match —
+     *                                    can be days later than the real return date
+     *                                    (notably across the pre-season → season gap).
+     *                                    Stamp the true date so it stays consistent with
+     *                                    the "out until X" date shown on the injury notice.
      */
-    public function notifyRecovery(Game $game, GamePlayer $player): GameNotification
+    public function notifyRecovery(Game $game, GamePlayer $player, ?Carbon $recoveredOn = null): GameNotification
     {
         return $this->create(
             game: $game,
@@ -233,6 +247,7 @@ class NotificationService
             metadata: [
                 'player_id' => $player->id,
             ],
+            gameDate: $recoveredOn,
         );
     }
 

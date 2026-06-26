@@ -81,6 +81,17 @@ class SendMatchNotifications
 
     private function notifyInjury(MatchFinalized $event, GamePlayer $player, MatchEvent $matchEvent): void
     {
+        // MatchResultProcessor only *applies* an injury when it would cost the player
+        // at least one fixture (getMatchesMissed > 0); a knock that heals entirely
+        // within a match-less gap — e.g. between the last pre-season game and the
+        // first league game — leaves injury_until null. This listener runs after that,
+        // so an absent injury_until means the injury was deemed cosmetic. Suppress the
+        // alert to match: otherwise the user sees a phantom "injured" notification with
+        // no real absence and no corresponding recovery (which is keyed off injury_until).
+        if (! $player->isInjured($event->match->scheduled_date)) {
+            return;
+        }
+
         $injuryType = $matchEvent->metadata['injury_type'] ?? 'Unknown injury';
         $weeksOut = $matchEvent->metadata['weeks_out'] ?? 2;
 
