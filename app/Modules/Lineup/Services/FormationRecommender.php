@@ -15,13 +15,17 @@ class FormationRecommender
      *                         specific slots (e.g. user drag-drops). These
      *                         slots are locked for the rest of the algorithm.
      *   Pass 1 — Primary:     place players whose PRIMARY matches a slot (compat 100).
-     *   Pass 2 — Secondary:   for still-empty slots, place unused players whose
-     *                         SECONDARY matches (compat 100).
      *   Pass 3 — Swap:        for still-empty slots, move a primary-pass assignee
      *                         to the empty slot via his secondary, freeing his
      *                         original slot for a less versatile unused player.
      *   Pass 4 — Weighted:    best-available fallback for slots that no natural
-     *                         fit can cover.
+     *                         fit can cover. Players whose secondary makes them
+     *                         compat-100 for the slot still benefit from that
+     *                         compat in the weighted score, but compete head-to-
+     *                         head with compat-80 primaries instead of pre-empting
+     *                         them — keeps a tired specialist (e.g. DM whose
+     *                         secondary is CM) from automatically beating a
+     *                         fresher player whose primary is a good fit.
      *   Pass 6 — Improve:     after all slots are filled, swap any placed player
      *                         for a higher-rated bench player who is a natural
      *                         (compat 100) fit for that slot — catches cases
@@ -129,7 +133,7 @@ class FormationRecommender
 
         // Result map keyed by slot id. The `pass` field tracks how each
         // assignment happened so Pass 3 can identify genuine primary
-        // assignees (valid swap donors) vs secondary/manual/fallback fillers.
+        // assignees (valid swap donors) vs manual/fallback fillers.
         $assigned = [];
         foreach ($slots as $slot) {
             $assigned[$slot['id']] = [
@@ -144,7 +148,6 @@ class FormationRecommender
 
         $this->applyManualPins($manualAssignments, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->fillByPrimary($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
-        $this->fillBySecondary($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->trySwapFill($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->fillByWeighted($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
         $this->fillByForceAssignment($sortedSlots, $sortedPlayers, $assigned, $usedPlayerIds);
@@ -219,39 +222,14 @@ class FormationRecommender
     }
 
     /**
-     * Pass 2 — fill still-empty slots with unused players whose SECONDARY
-     * position gives compatibility 100 for that slot.
-     */
-    private function fillBySecondary(array $sortedSlots, array $sortedPlayers, array &$assigned, array &$usedPlayerIds): void
-    {
-        foreach ($sortedSlots as $slot) {
-            if ($assigned[$slot['id']]['player'] !== null) {
-                continue;
-            }
-            foreach ($sortedPlayers as $player) {
-                if (in_array($player['id'], $usedPlayerIds, true)) {
-                    continue;
-                }
-                foreach ($player['secondary_positions'] ?? [] as $secondary) {
-                    if (PositionSlotMapper::getCompatibilityScore($secondary, $slot['label']) === 100) {
-                        $this->assignPlayer($assigned, $slot, $player, 100, 'secondary');
-                        $usedPlayerIds[] = $player['id'];
-                        continue 3; // next slot
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Pass 3 — for still-empty slots, see if an already-assigned primary-pass
      * player can move here via one of his secondaries, freeing his original
      * slot for a less versatile unused player whose primary fits there.
      *
-     * Only Pass-1 assignees are considered as donors. Pass-0 (manual),
-     * Pass-2 (secondary), and Pass-4 (fallback) assignees are deliberately
-     * excluded — moving them would either override user intent or fail to
-     * open up any new primary slot.
+     * Only Pass-1 assignees are considered as donors. Pass-0 (manual) and
+     * Pass-4 (fallback) assignees are deliberately excluded — moving them
+     * would either override user intent or fail to open up any new primary
+     * slot.
      */
     private function trySwapFill(array $sortedSlots, array $sortedPlayers, array &$assigned, array &$usedPlayerIds): void
     {

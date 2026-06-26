@@ -71,8 +71,18 @@ class ShowLineup
         $currentMentality = $this->lineupService->getMentality($match, $game->team_id);
         $currentMentality = $currentMentality ?? $defaultMentality;
 
-        // Get auto-selected lineup for quick select (using current formation)
-        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $competitionId, $formationEnum, $requireEnrollment);
+        // Get auto-selected lineup for quick select (using current formation).
+        // Pass the user's configured rotation policy so the "Auto Select"
+        // button penalises tired players the same way fast-mode prep does.
+        $autoLineup = $this->lineupService->autoSelectLineup(
+            $gameId,
+            $game->team_id,
+            $matchDate,
+            $competitionId,
+            $formationEnum,
+            $requireEnrollment,
+            $game->tactics?->default_rotation_policy,
+        );
 
         // If still no lineup (first match ever), use auto lineup
         if (empty($currentLineup)) {

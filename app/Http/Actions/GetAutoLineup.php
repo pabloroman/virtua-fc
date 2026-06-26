@@ -29,7 +29,10 @@ class GetAutoLineup
         $matchDate = $match->scheduled_date;
         $competitionId = $match->competition_id;
 
-        // Get auto-selected lineup for the formation
+        // Get auto-selected lineup for the formation. Pass the user's
+        // configured rotation policy so tired starters are penalised the
+        // same way fast-mode prep does — otherwise this button would rank
+        // purely by raw overall_score.
         $requireEnrollment = $game->requiresSquadEnrollment();
         $autoLineup = $this->lineupService->autoSelectLineup(
             $gameId,
@@ -38,6 +41,7 @@ class GetAutoLineup
             $competitionId,
             $formation,
             $requireEnrollment,
+            $game->tactics?->default_rotation_policy,
         );
 
         return response()->json([

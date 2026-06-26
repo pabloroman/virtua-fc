@@ -195,8 +195,9 @@ class FormationRecommenderTest extends TestCase
 
     public function test_secondary_fill_prefers_unused_player_over_swap(): void
     {
-        // If Pass 2 can fill an empty slot with an unused player via his
-        // secondary, we should not trigger a swap.
+        // When the only unused candidate for an empty slot fits via a
+        // secondary position, the weighted fallback (Pass 4) must still
+        // pick him at compat 100 — we do not need to trigger a swap.
         $players = collect([
             $this->player('gk', 'Goalkeeper'),
             $this->player('lb', 'Left-Back'),
@@ -459,9 +460,9 @@ class FormationRecommenderTest extends TestCase
         // Squad that fits 4-3-3 perfectly. 4-4-2 is also a clean fit because:
         //   - The wingers cover LM and RM via primary (LB/LW/RB/RW are all
         //     natural-fit 100 for the wide-mid slots in PositionSlotMapper).
-        //   - cm3 carries a `Second Striker` secondary, so Pass 2 fills the
-        //     spare CF slot at compat 100 once cm1 and cm2 have taken the
-        //     two CM slots.
+        //   - cm3 carries a `Second Striker` secondary, so the weighted
+        //     fallback (Pass 4) fills the spare CF slot at compat 100 once
+        //     cm1 and cm2 have taken the two CM slots.
         // Both formations end at score 103 mechanically, so the unbiased run
         // settles on the initial 4-3-3 candidate; a moderate 4-4-2 bias is
         // enough to push it ahead.
@@ -484,6 +485,86 @@ class FormationRecommenderTest extends TestCase
 
         $this->assertSame(Formation::F_4_3_3, $unbiased, 'Sanity check — fixture should pick 4-3-3 without bias');
         $this->assertSame(Formation::F_4_4_2, $biased, 'Bias should flip the choice when 4-4-2 is also supported');
+    }
+
+    public function test_fresh_mp_without_cm_secondary_beats_tired_mcd_with_cm_secondary(): void
+    {
+        // User-reported bug: in a 4-3-3 with 3 CM slots, the auto-lineup
+        // always parks defensive midfielders (with "Central Midfield" as a
+        // secondary) into the central slots even when fresher attacking
+        // midfielders are available. The fresh MP here doesn't have CM in
+        // his secondaries, but his weighted score (rating × compat=80 via
+        // primary) must still beat a tired MCD's (lowered rating × compat=100
+        // via secondary).
+        //
+        // Ratings here are pre-adjusted as if LineupService had already
+        // applied the fitness penalty before passing the pool to the
+        // recommender — that mirrors the autoSelectLineup path post-fix.
+        $players = collect([
+            $this->player('gk', 'Goalkeeper', 75),
+            $this->player('lb', 'Left-Back', 75),
+            $this->player('cb1', 'Centre-Back', 75),
+            $this->player('cb2', 'Centre-Back', 75),
+            $this->player('rb', 'Right-Back', 75),
+            $this->player('lw', 'Left Winger', 75),
+            $this->player('cf', 'Centre-Forward', 75),
+            $this->player('rw', 'Right Winger', 75),
+            // One natural CM at full freshness.
+            $this->player('mcFresh', 'Central Midfield', 80),
+            // Two MCDs with CM secondary, but their ratings are heavily
+            // penalised by fatigue (raw 85, effective ~60 each).
+            $this->player('mcdTired1', 'Defensive Midfield', 60, ['Central Midfield']),
+            $this->player('mcdTired2', 'Defensive Midfield', 58, ['Central Midfield']),
+            // Fresh attacking mid with NO Central Midfield secondary.
+            $this->player('mpFresh', 'Attacking Midfield', 78),
+        ]);
+
+        $bestXI = $this->recommender->bestXIFor(Formation::F_4_3_3, $players);
+        $map = $this->slotMap($bestXI);
+
+        // F_4_3_3 CM slots are ids 5, 6, 7.
+        $cmAssignments = [$map[5], $map[6], $map[7]];
+
+        $this->assertContains('mcFresh', $cmAssignments, 'Natural CM still fills a midfield slot');
+        $this->assertContains('mpFresh', $cmAssignments, 'Fresh MP must reach a CM slot ahead of a tired MCD');
+        $this->assertNotContains(
+            'mcdTired2',
+            $cmAssignments,
+            'Lower-rated tired MCD must not displace the fresh MP',
+        );
+    }
+
+    public function test_high_rated_mcd_with_cm_secondary_still_beats_lower_rated_fresh_mp(): void
+    {
+        // Counter-test: when the MCD is clearly the better player even after
+        // the compat-80-vs-100 tradeoff, the weighted formula should still
+        // prefer him. We keep this case green so the fix doesn't overshoot
+        // into "secondary positions are worthless" territory.
+        //
+        // Weighted score = (rating × 0.7) + (compat × 0.3).
+        //   mcdStar  (rating 88, compat 100 via secondary) → 61.6 + 30 = 91.6
+        //   mpAvg    (rating 78, compat 80  via primary)   → 54.6 + 24 = 78.6
+        $players = collect([
+            $this->player('gk', 'Goalkeeper', 75),
+            $this->player('lb', 'Left-Back', 75),
+            $this->player('cb1', 'Centre-Back', 75),
+            $this->player('cb2', 'Centre-Back', 75),
+            $this->player('rb', 'Right-Back', 75),
+            $this->player('lw', 'Left Winger', 75),
+            $this->player('cf', 'Centre-Forward', 75),
+            $this->player('rw', 'Right Winger', 75),
+            $this->player('mcOk', 'Central Midfield', 80),
+            $this->player('mcdStar', 'Defensive Midfield', 88, ['Central Midfield']),
+            $this->player('mpAvg', 'Attacking Midfield', 78),
+            $this->player('extraDef', 'Centre-Back', 60),
+        ]);
+
+        $bestXI = $this->recommender->bestXIFor(Formation::F_4_3_3, $players);
+        $map = $this->slotMap($bestXI);
+
+        $cmAssignments = [$map[5], $map[6], $map[7]];
+        $this->assertContains('mcOk', $cmAssignments);
+        $this->assertContains('mcdStar', $cmAssignments, 'Higher-rated MCD with CM secondary still earns the slot');
     }
 
     public function test_getBestFormation_overrides_bias_when_squad_cannot_support_it(): void

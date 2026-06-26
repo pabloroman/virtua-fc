@@ -183,6 +183,13 @@ class LineupService
     /**
      * Auto-select best XI by overall_score, respecting formation requirements.
      * Returns array of player IDs.
+     *
+     * Applies a rotation policy (defaulting to Balanced) so the fatigue
+     * penalty in selectBestXI keeps tired starters from beating fresher
+     * subs of the same rating. Without this, the manual "Auto Select"
+     * button on the lineup screen would rank purely by raw overall_score
+     * and pick burned-out players over rested ones — every automated
+     * lineup path already does this, this one was the outlier.
      */
     public function autoSelectLineup(
         string $gameId,
@@ -191,10 +198,12 @@ class LineupService
         string $competitionId,
         ?Formation $formation = null,
         bool $requireEnrollment = false,
+        ?RotationPolicy $rotationPolicy = null,
     ): array {
         return $this->selectBestXI(
             $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId, $requireEnrollment),
-            $formation
+            $formation,
+            $rotationPolicy ?? RotationPolicy::Balanced,
         )->pluck('id')->toArray();
     }
 
