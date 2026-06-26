@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "SoFIFA Squad Scraper",
+  "version": "1.0.0",
+  "description": "Scrape squad data (overall, potential, value, yearly wage) from a SoFIFA team or league page into one JSON file.",
+  "permissions": ["scripting", "activeTab", "downloads"],
+  "host_permissions": ["https://sofifa.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SoFIFA Squad Scraper"
+  }
+}

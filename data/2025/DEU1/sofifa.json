@@ -1,0 +1,6254 @@
+{
+  "league": "Germany Bundesliga",
+  "scraped_at": "2026-06-12T14:26:10.239Z",
+  "team_count": 18,
+  "teams": [
+    {
+      "player_count": 45,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Manuel Neuer",
+          "name": "M. Neuer",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 3400000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Konrad Laimer",
+          "name": "K. Laimer",
+          "overall_score": 84,
+          "potential": 84,
+          "value": 38000000,
+          "yearly_wage": 4680000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dayot Upamecano",
+          "name": "D. Upamecano",
+          "overall_score": 86,
+          "potential": 88,
+          "value": 74000000,
+          "yearly_wage": 5200000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonathan Tah",
+          "name": "J. Tah",
+          "overall_score": 87,
+          "potential": 87,
+          "value": 66500000,
+          "yearly_wage": 5980000
+        },
+        {
+          "currency": "€",
+          "full_name": "Josip Stanišić",
+          "name": "J. Stanišić",
+          "overall_score": 79,
+          "potential": 82,
+          "value": 21500000,
+          "yearly_wage": 2912000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joshua Kimmich",
+          "name": "J. Kimmich",
+          "overall_score": 89,
+          "potential": 89,
+          "value": 86000000,
+          "yearly_wage": 7280000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aleksandar Pavlović",
+          "name": "A. Pavlović",
+          "overall_score": 82,
+          "potential": 87,
+          "value": 43000000,
+          "yearly_wage": 2704000
+        },
+        {
+          "currency": "€",
+          "full_name": "Michael Olise",
+          "name": "M. Olise",
+          "overall_score": 89,
+          "potential": 91,
+          "value": 134000000,
+          "yearly_wage": 6240000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luis Díaz",
+          "name": "L. Díaz",
+          "overall_score": 87,
+          "potential": 87,
+          "value": 80000000,
+          "yearly_wage": 6240000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jamal Musiala",
+          "name": "J. Musiala",
+          "overall_score": 87,
+          "potential": 91,
+          "value": 116500000,
+          "yearly_wage": 5200000
+        },
+        {
+          "currency": "€",
+          "full_name": "Harry Kane",
+          "name": "H. Kane",
+          "overall_score": 90,
+          "potential": 90,
+          "value": 101000000,
+          "yearly_wage": 8840000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leon Goretzka",
+          "name": "L. Goretzka",
+          "overall_score": 81,
+          "potential": 81,
+          "value": 21500000,
+          "yearly_wage": 3588000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tom Bischof",
+          "name": "T. Bischof",
+          "overall_score": 78,
+          "potential": 86,
+          "value": 30500000,
+          "yearly_wage": 2132000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alphonso Davies",
+          "name": "A. Davies",
+          "overall_score": 83,
+          "potential": 86,
+          "value": 46000000,
+          "yearly_wage": 3536000
+        },
+        {
+          "currency": "€",
+          "full_name": "Min Jae Kim",
+          "name": "Kim Min Jae",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 26500000,
+          "yearly_wage": 3900000
+        },
+        {
+          "currency": "€",
+          "full_name": "Raphaël Guerreiro",
+          "name": "R. Guerreiro",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 12500000,
+          "yearly_wage": 3172000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hiroki Ito",
+          "name": "H. Ito",
+          "overall_score": 78,
+          "potential": 81,
+          "value": 16500000,
+          "yearly_wage": 2756000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Urbig",
+          "name": "J. Urbig",
+          "overall_score": 77,
+          "potential": 85,
+          "value": 20500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lennart Karl",
+          "name": "L. Karl",
+          "overall_score": 75,
+          "potential": 88,
+          "value": 13000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolas Jackson",
+          "name": "N. Jackson",
+          "overall_score": 79,
+          "potential": 82,
+          "value": 24500000,
+          "yearly_wage": 5460000
+        },
+        {
+          "currency": "€",
+          "full_name": "Serge Gnabry",
+          "name": "S. Gnabry",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 35500000,
+          "yearly_wage": 4524000
+        },
+        {
+          "currency": "€",
+          "full_name": "Wisdom Mike",
+          "name": "W. Mike",
+          "overall_score": 61,
+          "potential": 85,
+          "value": 1000000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sven Ulreich",
+          "name": "S. Ulreich",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 350000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "David Santos Daiber",
+          "name": "Santos Daiber",
+          "overall_score": 59,
+          "potential": 79,
+          "value": 600000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maycon Douglas Normanha Cardozo",
+          "name": "Maycon Cardozo",
+          "overall_score": 59,
+          "potential": 79,
+          "value": 600000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cassiano Kiala",
+          "name": "C. Kiala",
+          "overall_score": 58,
+          "potential": 82,
+          "value": 600000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Vincent Manuba",
+          "name": "V. Manuba",
+          "overall_score": 61,
+          "potential": 74,
+          "value": 750000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Deniz Ofli",
+          "name": "D. Ofli",
+          "overall_score": 60,
+          "potential": 80,
+          "value": 650000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jannis Bärtl",
+          "name": "J. Bärtl",
+          "overall_score": 58,
+          "potential": 73,
+          "value": 425000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leon Klanac",
+          "name": "L. Klanac",
+          "overall_score": 56,
+          "potential": 75,
+          "value": 325000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Guido Della Rovere",
+          "name": "G. Della Rovere",
+          "overall_score": 61,
+          "potential": 80,
+          "value": 825000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bara Sapoko Ndiaye",
+          "name": "B. Sapoko Ndiaye",
+          "overall_score": 61,
+          "potential": 81,
+          "value": 875000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Erblin Osmani",
+          "name": "E. Osmani",
+          "overall_score": 57,
+          "potential": 81,
+          "value": 500000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noël Aséko",
+          "name": "N. Aséko",
+          "overall_score": 70,
+          "potential": 84,
+          "value": 3800000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonah Kusi-Asare",
+          "name": "J. Kusi-Asare",
+          "overall_score": 62,
+          "potential": 84,
+          "value": 1300000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel Peretz",
+          "name": "D. Peretz",
+          "overall_score": 74,
+          "potential": 80,
+          "value": 5500000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bryan Zaragoza Martínez",
+          "name": "Bryan Zaragoza",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 16500000,
+          "yearly_wage": 2548000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lovro Zvonarek",
+          "name": "L. Zvonarek",
+          "overall_score": 66,
+          "potential": 78,
+          "value": 2100000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maurice Krattenmacher",
+          "name": "M. Krattenmacher",
+          "overall_score": 69,
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arijon Ibrahimović",
+          "name": "A. Ibrahimović",
+          "overall_score": 72,
+          "potential": 83,
+          "value": 5000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Armindo Sieb",
+          "name": "A. Sieb",
+          "overall_score": 71,
+          "potential": 79,
+          "value": 4200000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sacha Boey",
+          "name": "S. Boey",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1976000
+        },
+        {
+          "currency": "€",
+          "full_name": "João Maria Palhinha Gonçalves",
+          "name": "Palhinha",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 26000000,
+          "yearly_wage": 3900000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexander Nübel",
+          "name": "A. Nübel",
+          "overall_score": 80,
+          "potential": 81,
+          "value": 16500000,
+          "yearly_wage": 2184000
+        },
+        {
+          "currency": "€",
+          "full_name": "Felipe Chávez",
+          "name": "F. Chávez",
+          "overall_score": 62,
+          "potential": 80,
+          "value": 1000000,
+          "yearly_wage": 364000
+        }
+      ],
+      "team": "FC Bayern München",
+      "transfer_budget": 83800000,
+      "url": "https://sofifa.com/team/21/fc-bayern-munchen/260037/"
+    },
+    {
+      "player_count": 34,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Gregor Kobel",
+          "name": "G. Kobel",
+          "overall_score": 86,
+          "potential": 89,
+          "value": 66500000,
+          "yearly_wage": 2704000
+        },
+        {
+          "currency": "€",
+          "full_name": "Waldemar Anton",
+          "name": "W. Anton",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 31500000,
+          "yearly_wage": 3432000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nico Schlotterbeck",
+          "name": "N. Schlotterbeck",
+          "overall_score": 86,
+          "potential": 88,
+          "value": 75500000,
+          "yearly_wage": 4056000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ramy Bensebaini",
+          "name": "R. Bensebaini",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 14500000,
+          "yearly_wage": 2548000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julian Ryerson",
+          "name": "J. Ryerson",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 20500000,
+          "yearly_wage": 2600000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marcel Sabitzer",
+          "name": "M. Sabitzer",
+          "overall_score": 81,
+          "potential": 81,
+          "value": 18000000,
+          "yearly_wage": 2860000
+        },
+        {
+          "currency": "€",
+          "full_name": "Felix Nmecha",
+          "name": "F. Nmecha",
+          "overall_score": 84,
+          "potential": 86,
+          "value": 54500000,
+          "yearly_wage": 3276000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel Svensson",
+          "name": "D. Svensson",
+          "overall_score": 79,
+          "potential": 83,
+          "value": 23500000,
+          "yearly_wage": 2132000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julian Brandt",
+          "name": "J. Brandt",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 30000000,
+          "yearly_wage": 3328000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Beier",
+          "name": "M. Beier",
+          "overall_score": 80,
+          "potential": 84,
+          "value": 31000000,
+          "yearly_wage": 2600000
+        },
+        {
+          "currency": "€",
+          "full_name": "Serhou Guirassy",
+          "name": "S. Guirassy",
+          "overall_score": 85,
+          "potential": 85,
+          "value": 54000000,
+          "yearly_wage": 4628000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fábio Daniel Soares Silva",
+          "name": "Fábio Silva",
+          "overall_score": 79,
+          "potential": 85,
+          "value": 28500000,
+          "yearly_wage": 2444000
+        },
+        {
+          "currency": "€",
+          "full_name": "Karim Adeyemi",
+          "name": "K. Adeyemi",
+          "overall_score": 82,
+          "potential": 86,
+          "value": 43500000,
+          "yearly_wage": 2704000
+        },
+        {
+          "currency": "€",
+          "full_name": "Carney Chukwuemeka",
+          "name": "C. Chukwuemeka",
+          "overall_score": 78,
+          "potential": 84,
+          "value": 22500000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Salih Özcan",
+          "name": "S. Özcan",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 4300000,
+          "yearly_wage": 1716000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Süle",
+          "name": "N. Süle",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 12000000,
+          "yearly_wage": 2288000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yan Bueno Couto",
+          "name": "Yan Couto",
+          "overall_score": 77,
+          "potential": 81,
+          "value": 14000000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexander Meyer",
+          "name": "A. Meyer",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 725000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Reggiani",
+          "name": "L. Reggiani",
+          "overall_score": 66,
+          "potential": 82,
+          "value": 2000000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Samuele Inacio",
+          "name": "S. Inacio",
+          "overall_score": 66,
+          "potential": 84,
+          "value": 2100000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Filippo Mane",
+          "name": "F. Mane",
+          "overall_score": 65,
+          "potential": 79,
+          "value": 1600000,
+          "yearly_wage": 416000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrick Drewes",
+          "name": "P. Drewes",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 925000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Almugera Kabar",
+          "name": "A. Kabar",
+          "overall_score": 65,
+          "potential": 80,
+          "value": 1600000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mussa Kaba",
+          "name": "M. Kaba",
+          "overall_score": 61,
+          "potential": 85,
+          "value": 975000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Emre Can",
+          "name": "E. Can",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 21000000,
+          "yearly_wage": 3120000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jobe Bellingham",
+          "name": "J. Bellingham",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 16000000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elias Benkara",
+          "name": "E. Benkara",
+          "overall_score": 61,
+          "potential": 79,
+          "value": 775000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Danylo Krevsun",
+          "name": "D. Krevsun",
+          "overall_score": 63,
+          "potential": 77,
+          "value": 1200000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Silas Ostrzinski",
+          "name": "S. Ostrzinski",
+          "overall_score": 63,
+          "potential": 75,
+          "value": 1000000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mathis Albert",
+          "name": "M. Albert",
+          "overall_score": 66,
+          "potential": 88,
+          "value": 2700000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julien Duranville",
+          "name": "J. Duranville",
+          "overall_score": 72,
+          "potential": 85,
+          "value": 5500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Diant Ramaj",
+          "name": "D. Ramaj",
+          "overall_score": 75,
+          "potential": 81,
+          "value": 7000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cole Campbell",
+          "name": "C. Campbell",
+          "overall_score": 67,
+          "potential": 82,
+          "value": 2400000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kjell Wätjen",
+          "name": "K. Wätjen",
+          "overall_score": 67,
+          "potential": 78,
+          "value": 2200000,
+          "yearly_wage": 572000
+        }
+      ],
+      "team": "Borussia Dortmund",
+      "transfer_budget": 53500000,
+      "url": "https://sofifa.com/team/22/borussia-dortmund/260037/"
+    },
+    {
+      "player_count": 38,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Maarten Vandevoordt",
+          "name": "M. Vandevoordt",
+          "overall_score": 77,
+          "potential": 85,
+          "value": 20000000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ridle Baku",
+          "name": "R. Baku",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 17000000,
+          "yearly_wage": 2756000
+        },
+        {
+          "currency": "€",
+          "full_name": "Willi Orban",
+          "name": "W. Orban",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 23500000,
+          "yearly_wage": 3848000
+        },
+        {
+          "currency": "€",
+          "full_name": "Castello Lukeba",
+          "name": "C. Lukeba",
+          "overall_score": 81,
+          "potential": 87,
+          "value": 37500000,
+          "yearly_wage": 2704000
+        },
+        {
+          "currency": "€",
+          "full_name": "David Raum",
+          "name": "D. Raum",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 35000000,
+          "yearly_wage": 3692000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolas Seiwald",
+          "name": "N. Seiwald",
+          "overall_score": 80,
+          "potential": 85,
+          "value": 29000000,
+          "yearly_wage": 2496000
+        },
+        {
+          "currency": "€",
+          "full_name": "Assan Ouédraogo",
+          "name": "A. Ouédraogo",
+          "overall_score": 74,
+          "potential": 87,
+          "value": 10000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christoph Baumgartner",
+          "name": "C. Baumgartner",
+          "overall_score": 81,
+          "potential": 83,
+          "value": 32500000,
+          "yearly_wage": 3172000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yan Diomande",
+          "name": "Y. Diomande",
+          "overall_score": 81,
+          "potential": 89,
+          "value": 54500000,
+          "yearly_wage": 2340000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rômulo José Cardoso da Cruz",
+          "name": "Rômulo",
+          "overall_score": 78,
+          "potential": 83,
+          "value": 21500000,
+          "yearly_wage": 2496000
+        },
+        {
+          "currency": "€",
+          "full_name": "Antonio Nusa",
+          "name": "A. Nusa",
+          "overall_score": 78,
+          "potential": 88,
+          "value": 31000000,
+          "yearly_wage": 2080000
+        },
+        {
+          "currency": "€",
+          "full_name": "Johan Bakayoko",
+          "name": "J. Bakayoko",
+          "overall_score": 77,
+          "potential": 84,
+          "value": 21500000,
+          "yearly_wage": 2288000
+        },
+        {
+          "currency": "€",
+          "full_name": "Conrad Harder",
+          "name": "C. Harder",
+          "overall_score": 75,
+          "potential": 85,
+          "value": 12500000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Brajan Gruda",
+          "name": "B. Gruda",
+          "overall_score": 75,
+          "potential": 85,
+          "value": 12500000,
+          "yearly_wage": 2652000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ezechiel Banzuzi",
+          "name": "E. Banzuzi",
+          "overall_score": 73,
+          "potential": 85,
+          "value": 7500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Benjamin Henrichs",
+          "name": "B. Henrichs",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 19000000,
+          "yearly_wage": 3016000
+        },
+        {
+          "currency": "€",
+          "full_name": "El Chadaille Bitshiabu",
+          "name": "E. Bitshiabu",
+          "overall_score": 75,
+          "potential": 85,
+          "value": 11500000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leopold Zingerle",
+          "name": "L. Zingerle",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 750000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andrija Maksimović",
+          "name": "A. Maksimović",
+          "overall_score": 71,
+          "potential": 81,
+          "value": 4000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kosta Nedeljković",
+          "name": "K. Nedeljković",
+          "overall_score": 72,
+          "potential": 83,
+          "value": 4800000,
+          "yearly_wage": 2028000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lukas Klostermann",
+          "name": "L. Klostermann",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 7000000,
+          "yearly_wage": 2288000
+        },
+        {
+          "currency": "€",
+          "full_name": "Max Finkgräfe",
+          "name": "M. Finkgräfe",
+          "overall_score": 70,
+          "potential": 81,
+          "value": 3400000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Suleman Sani",
+          "name": "S. Sani",
+          "overall_score": 68,
+          "potential": 83,
+          "value": 2800000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Viggo Gebel",
+          "name": "V. Gebel",
+          "overall_score": 63,
+          "potential": 80,
+          "value": 1200000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Benno Kaltefleiter",
+          "name": "B. Kaltefleiter",
+          "overall_score": 59,
+          "potential": 79,
+          "value": 575000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tidiam Gomis",
+          "name": "T. Gomis",
+          "overall_score": 70,
+          "potential": 85,
+          "value": 3700000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Xaver Schlager",
+          "name": "X. Schlager",
+          "overall_score": 78,
+          "potential": 79,
+          "value": 14500000,
+          "yearly_wage": 2496000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ayodele Thomas",
+          "name": "A. Thomas",
+          "overall_score": 64,
+          "potential": 84,
+          "value": 1600000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Péter Gulácsi",
+          "name": "P. Gulácsi",
+          "overall_score": 84,
+          "potential": 84,
+          "value": 4700000,
+          "yearly_wage": 1664000
+        },
+        {
+          "currency": "€",
+          "full_name": "Samba Konaté",
+          "name": "S. Konaté",
+          "overall_score": 59,
+          "potential": 82,
+          "value": 700000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Timo Schlieck",
+          "name": "T. Schlieck",
+          "overall_score": 61,
+          "potential": 75,
+          "value": 675000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arthur Vermeeren",
+          "name": "A. Vermeeren",
+          "overall_score": 77,
+          "potential": 86,
+          "value": 23000000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Frederik Jäkel",
+          "name": "F. Jäkel",
+          "overall_score": 68,
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Loïs Openda",
+          "name": "L. Openda",
+          "overall_score": 82,
+          "potential": 84,
+          "value": 38500000,
+          "yearly_wage": 3640000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eljif Elmas",
+          "name": "E. Elmas",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 11500000,
+          "yearly_wage": 2392000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lutsharel Geertruida",
+          "name": "L. Geertruida",
+          "overall_score": 78,
+          "potential": 82,
+          "value": 18000000,
+          "yearly_wage": 2132000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonathan Norbye",
+          "name": "J. Norbye",
+          "overall_score": 61,
+          "potential": 77,
+          "value": 775000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Abdoul Koné",
+          "name": "A. Koné",
+          "overall_score": 67,
+          "potential": 79,
+          "value": 2300000,
+          "yearly_wage": 624000
+        }
+      ],
+      "team": "RB Leipzig",
+      "transfer_budget": 79500000,
+      "url": "https://sofifa.com/team/112172/rb-leipzig/260037/"
+    },
+    {
+      "player_count": 43,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Mark Flekken",
+          "name": "M. Flekken",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jarell Quansah",
+          "name": "J. Quansah",
+          "overall_score": 76,
+          "potential": 84,
+          "value": 15500000,
+          "yearly_wage": 2496000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robert Andrich",
+          "name": "R. Andrich",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 14500000,
+          "yearly_wage": 3796000
+        },
+        {
+          "currency": "€",
+          "full_name": "Edmond Tapsoba",
+          "name": "E. Tapsoba",
+          "overall_score": 82,
+          "potential": 83,
+          "value": 31500000,
+          "yearly_wage": 4472000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lucas Vázquez Iglesias",
+          "name": "Lucas Vázquez",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 3900000,
+          "yearly_wage": 3224000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aleix García Serrano",
+          "name": "Aleix García",
+          "overall_score": 84,
+          "potential": 84,
+          "value": 42000000,
+          "yearly_wage": 5720000
+        },
+        {
+          "currency": "€",
+          "full_name": "Exequiel Palacios",
+          "name": "E. Palacios",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 39500000,
+          "yearly_wage": 5200000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alejandro Grimaldo García",
+          "name": "Grimaldo",
+          "overall_score": 85,
+          "potential": 85,
+          "value": 53000000,
+          "yearly_wage": 6240000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ibrahim Maza",
+          "name": "I. Maza",
+          "overall_score": 79,
+          "potential": 87,
+          "value": 38000000,
+          "yearly_wage": 2704000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nathan Tella",
+          "name": "N. Tella",
+          "overall_score": 78,
+          "potential": 79,
+          "value": 17000000,
+          "yearly_wage": 3328000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrik Schick",
+          "name": "P. Schick",
+          "overall_score": 85,
+          "potential": 85,
+          "value": 54000000,
+          "yearly_wage": 7020000
+        },
+        {
+          "currency": "€",
+          "full_name": "Malik Tillman",
+          "name": "M. Tillman",
+          "overall_score": 79,
+          "potential": 84,
+          "value": 26500000,
+          "yearly_wage": 3380000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Hofmann",
+          "name": "J. Hofmann",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 8500000,
+          "yearly_wage": 3432000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ernest Poku",
+          "name": "E. Poku",
+          "overall_score": 76,
+          "potential": 85,
+          "value": 17000000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eliesse Ben Seghir",
+          "name": "E. Ben Seghir",
+          "overall_score": 75,
+          "potential": 84,
+          "value": 12500000,
+          "yearly_wage": 2184000
+        },
+        {
+          "currency": "€",
+          "full_name": "Loïc Badé",
+          "name": "L. Badé",
+          "overall_score": 78,
+          "potential": 83,
+          "value": 18500000,
+          "yearly_wage": 3172000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Oermann",
+          "name": "T. Oermann",
+          "overall_score": 72,
+          "potential": 80,
+          "value": 4900000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Janis Blaswich",
+          "name": "J. Blaswich",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 725000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christian Kofane",
+          "name": "C. Kofane",
+          "overall_score": 76,
+          "potential": 86,
+          "value": 16000000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ezequiel Fernández",
+          "name": "E. Fernández",
+          "overall_score": 76,
+          "potential": 84,
+          "value": 16000000,
+          "yearly_wage": 2496000
+        },
+        {
+          "currency": "€",
+          "full_name": "Montrell Culbreath",
+          "name": "M. Culbreath",
+          "overall_score": 67,
+          "potential": 83,
+          "value": 2500000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Axel Tape",
+          "name": "A. Tape",
+          "overall_score": 67,
+          "potential": 84,
+          "value": 2400000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jeremiah Mensah",
+          "name": "J. Mensah",
+          "overall_score": 62,
+          "potential": 82,
+          "value": 1100000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Martin Terrier",
+          "name": "M. Terrier",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 17500000,
+          "yearly_wage": 4056000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arthur Augusto de Matos Soares",
+          "name": "Arthur",
+          "overall_score": 73,
+          "potential": 78,
+          "value": 4700000,
+          "yearly_wage": 2080000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ben Hawighorst",
+          "name": "B. Hawighorst",
+          "overall_score": 60,
+          "potential": 82,
+          "value": 725000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Omlin",
+          "name": "J. Omlin",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 1600000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Naba Mensah",
+          "name": "N. Mensah",
+          "overall_score": 60,
+          "potential": 79,
+          "value": 625000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Lomb",
+          "name": "N. Lomb",
+          "overall_score": 66,
+          "potential": 66,
+          "value": 450000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jesper Schlich",
+          "name": "J. Schlich",
+          "overall_score": 57,
+          "potential": 73,
+          "value": 350000,
+          "yearly_wage": 52000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ferdinand Pohl",
+          "name": "F. Pohl",
+          "overall_score": 59,
+          "potential": 77,
+          "value": 550000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Emmanuel Chigozie Owen",
+          "name": "E. Chigozie Owen",
+          "overall_score": 60,
+          "potential": 79,
+          "value": 625000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Abdoulaye Faye",
+          "name": "A. Faye",
+          "overall_score": 69,
+          "potential": 81,
+          "value": 3200000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ken Izekor",
+          "name": "K. Izekor",
+          "overall_score": 60,
+          "potential": 78,
+          "value": 625000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jeanuël Belocian",
+          "name": "J. Belocian",
+          "overall_score": 70,
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noah Mbamba",
+          "name": "N. Mbamba",
+          "overall_score": 67,
+          "potential": 81,
+          "value": 2300000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Piero Hincapié",
+          "name": "P. Hincapié",
+          "overall_score": 83,
+          "potential": 87,
+          "value": 48500000,
+          "yearly_wage": 4212000
+        },
+        {
+          "currency": "€",
+          "full_name": "Victor Boniface",
+          "name": "V. Boniface",
+          "overall_score": 79,
+          "potential": 83,
+          "value": 25500000,
+          "yearly_wage": 3640000
+        },
+        {
+          "currency": "€",
+          "full_name": "Farid Alfa-Ruprecht",
+          "name": "F. Alfa-Ruprecht",
+          "overall_score": 65,
+          "potential": 77,
+          "value": 1700000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andrea Natali",
+          "name": "A. Natali",
+          "overall_score": 60,
+          "potential": 82,
+          "value": 725000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Artem Stepanov",
+          "name": "A. Stepanov",
+          "overall_score": 67,
+          "potential": 83,
+          "value": 2600000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alejo Sarco",
+          "name": "A. Sarco",
+          "overall_score": 64,
+          "potential": 81,
+          "value": 1500000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Francis Onyeka",
+          "name": "F. Onyeka",
+          "overall_score": 67,
+          "potential": 86,
+          "value": 2600000,
+          "yearly_wage": 832000
+        }
+      ],
+      "team": "Bayer 04 Leverkusen",
+      "transfer_budget": 62000000,
+      "url": "https://sofifa.com/team/32/bayer-04-leverkusen/260037/"
+    },
+    {
+      "player_count": 38,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Michael Zetterer",
+          "name": "M. Zetterer",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 3800000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rasmus Kristensen",
+          "name": "R. Kristensen",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 17000000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robin Koch",
+          "name": "R. Koch",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 18000000,
+          "yearly_wage": 2028000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arthur Theate",
+          "name": "A. Theate",
+          "overall_score": 78,
+          "potential": 83,
+          "value": 18500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nathaniel Brown",
+          "name": "N. Brown",
+          "overall_score": 80,
+          "potential": 86,
+          "value": 31500000,
+          "yearly_wage": 1664000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hugo Larsson",
+          "name": "H. Larsson",
+          "overall_score": 77,
+          "potential": 85,
+          "value": 23500000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ritsu Doan",
+          "name": "R. Doan",
+          "overall_score": 81,
+          "potential": 81,
+          "value": 27500000,
+          "yearly_wage": 2184000
+        },
+        {
+          "currency": "€",
+          "full_name": "Can Uzun",
+          "name": "C. Uzun",
+          "overall_score": 78,
+          "potential": 85,
+          "value": 27500000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Oscar Højlund",
+          "name": "O. Højlund",
+          "overall_score": 74,
+          "potential": 84,
+          "value": 9000000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arnaud Kalimuendo",
+          "name": "A. Kalimuendo",
+          "overall_score": 78,
+          "potential": 82,
+          "value": 20500000,
+          "yearly_wage": 4004000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonathan Burkardt",
+          "name": "J. Burkardt",
+          "overall_score": 82,
+          "potential": 85,
+          "value": 42000000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ellyes Skhiri",
+          "name": "E. Skhiri",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ansgar Knauff",
+          "name": "A. Knauff",
+          "overall_score": 77,
+          "potential": 81,
+          "value": 15000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jean-Mattéo Bahoya",
+          "name": "J. Bahoya",
+          "overall_score": 75,
+          "potential": 85,
+          "value": 12500000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mahmoud Dahoud",
+          "name": "M. Dahoud",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ayoube Amaimouni",
+          "name": "A. Amaimouni",
+          "overall_score": 70,
+          "potential": 83,
+          "value": 3800000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aurèle Amenda",
+          "name": "A. Amenda",
+          "overall_score": 74,
+          "potential": 80,
+          "value": 6000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kauã Morais Vieira dos Santos",
+          "name": "Kauã Santos",
+          "overall_score": 71,
+          "potential": 81,
+          "value": 3600000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Farès Chaïbi",
+          "name": "F. Chaïbi",
+          "overall_score": 76,
+          "potential": 81,
+          "value": 11500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Younes Ebnoutalib",
+          "name": "Y. Ebnoutalib",
+          "overall_score": 70,
+          "potential": 78,
+          "value": 3600000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mario Götze",
+          "name": "M. Götze",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 8500000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Michy Batshuayi",
+          "name": "M. Batshuayi",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Love Arrhov",
+          "name": "L. Arrhov",
+          "overall_score": 65,
+          "potential": 80,
+          "value": 1600000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Timmy Chandler",
+          "name": "T. Chandler",
+          "overall_score": 64,
+          "potential": 64,
+          "value": 180000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jens Grahl",
+          "name": "J. Grahl",
+          "overall_score": 63,
+          "potential": 63,
+          "value": 50000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Keita Kosugi",
+          "name": "K. Kosugi",
+          "overall_score": 71,
+          "potential": 81,
+          "value": 3900000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fousseny Doumbia",
+          "name": "F. Doumbia",
+          "overall_score": 60,
+          "potential": 75,
+          "value": 550000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Amil Šiljević",
+          "name": "A. Šiljević",
+          "overall_score": 60,
+          "potential": 78,
+          "value": 550000,
+          "yearly_wage": 52000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nnamdi Collins",
+          "name": "N. Collins",
+          "overall_score": 74,
+          "potential": 83,
+          "value": 9000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elias Baum",
+          "name": "E. Baum",
+          "overall_score": 72,
+          "potential": 84,
+          "value": 5500000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marvin Dills",
+          "name": "M. Dills",
+          "overall_score": 62,
+          "potential": 82,
+          "value": 1100000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexander Staff",
+          "name": "A. Staff",
+          "overall_score": 62,
+          "potential": 85,
+          "value": 1300000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Simon Simoni",
+          "name": "S. Simoni",
+          "overall_score": 64,
+          "potential": 78,
+          "value": 1200000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hrvoje Smolčić",
+          "name": "H. Smolčić",
+          "overall_score": 72,
+          "potential": 76,
+          "value": 3000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elye Wahi",
+          "name": "E. Wahi",
+          "overall_score": 74,
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jessic Ngankam",
+          "name": "J. Ngankam",
+          "overall_score": 69,
+          "potential": 74,
+          "value": 2100000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niels Nkounkou",
+          "name": "N. Nkounkou",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 4200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Junior Dina Ebimbe",
+          "name": "J. Dina Ebimbe",
+          "overall_score": 72,
+          "potential": 75,
+          "value": 3200000,
+          "yearly_wage": 988000
+        }
+      ],
+      "team": "Eintracht Frankfurt",
+      "transfer_budget": 44200000,
+      "url": "https://sofifa.com/team/1824/eintracht-frankfurt/260037/"
+    },
+    {
+      "player_count": 43,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Oliver Baumann",
+          "name": "O. Baumann",
+          "overall_score": 84,
+          "potential": 84,
+          "value": 4700000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Vladimír Coufal",
+          "name": "V. Coufal",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 9500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ozan Kabak",
+          "name": "O. Kabak",
+          "overall_score": 76,
+          "potential": 78,
+          "value": 8500000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Albian Hajdari",
+          "name": "A. Hajdari",
+          "overall_score": 75,
+          "potential": 79,
+          "value": 7500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bernardo Fernandes",
+          "name": "Bernardo",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4800000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leon Avdullahu",
+          "name": "L. Avdullahu",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 15500000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andrej Kramarić",
+          "name": "A. Kramarić",
+          "overall_score": 81,
+          "potential": 81,
+          "value": 12000000,
+          "yearly_wage": 2548000
+        },
+        {
+          "currency": "€",
+          "full_name": "Wouter Burger",
+          "name": "W. Burger",
+          "overall_score": 77,
+          "potential": 79,
+          "value": 13500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Lemperle",
+          "name": "T. Lemperle",
+          "overall_score": 76,
+          "potential": 80,
+          "value": 11000000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fisnik Asllani",
+          "name": "F. Asllani",
+          "overall_score": 79,
+          "potential": 83,
+          "value": 26000000,
+          "yearly_wage": 2028000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bazoumana Touré",
+          "name": "B. Touré",
+          "overall_score": 77,
+          "potential": 86,
+          "value": 23000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ihlas Bebou",
+          "name": "I. Bebou",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1664000
+        },
+        {
+          "currency": "€",
+          "full_name": "Max Moerstedt",
+          "name": "M. Moerstedt",
+          "overall_score": 69,
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Grischa Prömel",
+          "name": "G. Prömel",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 10000000,
+          "yearly_wage": 1872000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robin Hranáč",
+          "name": "R. Hranáč",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 8000000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexander Prass",
+          "name": "A. Prass",
+          "overall_score": 75,
+          "potential": 77,
+          "value": 6500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kevin Akpoguma",
+          "name": "K. Akpoguma",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Philipp",
+          "name": "L. Philipp",
+          "overall_score": 68,
+          "potential": 72,
+          "value": 1400000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Muhammed Damar",
+          "name": "M. Damar",
+          "overall_score": 72,
+          "potential": 80,
+          "value": 5500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cole Campbell",
+          "name": "C. Campbell",
+          "overall_score": 67,
+          "potential": 82,
+          "value": 2400000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Adam Hložek",
+          "name": "A. Hložek",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 17000000,
+          "yearly_wage": 1716000
+        },
+        {
+          "currency": "€",
+          "full_name": "Valentin Gendrey",
+          "name": "V. Gendrey",
+          "overall_score": 74,
+          "potential": 78,
+          "value": 5500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Erlein",
+          "name": "L. Erlein",
+          "overall_score": 65,
+          "potential": 78,
+          "value": 1600000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannick Eduardo",
+          "name": "Y. Eduardo",
+          "overall_score": 67,
+          "potential": 80,
+          "value": 2400000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Koki Machida",
+          "name": "K. Machida",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 5000000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luis Engelns",
+          "name": "L. Engelns",
+          "overall_score": 65,
+          "potential": 80,
+          "value": 1700000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florian Micheler",
+          "name": "F. Micheler",
+          "overall_score": 61,
+          "potential": 75,
+          "value": 775000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kelven Frees",
+          "name": "K. Frees",
+          "overall_score": 61,
+          "potential": 71,
+          "value": 675000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lúkas Petersson",
+          "name": "L. Petersson",
+          "overall_score": 64,
+          "potential": 70,
+          "value": 775000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Deniz Zeitler",
+          "name": "D. Zeitler",
+          "overall_score": 67,
+          "potential": 79,
+          "value": 2400000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luka Đurić",
+          "name": "L. Đurić",
+          "overall_score": 66,
+          "potential": 70,
+          "value": 1200000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Gift Orban",
+          "name": "G. Orban",
+          "overall_score": 74,
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Umut Tohumcu",
+          "name": "U. Tohumcu",
+          "overall_score": 70,
+          "potential": 80,
+          "value": 3500000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bambasé Conté",
+          "name": "B. Conté",
+          "overall_score": 69,
+          "potential": 75,
+          "value": 2200000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nahuel Noll",
+          "name": "N. Noll",
+          "overall_score": 68,
+          "potential": 75,
+          "value": 2100000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Attila Szalai",
+          "name": "A. Szalai",
+          "overall_score": 70,
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Erencan Yardımcı",
+          "name": "E. Yardımcı",
+          "overall_score": 67,
+          "potential": 74,
+          "value": 2100000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stanley Nsoki",
+          "name": "S. Nsoki",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dennis Geiger",
+          "name": "D. Geiger",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2400000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Haris Tabaković",
+          "name": "H. Tabaković",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4800000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Precious Benjamin",
+          "name": "P. Benjamin",
+          "overall_score": 56,
+          "potential": 69,
+          "value": 325000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hennes Behrens",
+          "name": "H. Behrens",
+          "overall_score": 70,
+          "potential": 77,
+          "value": 3000000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arthur Largura Chaves",
+          "name": "Arthur Chaves",
+          "overall_score": 74,
+          "potential": 79,
+          "value": 6000000,
+          "yearly_wage": 1196000
+        }
+      ],
+      "team": "TSG 1899 Hoffenheim",
+      "transfer_budget": 34700000,
+      "url": "https://sofifa.com/team/10029/tsg-1899-hoffenheim/260037/"
+    },
+    {
+      "player_count": 39,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Alexander Nübel",
+          "name": "A. Nübel",
+          "overall_score": 80,
+          "potential": 81,
+          "value": 16500000,
+          "yearly_wage": 2184000
+        },
+        {
+          "currency": "€",
+          "full_name": "Josha Vagnoman",
+          "name": "J. Vagnoman",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Finn Jeltsch",
+          "name": "F. Jeltsch",
+          "overall_score": 74,
+          "potential": 87,
+          "value": 9000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julian Chabot",
+          "name": "J. Chabot",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 19500000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Mittelstädt",
+          "name": "M. Mittelstädt",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 33000000,
+          "yearly_wage": 2964000
+        },
+        {
+          "currency": "€",
+          "full_name": "Atakan Karazor",
+          "name": "A. Karazor",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Angelo Stiller",
+          "name": "A. Stiller",
+          "overall_score": 83,
+          "potential": 87,
+          "value": 47500000,
+          "yearly_wage": 2444000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jamie Leweling",
+          "name": "J. Leweling",
+          "overall_score": 78,
+          "potential": 81,
+          "value": 19000000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Chris Führich",
+          "name": "C. Führich",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 1872000
+        },
+        {
+          "currency": "€",
+          "full_name": "Deniz Undav",
+          "name": "D. Undav",
+          "overall_score": 82,
+          "potential": 82,
+          "value": 31000000,
+          "yearly_wage": 3068000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ermedin Demirović",
+          "name": "E. Demirović",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 23000000,
+          "yearly_wage": 2548000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bilal El Khannouss",
+          "name": "B. El Khannouss",
+          "overall_score": 78,
+          "potential": 84,
+          "value": 22500000,
+          "yearly_wage": 1872000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tiago B. de Melo Tomás",
+          "name": "Tiago Tomás",
+          "overall_score": 76,
+          "potential": 82,
+          "value": 12000000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Badredine Bouanani",
+          "name": "B. Bouanani",
+          "overall_score": 74,
+          "potential": 82,
+          "value": 9500000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nikolas Nartey",
+          "name": "N. Nartey",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 4000000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lorenz Assignon",
+          "name": "L. Assignon",
+          "overall_score": 75,
+          "potential": 80,
+          "value": 7500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ramon Hendriks",
+          "name": "R. Hendriks",
+          "overall_score": 74,
+          "potential": 79,
+          "value": 6000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fabian Bredlow",
+          "name": "F. Bredlow",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1200000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "José María Andrés Baixauli",
+          "name": "Chema Andrés",
+          "overall_score": 73,
+          "potential": 82,
+          "value": 6500000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jeremy Arévalo Mera",
+          "name": "Jeremy",
+          "overall_score": 66,
+          "potential": 80,
+          "value": 2100000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dan-Axel Zagadou",
+          "name": "D. Zagadou",
+          "overall_score": 74,
+          "potential": 77,
+          "value": 4900000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lazar Jovanović",
+          "name": "L. Jovanović",
+          "overall_score": 64,
+          "potential": 82,
+          "value": 1500000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Jaquez",
+          "name": "L. Jaquez",
+          "overall_score": 71,
+          "potential": 79,
+          "value": 3900000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ameen Al Dakhil",
+          "name": "A. Al Dakhil",
+          "overall_score": 72,
+          "potential": 79,
+          "value": 4400000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Pascal Stenzel",
+          "name": "P. Stenzel",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1200000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noah Darvich",
+          "name": "N. Darvich",
+          "overall_score": 63,
+          "potential": 82,
+          "value": 1200000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stefan Drljača",
+          "name": "S. Drljača",
+          "overall_score": 66,
+          "potential": 70,
+          "value": 925000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florian Hellstern",
+          "name": "F. Hellstern",
+          "overall_score": 63,
+          "potential": 82,
+          "value": 1100000,
+          "yearly_wage": 52000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mirza Ćatović",
+          "name": "M. Ćatović",
+          "overall_score": 62,
+          "potential": 78,
+          "value": 950000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Justin Diehl",
+          "name": "J. Diehl",
+          "overall_score": 66,
+          "potential": 80,
+          "value": 2100000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yanik Spalt",
+          "name": "Y. Spalt",
+          "overall_score": 58,
+          "potential": 74,
+          "value": 475000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Herwerth",
+          "name": "M. Herwerth",
+          "overall_score": 63,
+          "potential": 77,
+          "value": 1100000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lauri Penna",
+          "name": "L. Penna",
+          "overall_score": 62,
+          "potential": 77,
+          "value": 925000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jovan Milošević",
+          "name": "J. Milošević",
+          "overall_score": 70,
+          "potential": 80,
+          "value": 3500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dennis Seimen",
+          "name": "D. Seimen",
+          "overall_score": 69,
+          "potential": 84,
+          "value": 2900000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Laurin Ulrich",
+          "name": "L. Ulrich",
+          "overall_score": 69,
+          "potential": 80,
+          "value": 3000000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannik Keitel",
+          "name": "Y. Keitel",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leonidas Stergiou",
+          "name": "L. Stergiou",
+          "overall_score": 71,
+          "potential": 78,
+          "value": 3600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jarzinho Malanga",
+          "name": "J. Malanga",
+          "overall_score": 64,
+          "potential": 80,
+          "value": 1500000,
+          "yearly_wage": 312000
+        }
+      ],
+      "team": "VfB Stuttgart",
+      "transfer_budget": 27700000,
+      "url": "https://sofifa.com/team/36/vfb-stuttgart/260037/"
+    },
+    {
+      "player_count": 43,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Kamil Grabara",
+          "name": "K. Grabara",
+          "overall_score": 81,
+          "potential": 84,
+          "value": 26000000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Saël Kumbedi",
+          "name": "S. Kumbedi",
+          "overall_score": 75,
+          "potential": 81,
+          "value": 8000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jeanuël Belocian",
+          "name": "J. Belocian",
+          "overall_score": 70,
+          "potential": 81,
+          "value": 3300000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Denis Vavro",
+          "name": "D. Vavro",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 2080000
+        },
+        {
+          "currency": "€",
+          "full_name": "Konstantinos Koulierakis",
+          "name": "K. Koulierakis",
+          "overall_score": 76,
+          "potential": 85,
+          "value": 15500000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joakim Mæhle",
+          "name": "J. Mæhle",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 9500000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Vinicius de Souza Costa",
+          "name": "Vinicius Souza",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 6500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrick Wimmer",
+          "name": "P. Wimmer",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 16500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christian Eriksen",
+          "name": "C. Eriksen",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 4700000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dženan Pejčinović",
+          "name": "D. Pejčinović",
+          "overall_score": 72,
+          "potential": 79,
+          "value": 4700000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mohamed Amoura",
+          "name": "M. Amoura",
+          "overall_score": 80,
+          "potential": 83,
+          "value": 28500000,
+          "yearly_wage": 2912000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Arnold",
+          "name": "M. Arnold",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 12500000,
+          "yearly_wage": 2652000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lovro Majer",
+          "name": "L. Majer",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 11000000,
+          "yearly_wage": 2288000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannick Gerhardt",
+          "name": "Y. Gerhardt",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jesper Lindstrøm",
+          "name": "J. Lindstrøm",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 5000000,
+          "yearly_wage": 3120000
+        },
+        {
+          "currency": "€",
+          "full_name": "Moritz Jenz",
+          "name": "M. Jenz",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 6500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aaron Zehnter",
+          "name": "A. Zehnter",
+          "overall_score": 74,
+          "potential": 80,
+          "value": 6000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marius Müller",
+          "name": "M. Müller",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Wind",
+          "name": "J. Wind",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 2288000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kento Shiogai",
+          "name": "K. Shiogai",
+          "overall_score": 68,
+          "potential": 82,
+          "value": 2900000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jenson Seelt",
+          "name": "J. Seelt",
+          "overall_score": 68,
+          "potential": 77,
+          "value": 2500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Adam Daghim",
+          "name": "A. Daghim",
+          "overall_score": 72,
+          "potential": 80,
+          "value": 5000000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kilian Fischer",
+          "name": "K. Fischer",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 3800000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan Bürger",
+          "name": "J. Bürger",
+          "overall_score": 62,
+          "potential": 75,
+          "value": 875000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Adjetey",
+          "name": "J. Adjetey",
+          "overall_score": 70,
+          "potential": 82,
+          "value": 3700000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kevin Paredes",
+          "name": "K. Paredes",
+          "overall_score": 73,
+          "potential": 82,
+          "value": 7000000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cleiton Santana dos Santos",
+          "name": "Cleiton",
+          "overall_score": 66,
+          "potential": 77,
+          "value": 1800000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mattias Svanberg",
+          "name": "M. Svanberg",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 2080000
+        },
+        {
+          "currency": "€",
+          "full_name": "Till Neininger",
+          "name": "T. Neininger",
+          "overall_score": 59,
+          "potential": 78,
+          "value": 550000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Pharell Hensel",
+          "name": "P. Hensel",
+          "overall_score": 61,
+          "potential": 76,
+          "value": 750000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bence Dárdai",
+          "name": "B. Dárdai",
+          "overall_score": 72,
+          "potential": 82,
+          "value": 5000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rogério Oliveira da Silva",
+          "name": "Rogério",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2300000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bruno Katz",
+          "name": "B. Katz",
+          "overall_score": 63,
+          "potential": 80,
+          "value": 1200000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Trevor Benedict",
+          "name": "T. Benedict",
+          "overall_score": 60,
+          "potential": 75,
+          "value": 575000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jakub Zieliński",
+          "name": "J. Zieliński",
+          "overall_score": 59,
+          "potential": 79,
+          "value": 550000,
+          "yearly_wage": 41600
+        },
+        {
+          "currency": "€",
+          "full_name": "Pavao Pervan",
+          "name": "P. Pervan",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 210000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bartol Franjić",
+          "name": "B. Franjić",
+          "overall_score": 69,
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jakub Kamiński",
+          "name": "J. Kamiński",
+          "overall_score": 77,
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aster Vranckx",
+          "name": "A. Vranckx",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3600000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andreas Skov Olsen",
+          "name": "A. Skov Olsen",
+          "overall_score": 75,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolas Cozza",
+          "name": "N. Cozza",
+          "overall_score": 70,
+          "potential": 71,
+          "value": 1700000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eryk Grzywacz",
+          "name": "E. Grzywacz",
+          "overall_score": 60,
+          "potential": 77,
+          "value": 600000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mathys Angély",
+          "name": "M. Angély",
+          "overall_score": 61,
+          "potential": 79,
+          "value": 775000,
+          "yearly_wage": 260000
+        }
+      ],
+      "team": "VfL Wolfsburg",
+      "transfer_budget": 40400000,
+      "url": "https://sofifa.com/team/175/vfl-wolfsburg/260037/"
+    },
+    {
+      "player_count": 38,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Daniel Batz",
+          "name": "D. Batz",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 400000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Silvan Widmer",
+          "name": "S. Widmer",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2100000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Danny da Costa",
+          "name": "D. da Costa",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 3800000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stefan Posch",
+          "name": "S. Posch",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 12000000,
+          "yearly_wage": 4160000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dominik Kohr",
+          "name": "D. Kohr",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 5000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Phillipp Mwene",
+          "name": "P. Mwene",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4100000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kaishū Sano",
+          "name": "K. Sano",
+          "overall_score": 80,
+          "potential": 83,
+          "value": 26000000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Paul Nebel",
+          "name": "P. Nebel",
+          "overall_score": 76,
+          "potential": 83,
+          "value": 15000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nadiem Amiri",
+          "name": "N. Amiri",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 21000000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sheraldo Becker",
+          "name": "S. Becker",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Phillip Tietz",
+          "name": "P. Tietz",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3300000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Armindo Sieb",
+          "name": "A. Sieb",
+          "overall_score": 71,
+          "potential": 79,
+          "value": 4200000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jae Sung Lee",
+          "name": "Lee Jae Sung",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6000000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lennard Maloney",
+          "name": "L. Maloney",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andreas Hanche-Olsen",
+          "name": "A. Hanche-Olsen",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 4000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stefan Bell",
+          "name": "S. Bell",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 1500000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kacper Potulski",
+          "name": "K. Potulski",
+          "overall_score": 68,
+          "potential": 83,
+          "value": 2600000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robin Zentner",
+          "name": "R. Zentner",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 7000000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nelson Weiper",
+          "name": "N. Weiper",
+          "overall_score": 70,
+          "potential": 83,
+          "value": 3900000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Anthony Caci",
+          "name": "A. Caci",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 12500000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nikolas Veratschnig",
+          "name": "N. Veratschnig",
+          "overall_score": 69,
+          "potential": 76,
+          "value": 2700000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fabio Moreno Fell",
+          "name": "F. Moreno Fell",
+          "overall_score": 62,
+          "potential": 66,
+          "value": 550000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "William Bøving",
+          "name": "W. Bøving",
+          "overall_score": 71,
+          "potential": 78,
+          "value": 3800000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maxim Leitsch",
+          "name": "M. Leitsch",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1700000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Tauer",
+          "name": "N. Tauer",
+          "overall_score": 66,
+          "potential": 70,
+          "value": 1100000,
+          "yearly_wage": 416000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel Gleiber",
+          "name": "D. Gleiber",
+          "overall_score": 61,
+          "potential": 75,
+          "value": 775000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lasse Rieß",
+          "name": "L. Rieß",
+          "overall_score": 67,
+          "potential": 74,
+          "value": 1700000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Silas Katompa Mvumpa",
+          "name": "Silas",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3300000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Benedict Hollerbach",
+          "name": "B. Hollerbach",
+          "overall_score": 75,
+          "potential": 79,
+          "value": 8000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sota Kawasaki",
+          "name": "S. Kawasaki",
+          "overall_score": 71,
+          "potential": 75,
+          "value": 2700000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maxim Dal",
+          "name": "M. Dal",
+          "overall_score": 58,
+          "potential": 75,
+          "value": 500000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kasey Bos",
+          "name": "K. Bos",
+          "overall_score": 65,
+          "potential": 75,
+          "value": 1500000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ben Bobzien",
+          "name": "B. Bobzien",
+          "overall_score": 67,
+          "potential": 76,
+          "value": 2300000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tom Krauß",
+          "name": "T. Krauß",
+          "overall_score": 74,
+          "potential": 77,
+          "value": 5000000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hyun Seok Hong",
+          "name": "Hong Hyun Seok",
+          "overall_score": 72,
+          "potential": 74,
+          "value": 2900000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marco Richter",
+          "name": "M. Richter",
+          "overall_score": 70,
+          "potential": 70,
+          "value": 1700000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arnaud Nordin",
+          "name": "A. Nordin",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3200000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Konstantin Schopp",
+          "name": "K. Schopp",
+          "overall_score": 59,
+          "potential": 74,
+          "value": 500000,
+          "yearly_wage": 156000
+        }
+      ],
+      "team": "1. FSV Mainz 05",
+      "transfer_budget": 11000000,
+      "url": "https://sofifa.com/team/169/1-fsv-mainz-05/260037/"
+    },
+    {
+      "player_count": 35,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Moritz Nicolas",
+          "name": "M. Nicolas",
+          "overall_score": 77,
+          "potential": 79,
+          "value": 9500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Philipp Sander",
+          "name": "P. Sander",
+          "overall_score": 75,
+          "potential": 76,
+          "value": 6000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nico Elvedi",
+          "name": "N. Elvedi",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kevin Diks",
+          "name": "K. Diks",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 7000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joe Scally",
+          "name": "J. Scally",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rocco Reitz",
+          "name": "R. Reitz",
+          "overall_score": 77,
+          "potential": 83,
+          "value": 16500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannik Engelhardt",
+          "name": "Y. Engelhardt",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 3800000,
+          "yearly_wage": 2392000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jens Castrop",
+          "name": "J. Castrop",
+          "overall_score": 74,
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Franck Honorat",
+          "name": "F. Honorat",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 21000000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kevin Stöger",
+          "name": "K. Stöger",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Haris Tabaković",
+          "name": "H. Tabaković",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4800000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Shuto Machino",
+          "name": "S. Machino",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 4100000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florian Neuhaus",
+          "name": "F. Neuhaus",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Giovanni Reyna",
+          "name": "G. Reyna",
+          "overall_score": 73,
+          "potential": 78,
+          "value": 4700000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hugo Bolin",
+          "name": "H. Bolin",
+          "overall_score": 71,
+          "potential": 77,
+          "value": 3000000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lukas Ullrich",
+          "name": "L. Ullrich",
+          "overall_score": 73,
+          "potential": 79,
+          "value": 4600000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kota Takai",
+          "name": "K. Takai",
+          "overall_score": 72,
+          "potential": 79,
+          "value": 4300000,
+          "yearly_wage": 2028000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan Olschowsky",
+          "name": "J. Olschowsky",
+          "overall_score": 67,
+          "potential": 74,
+          "value": 1700000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robin Hack",
+          "name": "R. Hack",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 11500000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Kleindienst",
+          "name": "T. Kleindienst",
+          "overall_score": 80,
+          "potential": 80,
+          "value": 21000000,
+          "yearly_wage": 2080000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alejo Sarco",
+          "name": "A. Sarco",
+          "overall_score": 64,
+          "potential": 81,
+          "value": 1500000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fritz Fleck",
+          "name": "F. Fleck",
+          "overall_score": 62,
+          "potential": 77,
+          "value": 925000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tiago Pereira Cardoso",
+          "name": "T. Pereira Cardoso",
+          "overall_score": 67,
+          "potential": 82,
+          "value": 2100000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marvin Friedrich",
+          "name": "M. Friedrich",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Swider",
+          "name": "N. Swider",
+          "overall_score": 60,
+          "potential": 80,
+          "value": 650000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fabio Chiarodia",
+          "name": "F. Chiarodia",
+          "overall_score": 69,
+          "potential": 79,
+          "value": 2900000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Wael Mohya",
+          "name": "W. Mohya",
+          "overall_score": 70,
+          "potential": 85,
+          "value": 3600000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nathan Ngoumou",
+          "name": "N. Ngoumou",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2800000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan Urbich",
+          "name": "J. Urbich",
+          "overall_score": 62,
+          "potential": 74,
+          "value": 975000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tobias Sippel",
+          "name": "T. Sippel",
+          "overall_score": 64,
+          "potential": 64,
+          "value": 60000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Grant-Leon Ranos",
+          "name": "G. Ranos",
+          "overall_score": 63,
+          "potential": 74,
+          "value": 1100000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tomáš Čvančara",
+          "name": "T. Čvančara",
+          "overall_score": 72,
+          "potential": 76,
+          "value": 3400000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Omlin",
+          "name": "J. Omlin",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 1600000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noah Pesch",
+          "name": "N. Pesch",
+          "overall_score": 64,
+          "potential": 77,
+          "value": 1400000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Shio Fukuda",
+          "name": "S. Fukuda",
+          "overall_score": 65,
+          "potential": 75,
+          "value": 1600000,
+          "yearly_wage": 364000
+        }
+      ],
+      "team": "Borussia Mönchengladbach",
+      "transfer_budget": 19900000,
+      "url": "https://sofifa.com/team/23/borussia-monchengladbach/260037/"
+    },
+    {
+      "player_count": 34,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Mio Backhaus",
+          "name": "M. Backhaus",
+          "overall_score": 75,
+          "potential": 84,
+          "value": 11000000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yukinari Sugawara",
+          "name": "Y. Sugawara",
+          "overall_score": 75,
+          "potential": 79,
+          "value": 7000000,
+          "yearly_wage": 2340000
+        },
+        {
+          "currency": "€",
+          "full_name": "Amos Pieper",
+          "name": "A. Pieper",
+          "overall_score": 76,
+          "potential": 78,
+          "value": 8000000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Karim Coulibaly",
+          "name": "K. Coulibaly",
+          "overall_score": 71,
+          "potential": 85,
+          "value": 4100000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Olivier Deman",
+          "name": "O. Deman",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2300000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Senne Lynen",
+          "name": "S. Lynen",
+          "overall_score": 76,
+          "potential": 79,
+          "value": 9000000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jens Stage",
+          "name": "J. Stage",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 17500000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cameron Puertas Castro",
+          "name": "Puertas",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 9000000,
+          "yearly_wage": 1716000
+        },
+        {
+          "currency": "€",
+          "full_name": "Justin Njinmah",
+          "name": "J. Njinmah",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jovan Milošević",
+          "name": "J. Milošević",
+          "overall_score": 70,
+          "potential": 80,
+          "value": 3500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Romano Schmid",
+          "name": "R. Schmid",
+          "overall_score": 78,
+          "potential": 81,
+          "value": 18500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Samuel Mbangula",
+          "name": "S. Mbangula",
+          "overall_score": 74,
+          "potential": 85,
+          "value": 9500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leonardo Bittencourt",
+          "name": "L. Bittencourt",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2500000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marco Friedl",
+          "name": "M. Friedl",
+          "overall_score": 77,
+          "potential": 79,
+          "value": 11000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Stark",
+          "name": "N. Stark",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Isaac Schmidt",
+          "name": "I. Schmidt",
+          "overall_score": 72,
+          "potential": 75,
+          "value": 2900000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julián Malatini",
+          "name": "J. Malatini",
+          "overall_score": 69,
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Karl Hein",
+          "name": "K. Hein",
+          "overall_score": 73,
+          "potential": 81,
+          "value": 6000000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Keke Topp",
+          "name": "K. Topp",
+          "overall_score": 68,
+          "potential": 79,
+          "value": 2700000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marco Grüll",
+          "name": "M. Grüll",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 4600000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrice Čović",
+          "name": "P. Čović",
+          "overall_score": 67,
+          "potential": 81,
+          "value": 2400000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mick Schmetgens",
+          "name": "M. Schmetgens",
+          "overall_score": 59,
+          "potential": 76,
+          "value": 525000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Wöber",
+          "name": "M. Wöber",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 4200000,
+          "yearly_wage": 2236000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mitchell Weiser",
+          "name": "M. Weiser",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 10000000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Felix Agu",
+          "name": "F. Agu",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Salim Musah",
+          "name": "S. Musah",
+          "overall_score": 61,
+          "potential": 77,
+          "value": 850000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stefan Smarkalev",
+          "name": "S. Smarkalev",
+          "overall_score": 59,
+          "potential": 77,
+          "value": 500000,
+          "yearly_wage": 52000
+        },
+        {
+          "currency": "€",
+          "full_name": "Wesley Adeh",
+          "name": "W. Adeh",
+          "overall_score": 60,
+          "potential": 77,
+          "value": 625000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Markus Kolke",
+          "name": "M. Kolke",
+          "overall_score": 67,
+          "potential": 67,
+          "value": 170000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Victor Boniface",
+          "name": "V. Boniface",
+          "overall_score": 79,
+          "potential": 83,
+          "value": 25500000,
+          "yearly_wage": 3640000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mats Heitmann",
+          "name": "M. Heitmann",
+          "overall_score": 57,
+          "potential": 74,
+          "value": 400000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leon Opitz",
+          "name": "L. Opitz",
+          "overall_score": 64,
+          "potential": 79,
+          "value": 1400000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Skelly Alvero",
+          "name": "S. Alvero",
+          "overall_score": 68,
+          "potential": 76,
+          "value": 2500000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dawid Kownacki",
+          "name": "D. Kownacki",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1900000,
+          "yearly_wage": 1040000
+        }
+      ],
+      "team": "SV Werder Bremen",
+      "transfer_budget": 14000000,
+      "url": "https://sofifa.com/team/38/sv-werder-bremen/260037/"
+    },
+    {
+      "player_count": 35,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Noah Atubolu",
+          "name": "N. Atubolu",
+          "overall_score": 78,
+          "potential": 83,
+          "value": 17000000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Philipp Treu",
+          "name": "P. Treu",
+          "overall_score": 74,
+          "potential": 77,
+          "value": 5500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Matthias Ginter",
+          "name": "M. Ginter",
+          "overall_score": 83,
+          "potential": 83,
+          "value": 25000000,
+          "yearly_wage": 2340000
+        },
+        {
+          "currency": "€",
+          "full_name": "Philipp Lienhart",
+          "name": "P. Lienhart",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 12000000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christian Günter",
+          "name": "C. Günter",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 5000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Eggestein",
+          "name": "M. Eggestein",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Johan Manzambi",
+          "name": "J. Manzambi",
+          "overall_score": 77,
+          "potential": 86,
+          "value": 22500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan-Niklas Beste",
+          "name": "J. Beste",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 8000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Vincenzo Grifo",
+          "name": "V. Grifo",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 14000000,
+          "yearly_wage": 1820000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lucas Höler",
+          "name": "L. Höler",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2300000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Igor Matanović",
+          "name": "I. Matanović",
+          "overall_score": 74,
+          "potential": 78,
+          "value": 6000000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Derry Scherhant",
+          "name": "D. Scherhant",
+          "overall_score": 73,
+          "potential": 78,
+          "value": 4700000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cyriaque Irié",
+          "name": "C. Irié",
+          "overall_score": 70,
+          "potential": 82,
+          "value": 3800000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lukas Kübler",
+          "name": "L. Kübler",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 3900000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jordy Makengo",
+          "name": "J. Makengo",
+          "overall_score": 72,
+          "potential": 76,
+          "value": 3100000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Anthony Jung",
+          "name": "A. Jung",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 900000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bruno Ogbus",
+          "name": "B. Ogbus",
+          "overall_score": 69,
+          "potential": 78,
+          "value": 2800000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florian Müller",
+          "name": "F. Müller",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2000000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolas Höfler",
+          "name": "N. Höfler",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 525000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Max Rosenfelder",
+          "name": "M. Rosenfelder",
+          "overall_score": 73,
+          "potential": 79,
+          "value": 4400000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Philipp",
+          "name": "M. Philipp",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1200000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrick Osterhage",
+          "name": "P. Osterhage",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 4500000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yuito Suzuki",
+          "name": "Y. Suzuki",
+          "overall_score": 75,
+          "potential": 78,
+          "value": 7500000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jannik Huth",
+          "name": "J. Huth",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 750000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Karl Steinmann",
+          "name": "K. Steinmann",
+          "overall_score": 63,
+          "potential": 74,
+          "value": 1000000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rouven Tarnutzer",
+          "name": "R. Tarnutzer",
+          "overall_score": 59,
+          "potential": 75,
+          "value": 550000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel-Kofi Kyereh",
+          "name": "D. Kyereh",
+          "overall_score": 70,
+          "potential": 70,
+          "value": 1600000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Berkay Yilmaz",
+          "name": "B. Yilmaz",
+          "overall_score": 69,
+          "potential": 77,
+          "value": 2900000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yann Sturm",
+          "name": "Y. Sturm",
+          "overall_score": 64,
+          "potential": 76,
+          "value": 1400000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robert Wagner",
+          "name": "R. Wagner",
+          "overall_score": 68,
+          "potential": 75,
+          "value": 2400000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noah Weißhaupt",
+          "name": "N. Weißhaupt",
+          "overall_score": 71,
+          "potential": 75,
+          "value": 2700000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Merlin Röhl",
+          "name": "M. Röhl",
+          "overall_score": 74,
+          "potential": 82,
+          "value": 9500000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eren Dinkçi",
+          "name": "E. Dinkçi",
+          "overall_score": 73,
+          "potential": 79,
+          "value": 4800000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Junior Adamu",
+          "name": "J. Adamu",
+          "overall_score": 71,
+          "potential": 75,
+          "value": 2700000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florent Muslija",
+          "name": "F. Muslija",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2800000,
+          "yearly_wage": 1040000
+        }
+      ],
+      "team": "SC Freiburg",
+      "transfer_budget": 21600000,
+      "url": "https://sofifa.com/team/25/sc-freiburg/260037/"
+    },
+    {
+      "player_count": 31,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Frederik Rønnow",
+          "name": "F. Rønnow",
+          "overall_score": 79,
+          "potential": 79,
+          "value": 8500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Danilho Doekhi",
+          "name": "D. Doekhi",
+          "overall_score": 80,
+          "potential": 81,
+          "value": 21000000,
+          "yearly_wage": 2132000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leopold Querfeld",
+          "name": "L. Querfeld",
+          "overall_score": 77,
+          "potential": 84,
+          "value": 20000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Diogo Filipe Pinto Leite",
+          "name": "Diogo Leite",
+          "overall_score": 76,
+          "potential": 79,
+          "value": 8500000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christopher Trimmel",
+          "name": "C. Trimmel",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 1200000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rani Khedira",
+          "name": "R. Khedira",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 5000000,
+          "yearly_wage": 1664000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aljoscha Kemlein",
+          "name": "A. Kemlein",
+          "overall_score": 74,
+          "potential": 79,
+          "value": 6000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tom Rothe",
+          "name": "T. Rothe",
+          "overall_score": 73,
+          "potential": 81,
+          "value": 6500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Oliver Burke",
+          "name": "O. Burke",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ilyas Ansah",
+          "name": "I. Ansah",
+          "overall_score": 73,
+          "potential": 83,
+          "value": 6500000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andrej Ilić",
+          "name": "A. Ilić",
+          "overall_score": 74,
+          "potential": 76,
+          "value": 5500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "Janik Haberer",
+          "name": "J. Haberer",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3500000,
+          "yearly_wage": 1560000
+        },
+        {
+          "currency": "€",
+          "full_name": "András Schäfer",
+          "name": "A. Schäfer",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 4900000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Woo Yeong Jeong",
+          "name": "Jeong Woo Yeong",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 4000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Derrick Köhn",
+          "name": "D. Köhn",
+          "overall_score": 75,
+          "potential": 76,
+          "value": 6000000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Josip Juranović",
+          "name": "J. Juranović",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2700000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stanley Nsoki",
+          "name": "S. Nsoki",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Matheo Raab",
+          "name": "M. Raab",
+          "overall_score": 70,
+          "potential": 74,
+          "value": 1700000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Livan Burcu",
+          "name": "L. Burcu",
+          "overall_score": 70,
+          "potential": 78,
+          "value": 3500000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Skarke",
+          "name": "T. Skarke",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robert Skov",
+          "name": "R. Skov",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2700000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alex Král",
+          "name": "A. Král",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3200000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Carl Klaus",
+          "name": "C. Klaus",
+          "overall_score": 67,
+          "potential": 67,
+          "value": 550000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "David Preu",
+          "name": "D. Preu",
+          "overall_score": 62,
+          "potential": 77,
+          "value": 950000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dmytro Bogdanov",
+          "name": "D. Bogdanov",
+          "overall_score": 58,
+          "potential": 73,
+          "value": 475000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andrik Markgraf",
+          "name": "A. Markgraf",
+          "overall_score": 63,
+          "potential": 78,
+          "value": 1100000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tom Wisbereit",
+          "name": "T. Wisbereit",
+          "overall_score": 56,
+          "potential": 72,
+          "value": 325000,
+          "yearly_wage": 33800
+        },
+        {
+          "currency": "€",
+          "full_name": "Oluwaseun Ogbemudia",
+          "name": "O. Ogbemudia",
+          "overall_score": 63,
+          "potential": 78,
+          "value": 1000000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marin Ljubičić",
+          "name": "M. Ljubičić",
+          "overall_score": 70,
+          "potential": 77,
+          "value": 3200000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "László Bénes",
+          "name": "L. Bénes",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 2000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Chris Bedia",
+          "name": "C. Bedia",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1900000,
+          "yearly_wage": 1248000
+        }
+      ],
+      "team": "1. FC Union Berlin",
+      "transfer_budget": 17900000,
+      "url": "https://sofifa.com/team/1831/1-fc-union-berlin/260037/"
+    },
+    {
+      "player_count": 41,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Marvin Schwäbe",
+          "name": "M. Schwäbe",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 9500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sebastian Sebulonsen",
+          "name": "S. Sebulonsen",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 3700000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jahmai Simpson-Pusey",
+          "name": "J. Simpson-Pusey",
+          "overall_score": 68,
+          "potential": 79,
+          "value": 2400000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cenk Özkacar",
+          "name": "C. Özkacar",
+          "overall_score": 71,
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kristoffer Lund",
+          "name": "K. Lund",
+          "overall_score": 72,
+          "potential": 79,
+          "value": 4500000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ísak Bergmann Jóhannesson",
+          "name": "Í. Jóhannesson",
+          "overall_score": 74,
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eric Martel",
+          "name": "E. Martel",
+          "overall_score": 76,
+          "potential": 81,
+          "value": 10500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan Thielmann",
+          "name": "J. Thielmann",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jakub Kamiński",
+          "name": "J. Kamiński",
+          "overall_score": 77,
+          "potential": 82,
+          "value": 16000000,
+          "yearly_wage": 1924000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marius Bülter",
+          "name": "M. Bülter",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4600000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Said El Mala",
+          "name": "S. El Mala",
+          "overall_score": 76,
+          "potential": 87,
+          "value": 16000000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Youssoupha Niang",
+          "name": "Y. Niang",
+          "overall_score": 62,
+          "potential": 79,
+          "value": 1000000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alessio Castro-Montes",
+          "name": "A. Castro-Montes",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tom Krauß",
+          "name": "T. Krauß",
+          "overall_score": 74,
+          "potential": 77,
+          "value": 5000000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Waldschmidt",
+          "name": "L. Waldschmidt",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Linton Maina",
+          "name": "L. Maina",
+          "overall_score": 73,
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rav van den Berg",
+          "name": "R. van den Berg",
+          "overall_score": 71,
+          "potential": 82,
+          "value": 3800000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ron-Robert Zieler",
+          "name": "R. Zieler",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 475000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ragnar Ache",
+          "name": "R. Ache",
+          "overall_score": 74,
+          "potential": 75,
+          "value": 5000000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joël Schmied",
+          "name": "J. Schmied",
+          "overall_score": 72,
+          "potential": 74,
+          "value": 2600000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dominique Heintz",
+          "name": "D. Heintz",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 1600000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fynn Schenten",
+          "name": "F. Schenten",
+          "overall_score": 62,
+          "potential": 79,
+          "value": 1000000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Florian Kainz",
+          "name": "F. Kainz",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 1900000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Timo Hübers",
+          "name": "T. Hübers",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2200000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Denis Huseinbašić",
+          "name": "D. Huseinbašić",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Felipe Chávez",
+          "name": "F. Chávez",
+          "overall_score": 62,
+          "potential": 80,
+          "value": 1000000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Malek El Mala",
+          "name": "M. El Mala",
+          "overall_score": 59,
+          "potential": 71,
+          "value": 550000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fayssal Harchaoui",
+          "name": "F. Harchaoui",
+          "overall_score": 60,
+          "potential": 77,
+          "value": 600000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Matthias Köbbing",
+          "name": "M. Köbbing",
+          "overall_score": 56,
+          "potential": 59,
+          "value": 130000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "David Fürst",
+          "name": "D. Fürst",
+          "overall_score": 59,
+          "potential": 77,
+          "value": 550000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sargis Adamyan",
+          "name": "S. Adamyan",
+          "overall_score": 66,
+          "potential": 66,
+          "value": 700000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cenny Neumann",
+          "name": "C. Neumann",
+          "overall_score": 61,
+          "potential": 77,
+          "value": 800000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Kilian",
+          "name": "L. Kilian",
+          "overall_score": 68,
+          "potential": 69,
+          "value": 1300000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Imad Rondić",
+          "name": "I. Rondić",
+          "overall_score": 66,
+          "potential": 67,
+          "value": 1000000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mansour Ouro-Tagba",
+          "name": "M. Ouro-Tagba",
+          "overall_score": 62,
+          "potential": 75,
+          "value": 975000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elias Bakatukanda",
+          "name": "E. Bakatukanda",
+          "overall_score": 66,
+          "potential": 75,
+          "value": 1800000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jusuf Gazibegović",
+          "name": "J. Gazibegović",
+          "overall_score": 69,
+          "potential": 72,
+          "value": 1700000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rasmus Carstensen",
+          "name": "R. Carstensen",
+          "overall_score": 69,
+          "potential": 72,
+          "value": 1900000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Emin Kujović",
+          "name": "E. Kujović",
+          "overall_score": 58,
+          "potential": 72,
+          "value": 500000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jaka Čuber Potočnik",
+          "name": "J. Čuber Potočnik",
+          "overall_score": 60,
+          "potential": 76,
+          "value": 650000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julian Pauli",
+          "name": "J. Pauli",
+          "overall_score": 67,
+          "potential": 80,
+          "value": 2300000,
+          "yearly_wage": 364000
+        }
+      ],
+      "team": "1. FC Köln",
+      "transfer_budget": 13200000,
+      "url": "https://sofifa.com/team/31/1-fc-koln/260037/"
+    },
+    {
+      "player_count": 39,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Finn Dahmen",
+          "name": "F. Dahmen",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 6500000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Chrislain Matsima",
+          "name": "C. Matsima",
+          "overall_score": 77,
+          "potential": 85,
+          "value": 22000000,
+          "yearly_wage": 1456000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jeffrey Gouweleeuw",
+          "name": "J. Gouweleeuw",
+          "overall_score": 77,
+          "potential": 77,
+          "value": 5000000,
+          "yearly_wage": 1768000
+        },
+        {
+          "currency": "€",
+          "full_name": "Cédric Zesiger",
+          "name": "C. Zesiger",
+          "overall_score": 74,
+          "potential": 76,
+          "value": 4500000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robin Fellhauer",
+          "name": "R. Fellhauer",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 4000000,
+          "yearly_wage": 1404000
+        },
+        {
+          "currency": "€",
+          "full_name": "Han-Noah Massengo",
+          "name": "H. Massengo",
+          "overall_score": 75,
+          "potential": 80,
+          "value": 8000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fabian Rieder",
+          "name": "F. Rieder",
+          "overall_score": 74,
+          "potential": 81,
+          "value": 8500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Dimitris Giannoulis",
+          "name": "D. Giannoulis",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6500000,
+          "yearly_wage": 1664000
+        },
+        {
+          "currency": "€",
+          "full_name": "Anton Kade",
+          "name": "A. Kade",
+          "overall_score": 73,
+          "potential": 80,
+          "value": 6000000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexis Claude-Maurice",
+          "name": "A. Claude-Maurice",
+          "overall_score": 76,
+          "potential": 77,
+          "value": 8500000,
+          "yearly_wage": 1716000
+        },
+        {
+          "currency": "€",
+          "full_name": "Michael Gregoritsch",
+          "name": "M. Gregoritsch",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4800000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kristijan Jakić",
+          "name": "K. Jakić",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 4900000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elvis Rexhbeçaj",
+          "name": "E. Rexhbeçaj",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3200000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mert Kömür",
+          "name": "M. Kömür",
+          "overall_score": 72,
+          "potential": 82,
+          "value": 5000000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arthur Largura Chaves",
+          "name": "Arthur Chaves",
+          "overall_score": 74,
+          "potential": 79,
+          "value": 6000000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marius Wolf",
+          "name": "M. Wolf",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 2600000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noahkai Banks",
+          "name": "N. Banks",
+          "overall_score": 71,
+          "potential": 83,
+          "value": 4100000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nediljko Labrović",
+          "name": "N. Labrović",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2100000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rodrigo Duarte Ribeiro",
+          "name": "Rodrigo Ribeiro",
+          "overall_score": 68,
+          "potential": 79,
+          "value": 2700000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Keven Schlotterbeck",
+          "name": "K. Schlotterbeck",
+          "overall_score": 75,
+          "potential": 76,
+          "value": 5500000,
+          "yearly_wage": 1612000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannik Keitel",
+          "name": "Y. Keitel",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Uchenna Ogundu",
+          "name": "U. Ogundu",
+          "overall_score": 64,
+          "potential": 77,
+          "value": 1400000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ismaël Gharbi",
+          "name": "I. Gharbi",
+          "overall_score": 72,
+          "potential": 80,
+          "value": 5500000,
+          "yearly_wage": 416000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mads Pedersen",
+          "name": "M. Pedersen",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1700000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mahmut Kücüksahin",
+          "name": "M. Kücüksahin",
+          "overall_score": 60,
+          "potential": 72,
+          "value": 575000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Schnitzer",
+          "name": "T. Schnitzer",
+          "overall_score": 58,
+          "potential": 78,
+          "value": 525000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Oliver Sorg",
+          "name": "O. Sorg",
+          "overall_score": 58,
+          "potential": 78,
+          "value": 525000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Felix Meiser",
+          "name": "F. Meiser",
+          "overall_score": 60,
+          "potential": 75,
+          "value": 525000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel Klein",
+          "name": "D. Klein",
+          "overall_score": 61,
+          "potential": 67,
+          "value": 425000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Thomas Kastanaras",
+          "name": "T. Kastanaras",
+          "overall_score": 63,
+          "potential": 72,
+          "value": 1100000,
+          "yearly_wage": 416000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yusuf Kabadayi",
+          "name": "Y. Kabadayi",
+          "overall_score": 65,
+          "potential": 76,
+          "value": 1600000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marcel Łubik",
+          "name": "M. Łubik",
+          "overall_score": 65,
+          "potential": 72,
+          "value": 1200000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Elias Saad",
+          "name": "E. Saad",
+          "overall_score": 71,
+          "potential": 72,
+          "value": 2200000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kyliane Dong",
+          "name": "K. Dong",
+          "overall_score": 64,
+          "potential": 76,
+          "value": 1400000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Henri Koudossou",
+          "name": "H. Koudossou",
+          "overall_score": 69,
+          "potential": 72,
+          "value": 1700000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Breithaupt",
+          "name": "T. Breithaupt",
+          "overall_score": 69,
+          "potential": 75,
+          "value": 2000000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nathanaël Mbuku",
+          "name": "N. Mbuku",
+          "overall_score": 70,
+          "potential": 76,
+          "value": 2500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Bauer",
+          "name": "M. Bauer",
+          "overall_score": 69,
+          "potential": 73,
+          "value": 1700000,
+          "yearly_wage": 780000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aiman Dardari",
+          "name": "A. Dardari",
+          "overall_score": 63,
+          "potential": 75,
+          "value": 1200000,
+          "yearly_wage": 312000
+        }
+      ],
+      "team": "FC Augsburg",
+      "transfer_budget": 16800000,
+      "url": "https://sofifa.com/team/100409/fc-augsburg/260037/"
+    },
+    {
+      "player_count": 36,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Daniel Heuer Fernandes",
+          "name": "D. Heuer Fernandes",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 7000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolás Capaldo",
+          "name": "N. Capaldo",
+          "overall_score": 73,
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luka Vušković",
+          "name": "L. Vušković",
+          "overall_score": 78,
+          "potential": 88,
+          "value": 27500000,
+          "yearly_wage": 2756000
+        },
+        {
+          "currency": "€",
+          "full_name": "Warmed Omari",
+          "name": "W. Omari",
+          "overall_score": 72,
+          "potential": 76,
+          "value": 2900000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "William Mikelbrencis",
+          "name": "W. Mikelbrencis",
+          "overall_score": 69,
+          "potential": 80,
+          "value": 3000000,
+          "yearly_wage": 468000
+        },
+        {
+          "currency": "€",
+          "full_name": "Albert Sambi Lokonga",
+          "name": "A. Sambi Lokonga",
+          "overall_score": 76,
+          "potential": 78,
+          "value": 9500000,
+          "yearly_wage": 1196000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nicolai Remberg",
+          "name": "N. Remberg",
+          "overall_score": 73,
+          "potential": 76,
+          "value": 4000000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Miro Muheim",
+          "name": "M. Muheim",
+          "overall_score": 75,
+          "potential": 75,
+          "value": 5500000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fábio Daniel Ferreira Vieira",
+          "name": "Fábio Vieira",
+          "overall_score": 77,
+          "potential": 81,
+          "value": 14500000,
+          "yearly_wage": 4940000
+        },
+        {
+          "currency": "€",
+          "full_name": "Robert Glatzel",
+          "name": "R. Glatzel",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ransford-Yeboah Königsdörffer",
+          "name": "R. Königsdörffer",
+          "overall_score": 70,
+          "potential": 77,
+          "value": 3200000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jean-Luc Dompé",
+          "name": "J. Dompé",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 4100000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Rayan Philippe",
+          "name": "R. Philippe",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3600000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Albert Grønbæk",
+          "name": "A. Grønbæk",
+          "overall_score": 73,
+          "potential": 78,
+          "value": 4600000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Philip Otele",
+          "name": "P. Otele",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3300000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Daniel Elfadli",
+          "name": "D. Elfadli",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2200000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Giorgi Gocholeishvili",
+          "name": "G. Gocholeishvili",
+          "overall_score": 70,
+          "potential": 74,
+          "value": 2100000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sander Tangvik",
+          "name": "S. Tangvik",
+          "overall_score": 70,
+          "potential": 79,
+          "value": 3100000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bakery Jatta",
+          "name": "B. Jatta",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1500000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jordan Torunarigha",
+          "name": "J. Torunarigha",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3900000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fabio Baldé",
+          "name": "F. Baldé",
+          "overall_score": 66,
+          "potential": 77,
+          "value": 1800000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Otto Stange",
+          "name": "O. Stange",
+          "overall_score": 64,
+          "potential": 81,
+          "value": 1500000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yussuf Poulsen",
+          "name": "Y. Poulsen",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Alexander Røssing-Lelesiit",
+          "name": "A. Røssing-Lelesiit",
+          "overall_score": 63,
+          "potential": 80,
+          "value": 1200000,
+          "yearly_wage": 208000
+        },
+        {
+          "currency": "€",
+          "full_name": "Bilal Yalçınkaya",
+          "name": "B. Yalçınkaya",
+          "overall_score": 59,
+          "potential": 76,
+          "value": 575000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hannes Hermann",
+          "name": "H. Hermann",
+          "overall_score": 57,
+          "potential": 68,
+          "value": 300000,
+          "yearly_wage": 52000
+        },
+        {
+          "currency": "€",
+          "full_name": "Damion Downs",
+          "name": "D. Downs",
+          "overall_score": 70,
+          "potential": 80,
+          "value": 3500000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Noah Katterbach",
+          "name": "N. Katterbach",
+          "overall_score": 68,
+          "potential": 73,
+          "value": 1700000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fernando Dickes",
+          "name": "F. Dickes",
+          "overall_score": 57,
+          "potential": 77,
+          "value": 400000,
+          "yearly_wage": 26000
+        },
+        {
+          "currency": "€",
+          "full_name": "Omar Megeed",
+          "name": "O. Megeed",
+          "overall_score": 58,
+          "potential": 76,
+          "value": 525000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Shafiq Nandja",
+          "name": "S. Nandja",
+          "overall_score": 59,
+          "potential": 73,
+          "value": 500000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Levin Öztunalı",
+          "name": "L. Öztunalı",
+          "overall_score": 67,
+          "potential": 67,
+          "value": 1000000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Łukasz Poręba",
+          "name": "Ł. Poręba",
+          "overall_score": 69,
+          "potential": 74,
+          "value": 1900000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Immanuel Pherai",
+          "name": "I. Pherai",
+          "overall_score": 69,
+          "potential": 74,
+          "value": 2100000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joel Agyekum",
+          "name": "J. Agyekum",
+          "overall_score": 59,
+          "potential": 72,
+          "value": 500000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Aboubaka Soumahoro",
+          "name": "A. Soumahoro",
+          "overall_score": 64,
+          "potential": 77,
+          "value": 1300000,
+          "yearly_wage": 260000
+        }
+      ],
+      "team": "Hamburger SV",
+      "transfer_budget": 13800000,
+      "url": "https://sofifa.com/team/28/hamburger-sv/260037/"
+    },
+    {
+      "player_count": 33,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Nikola Vasilj",
+          "name": "N. Vasilj",
+          "overall_score": 78,
+          "potential": 78,
+          "value": 9500000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hauke Wahl",
+          "name": "H. Wahl",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 2900000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eric Smith",
+          "name": "E. Smith",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3600000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Karol Mets",
+          "name": "K. Mets",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1200000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Manolis Saliakas",
+          "name": "M. Saliakas",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2100000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jackson Irvine",
+          "name": "J. Irvine",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 3300000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Joel Chima Fujita",
+          "name": "J. Fujita",
+          "overall_score": 72,
+          "potential": 77,
+          "value": 3500000,
+          "yearly_wage": 832000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arkadiusz Pyrka",
+          "name": "A. Pyrka",
+          "overall_score": 70,
+          "potential": 76,
+          "value": 2400000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Danel Sinani",
+          "name": "D. Sinani",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1900000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mathias Pereira Lage",
+          "name": "M. Pereira Lage",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3100000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Andréas Hountondji",
+          "name": "A. Hountondji",
+          "overall_score": 70,
+          "potential": 77,
+          "value": 3300000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Martijn Kaars",
+          "name": "M. Kaars",
+          "overall_score": 72,
+          "potential": 73,
+          "value": 2800000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Abdoulie Ceesay",
+          "name": "A. Ceesay",
+          "overall_score": 66,
+          "potential": 74,
+          "value": 1900000,
+          "yearly_wage": 364000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mathias Rasmussen",
+          "name": "M. Rasmussen",
+          "overall_score": 73,
+          "potential": 73,
+          "value": 3200000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Connor Metcalfe",
+          "name": "C. Metcalfe",
+          "overall_score": 69,
+          "potential": 71,
+          "value": 1700000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tomoya Andō",
+          "name": "T. Andō",
+          "overall_score": 70,
+          "potential": 73,
+          "value": 1800000,
+          "yearly_wage": 728000
+        },
+        {
+          "currency": "€",
+          "full_name": "Louis Oppie",
+          "name": "L. Oppie",
+          "overall_score": 70,
+          "potential": 75,
+          "value": 2200000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ben Voll",
+          "name": "B. Voll",
+          "overall_score": 67,
+          "potential": 72,
+          "value": 1200000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Adam Dźwigała",
+          "name": "A. Dźwigała",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1200000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Taichi Hara",
+          "name": "T. Hara",
+          "overall_score": 68,
+          "potential": 69,
+          "value": 1400000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jannik Robatsch",
+          "name": "J. Robatsch",
+          "overall_score": 65,
+          "potential": 76,
+          "value": 1500000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "David Nemeth",
+          "name": "D. Nemeth",
+          "overall_score": 70,
+          "potential": 75,
+          "value": 2200000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "James Sands",
+          "name": "J. Sands",
+          "overall_score": 72,
+          "potential": 75,
+          "value": 2900000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Ricky-Jade Jones",
+          "name": "R. Jones",
+          "overall_score": 68,
+          "potential": 72,
+          "value": 1800000,
+          "yearly_wage": 572000
+        },
+        {
+          "currency": "€",
+          "full_name": "Lars Ritzka",
+          "name": "L. Ritzka",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1300000,
+          "yearly_wage": 624000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marwin Schmitz",
+          "name": "M. Schmitz",
+          "overall_score": 59,
+          "potential": 77,
+          "value": 550000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Emil Gazdov",
+          "name": "E. Gazdov",
+          "overall_score": 62,
+          "potential": 71,
+          "value": 775000,
+          "yearly_wage": 36400
+        },
+        {
+          "currency": "€",
+          "full_name": "Romeo Aigbekaen",
+          "name": "R. Aigbekaen",
+          "overall_score": 59,
+          "potential": 70,
+          "value": 500000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nick Schmidt",
+          "name": "N. Schmidt",
+          "overall_score": 58,
+          "potential": 75,
+          "value": 500000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Simon Spari",
+          "name": "S. Spari",
+          "overall_score": 61,
+          "potential": 71,
+          "value": 625000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Fin Stevens",
+          "name": "F. Stevens",
+          "overall_score": 63,
+          "potential": 72,
+          "value": 1000000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Erik Ahlstrand",
+          "name": "E. Ahlstrand",
+          "overall_score": 65,
+          "potential": 71,
+          "value": 1100000,
+          "yearly_wage": 312000
+        },
+        {
+          "currency": "€",
+          "full_name": "Scott Banks",
+          "name": "S. Banks",
+          "overall_score": 63,
+          "potential": 68,
+          "value": 725000,
+          "yearly_wage": 260000
+        }
+      ],
+      "team": "FC St. Pauli",
+      "transfer_budget": 6600000,
+      "url": "https://sofifa.com/team/110329/fc-st-pauli/260037/"
+    },
+    {
+      "player_count": 33,
+      "players": [
+        {
+          "currency": "€",
+          "full_name": "Diant Ramaj",
+          "name": "D. Ramaj",
+          "overall_score": 75,
+          "potential": 81,
+          "value": 7000000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marnon Busch",
+          "name": "M. Busch",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Patrick Mainka",
+          "name": "P. Mainka",
+          "overall_score": 76,
+          "potential": 76,
+          "value": 6000000,
+          "yearly_wage": 1508000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jonas Föhrenbach",
+          "name": "J. Föhrenbach",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Hennes Behrens",
+          "name": "H. Behrens",
+          "overall_score": 70,
+          "potential": 77,
+          "value": 3000000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Jan Schöppner",
+          "name": "J. Schöppner",
+          "overall_score": 72,
+          "potential": 74,
+          "value": 2600000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Eren Dinkçi",
+          "name": "E. Dinkçi",
+          "overall_score": 73,
+          "potential": 79,
+          "value": 4800000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Luca Kerber",
+          "name": "L. Kerber",
+          "overall_score": 69,
+          "potential": 76,
+          "value": 2600000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Niklas Dorsch",
+          "name": "N. Dorsch",
+          "overall_score": 74,
+          "potential": 74,
+          "value": 4500000,
+          "yearly_wage": 1352000
+        },
+        {
+          "currency": "€",
+          "full_name": "Arijon Ibrahimović",
+          "name": "A. Ibrahimović",
+          "overall_score": 72,
+          "potential": 83,
+          "value": 5000000,
+          "yearly_wage": 1300000
+        },
+        {
+          "currency": "€",
+          "full_name": "Marvin Pieringer",
+          "name": "M. Pieringer",
+          "overall_score": 73,
+          "potential": 74,
+          "value": 3700000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Budu Zivzivadze",
+          "name": "B. Zivzivadze",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1248000
+        },
+        {
+          "currency": "€",
+          "full_name": "Sirlord Conteh",
+          "name": "S. Conteh",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1400000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mathias Honsak",
+          "name": "M. Honsak",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2400000,
+          "yearly_wage": 1144000
+        },
+        {
+          "currency": "€",
+          "full_name": "Omar Haktab Traoré",
+          "name": "O. Traoré",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2300000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Benedikt Gimber",
+          "name": "B. Gimber",
+          "overall_score": 71,
+          "potential": 72,
+          "value": 1800000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tim Siersleben",
+          "name": "T. Siersleben",
+          "overall_score": 71,
+          "potential": 74,
+          "value": 2200000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Frank Feller",
+          "name": "F. Feller",
+          "overall_score": 69,
+          "potential": 77,
+          "value": 2700000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Stefan Schimmer",
+          "name": "S. Schimmer",
+          "overall_score": 69,
+          "potential": 69,
+          "value": 1200000,
+          "yearly_wage": 884000
+        },
+        {
+          "currency": "€",
+          "full_name": "Mikkel Kaufmann",
+          "name": "M. Kaufmann",
+          "overall_score": 68,
+          "potential": 73,
+          "value": 1800000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Yannik Wagner",
+          "name": "Y. Wagner",
+          "overall_score": 60,
+          "potential": 77,
+          "value": 625000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leonidas Stergiou",
+          "name": "L. Stergiou",
+          "overall_score": 71,
+          "potential": 78,
+          "value": 3600000,
+          "yearly_wage": 988000
+        },
+        {
+          "currency": "€",
+          "full_name": "Adam Kölle",
+          "name": "A. Kölle",
+          "overall_score": 63,
+          "potential": 74,
+          "value": 975000,
+          "yearly_wage": 260000
+        },
+        {
+          "currency": "€",
+          "full_name": "Leart Paçarada",
+          "name": "L. Paçarada",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 2000000,
+          "yearly_wage": 1092000
+        },
+        {
+          "currency": "€",
+          "full_name": "Christian Conteh",
+          "name": "C. Conteh",
+          "overall_score": 68,
+          "potential": 69,
+          "value": 1400000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Julian Niehues",
+          "name": "J. Niehues",
+          "overall_score": 72,
+          "potential": 75,
+          "value": 2900000,
+          "yearly_wage": 936000
+        },
+        {
+          "currency": "€",
+          "full_name": "Adrian Beck",
+          "name": "A. Beck",
+          "overall_score": 71,
+          "potential": 71,
+          "value": 1900000,
+          "yearly_wage": 1040000
+        },
+        {
+          "currency": "€",
+          "full_name": "Paul Tschernuth",
+          "name": "P. Tschernuth",
+          "overall_score": 59,
+          "potential": 67,
+          "value": 425000,
+          "yearly_wage": 104000
+        },
+        {
+          "currency": "€",
+          "full_name": "Tobias Weigel",
+          "name": "T. Weigel",
+          "overall_score": 59,
+          "potential": 73,
+          "value": 525000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Nick Rothweiler",
+          "name": "N. Rothweiler",
+          "overall_score": 59,
+          "potential": 73,
+          "value": 525000,
+          "yearly_wage": 156000
+        },
+        {
+          "currency": "€",
+          "full_name": "Thomas Keller",
+          "name": "T. Keller",
+          "overall_score": 68,
+          "potential": 72,
+          "value": 1500000,
+          "yearly_wage": 676000
+        },
+        {
+          "currency": "€",
+          "full_name": "Maximilian Breunig",
+          "name": "M. Breunig",
+          "overall_score": 66,
+          "potential": 71,
+          "value": 1300000,
+          "yearly_wage": 520000
+        },
+        {
+          "currency": "€",
+          "full_name": "Kevin Müller",
+          "name": "K. Müller",
+          "overall_score": 72,
+          "potential": 72,
+          "value": 400000,
+          "yearly_wage": 728000
+        }
+      ],
+      "team": "1. FC Heidenheim 1846",
+      "transfer_budget": 8500000,
+      "url": "https://sofifa.com/team/111235/1-fc-heidenheim-1846/260037/"
+    }
+  ],
+  "total_players": 678
+}
