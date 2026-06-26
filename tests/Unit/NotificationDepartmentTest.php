@@ -4,8 +4,8 @@ namespace Tests\Unit;
 
 use App\Models\GameNotification;
 use Illuminate\Support\Collection;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Tests\TestCase;
 
 class NotificationDepartmentTest extends TestCase
 {
