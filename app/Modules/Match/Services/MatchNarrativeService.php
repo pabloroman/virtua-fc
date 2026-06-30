@@ -7,13 +7,18 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\TransferOffer;
 use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Modules\Match\DTOs\MatchNarrative;
 
 class MatchNarrativeService
 {
     /**
-     * Generate 1-2 pre-match narrative snippets for the next-match card.
+     * Generate pre-match narrative snippets.
+     *
+     * The next-match card asks for the default 1-2; the dashboard briefing
+     * requests a few more (`$limit`) for its wider canvas. selectTop() keeps the
+     * selection varied (one per category) regardless of how many are requested.
      *
      * @return array<MatchNarrative>
      */
@@ -24,20 +29,24 @@ class MatchNarrativeService
         ?GameStanding $opponentStanding,
         array $playerForm,
         array $opponentForm,
+        int $limit = 2,
     ): array {
         if ($game->isTournamentMode()) {
             $candidates = $this->tournamentCandidates($game, $nextMatch, $playerStanding, $opponentStanding, $playerForm, $opponentForm);
         } else {
             $candidates = [
                 ...$this->cupCandidates($nextMatch, $game),
+                ...$this->europeanCandidates($nextMatch),
                 ...$this->formCandidates($playerForm, $game),
                 ...$this->stakesCandidates($game, $playerStanding, $opponentStanding, $nextMatch),
+                ...$this->rivalryCandidates($game, $nextMatch),
+                ...$this->marketCandidates($game),
                 ...$this->moodCandidates($game),
                 ...$this->scoutingCandidates($opponentStanding, $opponentForm, $nextMatch, $game),
             ];
         }
 
-        return $this->selectTop($candidates, $nextMatch->round_number ?? 1);
+        return $this->selectTop($candidates, $nextMatch->round_number ?? 1, $limit);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -232,6 +241,12 @@ class MatchNarrativeService
             return [];
         }
 
+        // European knockout ties get their own tailored continental-night prose
+        // (europeanCandidates) rather than the generic domestic-cup framing.
+        if (($match->competition?->role ?? '') === Competition::ROLE_EUROPEAN) {
+            return [];
+        }
+
         $candidates = [];
         $roundName = $match->round_name ?? '';
         $competitionName = __($match->competition->name ?? '');
@@ -278,6 +293,139 @@ class MatchNarrativeService
         return [$this->candidate('cup', 6, 'cup_generic', ['competition' => $competitionName, 'round' => __($roundName)])];
     }
 
+    // ── Career: Transfer Market & Media Buzz ────────────────────────
+
+    /**
+     * Outward "buzz": rival clubs courting the user's players (real interest
+     * records) and transfer-window deadline pressure. Brings the wider market
+     * into the pre-match read.
+     */
+    private function marketCandidates(Game $game): array
+    {
+        $candidates = [];
+
+        $offers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
+            ->where('game_id', $game->id)
+            ->where('offering_team_id', '!=', $game->team_id)
+            ->whereIn('offer_type', [TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_PRE_CONTRACT])
+            ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED, TransferOffer::STATUS_AGREED])
+            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->orderByDesc('transfer_fee')
+            ->get();
+
+        if ($offers->isNotEmpty()) {
+            $distinctPlayers = $offers->pluck('game_player_id')->unique()->count();
+            $lead = $offers->first();
+            $playerName = $lead->gamePlayer?->name;
+            $clubName = $lead->offeringTeam?->short_name ?? $lead->offeringTeam?->name;
+
+            if ($playerName && $clubName) {
+                // A bid is "breaking news" when fresh and fades to old news as it
+                // lingers (offers persist for weeks), so the same transfer saga
+                // stops leading the feed every single matchday.
+                $ageDays = $lead->game_date ? abs($lead->game_date->diffInDays($game->current_date)) : 999;
+                $priority = $ageDays <= 7 ? 8 : ($ageDays <= 21 ? 5 : 3);
+
+                if ($distinctPlayers > 1) {
+                    $candidates[] = $this->candidate('market', $priority, 'market_multiple_targets', ['count' => $distinctPlayers]);
+                } elseif ($lead->isPreContract()) {
+                    $candidates[] = $this->candidate('market', $priority, 'market_precontract', ['player' => $playerName, 'club' => $clubName]);
+                } else {
+                    $candidates[] = $this->candidate('market', $priority, 'market_courted', ['player' => $playerName, 'club' => $clubName]);
+                }
+            }
+        }
+
+        $countdown = $game->getWindowCountdown();
+        if ($countdown && $countdown['action'] === 'closes' && $countdown['matchdays'] <= 3) {
+            $candidates[] = $this->candidate('market', 6, 'market_window_closing');
+        }
+
+        return $candidates;
+    }
+
+    // ── Career: Rivalry & Head-to-Head ──────────────────────────────
+
+    /**
+     * The reverse league fixture earlier this season frames the meeting — a
+     * win avenged, a result to protect, or a score to settle.
+     */
+    private function rivalryCandidates(Game $game, GameMatch $match): array
+    {
+        if ($match->competition_id !== $game->competition_id) {
+            return [];
+        }
+
+        $userIsHome = $match->home_team_id === $game->team_id;
+        $opponent = $userIsHome ? $match->awayTeam : $match->homeTeam;
+        $opponentId = $userIsHome ? $match->away_team_id : $match->home_team_id;
+        $opponentName = $opponent?->short_name ?? $opponent?->name;
+
+        if (!$opponentName) {
+            return [];
+        }
+
+        $reverse = GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $match->competition_id)
+            ->where('played', true)
+            ->where('id', '!=', $match->id)
+            ->where(function ($q) use ($game, $opponentId) {
+                $q->where(fn ($q2) => $q2->where('home_team_id', $game->team_id)->where('away_team_id', $opponentId))
+                    ->orWhere(fn ($q2) => $q2->where('home_team_id', $opponentId)->where('away_team_id', $game->team_id));
+            })
+            ->orderByDesc('scheduled_date')
+            ->first();
+
+        if (!$reverse) {
+            return [];
+        }
+
+        $reverseUserHome = $reverse->home_team_id === $game->team_id;
+        $userScore = $reverseUserHome ? $reverse->home_score : $reverse->away_score;
+        $oppScore = $reverseUserHome ? $reverse->away_score : $reverse->home_score;
+
+        if ($userScore > $oppScore) {
+            return [$this->candidate('rivalry', 7, 'rivalry_won_reverse', ['opponent' => $opponentName, 'score' => "{$userScore}-{$oppScore}"])];
+        }
+
+        if ($userScore < $oppScore) {
+            return [$this->candidate('rivalry', 8, 'rivalry_lost_reverse', ['opponent' => $opponentName, 'score' => "{$oppScore}-{$userScore}"])];
+        }
+
+        return [$this->candidate('rivalry', 6, 'rivalry_drew_reverse', ['opponent' => $opponentName])];
+    }
+
+    // ── Career: European Nights ─────────────────────────────────────
+
+    /**
+     * Tailored continental-competition framing (Champions / Europa / Conference
+     * League), distinct from the domestic-cup prose — knockout drama, or a
+     * group / league-phase night under the lights.
+     */
+    private function europeanCandidates(GameMatch $match): array
+    {
+        if (($match->competition?->role ?? '') !== Competition::ROLE_EUROPEAN) {
+            return [];
+        }
+
+        $competitionName = __($match->competition->name ?? '');
+        $roundName = $match->round_name ?? '';
+
+        if ($match->isCupMatch()) {
+            if (str_contains($roundName, 'final') && !str_contains($roundName, 'semi')) {
+                return [$this->candidate('european', 10, 'euro_final', ['competition' => $competitionName])];
+            }
+
+            if (str_contains($roundName, 'semi')) {
+                return [$this->candidate('european', 9, 'euro_semi', ['competition' => $competitionName])];
+            }
+
+            return [$this->candidate('european', 8, 'euro_knockout', ['competition' => $competitionName])];
+        }
+
+        return [$this->candidate('european', 7, 'euro_group', ['competition' => $competitionName])];
+    }
+
     private function formCandidates(array $playerForm, Game $game): array
     {
         $candidates = [];
@@ -291,13 +439,15 @@ class MatchNarrativeService
         $unbeaten = $this->detectUnbeatenRun($playerForm);
         $winless = $this->detectWinlessRun($playerForm);
 
-        // Lower thresholds for tournament mode (shorter competition)
-        $isTournament = $game->isTournamentMode();
-        $winStreakLong = $isTournament ? 4 : 5;
-        $winStreakMin = $isTournament ? 2 : 3;
-        $loseStreakMin = $isTournament ? 2 : 3;
-        $unbeatenMin = $isTournament ? 3 : 5;
-        $winlessMin = $isTournament ? 3 : 4;
+        // Thresholds are deliberately modest, so form colour surfaces from a
+        // short run rather than only after a long one — more week-to-week
+        // variety. A "long" winning streak is the only mode-specific cutoff
+        // (tournaments are shorter).
+        $winStreakLong = $game->isTournamentMode() ? 4 : 5;
+        $winStreakMin = 2;
+        $loseStreakMin = 2;
+        $unbeatenMin = $game->isTournamentMode() ? 3 : 4;
+        $winlessMin = 3;
 
         if ($winStreak >= $winStreakLong) {
             $candidates[] = $this->candidate('form', 9, 'streak_win_long', ['count' => $winStreak]);
@@ -332,11 +482,11 @@ class MatchNarrativeService
         $position = $playerStanding->position;
         $points = $playerStanding->points;
 
-        if ($position === 1 && $matchday >= 5) {
+        if ($position === 1 && $matchday >= 4) {
             $candidates[] = $this->candidate('stakes', 9, 'top_of_table');
         }
 
-        if ($matchday >= 5 && $position > 1 && $position <= 3) {
+        if ($matchday >= 4 && $position > 1 && $position <= 3) {
             $leaderPoints = GameStanding::where('game_id', $game->id)
                 ->where('competition_id', $game->competition_id)
                 ->where('position', 1)
@@ -360,7 +510,7 @@ class MatchNarrativeService
             ]);
         }
 
-        if ($opponentStanding && $matchday >= 5) {
+        if ($opponentStanding && $matchday >= 4) {
             $positionDiff = abs($position - $opponentStanding->position);
             $pointsDiff = abs($points - $opponentStanding->points);
 
@@ -376,7 +526,7 @@ class MatchNarrativeService
             }
         }
 
-        if ($matchday >= 8 && $game->season_goal) {
+        if ($matchday >= 6 && $game->season_goal) {
             $competition = Competition::find($game->competition_id);
             $config = $competition?->getConfig();
 
@@ -430,16 +580,19 @@ class MatchNarrativeService
             $candidates[] = $this->candidate('mood', 8, 'injury_crisis', ['count' => $injuryCount]);
         }
 
+        // Problems (low morale/fitness, an injury crisis) are worth surfacing;
+        // the stable positive states sit at low priority so they fill a gap
+        // rather than leading the feed every quiet week.
         if ($avgMorale < 40) {
             $candidates[] = $this->candidate('mood', 7, 'morale_low');
         } elseif ($avgMorale > 75) {
-            $candidates[] = $this->candidate('mood', 6, 'morale_high');
+            $candidates[] = $this->candidate('mood', 3, 'morale_high');
         }
 
         if ($avgFitness < 55) {
             $candidates[] = $this->candidate('mood', 7, 'fitness_low');
         } elseif ($avgFitness > 80) {
-            $candidates[] = $this->candidate('mood', 5, 'fitness_high');
+            $candidates[] = $this->candidate('mood', 2, 'fitness_high');
         }
 
         return $candidates;
@@ -458,13 +611,13 @@ class MatchNarrativeService
             $total = count($opponentForm);
 
             if ($oppWins <= 1 && $total >= 4) {
-                $candidates[] = $this->candidate('scouting', 5, 'opponent_poor_form', [
+                $candidates[] = $this->candidate('scouting', 6, 'opponent_poor_form', [
                     'opponent' => $opponentName,
                     'wins' => $oppWins,
                     'total' => $total,
                 ]);
             } elseif ($oppWins >= 4 && $total >= 5) {
-                $candidates[] = $this->candidate('scouting', 5, 'opponent_hot', [
+                $candidates[] = $this->candidate('scouting', 6, 'opponent_hot', [
                     'opponent' => $opponentName,
                     'wins' => $oppWins,
                     'total' => $total,
@@ -482,18 +635,28 @@ class MatchNarrativeService
                 $posDiff = $playerStanding->position - $opponentStanding->position;
 
                 if ($posDiff > 8) {
-                    $candidates[] = $this->candidate('scouting', 6, 'opponent_strong', [
+                    $candidates[] = $this->candidate('scouting', 7, 'opponent_strong', [
                         'opponent' => $opponentName,
                         'position' => $this->ordinalPosition($opponentStanding->position),
                     ]);
                 } elseif ($posDiff < -8) {
-                    $candidates[] = $this->candidate('scouting', 4, 'opponent_weak', [
+                    $candidates[] = $this->candidate('scouting', 5, 'opponent_weak', [
                         'opponent' => $opponentName,
                         'position' => $this->ordinalPosition($opponentStanding->position),
                     ]);
                 }
             }
         }
+
+        // Always-on opponent preview floor: a notable angle (hot/poor/strong/weak)
+        // wins on priority when one applies, but otherwise this guarantees a
+        // fresh, opponent-specific line every matchday — the single biggest
+        // source of week-to-week variety, since the opponent changes each round.
+        // Home/away framing + matchday-rotated variants keep it from repeating.
+        $userIsHome = $match->home_team_id === $game->team_id;
+        $candidates[] = $this->candidate('scouting', 4, $userIsHome ? 'opponent_preview_home' : 'opponent_preview_away', [
+            'opponent' => $opponentName,
+        ]);
 
         return $candidates;
     }
@@ -555,27 +718,32 @@ class MatchNarrativeService
     }
 
     /**
-     * Select the top 1-2 candidates, ensuring category diversity.
+     * Select up to $limit candidates in priority order, one per category so
+     * the snippets stay varied. The next-match card requests 2; the dashboard
+     * briefing requests more for its wider canvas.
      *
      * @return array<MatchNarrative>
      */
-    private function selectTop(array $candidates, int $matchday): array
+    private function selectTop(array $candidates, int $matchday, int $limit = 2): array
     {
-        if (empty($candidates)) {
+        if (empty($candidates) || $limit < 1) {
             return [];
         }
 
         usort($candidates, fn ($a, $b) => $b['priority'] <=> $a['priority']);
 
-        $first = $candidates[0];
-        $result = [
-            $this->toNarrative($first, $matchday),
-        ];
+        $result = [];
+        $usedCategories = [];
 
-        // Pick a second from a different category
         foreach ($candidates as $candidate) {
-            if ($candidate['category'] !== $first['category']) {
-                $result[] = $this->toNarrative($candidate, $matchday);
+            if (in_array($candidate['category'], $usedCategories, true)) {
+                continue;
+            }
+
+            $result[] = $this->toNarrative($candidate, $matchday);
+            $usedCategories[] = $candidate['category'];
+
+            if (count($result) >= $limit) {
                 break;
             }
         }
@@ -599,7 +767,7 @@ class MatchNarrativeService
     private function pickVariant(string $baseKey, int $matchday): string
     {
         $variantCount = 0;
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 6; $i++) {
             if (__("narrative.{$baseKey}_v{$i}") !== "narrative.{$baseKey}_v{$i}") {
                 $variantCount = $i;
             } else {

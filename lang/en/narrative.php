@@ -102,6 +102,57 @@ return [
     'opponent_hot_v1' => ':opponent arrive in fine form — :wins wins from their last :total.',
     'opponent_hot_v2' => 'Watch out: :opponent are on a hot streak with :wins wins in :total.',
 
+    'opponent_preview_home_v1' => 'Today you welcome :opponent to your turf.',
+    'opponent_preview_home_v2' => 'Home advantage as :opponent come to visit.',
+    'opponent_preview_home_v3' => ':opponent are the visitors — make home count.',
+    'opponent_preview_home_v4' => 'A home date with :opponent, with the crowd behind you.',
+
+    'opponent_preview_away_v1' => 'A trip to face :opponent on their patch.',
+    'opponent_preview_away_v2' => 'On the road to take on :opponent.',
+    'opponent_preview_away_v3' => 'Away from home against :opponent — a different test.',
+    'opponent_preview_away_v4' => ':opponent host you. Quieten their crowd.',
+
+    // ── European Nights ─────────────────────────────────────────────
+
+    'euro_final_v1' => 'The :competition final. One night to write your name in history.',
+    'euro_final_v2' => 'This is it — the :competition final. Glory or heartbreak.',
+
+    'euro_semi_v1' => 'A :competition semi-final. Ninety minutes from the final.',
+    'euro_semi_v2' => 'The last four of the :competition. So close to glory now.',
+
+    'euro_knockout_v1' => ':competition knockout football — win or go home.',
+    'euro_knockout_v2' => 'A European knockout tie. No room for error under the lights.',
+
+    'euro_group_v1' => 'A :competition night under the lights. Points on the continent matter.',
+    'euro_group_v2' => 'European football returns. A statement in the :competition awaits.',
+
+    // ── Rivalry & Head-to-Head ──────────────────────────────────────
+
+    'rivalry_won_reverse_v1' => 'You beat :opponent :score in the reverse fixture — do it again.',
+    'rivalry_won_reverse_v2' => 'The last meeting went your way (:score vs :opponent). Confidence is high.',
+
+    'rivalry_lost_reverse_v1' => ':opponent won the reverse :score. Time for revenge.',
+    'rivalry_lost_reverse_v2' => 'A score to settle — :opponent took the points :score last time.',
+
+    'rivalry_drew_reverse_v1' => 'Honours even with :opponent last time. A chance to settle it.',
+    'rivalry_drew_reverse_v2' => 'The reverse fixture with :opponent ended level — break the deadlock.',
+
+    // ── Transfer Market & Buzz ──────────────────────────────────────
+
+    'market_courted_v1' => ':club have made a move for :player. Eyes on the dressing room.',
+    'market_courted_v2' => 'Speculation surrounds :player as :club come calling.',
+    'market_courted_v3' => 'The rumour mill links :player with a move to :club.',
+
+    'market_precontract_v1' => ':club are circling :player on a pre-contract. His future is in doubt.',
+    'market_precontract_v2' => ':player is being tapped up by :club — unsettling news.',
+    'market_precontract_v3' => ':club are reportedly preparing a pre-contract approach for :player.',
+
+    'market_multiple_targets_v1' => 'Vultures circling: :count of your players are drawing interest.',
+    'market_multiple_targets_v2' => ':count squad members have suitors. The market is testing your resolve.',
+
+    'market_window_closing_v1' => 'The transfer window is about to slam shut — last chance to do business.',
+    'market_window_closing_v2' => 'Deadline looms. The window closes within a couple of matches.',
+
     // ── Tournament: Group Stage ─────────────────────────────────────
 
     'wc_group_opener_v1' => 'Opening match of the World Cup. A chance to set the tone early.',

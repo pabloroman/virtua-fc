@@ -187,9 +187,13 @@ class ShowGame
             'dashboardContext' => $dashboardContext,
         ];
 
-        // Generate pre-match narrative snippets (tournament mode only for now)
-        if ($nextMatch && $game->isTournamentMode()) {
+        // Generate pre-match narrative snippets. Tournament mode renders 1-2 in
+        // the next-match card; season-based modes surface a few more as the
+        // wide-column "match preview" lead on the dashboard. Category diversity
+        // in selectTop() keeps the mix varied (at most one per category).
+        if ($nextMatch) {
             $isHome = $nextMatch->home_team_id === $game->team_id;
+
             $viewData['narratives'] = $this->narrativeService->generate(
                 $game,
                 $nextMatch,
@@ -197,6 +201,7 @@ class ShowGame
                 $isHome ? $viewData['awayStanding'] : $viewData['homeStanding'],
                 $viewData['playerForm'],
                 $viewData['opponentForm'],
+                limit: $game->isTournamentMode() ? 2 : 4,
             );
         }
 

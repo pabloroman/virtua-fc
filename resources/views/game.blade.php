@@ -120,9 +120,17 @@
 
             <hr class="border-border-strong md:hidden" />
 
-            {{-- Notifications inbox: the dominant 2/3 column on desktop
-                 (md:order-1) so the department tabs and message rows have room. --}}
-            <div class="space-y-8 md:order-1 md:col-span-2">
+            {{-- Wide 2/3 column on desktop (md:order-1): the pre-match narrative
+                 dispatch leads, then the notifications inbox. --}}
+            <div class="space-y-4 md:space-y-6 md:order-1 md:col-span-2">
+                {{-- News: the league narrative engine surfaced as icon-tagged story
+                     items (transfer buzz, rivalry, European nights, form, mood…),
+                     a sibling of the inbox. Season-based modes lead with it;
+                     tournament mode keeps the prose in the next-match card. --}}
+                @if(!empty($narratives) && !$game->isTournamentMode())
+                    <x-news :narratives="$narratives" :game="$game" />
+                @endif
+
                 <x-section-card :title="__('notifications.inbox')">
                     <x-slot name="badge">
                         <div class="flex items-center gap-2">
@@ -139,13 +147,11 @@
                     </x-slot>
 
                     @if($groupedNotifications->isEmpty())
-                    <div class="text-center py-8 px-4">
-                        <div class="text-text-faint mb-2">
-                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                    <div class="flex items-center gap-2 px-5 py-2.5 text-xs text-text-muted">
+                        <svg class="w-4 h-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ __('notifications.all_caught_up') }}</span>
                     </div>
                     @else
                     @php $flatNotifications = $groupedNotifications->flatten(); @endphp
@@ -227,13 +233,11 @@
                     </x-slot>
 
                     @if($groupedNotifications->isEmpty())
-                    <div class="text-center py-8 px-4">
-                        <div class="text-text-faint mb-2">
-                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                    <div class="flex items-center gap-2 px-5 py-2.5 text-xs text-text-muted">
+                        <svg class="w-4 h-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ __('notifications.all_caught_up') }}</span>
                     </div>
                     @else
                     @php $flatNotifications = $groupedNotifications->flatten(); @endphp
