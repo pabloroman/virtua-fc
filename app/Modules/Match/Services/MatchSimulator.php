@@ -1932,13 +1932,16 @@ class MatchSimulator
         // Attenuate defensive effect based on the attacker's quality advantage.
         // When a team is much stronger, opponent's defensive tactics are less
         // effective — quality prevails through possession, individual skill,
-        // and forcing defensive errors over 90 minutes.
+        // and forcing defensive errors over 90 minutes. Defensive fatigue adds a
+        // time dimension on top: a sustained shell tires and cracks late, so the
+        // stronger side breaks it down further as the match wears on.
         $damping = (float) config('match_simulation.defensive_quality_damping', 1.2);
 
         if ($preHomeXG > 0) {
             $homeReduction = $homeXG / $preHomeXG;
             if ($homeReduction < 1.0 && $strengthRatio > 1.0) {
                 $attenuation = 1.0 / pow($strengthRatio, $damping);
+                $attenuation *= 1.0 - $this->defensiveFatigueErosion($effectiveMinute, $strengthRatio);
                 $homeXG = $preHomeXG * (1.0 - (1.0 - $homeReduction) * $attenuation);
             }
         }
@@ -1948,11 +1951,58 @@ class MatchSimulator
             $inverseRatio = $strengthRatio > 0 ? 1.0 / $strengthRatio : 1.0;
             if ($awayReduction < 1.0 && $inverseRatio > 1.0) {
                 $attenuation = 1.0 / pow($inverseRatio, $damping);
+                $attenuation *= 1.0 - $this->defensiveFatigueErosion($effectiveMinute, $inverseRatio);
                 $awayXG = $preAwayXG * (1.0 - (1.0 - $awayReduction) * $attenuation);
             }
         }
 
         return [$homeXG, $awayXG];
+    }
+
+    /**
+     * Defensive fatigue: the extra fraction of an opponent's defensive xG
+     * suppression that a *sustained* shell surrenders as the match wears on. A
+     * parked bus tires and makes late mistakes, so the attacking side breaks it
+     * down in the closing stages. Returns 0 before `ramp_start_minute`, then
+     * ramps linearly to `max_erosion` by minute 90 (mirroring the High-Press
+     * fade in {@see PressingIntensity::opponentXGModifier()}).
+     *
+     * When `pressure_scaled` is on, the shell tires faster the bigger the quality
+     * edge it is absorbing — `$edge` is the attacking side's strength ratio over
+     * the defender (> 1.0), reaching full effect at `full_pressure_edge`. The
+     * result is folded into the quality-damping attenuation, so it only ever
+     * lifts the stronger side's xG and never applies in evenly-matched games.
+     *
+     * @param  float  $effectiveMinute  Midpoint minute of the simulated segment
+     * @param  float  $edge  Attacking side's strength ratio over the defender (> 1.0)
+     * @return float  Erosion fraction in [0, 1]
+     */
+    private function defensiveFatigueErosion(float $effectiveMinute, float $edge): float
+    {
+        $config = config('match_simulation.defensive_fatigue', []);
+
+        if (! ($config['enabled'] ?? false)) {
+            return 0.0;
+        }
+
+        $rampStart = (float) ($config['ramp_start_minute'] ?? 60);
+        if ($effectiveMinute <= $rampStart) {
+            return 0.0;
+        }
+
+        $rampRange = 90.0 - $rampStart;
+        $progress = $rampRange > 0 ? min(1.0, ($effectiveMinute - $rampStart) / $rampRange) : 1.0;
+        $erosion = (float) ($config['max_erosion'] ?? 0.0) * $progress;
+
+        if ($config['pressure_scaled'] ?? false) {
+            $fullPressureEdge = (float) ($config['full_pressure_edge'] ?? 0.30);
+            $pressure = $fullPressureEdge > 0
+                ? min(1.0, max(0.0, $edge - 1.0) / $fullPressureEdge)
+                : 1.0;
+            $erosion *= $pressure;
+        }
+
+        return min(1.0, max(0.0, $erosion));
     }
 
     /**

@@ -143,7 +143,7 @@ class SimulateMatch extends Command
                 $formation,
                 $homeMentality,
                 $awayMentality
-            );
+            )->result;
 
             // Track results
             if ($result->homeScore > $result->awayScore) {

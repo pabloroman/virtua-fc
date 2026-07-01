@@ -64,16 +64,16 @@ return [
     |   keeps a realistic spread (champion ~85, strongest squad wins ~45%); verify
     |   with `php artisan app:diagnose-strength-realism`.
     |
-    | Example (base_goals 1.4, D 10, neutral):
-    |   gap  4 pts → supremacy 0.4 → xG 1.6 vs 1.2  (slight edge, frequent draws)
-    |   gap 12 pts → supremacy 1.2 → xG 2.0 vs 0.8  (clear favourite — pulls clear)
-    |   gap 20 pts → supremacy 2.0 → xG 2.4 vs 0.4  (rout)
+    | Example (base_goals 1.5, D 8.5, neutral):
+    |   gap  4 pts → supremacy 0.47 → xG 1.74 vs 1.27  (slight edge, frequent draws)
+    |   gap 12 pts → supremacy 1.41 → xG 2.21 vs 0.79  (clear favourite — pulls clear)
+    |   gap 20 pts → supremacy 2.35 → xG 2.68 vs 0.32  (rout)
     |
     */
-    'base_goals' => 1.4,                // per-team xG when evenly matched (~2.8 total)
-    'goal_supremacy_scale' => 10.0,     // rating points per goal of home-minus-away supremacy
+    'base_goals' => 1.5,                // per-team xG when evenly matched (~3.0 total)
+    'goal_supremacy_scale' => 8.5,      // rating points per goal of home-minus-away supremacy
     'home_advantage_goals' => 0.20,     // fixed home xG bonus
-    'defensive_quality_damping' => 0.6, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
+    'defensive_quality_damping' => 1.0, // how much quality advantage erodes defensive tactics (0=none, higher=more erosion)
 
     /*
     |--------------------------------------------------------------------------
@@ -144,7 +144,7 @@ return [
     |
     */
     'dixon_coles_rho' => -0.05,         // goal correlation: 0 = independent Poisson, -0.13 = realistic
-    'score_concentration' => 1.4,       // 1.0 = standard, >1 = results cluster closer to xG mode
+    'score_concentration' => 1.2,       // 1.0 = standard, >1 = results cluster closer to xG mode
 
     /*
     |--------------------------------------------------------------------------
@@ -338,6 +338,42 @@ return [
         'direct_vs_deep' => 1.08,                        // Direct own xG bonus vs opponent Deep line (long balls bypass deep block)
         'high_line_high_press_synergy' => 1.06,          // Own xG bonus when using both High Line + High Press (coordinated pressing)
         'attacking_high_line_vulnerability' => 1.04,     // Opponent own xG bonus vs team using Attacking mentality + High Line (general exposure)
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Defensive Fatigue (Time × Pressure)
+    |--------------------------------------------------------------------------
+    |
+    | A sustained defensive shell tires. As a match wears on, a defending side
+    | under pressure loses concentration and makes late defensive mistakes, so a
+    | parked bus tends to crack in the closing stages. This adds a TIME dimension
+    | to `defensive_quality_damping`: past `ramp_start_minute`, an additional
+    | fraction of the opponent's defensive xG suppression is undone, ramping
+    | linearly to `max_erosion` at minute 90. It only ever *lifts* the attacking
+    | side's xG (a tiring shell concedes more, it never starts attacking) and only
+    | applies where a quality edge already lets the stronger side break the block,
+    | so evenly-matched games stay tight and low-scoring.
+    |
+    | This is what turns a raw quality advantage into late goals against packed
+    | defences — the realism reason a much stronger side eventually pulls away
+    | rather than being held to a 0-0 by a team that simply defends for 90'.
+    |
+    | ramp_start_minute: shell holds firm until this minute (no erosion before it).
+    | max_erosion: at minute 90, up to this fraction of the surviving defensive
+    |   suppression is undone (0 = fatigue off, 1 = the shell fully cracks).
+    | pressure_scaled: when true, the shell tires faster the bigger the quality
+    |   edge it is absorbing; when false, time is the only factor.
+    | full_pressure_edge: the attacker's strength-ratio surplus (e.g. 0.30 = a
+    |   30%-stronger side) at which pressure scaling reaches its full effect.
+    |
+    */
+    'defensive_fatigue' => [
+        'enabled' => true,
+        'ramp_start_minute' => 60,
+        'max_erosion' => 0.5,
+        'pressure_scaled' => true,
+        'full_pressure_edge' => 0.30,
     ],
 
     /*
