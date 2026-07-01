@@ -291,16 +291,7 @@
                     <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
                 </div>
                 @else
-                <div x-data="{ dept: 'all' }">
-                    <x-notification-department-tabs :notifications="$recentNotifications" />
-                    <div class="divide-y divide-border-default">
-                        @foreach($recentNotifications as $notification)
-                            <div x-show="dept === 'all' || dept === @js($notification->getDepartment())">
-                                <x-notification-row :notification="$notification" :game="$game" />
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                <x-notification-inbox-list :notifications="$recentNotifications" :game="$game" />
                 @endif
             </div>
         </x-modal>

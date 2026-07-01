@@ -154,17 +154,7 @@
                         <span>{{ __('notifications.all_caught_up') }}</span>
                     </div>
                     @else
-                    @php $flatNotifications = $groupedNotifications->flatten(); @endphp
-                    <div x-data="{ dept: 'all' }">
-                        <x-notification-department-tabs :notifications="$flatNotifications" />
-                        <div class="divide-y divide-border-default">
-                            @foreach($flatNotifications as $notification)
-                                <div x-show="dept === 'all' || dept === @js($notification->getDepartment())">
-                                    <x-notification-row :notification="$notification" :game="$game" />
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                    <x-notification-inbox-list :notifications="$groupedNotifications->flatten()" :game="$game" />
                     @endif
                 </x-section-card>
             </div>
@@ -240,17 +230,7 @@
                         <span>{{ __('notifications.all_caught_up') }}</span>
                     </div>
                     @else
-                    @php $flatNotifications = $groupedNotifications->flatten(); @endphp
-                    <div x-data="{ dept: 'all' }">
-                        <x-notification-department-tabs :notifications="$flatNotifications" />
-                        <div class="divide-y divide-border-default">
-                            @foreach($flatNotifications as $notification)
-                                <div x-show="dept === 'all' || dept === @js($notification->getDepartment())">
-                                    <x-notification-row :notification="$notification" :game="$game" />
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                    <x-notification-inbox-list :notifications="$groupedNotifications->flatten()" :game="$game" />
                     @endif
                 </x-section-card>
             </div>
