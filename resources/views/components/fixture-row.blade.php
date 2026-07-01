@@ -4,6 +4,7 @@
     'showScore' => true,
     'highlightNext' => true,
     'nextMatchId' => null,
+    'shortCompetition' => false,
 ])
 
 @php
@@ -54,11 +55,16 @@
         <span class="text-xs truncate {{ $isNextMatch ? 'text-text-primary font-medium' : 'text-text-body' }}">{{ $opponent->name }}</span>
     </div>
 
-    {{-- Competition pill: short name on mobile, full on desktop (hidden in tournament mode) --}}
+    {{-- Competition pill: short name on mobile, full on desktop (hidden in tournament mode).
+         When $shortCompetition is set (narrow dashboard column), use the compact abbreviation at every breakpoint. --}}
     @unless($game->isTournamentMode())
         <div class="shrink-0">
-            <span class="md:hidden"><x-competition-pill :competition="$match->competition" :short="true" class="scale-90 origin-right" /></span>
-            <span class="hidden md:inline"><x-competition-pill :competition="$match->competition" class="scale-90 origin-right" /></span>
+            @if($shortCompetition)
+                <x-competition-pill :competition="$match->competition" :abbrev="true" class="scale-90 origin-right" />
+            @else
+                <span class="md:hidden"><x-competition-pill :competition="$match->competition" :short="true" class="scale-90 origin-right" /></span>
+                <span class="hidden md:inline"><x-competition-pill :competition="$match->competition" class="scale-90 origin-right" /></span>
+            @endif
         </div>
     @endunless
 

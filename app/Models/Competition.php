@@ -82,6 +82,23 @@ class Competition extends Model
         'PRESEASON' => 'Amistoso',
     ];
 
+    // Ultra-compact tags for tight layouts (narrow dashboard column). Falls back
+    // to shortName() for anything not listed here.
+    private const ABBREVIATIONS = [
+        'ESP1'    => 'Liga',
+        'ESP2'    => 'Liga 2',
+        'ESP3A'   => '1ªFed I',
+        'ESP3B'   => '1ªFed II',
+        'ESP3PO'  => 'Playoff',
+        'ESPCUP'  => 'Copa',
+        'ESPSUP'  => 'Supercopa',
+        'ENG1'    => 'Premier',
+        'UCL'     => 'UCL',
+        'UEL'     => 'UEL',
+        'UECL'    => 'UECL',
+        'UEFASUP' => 'Supercup',
+    ];
+
     protected $fillable = [
         'id',
         'name',
@@ -109,6 +126,11 @@ class Competition extends Model
     public function shortName(): string
     {
         return self::SHORT_NAMES[$this->id] ?? $this->name;
+    }
+
+    public function abbreviation(): string
+    {
+        return self::ABBREVIATIONS[$this->id] ?? $this->shortName();
     }
 
     public function isLeague(): bool

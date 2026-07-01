@@ -42,7 +42,7 @@
                     </x-slot>
                     <div class="divide-y divide-border-default">
                         @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
-                            <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
+                            <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" :short-competition="true" />
                         @endforeach
                     </div>
                 </x-section-card>
