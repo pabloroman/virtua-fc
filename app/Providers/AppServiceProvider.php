@@ -28,7 +28,6 @@ use App\Modules\Match\Listeners\EnsureMatchAttendance;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
 use App\Modules\Match\Listeners\UpdateManagerStats;
-use App\Modules\Notification\Listeners\NotifyTransferWindowClosed;
 use App\Modules\Notification\Listeners\NotifyTransferWindowClosing;
 use App\Modules\Notification\Listeners\NotifyTransferWindowOpen;
 use App\Modules\Notification\Listeners\NotifyUnenrolledPlayersBeforeWindowClose;
@@ -152,7 +151,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(GameDateAdvanced::class, NotifyUnenrolledPlayersBeforeWindowClose::class);
         Event::listen(GameDateAdvanced::class, ProcessTransferWindowClose::class);
         Event::listen(GameDateAdvanced::class, RecomputeWageProjectionOnWindowClose::class);
-        Event::listen(GameDateAdvanced::class, NotifyTransferWindowClosed::class);
         Event::listen(GameDateAdvanced::class, EnforceSquadRegistration::class);
         Event::listen(GameDateAdvanced::class, RollSalaryUnhappiness::class);
         Event::listen(GameDateAdvanced::class, ApplyWageGapMoraleDrip::class);

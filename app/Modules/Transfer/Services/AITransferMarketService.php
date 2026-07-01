@@ -202,11 +202,11 @@ class AITransferMarketService
         // Flush all batched operations
         $this->flushBatchedOperations($playerUpdates, $transferInserts);
 
-        // Notify with total count (prior window activity + close-time activity)
+        // Announce the window close (always) with the total count of AI moves
+        // (prior window activity + close-time activity). This single notification
+        // replaces the former separate "window closed" notice.
         $totalCount = $priorCount + $freeAgentCount + $transferCount;
-        if ($totalCount > 0) {
-            $this->notificationService->notifyAITransferSummary($game, $totalCount, $window);
-        }
+        $this->notificationService->notifyAITransferSummary($game, $totalCount, $window);
     }
 
     /**

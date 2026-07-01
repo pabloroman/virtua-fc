@@ -73,7 +73,6 @@ class GameNotification extends Model
     public const TYPE_STADIUM = 'stadium';
     public const TYPE_COMMERCIAL = 'commercial';
     public const TYPE_TRANSFER_WINDOW_CLOSING = 'transfer_window_closing';
-    public const TYPE_TRANSFER_WINDOW_CLOSED = 'transfer_window_closed';
     public const TYPE_SQUAD_REGISTRATION_REQUIRED = 'squad_registration_required';
     public const TYPE_JOB_OFFER_RECEIVED = 'job_offer_received';
     public const TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE = 'player_left_via_release_clause';
@@ -116,7 +115,6 @@ class GameNotification extends Model
         self::TYPE_MATCH_FORFEIT => 'squad',
         self::TYPE_BUDGET_LOAN => 'finances',
         self::TYPE_TRANSFER_WINDOW_CLOSING => 'transfers',
-        self::TYPE_TRANSFER_WINDOW_CLOSED => 'transfers',
         self::TYPE_SQUAD_REGISTRATION_REQUIRED => 'registration',
         self::TYPE_STADIUM => 'stadium',
         self::TYPE_COMMERCIAL => 'commercial',

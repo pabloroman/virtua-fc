@@ -135,13 +135,11 @@ return [
     'transfer_window_closing_title' => ':window Transfer Window Closing',
     'transfer_window_closing_message' => 'This is your last chance to sign a player. The transfer window closes after this matchday.',
 
-    // Transfer window closed
-    'transfer_window_closed_title' => ':window Transfer Window Closed',
-    'transfer_window_closed_message' => 'The transfer window is now closed. Agreed transfers will complete when the next window opens.',
-
-    // AI transfer market
-    'ai_transfer_title' => ':window Transfer Window Summary',
-    'ai_transfer_message' => ':count transfers completed across the league.',
+    // Transfer window closed (also the AI market summary — the window-close notice
+    // and the league transfer count are a single notification)
+    'ai_transfer_title' => ':window Transfer Window Closed',
+    'ai_transfer_message' => 'The transfer window is now closed. :count transfers completed across the league. Agreed transfers will complete when the next window opens.',
+    'ai_transfer_message_none' => 'The transfer window is now closed. Agreed transfers will complete when the next window opens.',
     'ai_transfer_window_summer' => 'Summer',
     'ai_transfer_window_winter' => 'Winter',
 

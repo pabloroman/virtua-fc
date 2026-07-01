@@ -16,8 +16,9 @@ class ProcessTransferWindowClose
     public function handle(GameDateAdvanced $event): void
     {
         // Detect boundary crossing: previousDate was inside a window, newDate is outside.
-        // This fires on the same matchday as NotifyTransferWindowClosed, ~1 week after
-        // the "window closing" warning.
+        // This fires ~1 week after the "window closing" warning. processWindowClose()
+        // also emits the single "window closed" notification (with the league transfer
+        // count folded in).
         $previousWindow = TransferWindowType::fromDate($event->previousDate);
         $newWindow = TransferWindowType::fromDate($event->newDate);
 

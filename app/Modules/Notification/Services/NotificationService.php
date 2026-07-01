@@ -701,15 +701,22 @@ class NotificationService
     // ==========================================
 
     /**
-     * Create a single summary notification for AI transfer window activity.
+     * Create the single window-close notification: it announces that the transfer
+     * window has closed and folds in the league-wide AI transfer count. Tapping it
+     * opens the per-team transfer breakdown (ShowTransferActivity keys on this type).
+     * When no transfers completed, the count sentence is dropped.
      */
     public function notifyAITransferSummary(Game $game, int $totalMoves, string $window): GameNotification
     {
+        $message = $totalMoves > 0
+            ? __('notifications.ai_transfer_message', ['count' => $totalMoves])
+            : __('notifications.ai_transfer_message_none');
+
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_AI_TRANSFER_ACTIVITY,
             title: __('notifications.ai_transfer_title', ['window' => __("notifications.ai_transfer_window_{$window}")]),
-            message: __('notifications.ai_transfer_message', ['count' => $totalMoves]),
+            message: $message,
             priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'window' => $window,
@@ -779,25 +786,6 @@ class NotificationService
             title: __('notifications.transfer_window_closing_title', ['window' => $windowLabel]),
             message: __('notifications.transfer_window_closing_message'),
             priority: GameNotification::PRIORITY_WARNING,
-            metadata: [
-                'window' => $window,
-            ],
-        );
-    }
-
-    /**
-     * Notify the user that the transfer window has closed.
-     */
-    public function notifyTransferWindowClosed(Game $game, string $window): GameNotification
-    {
-        $windowLabel = __("notifications.ai_transfer_window_{$window}");
-
-        return $this->create(
-            game: $game,
-            type: GameNotification::TYPE_TRANSFER_WINDOW_CLOSED,
-            title: __('notifications.transfer_window_closed_title', ['window' => $windowLabel]),
-            message: __('notifications.transfer_window_closed_message'),
-            priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'window' => $window,
             ],
