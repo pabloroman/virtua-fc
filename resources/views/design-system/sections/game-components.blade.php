@@ -825,7 +825,7 @@
     {{-- Notification Department Tabs --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Notification Department Tabs <code class="text-xs text-accent-blue font-mono">&lt;x-notification-department-tabs&gt;</code></h3>
-        <p class="text-sm text-text-secondary mb-4">A horizontal filter strip for the inbox, letting the user narrow notifications to a single club department (first team, transfers, scouting, academy, board, competition). Each notification's department is derived from its type via <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">GameNotification::getDepartment()</code>. The strip drives an Alpine <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">dept</code> property on a surrounding <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-data</code> scope and rows filter client-side with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-show</code>. Only departments present in the list get a tab; the strip renders nothing when a single department is present. The active tab shows an unread-count badge.</p>
+        <p class="text-sm text-text-secondary mb-4">A horizontal filter strip for the inbox, letting the user narrow notifications to a single club department (first team, transfers, scouting, academy, board, competition). Each notification's department is derived from its type via <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">GameNotification::getDepartment()</code>. The strip drives an Alpine <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">dept</code> property on a surrounding <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-data</code> scope and rows filter client-side with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-show</code>. Only departments present in the list get a tab; the strip renders nothing when a single department is present. The active tab shows an unread-count badge. In practice, drop the whole inbox body — tabs, Alpine scope and filtered rows — with the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-notification-inbox-list&gt;</code> wrapper below; it composes this strip internally.</p>
 
         {{-- Props table --}}
         <div class="overflow-x-auto mb-4">
@@ -853,16 +853,8 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="notifTabsCode">&lt;div x-data="{ dept: 'all' }"&gt;
-    &lt;x-notification-department-tabs :notifications="$notifications" /&gt;
-    &lt;div class="divide-y divide-border-default"&gt;
-        @@foreach($notifications as $notification)
-            &lt;div x-show="dept === 'all' || dept === @@js($notification-&gt;getDepartment())"&gt;
-                &lt;x-notification-row :notification="$notification" :game="$game" /&gt;
-            &lt;/div&gt;
-        @@endforeach
-    &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="notifTabsCode">{{-- Recommended: the wrapper composes the tabs + filtered rows --}}
+&lt;x-notification-inbox-list :notifications="$notifications" :game="$game" /&gt;</code></pre>
         </div>
     </div>
 
