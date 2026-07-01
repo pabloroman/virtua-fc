@@ -19,7 +19,7 @@
 <div class="rounded-xl overflow-hidden border border-border-strong bg-surface-800">
     {{-- Competition & Match Info --}}
     <div class="px-4 py-3 md:px-6 md:py-4 border-b border-border-default">
-        <x-match-card-header :match="$nextMatch" :tournament-mode="$game->isTournamentMode()" />
+        <x-match-card-header :match="$nextMatch" :tournament-mode="$game->isTournamentMode()" :compact="true" />
     </div>
 
     {{-- Team Face-Off --}}

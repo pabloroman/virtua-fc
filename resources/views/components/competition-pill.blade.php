@@ -9,7 +9,7 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5']) }}>
-    <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $badge['bg'] }} {{ $badge['text'] }}">
+    <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap {{ $badge['bg'] }} {{ $badge['text'] }}">
         {{ $label }}
     </span>
     @if($roundName)
