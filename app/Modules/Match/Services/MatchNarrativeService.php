@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Modules\Match\DTOs\MatchNarrative;
@@ -167,8 +168,8 @@ class MatchNarrativeService
         $candidates = [];
 
         $opponentName = $match->home_team_id === $game->team_id
-            ? $match->awayTeam->short_name ?? $match->awayTeam->name
-            : $match->homeTeam->short_name ?? $match->homeTeam->name;
+            ? $match->awayTeam->name
+            : $match->homeTeam->name;
 
         // Group stage: opponent position in group
         if ($opponentStanding && !$match->isCupMatch()) {
@@ -249,30 +250,30 @@ class MatchNarrativeService
 
         $candidates = [];
         $roundName = $match->round_name ?? '';
-        $competitionName = __($match->competition->name ?? '');
+        $compParams = $this->competitionParams('competition', $match->competition);
 
         $cupTie = $match->cupTie;
         $isSecondLeg = $cupTie && $cupTie->second_leg_match_id === $match->id;
         $firstLegPlayed = $cupTie && $cupTie->firstLegMatch?->played;
 
         if (str_contains($roundName, 'final') && !str_contains($roundName, 'semi')) {
-            return [$this->candidate('cup', 10, 'cup_final', ['competition' => $competitionName])];
+            return [$this->candidate('cup', 10, 'cup_final', $compParams)];
         }
 
         if (str_contains($roundName, 'semi_finals')) {
             if ($isSecondLeg && $firstLegPlayed) {
-                return [$this->candidate('cup', 10, 'cup_semi_second_leg', ['competition' => $competitionName])];
+                return [$this->candidate('cup', 10, 'cup_semi_second_leg', $compParams)];
             }
 
-            return [$this->candidate('cup', 9, 'cup_semi', ['competition' => $competitionName])];
+            return [$this->candidate('cup', 9, 'cup_semi', $compParams)];
         }
 
         if (str_contains($roundName, 'quarter_finals')) {
-            return [$this->candidate('cup', 8, 'cup_quarter', ['competition' => $competitionName])];
+            return [$this->candidate('cup', 8, 'cup_quarter', $compParams)];
         }
 
         if (str_contains($roundName, 'round_of_16')) {
-            return [$this->candidate('cup', 7, 'cup_round_of_16', ['competition' => $competitionName])];
+            return [$this->candidate('cup', 7, 'cup_round_of_16', $compParams)];
         }
 
         if ($isSecondLeg && $firstLegPlayed) {
@@ -290,7 +291,7 @@ class MatchNarrativeService
             return [$this->candidate('cup', 7, 'cup_second_leg_drawn')];
         }
 
-        return [$this->candidate('cup', 6, 'cup_generic', ['competition' => $competitionName, 'round' => __($roundName)])];
+        return [$this->candidate('cup', 6, 'cup_generic', [...$compParams, 'round' => __($roundName)])];
     }
 
     // ── Career: Transfer Market & Media Buzz ────────────────────────
@@ -317,7 +318,7 @@ class MatchNarrativeService
             $distinctPlayers = $offers->pluck('game_player_id')->unique()->count();
             $lead = $offers->first();
             $playerName = $lead->gamePlayer?->name;
-            $clubName = $lead->offeringTeam?->short_name ?? $lead->offeringTeam?->name;
+            $clubName = $lead->offeringTeam?->name;
 
             if ($playerName && $clubName) {
                 // A bid is "breaking news" when fresh and fades to old news as it
@@ -325,13 +326,14 @@ class MatchNarrativeService
                 // stops leading the feed every single matchday.
                 $ageDays = $lead->game_date ? abs($lead->game_date->diffInDays($game->current_date)) : 999;
                 $priority = $ageDays <= 7 ? 8 : ($ageDays <= 21 ? 5 : 3);
+                $clubParams = $this->teamParams('club', $lead->offeringTeam);
 
                 if ($distinctPlayers > 1) {
                     $candidates[] = $this->candidate('market', $priority, 'market_multiple_targets', ['count' => $distinctPlayers]);
                 } elseif ($lead->isPreContract()) {
-                    $candidates[] = $this->candidate('market', $priority, 'market_precontract', ['player' => $playerName, 'club' => $clubName]);
+                    $candidates[] = $this->candidate('market', $priority, 'market_precontract', ['player' => $playerName, ...$clubParams]);
                 } else {
-                    $candidates[] = $this->candidate('market', $priority, 'market_courted', ['player' => $playerName, 'club' => $clubName]);
+                    $candidates[] = $this->candidate('market', $priority, 'market_courted', ['player' => $playerName, ...$clubParams]);
                 }
             }
         }
@@ -359,11 +361,13 @@ class MatchNarrativeService
         $userIsHome = $match->home_team_id === $game->team_id;
         $opponent = $userIsHome ? $match->awayTeam : $match->homeTeam;
         $opponentId = $userIsHome ? $match->away_team_id : $match->home_team_id;
-        $opponentName = $opponent?->short_name ?? $opponent?->name;
+        $opponentName = $opponent?->name;
 
-        if (!$opponentName) {
+        if (!$opponentName || !$opponent) {
             return [];
         }
+
+        $oppParams = $this->teamParams('opponent', $opponent);
 
         $reverse = GameMatch::where('game_id', $game->id)
             ->where('competition_id', $match->competition_id)
@@ -385,14 +389,14 @@ class MatchNarrativeService
         $oppScore = $reverseUserHome ? $reverse->away_score : $reverse->home_score;
 
         if ($userScore > $oppScore) {
-            return [$this->candidate('rivalry', 7, 'rivalry_won_reverse', ['opponent' => $opponentName, 'score' => "{$userScore}-{$oppScore}"])];
+            return [$this->candidate('rivalry', 7, 'rivalry_won_reverse', [...$oppParams, 'score' => "{$userScore}-{$oppScore}"])];
         }
 
         if ($userScore < $oppScore) {
-            return [$this->candidate('rivalry', 8, 'rivalry_lost_reverse', ['opponent' => $opponentName, 'score' => "{$oppScore}-{$userScore}"])];
+            return [$this->candidate('rivalry', 8, 'rivalry_lost_reverse', [...$oppParams, 'score' => "{$oppScore}-{$userScore}"])];
         }
 
-        return [$this->candidate('rivalry', 6, 'rivalry_drew_reverse', ['opponent' => $opponentName])];
+        return [$this->candidate('rivalry', 6, 'rivalry_drew_reverse', $oppParams)];
     }
 
     // ── Career: European Nights ─────────────────────────────────────
@@ -408,22 +412,22 @@ class MatchNarrativeService
             return [];
         }
 
-        $competitionName = __($match->competition->name ?? '');
+        $compParams = $this->competitionParams('competition', $match->competition);
         $roundName = $match->round_name ?? '';
 
         if ($match->isCupMatch()) {
             if (str_contains($roundName, 'final') && !str_contains($roundName, 'semi')) {
-                return [$this->candidate('european', 10, 'euro_final', ['competition' => $competitionName])];
+                return [$this->candidate('european', 10, 'euro_final', $compParams)];
             }
 
             if (str_contains($roundName, 'semi')) {
-                return [$this->candidate('european', 9, 'euro_semi', ['competition' => $competitionName])];
+                return [$this->candidate('european', 9, 'euro_semi', $compParams)];
             }
 
-            return [$this->candidate('european', 8, 'euro_knockout', ['competition' => $competitionName])];
+            return [$this->candidate('european', 8, 'euro_knockout', $compParams)];
         }
 
-        return [$this->candidate('european', 7, 'euro_group', ['competition' => $competitionName])];
+        return [$this->candidate('european', 7, 'euro_group', $compParams)];
     }
 
     private function formCandidates(array $playerForm, Game $game): array
@@ -515,12 +519,10 @@ class MatchNarrativeService
             $pointsDiff = abs($points - $opponentStanding->points);
 
             if ($positionDiff <= 3 && $pointsDiff <= 4) {
-                $opponentName = $match->home_team_id === $game->team_id
-                    ? $match->awayTeam->short_name ?? $match->awayTeam->name
-                    : $match->homeTeam->short_name ?? $match->homeTeam->name;
+                $opponentTeam = $match->home_team_id === $game->team_id ? $match->awayTeam : $match->homeTeam;
 
                 $candidates[] = $this->candidate('stakes', 8, 'direct_rival', [
-                    'opponent' => $opponentName,
+                    ...$this->teamParams('opponent', $opponentTeam),
                     'points' => $pointsDiff,
                 ]);
             }
@@ -605,9 +607,8 @@ class MatchNarrativeService
     {
         $candidates = [];
 
-        $opponentName = $match->home_team_id === $game->team_id
-            ? $match->awayTeam->short_name ?? $match->awayTeam->name
-            : $match->homeTeam->short_name ?? $match->homeTeam->name;
+        $opponentTeam = $match->home_team_id === $game->team_id ? $match->awayTeam : $match->homeTeam;
+        $oppParams = $this->teamParams('opponent', $opponentTeam);
 
         if (!empty($opponentForm)) {
             $oppWins = count(array_filter($opponentForm, fn ($r) => $r === 'W'));
@@ -615,13 +616,13 @@ class MatchNarrativeService
 
             if ($oppWins <= 1 && $total >= 4) {
                 $candidates[] = $this->candidate('scouting', 6, 'opponent_poor_form', [
-                    'opponent' => $opponentName,
+                    ...$oppParams,
                     'wins' => $oppWins,
                     'total' => $total,
                 ]);
             } elseif ($oppWins >= 4 && $total >= 5) {
                 $candidates[] = $this->candidate('scouting', 6, 'opponent_hot', [
-                    'opponent' => $opponentName,
+                    ...$oppParams,
                     'wins' => $oppWins,
                     'total' => $total,
                 ]);
@@ -639,12 +640,12 @@ class MatchNarrativeService
 
                 if ($posDiff > 8) {
                     $candidates[] = $this->candidate('scouting', 7, 'opponent_strong', [
-                        'opponent' => $opponentName,
+                        ...$oppParams,
                         'position' => $this->ordinalPosition($opponentStanding->position),
                     ]);
                 } elseif ($posDiff < -8) {
                     $candidates[] = $this->candidate('scouting', 5, 'opponent_weak', [
-                        'opponent' => $opponentName,
+                        ...$oppParams,
                         'position' => $this->ordinalPosition($opponentStanding->position),
                     ]);
                 }
@@ -657,9 +658,7 @@ class MatchNarrativeService
         // source of week-to-week variety, since the opponent changes each round.
         // Home/away framing + matchday-rotated variants keep it from repeating.
         $userIsHome = $match->home_team_id === $game->team_id;
-        $candidates[] = $this->candidate('scouting', 4, $userIsHome ? 'opponent_preview_home' : 'opponent_preview_away', [
-            'opponent' => $opponentName,
-        ]);
+        $candidates[] = $this->candidate('scouting', 4, $userIsHome ? 'opponent_preview_home' : 'opponent_preview_away', $oppParams);
 
         return $candidates;
     }
@@ -717,6 +716,41 @@ class MatchNarrativeService
             'priority' => $priority,
             'key' => $key,
             'params' => $params,
+        ];
+    }
+
+    /**
+     * Expand a team into a Spanish article-aware param family. The ES narrative
+     * strings pick the contracted form they need (`:opponent_a` → "al Atalanta",
+     * "a la Real Sociedad", "a Osasuna"); EN strings use the bare `:opponent`.
+     * The bare `:opponent`/`:club` key stays the plain name for the EN templates
+     * and for the tournament `wc_*` strings (national teams, no article).
+     *
+     * @return array<string, string>
+     */
+    private function teamParams(string $prefix, Team $team): array
+    {
+        return [
+            $prefix => $team->name,
+            "{$prefix}_el" => $team->nameWithEl(),
+            "{$prefix}_a" => $team->nameWithA(),
+            "{$prefix}_de" => $team->nameWithDe(),
+        ];
+    }
+
+    /**
+     * Competition equivalent of teamParams(), built on the short name so prose
+     * reads "la Champions League" rather than "la UEFA Champions League".
+     *
+     * @return array<string, string>
+     */
+    private function competitionParams(string $prefix, Competition $comp): array
+    {
+        return [
+            $prefix => $comp->shortName(),
+            "{$prefix}_el" => $comp->nameWithEl(),
+            "{$prefix}_a" => $comp->nameWithA(),
+            "{$prefix}_de" => $comp->nameWithDe(),
         ];
     }
 

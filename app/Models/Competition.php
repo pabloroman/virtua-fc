@@ -99,6 +99,15 @@ class Competition extends Model
         'UEFASUP' => 'Supercup',
     ];
 
+    // Spanish grammatical article per competition. Most are feminine ("la Liga",
+    // "la Copa del Rey", "la Champions League"); a few are masculine ("el Mundial",
+    // "el amistoso", "el playoff"). Falls back to "la" for anything not listed.
+    private const ARTICLES = [
+        'WC2026'    => 'el',
+        'PRESEASON' => 'el',
+        'ESP3PO'    => 'el',
+    ];
+
     protected $fillable = [
         'id',
         'name',
@@ -131,6 +140,65 @@ class Competition extends Model
     public function abbreviation(): string
     {
         return self::ABBREVIATIONS[$this->id] ?? $this->shortName();
+    }
+
+    /**
+     * Spanish grammatical article for this competition's short name:
+     * "la" (la Liga, la Champions League), "el" (el Mundial), or null.
+     */
+    public function getArticleAttribute(): ?string
+    {
+        return self::ARTICLES[$this->id] ?? 'la';
+    }
+
+    /**
+     * Short name with "de" preposition: "de la Champions League", "del Mundial".
+     */
+    public function nameWithDe(): string
+    {
+        return match ($this->article) {
+            'la' => 'de la ' . $this->shortName(),
+            null => 'de ' . $this->shortName(),
+            default => 'del ' . $this->shortName(),
+        };
+    }
+
+    /**
+     * Short name with "a" preposition: "a la Champions League", "al Mundial".
+     */
+    public function nameWithA(): string
+    {
+        return match ($this->article) {
+            'la' => 'a la ' . $this->shortName(),
+            null => 'a ' . $this->shortName(),
+            default => 'al ' . $this->shortName(),
+        };
+    }
+
+    /**
+     * Short name with "en" preposition: "en la Champions League", "en el Mundial".
+     */
+    public function nameWithEn(): string
+    {
+        return match ($this->article) {
+            'la' => 'en la ' . $this->shortName(),
+            null => 'en ' . $this->shortName(),
+            default => 'en el ' . $this->shortName(),
+        };
+    }
+
+    /**
+     * Short name with definite article as nominative: "la Champions League",
+     * "el Mundial". Article is lowercase; use the capitalized placeholder
+     * (:Competition_el) or Str::ucfirst() at the call site to start a sentence.
+     */
+    public function nameWithEl(): string
+    {
+        return match ($this->article) {
+            'la' => 'la ' . $this->shortName(),
+            null => $this->shortName(),
+            default => 'el ' . $this->shortName(),
+        };
     }
 
     public function isLeague(): bool
