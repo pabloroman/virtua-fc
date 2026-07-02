@@ -96,8 +96,11 @@ return [
     'opponent_weak_v1' => ':Opponent_el está :position en la tabla. Oportunidad para sumar de tres.',
     'opponent_weak_v2' => ':Opponent_el es :position — una ocasión para sumar los tres puntos.',
 
-    'opponent_poor_form_v1' => ':Opponent_el solo ha ganado :wins de sus últimos :total partidos. Se huele la debilidad.',
-    'opponent_poor_form_v2' => ':Opponent_el llega en baja forma — :wins victorias en :total partidos.',
+    'opponent_winless_v1' => ':Opponent_el lleva :total partidos sin ganar. Se huele la debilidad.',
+    'opponent_winless_v2' => ':Opponent_el llega en baja forma — :total partidos sin ganar.',
+
+    'opponent_poor_form_v1' => ':Opponent_el solo ha ganado uno de sus últimos :total partidos. Se huele la debilidad.',
+    'opponent_poor_form_v2' => ':Opponent_el llega en baja forma — una sola victoria en :total partidos.',
 
     'opponent_hot_v1' => ':Opponent_el llega en gran forma — :wins victorias en sus últimos :total partidos.',
     'opponent_hot_v2' => 'Ojo con :opponent_el: en racha con :wins triunfos en :total encuentros.',
@@ -114,17 +117,23 @@ return [
 
     // ── Noches Europeas ─────────────────────────────────────────────
 
-    'euro_final_v1' => 'Final :competition_de. Una noche para entrar en la historia.',
-    'euro_final_v2' => 'Es la final :competition_de. Gloria o decepción.',
+    'euro_final_v1' => 'La final :competition_de ante :opponent_el. Una noche para entrar en la historia.',
+    'euro_final_v2' => 'Es la final :competition_de ante :opponent_el. Gloria o decepción.',
 
-    'euro_semi_v1' => 'Semifinal :competition_de. A noventa minutos de la final.',
-    'euro_semi_v2' => 'Entre los cuatro mejores :competition_de. La gloria está cerca.',
+    'euro_semi_home_v1' => 'Semifinal :competition_de en tu estadio ante :opponent_el. A un paso de la final.',
+    'euro_semi_home_v2' => 'Entre los cuatro mejores :competition_de: recibes :opponent_a con la final en juego.',
+    'euro_semi_away_v1' => 'Semifinal :competition_de a domicilio ante :opponent_el. A un paso de la final.',
+    'euro_semi_away_v2' => 'Entre los cuatro mejores :competition_de: visitas :opponent_a con la final en juego.',
 
-    'euro_knockout_v1' => 'Eliminatoria :competition_de: ganar o caer.',
-    'euro_knockout_v2' => 'Cruce europeo a vida o muerte. Sin margen de error.',
+    'euro_knockout_home_v1' => 'Eliminatoria :competition_de en tu estadio. Recibes :opponent_a: ganar o caer.',
+    'euro_knockout_home_v2' => 'Cruce europeo a vida o muerte ante :opponent_el en casa. Sin margen de error.',
+    'euro_knockout_away_v1' => 'Eliminatoria :competition_de a domicilio. Visitas :opponent_a: ganar o caer.',
+    'euro_knockout_away_v2' => 'Cruce europeo a vida o muerte en el campo :opponent_de. Sin margen de error.',
 
-    'euro_group_v1' => 'Noche :competition_de bajo los focos. Cada punto en el continente cuenta.',
-    'euro_group_v2' => 'Vuelve :competition_el. Toca dejar huella en Europa.',
+    'euro_group_home_v1' => 'Noche :competition_de bajo los focos. Recibes :opponent_a con el continente en juego.',
+    'euro_group_home_v2' => 'Vuelve :competition_el a tu estadio: recibes :opponent_a.',
+    'euro_group_away_v1' => 'Noche :competition_de a domicilio. Visitas :opponent_a bajo los focos.',
+    'euro_group_away_v2' => 'Duelo europeo a domicilio ante :opponent_el en :competition_el.',
 
     // ── Rivalidad y Cara a Cara ─────────────────────────────────────
 

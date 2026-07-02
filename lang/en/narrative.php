@@ -96,8 +96,11 @@ return [
     'opponent_weak_v1' => ':opponent are struggling at :position. An opportunity to pick up points.',
     'opponent_weak_v2' => ':opponent sit :position — a chance to take three points.',
 
-    'opponent_poor_form_v1' => ':opponent have won just :wins of their last :total. Vulnerability beckons.',
-    'opponent_poor_form_v2' => ':opponent arrive in poor form — :wins wins from :total matches.',
+    'opponent_winless_v1' => ':opponent have gone :total matches without a win. Vulnerability beckons.',
+    'opponent_winless_v2' => ':opponent arrive winless from their last :total. Ripe for the taking.',
+
+    'opponent_poor_form_v1' => ':opponent have won just one of their last :total. Vulnerability beckons.',
+    'opponent_poor_form_v2' => ':opponent arrive in poor form — a single win from :total matches.',
 
     'opponent_hot_v1' => ':opponent arrive in fine form — :wins wins from their last :total.',
     'opponent_hot_v2' => 'Watch out: :opponent are on a hot streak with :wins wins in :total.',
@@ -114,17 +117,23 @@ return [
 
     // ── European Nights ─────────────────────────────────────────────
 
-    'euro_final_v1' => 'The :competition final. One night to write your name in history.',
-    'euro_final_v2' => 'This is it — the :competition final. Glory or heartbreak.',
+    'euro_final_v1' => 'The :competition final against :opponent. One night to write your name in history.',
+    'euro_final_v2' => 'This is it — the :competition final against :opponent. Glory or heartbreak.',
 
-    'euro_semi_v1' => 'A :competition semi-final. Ninety minutes from the final.',
-    'euro_semi_v2' => 'The last four of the :competition. So close to glory now.',
+    'euro_semi_home_v1' => 'A :competition semi-final at home against :opponent. One step from the final.',
+    'euro_semi_home_v2' => 'The last four of the :competition: you host :opponent with a final at stake.',
+    'euro_semi_away_v1' => 'A :competition semi-final away to :opponent. One step from the final.',
+    'euro_semi_away_v2' => 'The last four of the :competition: you visit :opponent with a final at stake.',
 
-    'euro_knockout_v1' => ':competition knockout football — win or go home.',
-    'euro_knockout_v2' => 'A European knockout tie. No room for error under the lights.',
+    'euro_knockout_home_v1' => 'A :competition knockout tie at home against :opponent — win or go home.',
+    'euro_knockout_home_v2' => 'European knockout football under your lights: :opponent visit, no room for error.',
+    'euro_knockout_away_v1' => 'A :competition knockout tie away to :opponent — win or go home.',
+    'euro_knockout_away_v2' => 'A European knockout night at :opponent — no room for error under the lights.',
 
-    'euro_group_v1' => 'A :competition night under the lights. Points on the continent matter.',
-    'euro_group_v2' => 'European football returns. A statement in the :competition awaits.',
+    'euro_group_home_v1' => 'A :competition night under the lights — you host :opponent, the continent watching.',
+    'euro_group_home_v2' => ':competition football returns to your ground: :opponent visit.',
+    'euro_group_away_v1' => 'A :competition night on the road — you visit :opponent under the lights.',
+    'euro_group_away_v2' => 'A European away night against :opponent in the :competition.',
 
     // ── Rivalry & Head-to-Head ──────────────────────────────────────
 

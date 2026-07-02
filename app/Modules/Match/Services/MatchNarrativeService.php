@@ -15,6 +15,18 @@ use App\Modules\Match\DTOs\MatchNarrative;
 class MatchNarrativeService
 {
     /**
+     * Categories whose selected line already names and frames THIS fixture, so a
+     * generic opponent preview beside it is just a redundant second intro. A
+     * European line now names the opponent + venue; a rivalry line frames the
+     * reverse tie. (Domestic cup is deliberately excluded — its lines carry
+     * round / second-leg state that complements rather than duplicates the preview.)
+     */
+    private const FIXTURE_FRAMING_CATEGORIES = ['european', 'rivalry'];
+
+    /** The always-on floor previews — the first to go when a richer framing exists. */
+    private const GENERIC_PREVIEW_KEYS = ['opponent_preview_home', 'opponent_preview_away'];
+
+    /**
      * Generate pre-match narrative snippets.
      *
      * The next-match card asks for the default 1-2; the dashboard briefing
@@ -37,7 +49,7 @@ class MatchNarrativeService
         } else {
             $candidates = [
                 ...$this->cupCandidates($nextMatch, $game),
-                ...$this->europeanCandidates($nextMatch),
+                ...$this->europeanCandidates($nextMatch, $game),
                 ...$this->formCandidates($playerForm, $game),
                 ...$this->stakesCandidates($game, $playerStanding, $opponentStanding, $nextMatch),
                 ...$this->rivalryCandidates($game, $nextMatch),
@@ -403,31 +415,45 @@ class MatchNarrativeService
 
     /**
      * Tailored continental-competition framing (Champions / Europa / Conference
-     * League), distinct from the domestic-cup prose — knockout drama, or a
-     * group / league-phase night under the lights.
+     * League), distinct from the domestic-cup prose. The line names the opponent
+     * and venue so it carries the whole fixture on its own; the generic opponent
+     * preview is then redundant and gets suppressed in selectCandidates() via
+     * FIXTURE_FRAMING_CATEGORIES.
      */
-    private function europeanCandidates(GameMatch $match): array
+    private function europeanCandidates(GameMatch $match, Game $game): array
     {
         if (($match->competition?->role ?? '') !== Competition::ROLE_EUROPEAN) {
             return [];
         }
 
-        $compParams = $this->competitionParams('competition', $match->competition);
+        $userIsHome = $match->home_team_id === $game->team_id;
+        $opponent = $userIsHome ? $match->awayTeam : $match->homeTeam;
+
+        if (!$opponent) {
+            return [];
+        }
+
+        $params = [
+            ...$this->competitionParams('competition', $match->competition),
+            ...$this->teamParams('opponent', $opponent),
+        ];
+        $venue = $userIsHome ? 'home' : 'away';
         $roundName = $match->round_name ?? '';
 
         if ($match->isCupMatch()) {
+            // The final is a single-leg neutral-venue tie, so no home/away framing.
             if (str_contains($roundName, 'final') && !str_contains($roundName, 'semi')) {
-                return [$this->candidate('european', 10, 'euro_final', $compParams)];
+                return [$this->candidate('european', 10, 'euro_final', $params)];
             }
 
             if (str_contains($roundName, 'semi')) {
-                return [$this->candidate('european', 9, 'euro_semi', $compParams)];
+                return [$this->candidate('european', 9, "euro_semi_{$venue}", $params)];
             }
 
-            return [$this->candidate('european', 8, 'euro_knockout', $compParams)];
+            return [$this->candidate('european', 8, "euro_knockout_{$venue}", $params)];
         }
 
-        return [$this->candidate('european', 7, 'euro_group', $compParams)];
+        return [$this->candidate('european', 7, "euro_group_{$venue}", $params)];
     }
 
     private function formCandidates(array $playerForm, Game $game): array
@@ -614,10 +640,18 @@ class MatchNarrativeService
             $oppWins = count(array_filter($opponentForm, fn ($r) => $r === 'W'));
             $total = count($opponentForm);
 
-            if ($oppWins <= 1 && $total >= 4) {
+            if ($oppWins === 0 && $total >= 4) {
+                // A winless side reads naturally as "X matches without a win",
+                // not the stilted "0 wins in X matches".
+                $candidates[] = $this->candidate('scouting', 6, 'opponent_winless', [
+                    ...$oppParams,
+                    'total' => $total,
+                ]);
+            } elseif ($oppWins === 1 && $total >= 4) {
+                // Exactly one win: the template says "a single win", so there is
+                // no :wins param and no "1 victorias" plural-agreement bug.
                 $candidates[] = $this->candidate('scouting', 6, 'opponent_poor_form', [
                     ...$oppParams,
-                    'wins' => $oppWins,
                     'total' => $total,
                 ]);
             } elseif ($oppWins >= 4 && $total >= 5) {
@@ -755,13 +789,15 @@ class MatchNarrativeService
     }
 
     /**
-     * Select up to $limit candidates in priority order, one per category so
-     * the snippets stay varied. The next-match card requests 2; the dashboard
-     * briefing requests more for its wider canvas.
+     * Select up to $limit candidates in priority order, one per category so the
+     * snippets stay varied, applying the cross-line coherence rules. Kept pure
+     * (operates on the candidate arrays — no translator, no DB) so selection and
+     * coherence are unit-testable in isolation.
      *
-     * @return array<MatchNarrative>
+     * @param  array<array{category: string, priority: int, key: string, params: array}>  $candidates
+     * @return array<array{category: string, priority: int, key: string, params: array}>
      */
-    private function selectTop(array $candidates, int $matchday, int $limit = 2): array
+    protected function selectCandidates(array $candidates, int $limit = 2): array
     {
         if (empty($candidates) || $limit < 1) {
             return [];
@@ -777,7 +813,17 @@ class MatchNarrativeService
                 continue;
             }
 
-            $result[] = $this->toNarrative($candidate, $matchday);
+            // A generic opponent preview is redundant once the fixture is already
+            // framed by a European or rivalry line (both name the opponent). Skip it
+            // WITHOUT marking its category used, so a coherent line can still fill
+            // this slot. No lookahead needed: every framing category outranks the
+            // preview, so it is already selected by the time the preview is reached.
+            if (in_array($candidate['key'], self::GENERIC_PREVIEW_KEYS, true)
+                && array_intersect(self::FIXTURE_FRAMING_CATEGORIES, $usedCategories) !== []) {
+                continue;
+            }
+
+            $result[] = $candidate;
             $usedCategories[] = $candidate['category'];
 
             if (count($result) >= $limit) {
@@ -786,6 +832,20 @@ class MatchNarrativeService
         }
 
         return $result;
+    }
+
+    /**
+     * Select up to $limit candidates and render them to narratives. The next-match
+     * card requests 2; the dashboard briefing requests more for its wider canvas.
+     *
+     * @return array<MatchNarrative>
+     */
+    private function selectTop(array $candidates, int $matchday, int $limit = 2): array
+    {
+        return array_map(
+            fn (array $candidate) => $this->toNarrative($candidate, $matchday),
+            $this->selectCandidates($candidates, $limit),
+        );
     }
 
     private function toNarrative(array $candidate, int $matchday): MatchNarrative
