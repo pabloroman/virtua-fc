@@ -102,6 +102,57 @@ return [
     'opponent_hot_v1' => ':opponent llega en gran forma — :wins victorias en sus últimos :total partidos.',
     'opponent_hot_v2' => 'Ojo con :opponent: en racha con :wins triunfos en :total encuentros.',
 
+    'opponent_preview_home_v1' => 'Hoy recibes a :opponent en tu feudo.',
+    'opponent_preview_home_v2' => 'Juegas en casa ante la visita de :opponent.',
+    'opponent_preview_home_v3' => ':opponent visita tu estadio — haz valer la localía.',
+    'opponent_preview_home_v4' => 'Cita en casa con :opponent, con la afición empujando.',
+
+    'opponent_preview_away_v1' => 'Visita complicada al campo de :opponent.',
+    'opponent_preview_away_v2' => 'Toca viajar para medirte a :opponent.',
+    'opponent_preview_away_v3' => 'Lejos de casa ante :opponent, otro tipo de examen.',
+    'opponent_preview_away_v4' => ':opponent ejerce de local. Toca silenciar su grada.',
+
+    // ── Noches Europeas ─────────────────────────────────────────────
+
+    'euro_final_v1' => 'Final de :competition. Una noche para entrar en la historia.',
+    'euro_final_v2' => 'Es la final de :competition. Gloria o decepción.',
+
+    'euro_semi_v1' => 'Semifinal de :competition. A noventa minutos de la final.',
+    'euro_semi_v2' => 'Entre los cuatro mejores de :competition. La gloria está cerca.',
+
+    'euro_knockout_v1' => 'Eliminatoria de :competition: ganar o caer.',
+    'euro_knockout_v2' => 'Cruce europeo a vida o muerte. Sin margen de error.',
+
+    'euro_group_v1' => 'Noche de :competition bajo los focos. Cada punto en el continente cuenta.',
+    'euro_group_v2' => 'Vuelve :competition. Toca dejar huella en Europa.',
+
+    // ── Rivalidad y Cara a Cara ─────────────────────────────────────
+
+    'rivalry_won_reverse_v1' => 'Ganaste a :opponent :score en la ida. A repetirlo.',
+    'rivalry_won_reverse_v2' => 'El último duelo cayó de tu lado (:score ante :opponent). Moral alta.',
+
+    'rivalry_lost_reverse_v1' => ':opponent ganó la ida :score. Toca la revancha.',
+    'rivalry_lost_reverse_v2' => 'Hay cuentas pendientes: :opponent se llevó los puntos :score la última vez.',
+
+    'rivalry_drew_reverse_v1' => 'Empate con :opponent en la ida. Ocasión para decantar la balanza.',
+    'rivalry_drew_reverse_v2' => 'El duelo de ida con :opponent acabó igualado — rompe la igualdad.',
+
+    // ── Mercado de Fichajes ─────────────────────────────────────────
+
+    'market_courted_v1' => ':club ha movido ficha por :player. Ojo al vestuario.',
+    'market_courted_v2' => 'Crece la especulación sobre :player con el interés de :club.',
+    'market_courted_v3' => 'Los rumores vinculan a :player con :club.',
+
+    'market_precontract_v1' => ':club ronda a :player para un precontrato. Su futuro está en el aire.',
+    'market_precontract_v2' => ':club tantea a :player — noticias que inquietan.',
+    'market_precontract_v3' => ':club prepararía una oferta de precontrato por :player.',
+
+    'market_multiple_targets_v1' => 'Buitres al acecho: :count de tus jugadores despiertan interés.',
+    'market_multiple_targets_v2' => ':count futbolistas tienen pretendientes. El mercado pone a prueba tu temple.',
+
+    'market_window_closing_v1' => 'El mercado está a punto de cerrar — última oportunidad para operar.',
+    'market_window_closing_v2' => 'El cierre acecha. El mercado se cierra en un par de jornadas.',
+
     // ── Torneo: Fase de Grupos ──────────────────────────────────────
 
     'wc_group_opener_v1' => 'Partido inaugural del Mundial. Una buena oportunidad para empezar con buen pie.',

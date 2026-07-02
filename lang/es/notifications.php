@@ -7,6 +7,15 @@ return [
     'mark_all_read' => 'Marcar todo como leído',
     'all_caught_up' => 'Estás al día',
 
+    // Department inbox tabs
+    'dept_all' => 'Todo',
+    'dept_sporting' => 'Cuerpo técnico',
+    'dept_transfers' => 'Dirección deportiva',
+    'dept_scouting' => 'Ojeadores',
+    'dept_academy' => 'Cantera',
+    'dept_board' => 'Junta directiva',
+    'dept_competition' => 'Competición',
+
     // Critical-alert popup (blocking, must-dismiss)
     'alert_heading' => 'Aviso importante',
     'alerts_heading' => ':count avisos importantes',
