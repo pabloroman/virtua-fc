@@ -5,6 +5,8 @@ namespace App\Modules\Player\Services;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
 use App\Modules\Match\Services\EnergyCalculator;
+use App\Modules\Match\Support\MatchOutcomeModel;
+use App\Modules\Match\Support\PaperStrength;
 use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 
@@ -32,6 +34,24 @@ class PlayerConditionService
     // Morale bounds
     private const MAX_MORALE = 100;
     private const MIN_MORALE = 50;
+
+    // Underperformance/overperformance morale, keyed on the expected-points delta
+    // (actual − expected league points, expected derived from the sim's pre-match
+    // win probability). Dropping points you were favoured to take erodes morale
+    // beyond the flat loss penalty; stealing points you weren't favoured to take
+    // lifts it beyond the flat win bonus. Both scale with severity and stack on
+    // the normal result change, so a heavy favourite's collapse bites hard while
+    // an underdog's expected defeat barely registers.
+    private const UNDERPERFORMANCE_POINTS_THRESHOLD = 1.0; // expected pts dropped before it bites
+    private const UNDERPERFORMANCE_SPAN = 1.5;              // delta beyond threshold ⇒ full penalty
+    private const UNDERPERFORMANCE_MAX_PENALTY = 5;         // cap (heavy-favourite collapse)
+    private const OVERPERFORMANCE_POINTS_THRESHOLD = 1.0;  // expected pts gained above expectation before it lifts
+    private const OVERPERFORMANCE_SPAN = 1.5;
+    private const OVERPERFORMANCE_MAX_BONUS = 4;            // cap (underdog giant-killing)
+
+    // A lineup below this many players isn't a real XI (partial/empty lineups in
+    // tests or abandoned matches) — skip the expectation term for that match.
+    private const MIN_LINEUP_FOR_EXPECTATION = 7;
 
     /**
      * Batch-update fitness and morale for all players across all matches in a matchday.
@@ -62,9 +82,14 @@ class PlayerConditionService
             $homeWon = $match->home_score > $match->away_score;
             $awayWon = $match->away_score > $match->home_score;
 
-            $players = collect()
-                ->merge($allPlayersByTeam->get($match->home_team_id, collect()))
-                ->merge($allPlayersByTeam->get($match->away_team_id, collect()));
+            $homePlayers = $allPlayersByTeam->get($match->home_team_id, collect());
+            $awayPlayers = $allPlayersByTeam->get($match->away_team_id, collect());
+
+            // Expected-points delta per side (actual − expected). Computed once per
+            // match from the paper strength of each XI, before the player loop.
+            [$homeDelta, $awayDelta] = $this->expectedPointsDeltas($match, $homePlayers, $awayPlayers);
+
+            $players = collect()->merge($homePlayers)->merge($awayPlayers);
 
             foreach ($players as $player) {
                 if (isset($updates[$player->id])) {
@@ -81,7 +106,8 @@ class PlayerConditionService
                     $isInLineup,
                     $isHome ? $homeWon : $awayWon,
                     $isHome ? $awayWon : $homeWon,
-                    $eventsByPlayer[$player->id] ?? []
+                    $eventsByPlayer[$player->id] ?? [],
+                    $isHome ? $homeDelta : $awayDelta,
                 );
 
                 // Sidelined players are allowed below MIN_FITNESS so a long
@@ -105,6 +131,65 @@ class PlayerConditionService
     private function bulkUpdateConditions(array $updates): void
     {
         GamePlayerMatchState::bulkSetValues($updates);
+    }
+
+    /**
+     * Expected-points delta (actual − expected) for each side of a match.
+     *
+     * Recomputes the pre-match expectation from the paper strength of each XI —
+     * the same math the sim used to produce the result — so morale can react to
+     * a favourite dropping points it was supposed to take (negative delta) or an
+     * underdog stealing points it wasn't (positive delta).
+     *
+     * Returns [0.0, 0.0] when there is nothing to weigh — an unscored match (e.g.
+     * the user's deferred match while an AI batch updates conditions) or a lineup
+     * too thin to be a real XI — leaving the flat result change as the only
+     * morale driver.
+     *
+     * @return array{0: float, 1: float}  [homeDelta, awayDelta]
+     */
+    private function expectedPointsDeltas($match, $homePlayers, $awayPlayers): array
+    {
+        if ($match->home_score === null || $match->away_score === null) {
+            return [0.0, 0.0];
+        }
+
+        $homeXI = $homePlayers->whereIn('id', $match->home_lineup ?? []);
+        $awayXI = $awayPlayers->whereIn('id', $match->away_lineup ?? []);
+
+        if ($homeXI->count() < self::MIN_LINEUP_FOR_EXPECTATION
+            || $awayXI->count() < self::MIN_LINEUP_FOR_EXPECTATION) {
+            return [0.0, 0.0];
+        }
+
+        [$homeXG, $awayXG] = MatchOutcomeModel::expectedGoals(
+            PaperStrength::estimate($homeXI),
+            PaperStrength::estimate($awayXI),
+            $match->isNeutralVenue(),
+        );
+        $probs = MatchOutcomeModel::outcomeProbabilities(
+            MatchOutcomeModel::scoreProbabilityMatrix($homeXG, $awayXG),
+        );
+
+        $homeExpectedPts = 3 * $probs['home'] + $probs['draw'];
+        $awayExpectedPts = 3 * $probs['away'] + $probs['draw'];
+
+        $homeActualPts = $this->actualPoints($match->home_score, $match->away_score);
+        $awayActualPts = $this->actualPoints($match->away_score, $match->home_score);
+
+        return [$homeActualPts - $homeExpectedPts, $awayActualPts - $awayExpectedPts];
+    }
+
+    /**
+     * League points a side earned from its own vs the opponent's score (3/1/0).
+     */
+    private function actualPoints(int $forScore, int $againstScore): int
+    {
+        return match (true) {
+            $forScore > $againstScore => 3,
+            $forScore === $againstScore => 1,
+            default => 0,
+        };
     }
 
     /**
@@ -204,7 +289,8 @@ class PlayerConditionService
         bool $playedMatch,
         bool $teamWon,
         bool $teamLost,
-        array $playerEvents
+        array $playerEvents,
+        float $teamPointsDelta = 0.0
     ): int {
         $change = 0;
 
@@ -218,6 +304,13 @@ class PlayerConditionService
         } else {
             $change += (int) (rand(self::MORALE_DRAW[0], self::MORALE_DRAW[1]) * $resultMultiplier);
         }
+
+        // Under/overperformance vs the pre-match expectation, keyed on the
+        // expected-points delta. A favourite that drops points it was supposed
+        // to take loses morale beyond the flat penalty; an underdog that steals
+        // points gains beyond the flat bonus. Shares the same result multiplier
+        // so bench players feel it at half.
+        $change += self::underperformanceMoraleDelta($teamPointsDelta, $resultMultiplier);
 
         // Individual event impacts (only for players who participated)
         if ($playedMatch) {
@@ -243,6 +336,40 @@ class PlayerConditionService
         }
 
         return $change;
+    }
+
+    /**
+     * Morale change from a result relative to its pre-match expectation, keyed on
+     * the expected-points delta (actual − expected league points).
+     *
+     * Deterministic and severity-scaled: a favourite dropping points it was
+     * favoured to take erodes morale beyond the flat loss penalty, and an
+     * underdog stealing points lifts it beyond the flat win bonus, while a result
+     * that merely matched expectation returns 0. An expected defeat (small
+     * negative delta below the threshold) barely registers. `$resultMultiplier`
+     * scales the same way the flat result does (1.0 played, 0.5 bench).
+     *
+     * Static so the shape can be unit-tested directly, without the random
+     * flat-result noise around it.
+     */
+    public static function underperformanceMoraleDelta(float $teamPointsDelta, float $resultMultiplier = 1.0): int
+    {
+        $dropped = -$teamPointsDelta; // >0 when the side finished below expectation
+        $gained = $teamPointsDelta;   // >0 when the side finished above expectation
+
+        if ($dropped > self::UNDERPERFORMANCE_POINTS_THRESHOLD) {
+            $severity = min(1.0, ($dropped - self::UNDERPERFORMANCE_POINTS_THRESHOLD) / self::UNDERPERFORMANCE_SPAN);
+
+            return -(int) round($severity * self::UNDERPERFORMANCE_MAX_PENALTY * $resultMultiplier);
+        }
+
+        if ($gained > self::OVERPERFORMANCE_POINTS_THRESHOLD) {
+            $severity = min(1.0, ($gained - self::OVERPERFORMANCE_POINTS_THRESHOLD) / self::OVERPERFORMANCE_SPAN);
+
+            return (int) round($severity * self::OVERPERFORMANCE_MAX_BONUS * $resultMultiplier);
+        }
+
+        return 0;
     }
 
     /**

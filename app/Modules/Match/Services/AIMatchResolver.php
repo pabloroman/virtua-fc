@@ -7,6 +7,7 @@ use App\Models\GamePlayer;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\Support\MatchOutcomeModel;
+use App\Modules\Match\Support\PaperStrength;
 use App\Modules\Match\Support\StoppageCalculator;
 use Illuminate\Support\Collection;
 
@@ -243,31 +244,13 @@ class AIMatchResolver
     }
 
     /**
-     * Calculate team strength from a selected XI.
-     *
-     * Simplified version of MatchSimulator::calculateTeamStrength():
-     * - No energy model (no minute-by-minute drain)
-     * - No per-player match performance variance (averages out over a season)
-     * - Fitness weight removed — its impact comes via rotation (low-fitness
-     *   players are penalized in lineup selection via effectiveScore)
+     * Paper strength of a selected XI — the ability-dominant average that feeds
+     * the outcome model. Delegates to the shared {@see PaperStrength} estimator
+     * (no energy/form/position noise; fitness enters via lineup selection).
      */
     private function calculateTeamStrength(Collection $lineup): float
     {
-        if ($lineup->count() < 7) {
-            return 0.30;
-        }
-
-        $wOverall = config('match_simulation.strength_weight_overall', 0.95);
-        $wMorale = config('match_simulation.strength_weight_morale', 0.05);
-
-        $totalStrength = 0;
-        foreach ($lineup as $player) {
-            $playerStrength = ($player->overall_score * $wOverall) +
-                              ($player->morale * $wMorale);
-            $totalStrength += $playerStrength;
-        }
-
-        return ($totalStrength / 11) / 100;
+        return PaperStrength::estimate($lineup);
     }
 
     /**

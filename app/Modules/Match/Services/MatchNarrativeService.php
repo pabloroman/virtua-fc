@@ -430,9 +430,13 @@ class MatchNarrativeService
             $candidates[] = $this->candidate('mood', 8, 'injury_crisis', ['count' => $injuryCount]);
         }
 
-        if ($avgMorale < 40) {
+        // Thresholds sit inside the [50,100] morale band: the default 80 must
+        // read as neutral, not "sky-high", so `morale_high` is earned only above
+        // 85 (a winning run) and `morale_low` becomes reachable below 62 (a side
+        // slumping under the underperformance term). Neutral 62–85 stays quiet.
+        if ($avgMorale < 62) {
             $candidates[] = $this->candidate('mood', 7, 'morale_low');
-        } elseif ($avgMorale > 75) {
+        } elseif ($avgMorale > 85) {
             $candidates[] = $this->candidate('mood', 6, 'morale_high');
         }
 
