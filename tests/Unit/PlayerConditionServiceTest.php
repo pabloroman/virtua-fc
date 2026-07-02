@@ -345,4 +345,158 @@ class PlayerConditionServiceTest extends TestCase
         // Weekly matches should allow near-full recovery (stabilize 90-100)
         $this->assertGreaterThan(85, $fitness, 'Weekly schedule should maintain high fitness');
     }
+
+    // -------------------------------------------------------
+    // Underperformance / overperformance morale term
+    // -------------------------------------------------------
+
+    public function test_underperformance_morale_delta_shape(): void
+    {
+        // Favourite that loses (dropped ≈ 2.4 expected pts) takes the near-full penalty.
+        $this->assertSame(-5, PlayerConditionService::underperformanceMoraleDelta(-2.4));
+        // Even match lost (dropped ≈ 1.4) — a small bite just past the threshold.
+        $this->assertSame(-1, PlayerConditionService::underperformanceMoraleDelta(-1.4));
+        // Underdog losing as expected (dropped 0.6, below threshold) — nothing.
+        $this->assertSame(0, PlayerConditionService::underperformanceMoraleDelta(-0.6));
+        // Exactly at the threshold does not fire (strict comparison).
+        $this->assertSame(0, PlayerConditionService::underperformanceMoraleDelta(-1.0));
+        // A result that matched expectation is neutral.
+        $this->assertSame(0, PlayerConditionService::underperformanceMoraleDelta(0.0));
+        // Favourite winning as expected (gained 0.6) earns no surge.
+        $this->assertSame(0, PlayerConditionService::underperformanceMoraleDelta(0.6));
+        // Underdog upset win (gained ≈ 2.4) earns the near-full surge.
+        $this->assertSame(4, PlayerConditionService::underperformanceMoraleDelta(2.4));
+        // Bench players feel it at half.
+        $this->assertSame(-2, PlayerConditionService::underperformanceMoraleDelta(-2.4, 0.5));
+        // Severity is capped — an extreme delta can't exceed the max penalty.
+        $this->assertSame(-5, PlayerConditionService::underperformanceMoraleDelta(-6.0));
+    }
+
+    public function test_strong_favourite_losing_drops_morale_beyond_flat_loss(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $strong = Team::factory()->create();
+        $weak = Team::factory()->create();
+
+        $strongSquad = $this->createSquad($game, $strong, overall: 90, morale: 80);
+        $weakSquad = $this->createSquad($game, $weak, overall: 40, morale: 80);
+
+        // Heavy favourite (home) loses 0-1: it dropped points it was expected to
+        // take, so its squad morale should fall below what the flat loss alone
+        // (max −4 → 76) could produce — the underperformance term (−5) stacks on.
+        $match = GameMatch::factory()->create([
+            'game_id' => $game->id,
+            'home_team_id' => $strong->id,
+            'away_team_id' => $weak->id,
+            'home_lineup' => $strongSquad->pluck('id')->all(),
+            'away_lineup' => $weakSquad->pluck('id')->all(),
+            'home_score' => 0,
+            'away_score' => 1,
+        ]);
+
+        $this->service->batchUpdateAfterMatchday(
+            collect([$match]),
+            [['matchId' => $match->id, 'events' => []]],
+            collect([$strong->id => $strongSquad, $weak->id => $weakSquad]),
+            [$strong->id => 7, $weak->id => 7],
+            $this->currentDate,
+        );
+
+        $avgMorale = $this->squadAverageMorale($strongSquad);
+        $this->assertLessThan(75, $avgMorale,
+            'A favourite collapsing should drop morale past the flat loss penalty');
+    }
+
+    public function test_underdog_upset_win_lifts_morale_beyond_flat_win(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $strong = Team::factory()->create();
+        $weak = Team::factory()->create();
+
+        // Seed at 65 so the win bonus + surge stays clear of the 100 clamp.
+        $strongSquad = $this->createSquad($game, $strong, overall: 90, morale: 65);
+        $weakSquad = $this->createSquad($game, $weak, overall: 40, morale: 65);
+
+        // Underdog (away) wins 1-0: it took points it wasn't expected to, so its
+        // morale rises above what the flat win alone (~+6 avg → ~71) yields.
+        $match = GameMatch::factory()->create([
+            'game_id' => $game->id,
+            'home_team_id' => $strong->id,
+            'away_team_id' => $weak->id,
+            'home_lineup' => $strongSquad->pluck('id')->all(),
+            'away_lineup' => $weakSquad->pluck('id')->all(),
+            'home_score' => 0,
+            'away_score' => 1,
+        ]);
+
+        $this->service->batchUpdateAfterMatchday(
+            collect([$match]),
+            [['matchId' => $match->id, 'events' => []]],
+            collect([$strong->id => $strongSquad, $weak->id => $weakSquad]),
+            [$strong->id => 7, $weak->id => 7],
+            $this->currentDate,
+        );
+
+        $avgMorale = $this->squadAverageMorale($weakSquad);
+        $this->assertGreaterThan(72, $avgMorale,
+            'An underdog upset should lift morale past the flat win bonus');
+    }
+
+    public function test_incomplete_lineups_skip_underperformance_term(): void
+    {
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $strong = Team::factory()->create();
+        $weak = Team::factory()->create();
+
+        $strongSquad = $this->createSquad($game, $strong, overall: 90, morale: 80);
+        $weakSquad = $this->createSquad($game, $weak, overall: 40, morale: 80);
+
+        // Empty lineups (an abandoned/unset match): no XI to compute expectation
+        // from, so the term must NOT fire — morale stays in the flat-only band and
+        // never dips into the favourite-collapse range (~72).
+        $match = GameMatch::factory()->create([
+            'game_id' => $game->id,
+            'home_team_id' => $strong->id,
+            'away_team_id' => $weak->id,
+            'home_lineup' => [],
+            'away_lineup' => [],
+            'home_score' => 0,
+            'away_score' => 1,
+        ]);
+
+        $this->service->batchUpdateAfterMatchday(
+            collect([$match]),
+            [['matchId' => $match->id, 'events' => []]],
+            collect([$strong->id => $strongSquad, $weak->id => $weakSquad]),
+            [$strong->id => 7, $weak->id => 7],
+            $this->currentDate,
+        );
+
+        $avgMorale = $this->squadAverageMorale($strongSquad);
+        $this->assertGreaterThanOrEqual(75, $avgMorale,
+            'Incomplete lineups should apply no underperformance term');
+    }
+
+    /**
+     * Create a full XI's worth of players on a team with a fixed overall/morale.
+     *
+     * @return \Illuminate\Support\Collection<int, GamePlayer>
+     */
+    private function createSquad(Game $game, Team $team, int $overall, int $morale, int $count = 11): \Illuminate\Support\Collection
+    {
+        return collect(range(1, $count))->map(fn () => GamePlayer::factory()
+            ->forGame($game)
+            ->forTeam($team)
+            ->create([
+                'position' => 'Central Midfield',
+                'fitness' => 100,
+                'morale' => $morale,
+                'overall_score' => $overall,
+            ]));
+    }
+
+    private function squadAverageMorale(\Illuminate\Support\Collection $squad): float
+    {
+        return (float) $squad->avg(fn (GamePlayer $p) => $p->fresh()->morale);
+    }
 }
