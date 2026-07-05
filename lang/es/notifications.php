@@ -100,8 +100,8 @@ return [
     'trophy_won_title' => '¡Campeón de la :competition!',
 
     // Academy
-    'academy_batch_title' => 'Nuevos canteranos',
-    'academy_batch_message' => ':count nuevos jugadores han llegado a la cantera.',
+    'academy_prospect_title' => 'Nuevo canterano',
+    'academy_prospect_message' => ':player ha llegado a la cantera.',
     'academy_overage_promoted_title' => 'Graduados de la cantera',
     'academy_overage_promoted_message' => ':count canteranos de 21+ años han sido promocionados al primer equipo.',
     'academy_gap_promoted_title' => 'Canteranos promocionados',

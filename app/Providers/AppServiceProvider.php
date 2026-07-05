@@ -3,11 +3,9 @@
 namespace App\Providers;
 
 use App\Events\SeasonCompleted;
-use App\Events\SeasonStarted;
 use App\Events\TournamentCompleted;
 use App\Events\TournamentEnded;
 use App\Http\View\Composers\TacticalGuideComposer;
-use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use App\Modules\Finance\Listeners\ActivateCompletedStadiumProjects;
 use App\Modules\Finance\Listeners\RecomputeWageProjectionOnWindowClose;
@@ -128,8 +126,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(CupTieResolved::class, SendCupTieNotifications::class);
 
         Event::listen(LeaguePhaseCompleted::class, AwardLeaguePhaseBonus::class);
-
-        Event::listen(SeasonStarted::class, GenerateInitialAcademyBatch::class);
 
         Event::listen(SeasonCompleted::class, SimulateOtherLeagues::class);
         Event::listen(SeasonCompleted::class, RecordSeasonCompleted::class);

@@ -196,6 +196,13 @@ class CareerActionProcessor
         $this->youthAcademyService->developPlayers($game);
         $mark('develop_academy');
 
+        // Academy prospects arrive year-round: roll for a new arrival each tick
+        $prospect = $this->youthAcademyService->maybeGenerateProspect($game);
+        if ($prospect !== null) {
+            $this->notificationService->notifyAcademyProspect($game, $prospect);
+        }
+        $mark('generate_academy');
+
         // AI transfer market: process batch during open window
         $this->processAITransferBatch($game);
         $mark('ai_transfer_batch');

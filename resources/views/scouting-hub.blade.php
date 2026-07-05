@@ -64,6 +64,8 @@
             </div>
         </x-help-disclosure>
 
+        <x-investment-notice :game="$game" area="scouting" :tier="$scoutingTier" class="mt-6" />
+
         {{-- ============================================================= --}}
         {{-- SCOUTING DESK — shortlisted targets + the latest search results --}}
         {{-- ============================================================= --}}

@@ -59,6 +59,8 @@
             </div>
         </x-help-disclosure>
 
+        <x-investment-notice :game="$game" area="youth_academy" :tier="$tier" class="mb-6" />
+
         @if($reserveCount === 0)
             <div class="text-center py-16">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-surface-700 rounded-full mb-4">
