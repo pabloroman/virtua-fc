@@ -133,17 +133,11 @@
 
                 <x-section-card :title="__('notifications.inbox')">
                     <x-slot name="badge">
-                        <div class="flex items-center gap-2">
-                            @if($unreadNotificationCount > 0)
-                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
-                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
-                            </span>
-                            @endif
-                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
-                            </form>
-                        </div>
+                        @if($unreadNotificationCount > 0)
+                        <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                            {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                        </span>
+                        @endif
                     </x-slot>
 
                     @if($groupedNotifications->isEmpty())
@@ -209,17 +203,11 @@
             <div class="space-y-8">
                 <x-section-card :title="__('notifications.inbox')">
                     <x-slot name="badge">
-                        <div class="flex items-center gap-2">
-                            @if($unreadNotificationCount > 0)
-                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
-                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
-                            </span>
-                            @endif
-                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
-                            </form>
-                        </div>
+                        @if($unreadNotificationCount > 0)
+                        <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                            {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                        </span>
+                        @endif
                     </x-slot>
 
                     @if($groupedNotifications->isEmpty())

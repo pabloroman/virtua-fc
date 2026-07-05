@@ -4,7 +4,6 @@ return [
     // Inbox
     'inbox' => 'Notifications',
     'new' => 'new',
-    'mark_all_read' => 'Mark all as read',
     'all_caught_up' => 'You\'re all caught up',
 
     // Department inbox tabs

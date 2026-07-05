@@ -168,7 +168,12 @@ class ShowGame
             return redirect()->route('game.tournament-end', $gameId);
         }
 
-        $notifications = $this->notificationService->getNotifications($game->id, true, 15);
+        // The inbox holds the current matchday's notifications. Everything is
+        // marked read at the start of each advance (MatchdayOrchestrator::advance),
+        // so an unread-only query auto-clears the feed every matchday. Rows no
+        // longer mark themselves read on click, so notifications persist through
+        // the matchday — clicking one navigates without dismissing it.
+        $notifications = $this->notificationService->getNotifications($game->id, true, 20);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
         $dashboardContext = $this->competitionViewService->resolveDashboardContext($game, $nextMatch);
