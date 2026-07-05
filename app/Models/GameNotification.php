@@ -403,142 +403,114 @@ class GameNotification extends Model
             self::TYPE_PLAYER_INJURED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_PLAYER_SUSPENDED => [
                 'icon_bg' => 'bg-orange-500/10',
                 'icon_text' => 'text-orange-500',
-                'dot' => 'bg-orange-500',
             ],
             self::TYPE_PLAYER_RECOVERED => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_LOW_FITNESS => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_TRANSFER_OFFER_RECEIVED => [
                 'icon_bg' => 'bg-blue-500/10',
                 'icon_text' => 'text-blue-500',
-                'dot' => 'bg-blue-500',
             ],
             self::TYPE_TRANSFER_OFFER_EXPIRING => [
                 'icon_bg' => 'bg-indigo-500/10',
                 'icon_text' => 'text-indigo-500',
-                'dot' => 'bg-indigo-500',
             ],
             self::TYPE_TRANSFER_COMPLETE => [
                 'icon_bg' => 'bg-sky-500/10',
                 'icon_text' => 'text-sky-500',
-                'dot' => 'bg-sky-500',
             ],
             self::TYPE_TRANSFER_FAILED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_SCOUT_REPORT_COMPLETE => [
                 'icon_bg' => 'bg-teal-500/10',
                 'icon_text' => 'text-teal-500',
-                'dot' => 'bg-teal-500',
             ],
             self::TYPE_CONTRACT_EXPIRING => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_LOAN_RETURN => [
                 'icon_bg' => 'bg-violet-500/10',
                 'icon_text' => 'text-violet-500',
-                'dot' => 'bg-violet-500',
             ],
             self::TYPE_LOAN_DESTINATION_FOUND => [
                 'icon_bg' => 'bg-purple-500/10',
                 'icon_text' => 'text-purple-500',
-                'dot' => 'bg-purple-500',
             ],
             self::TYPE_LOAN_SEARCH_FAILED => [
                 'icon_bg' => 'bg-slate-500/10',
                 'icon_text' => 'text-slate-400',
-                'dot' => 'bg-slate-400',
             ],
             self::TYPE_COMPETITION_ADVANCEMENT => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_COMPETITION_ELIMINATION => [
                 'icon_bg' => 'bg-rose-500/10',
                 'icon_text' => 'text-rose-500',
-                'dot' => 'bg-rose-500',
             ],
             self::TYPE_ACADEMY_PROSPECT, self::TYPE_ACADEMY_BATCH => [
                 'icon_bg' => 'bg-lime-500/10',
                 'icon_text' => 'text-lime-500',
-                'dot' => 'bg-lime-500',
             ],
             self::TYPE_LOAN_REQUEST_RESULT => [
                 'icon_bg' => 'bg-purple-500/10',
                 'icon_text' => 'text-purple-500',
-                'dot' => 'bg-purple-500',
             ],
             self::TYPE_TOURNAMENT_WELCOME => [
                 'icon_bg' => 'bg-yellow-500/10',
                 'icon_text' => 'text-yellow-500',
-                'dot' => 'bg-yellow-500',
             ],
             self::TYPE_AI_TRANSFER_ACTIVITY => [
                 'icon_bg' => 'bg-cyan-500/10',
                 'icon_text' => 'text-cyan-500',
-                'dot' => 'bg-cyan-500',
             ],
             self::TYPE_TRANSFER_WINDOW_OPEN => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_PLAYER_RELEASED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_EMERGENCY_SIGNING => [
                 'icon_bg' => 'bg-orange-500/10',
                 'icon_text' => 'text-orange-500',
-                'dot' => 'bg-orange-500',
             ],
             self::TYPE_MATCH_FORFEIT => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_BUDGET_LOAN => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_SQUAD_REGISTRATION_REQUIRED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_JOB_OFFER_RECEIVED => [
                 'icon_bg' => 'bg-indigo-500/10',
                 'icon_text' => 'text-indigo-500',
-                'dot' => 'bg-indigo-500',
             ],
             self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             default => [
                 'icon_bg' => 'bg-slate-500/10',
                 'icon_text' => 'text-slate-400',
-                'dot' => 'bg-slate-400',
             ],
         };
     }

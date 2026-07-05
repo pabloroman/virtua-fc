@@ -3,7 +3,6 @@
 @php
     $classes = $notification->getTypeClasses();
     $badge = $notification->getPriorityBadge();
-    $isUnread = !$notification->isRead();
 @endphp
 
 <a href="{{ route($notification->getNavigationRoute(), $notification->getNavigationParams($game->id)) }}" class="block px-4 py-3 hover:bg-surface-700/30 transition-colors">
@@ -26,9 +25,5 @@
                 @endif
             </div>
         </div>
-
-        @if($isUnread)
-        <div class="w-2 h-2 rounded-full {{ $classes['dot'] }} shrink-0 mt-1.5"></div>
-        @endif
     </div>
 </a>

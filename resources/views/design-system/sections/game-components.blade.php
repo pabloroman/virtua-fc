@@ -732,7 +732,7 @@
     {{-- Notification Row --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Notification Row <code class="text-xs text-accent-blue font-mono">&lt;x-notification-row&gt;</code></h3>
-        <p class="text-sm text-text-secondary mb-4">A single notification entry in the inbox. Renders as a clickable row with a translucent icon, title, message, timestamp, priority badge, and an unread dot indicator. Rows are stacked inside a <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">divide-y</code> container within a section card. Clicking marks the notification as read.</p>
+        <p class="text-sm text-text-secondary mb-4">A single notification entry in the inbox. Renders as a clickable row with a translucent type-colored icon, title, message, timestamp, and priority badge. Rows are stacked inside a <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">divide-y</code> container within a section card. The inbox holds the current matchday's notifications (they clear automatically on the next advance), so there is no per-row read state; clicking a row opens the related page (transfers, lineup, etc.).</p>
 
         {{-- Props table --}}
         <div class="overflow-x-auto mb-4">
