@@ -143,15 +143,19 @@ class NarrativeArticleTemplateTest extends TestCase
 
     public function test_competition_articles_render_correctly(): void
     {
-        $ucl = $this->competitionParams('competition', $this->competition('UCL'));
+        // The European lines now name the opponent + venue (see the "merge
+        // European lines" change), so render through a full bag. This still
+        // exercises the competition contractions: :competition_el → "la
+        // Champions League", :competition_de → "de la Champions League".
+        $bag = $this->bag($this->team('Atalanta BC'), $this->competition('UCL'));
 
         $this->assertSame(
-            'Vuelve la Champions League. Toca dejar huella en Europa.',
-            trans('narrative.euro_group_v2', $ucl, 'es'),
+            'Vuelve la Champions League a tu estadio: recibes al Atalanta BC.',
+            trans('narrative.euro_group_home_v2', $bag, 'es'),
         );
         $this->assertSame(
-            'Final de la Champions League. Una noche para entrar en la historia.',
-            trans('narrative.euro_final_v1', $ucl, 'es'),
+            'La final de la Champions League ante el Atalanta BC. Una noche para entrar en la historia.',
+            trans('narrative.euro_final_v1', $bag, 'es'),
         );
     }
 }

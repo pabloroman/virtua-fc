@@ -568,11 +568,19 @@ class PreContractBalanceTest extends TestCase
             'projected_wages' => 50_000_000_00,
         ]);
 
-        // Player with expiring contract (ends June 2025, season is 2024)
-        $player = GamePlayer::factory()->create([
+        // Player with expiring contract (ends June 2025, season is 2024).
+        // Pin ability + a prime age so the base wage is deterministic and well
+        // above the point where Money::roundPrice()'s €50K/€100K grid would
+        // collapse the pre-contract premium (1.40x) onto the transfer premium
+        // (1.15x) — the factory's random overall/age otherwise makes the
+        // strictly-greater assertion below flaky. Keep the current wage low so
+        // its floor doesn't mask the premium gap.
+        $player = GamePlayer::factory()->age(27)->create([
             'game_id' => $game->id,
             'team_id' => $sourceTeam->id,
             'market_value_cents' => 2_000_000_000, // €20M
+            'overall_score' => 80,
+            'annual_wage' => 100_000_00,           // €100K
             'contract_until' => '2025-06-30',
         ]);
 
