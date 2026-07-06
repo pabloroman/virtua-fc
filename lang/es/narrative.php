@@ -53,14 +53,17 @@ return [
     'top_of_table_v1' => 'Líderes de la clasificación. Todas las miradas puestas en vosotros.',
     'top_of_table_v2' => 'En lo más alto de la tabla — la presión de la expectativa crece con cada jornada.',
 
-    'title_race_v1' => 'A solo :points puntos del líder. Cada partido es una final.',
-    'title_race_v2' => 'La lucha por el título sigue viva. :points puntos os separan de la cima.',
+    // Reusable pluralised points fragment fed into :points below via trans_choice.
+    'points_count' => ':count punto|:count puntos',
 
-    'relegation_v1' => ':position en la tabla. Esto es una final.',
+    'title_race_v1' => 'A solo :points del líder. Cada punto cuenta en la pelea por lo más alto.',
+    'title_race_v2' => 'La lucha por el liderato sigue viva. :points os separan de la cima.',
+
+    'relegation_v1' => ':position en la tabla. La pelea por salir del descenso está en marcha.',
     'relegation_v2' => 'En zona de descenso. Tres puntos pueden cambiarlo todo.',
 
-    'direct_rival_v1' => ':Opponent_el está a solo :points puntos en la clasificación. Un duelo directo.',
-    'direct_rival_v2' => 'Un choque crucial — :opponent_el está a solo :points puntos.',
+    'direct_rival_v1' => ':Opponent_el está a solo :points en la clasificación. Un duelo directo.',
+    'direct_rival_v2' => 'Un choque crucial — :opponent_el está a solo :points.',
 
     'goal_behind_v1' => 'Actualmente :position — a :diff posiciones del objetivo de temporada.',
     'goal_behind_v2' => 'La directiva esperaba más. :diff posiciones os separan del objetivo.',

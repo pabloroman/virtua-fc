@@ -525,7 +525,7 @@ class MatchNarrativeService
             if ($leaderPoints !== null) {
                 $gap = $leaderPoints - $points;
                 if ($gap <= 6) {
-                    $candidates[] = $this->candidate('stakes', 9, 'title_race', ['points' => $gap]);
+                    $candidates[] = $this->candidate('stakes', 9, 'title_race', ['points' => $this->pointsLabel($gap)]);
                 }
             }
         }
@@ -549,7 +549,7 @@ class MatchNarrativeService
 
                 $candidates[] = $this->candidate('stakes', 8, 'direct_rival', [
                     ...$this->teamParams('opponent', $opponentTeam),
-                    'points' => $pointsDiff,
+                    'points' => $this->pointsLabel($pointsDiff),
                 ]);
             }
         }
@@ -751,6 +751,16 @@ class MatchNarrativeService
             'key' => $key,
             'params' => $params,
         ];
+    }
+
+    /**
+     * Render a points count as a locale-aware, singular/plural-correct fragment
+     * ("1 punto" / "3 puntos") to feed into the :points param, since the generic
+     * __() render path can't pluralise on its own.
+     */
+    private function pointsLabel(int $count): string
+    {
+        return trans_choice('narrative.points_count', $count, ['count' => $count]);
     }
 
     /**

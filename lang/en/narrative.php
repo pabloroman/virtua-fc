@@ -53,14 +53,17 @@ return [
     'top_of_table_v1' => 'Top of the league. All eyes are on you.',
     'top_of_table_v2' => 'Leading the table — the pressure of expectation grows with every match.',
 
-    'title_race_v1' => 'Just :points points off the top. Every match is a title decider now.',
-    'title_race_v2' => 'The title race is alive. :points points separate you from the summit.',
+    // Reusable pluralised points fragment fed into :points below via trans_choice.
+    'points_count' => ':count point|:count points',
 
-    'relegation_v1' => ':position in the table. This is a must-win.',
+    'title_race_v1' => 'Just :points off the top. Every point counts in the fight for first.',
+    'title_race_v2' => 'The title race is alive. :points separate you from the summit.',
+
+    'relegation_v1' => ':position in the table. The fight to climb out of the drop zone is on.',
     'relegation_v2' => 'Deep in the relegation zone. Three points could change everything.',
 
-    'direct_rival_v1' => ':opponent are just :points points away in the table. A six-pointer.',
-    'direct_rival_v2' => 'A crucial clash — :opponent sit just :points points adrift.',
+    'direct_rival_v1' => ':opponent are just :points away in the table. A six-pointer.',
+    'direct_rival_v2' => 'A crucial clash with :opponent — just :points between you in the table.',
 
     'goal_behind_v1' => 'Currently :position — :diff places off the season target. Work to do.',
     'goal_behind_v2' => 'The board expected better. :diff positions separate you from the target.',
@@ -202,7 +205,7 @@ return [
     'wc_knockout_r16_v2' => 'Into the last 16. The level of opposition rises from here.',
     'wc_knockout_r16_v3' => 'SWEET SIXTEEN. The World Cup is heating up.',
 
-    'wc_knockout_qf_v1' => 'Quarter-finals. Four matches stand between you and the trophy.',
+    'wc_knockout_qf_v1' => 'Quarter-finals. Three matches stand between you and the trophy.',
     'wc_knockout_qf_v2' => 'Among the last eight. A semi-final place is at stake.',
     'wc_knockout_qf_v3' => 'ELITE COMPANY. Eight teams remain. Four go home.',
 
