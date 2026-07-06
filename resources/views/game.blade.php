@@ -120,17 +120,10 @@
 
             <hr class="border-border-strong md:hidden" />
 
-            {{-- Wide 2/3 column on desktop (md:order-1): the pre-match narrative
-                 dispatch leads, then the notifications inbox. --}}
+            {{-- Wide 2/3 column on desktop (md:order-1): the notifications inbox
+                 leads with actionable per-matchday events, then News sets the scene. --}}
             <div class="space-y-4 md:space-y-6 md:order-1 md:col-span-2">
-                {{-- News: the league narrative engine surfaced as icon-tagged story
-                     items (transfer buzz, rivalry, European nights, form, mood…),
-                     a sibling of the inbox. Season-based modes lead with it;
-                     tournament mode keeps the prose in the next-match card. --}}
-                @if(!empty($narratives) && !$game->isTournamentMode())
-                    <x-news :narratives="$narratives" :game="$game" />
-                @endif
-
+                @if($showInbox)
                 <x-section-card :title="__('notifications.inbox')">
                     <x-slot name="badge">
                         @if($unreadNotificationCount > 0)
@@ -151,6 +144,16 @@
                     <x-notification-inbox-list :notifications="$groupedNotifications->flatten()" :game="$game" />
                     @endif
                 </x-section-card>
+                @endif
+
+                {{-- News: the league narrative engine surfaced as icon-tagged story
+                     items (transfer buzz, rivalry, European nights, form, mood…).
+                     Season-based modes surface it here; tournament mode keeps the
+                     prose in the next-match card. Leads the column on quiet
+                     matchdays when the inbox is empty and hidden. --}}
+                @if($showNews)
+                    <x-news :narratives="$narratives" :game="$game" />
+                @endif
             </div>
         </div>
         @elseif($hasRemainingMatches)

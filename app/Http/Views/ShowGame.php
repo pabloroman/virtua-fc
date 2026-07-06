@@ -210,6 +210,15 @@ class ShowGame
             );
         }
 
+        // Wide-column ordering: the notifications inbox leads (actionable
+        // per-matchday events), with News below as the atmospheric layer. The
+        // empty inbox is hidden only when News can lead in its place; in
+        // tournament mode News isn't rendered here (it stays in the next-match
+        // card), so the inbox stays even when empty to keep the column populated.
+        $showNews = !empty($viewData['narratives'] ?? null) && !$game->isTournamentMode();
+        $viewData['showNews'] = $showNews;
+        $viewData['showInbox'] = $groupedNotifications->isNotEmpty() || !$showNews;
+
         // Add knockout progress for tournament mode
         if ($game->isTournamentMode()) {
             $viewData['tournamentTie'] = $this->getPlayerTournamentTie($game);
