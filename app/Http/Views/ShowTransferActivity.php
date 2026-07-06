@@ -26,9 +26,9 @@ class ShowTransferActivity
             return redirect()->route('show-game', $gameId);
         }
 
-        // Mark the notification as read
-        $notification->markAsRead();
-
+        // Read state is cleared only by the matchday advance (markAllAsRead),
+        // so opening this breakdown does not dismiss the notification — it
+        // stays in the inbox for the rest of the current matchday.
         $metadata = $notification->metadata ?? [];
         $window = $metadata['window'] ?? 'summer';
         $season = $metadata['season'] ?? $game->season;

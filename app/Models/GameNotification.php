@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 /**
  * @property string $id
@@ -122,6 +123,68 @@ class GameNotification extends Model
         self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => 'transfer-activity',
     ];
 
+    // Club departments. A derived grouping over `type` (see DEPARTMENT_MAP) that
+    // lets the inbox be filtered by the department that "owns" each message —
+    // first team / medical, transfers, scouting, academy, board, competition.
+    // It mirrors NAVIGATION_MAP: computed from `type`, so there is no column to
+    // store or backfill.
+    public const DEPARTMENT_SPORTING = 'sporting';
+    public const DEPARTMENT_TRANSFERS = 'transfers';
+    public const DEPARTMENT_SCOUTING = 'scouting';
+    public const DEPARTMENT_ACADEMY = 'academy';
+    public const DEPARTMENT_BOARD = 'board';
+    public const DEPARTMENT_COMPETITION = 'competition';
+
+    // Canonical order for stable tab display.
+    public const DEPARTMENTS = [
+        self::DEPARTMENT_SPORTING,
+        self::DEPARTMENT_TRANSFERS,
+        self::DEPARTMENT_SCOUTING,
+        self::DEPARTMENT_ACADEMY,
+        self::DEPARTMENT_BOARD,
+        self::DEPARTMENT_COMPETITION,
+    ];
+
+    private const DEPARTMENT_MAP = [
+        // First team / medical
+        self::TYPE_PLAYER_INJURED => self::DEPARTMENT_SPORTING,
+        self::TYPE_PLAYER_SUSPENDED => self::DEPARTMENT_SPORTING,
+        self::TYPE_PLAYER_RECOVERED => self::DEPARTMENT_SPORTING,
+        self::TYPE_LOW_FITNESS => self::DEPARTMENT_SPORTING,
+        self::TYPE_LOAN_RETURN => self::DEPARTMENT_SPORTING,
+        self::TYPE_TRANSFER_COMPLETE => self::DEPARTMENT_SPORTING,
+        self::TYPE_PLAYER_RELEASED => self::DEPARTMENT_SPORTING,
+        self::TYPE_EMERGENCY_SIGNING => self::DEPARTMENT_SPORTING,
+        self::TYPE_MATCH_FORFEIT => self::DEPARTMENT_SPORTING,
+        self::TYPE_SQUAD_REGISTRATION_REQUIRED => self::DEPARTMENT_SPORTING,
+        // Transfers / sporting director
+        self::TYPE_TRANSFER_OFFER_RECEIVED => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_TRANSFER_OFFER_EXPIRING => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_CONTRACT_EXPIRING => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_LOAN_DESTINATION_FOUND => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_LOAN_SEARCH_FAILED => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_TRANSFER_FAILED => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_AI_TRANSFER_ACTIVITY => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_TRANSFER_WINDOW_OPEN => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_TRANSFER_WINDOW_CLOSING => self::DEPARTMENT_TRANSFERS,
+        self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => self::DEPARTMENT_TRANSFERS,
+        // Scouting
+        self::TYPE_SCOUT_REPORT_COMPLETE => self::DEPARTMENT_SCOUTING,
+        self::TYPE_LOAN_REQUEST_RESULT => self::DEPARTMENT_SCOUTING,
+        // Academy
+        self::TYPE_ACADEMY_PROSPECT => self::DEPARTMENT_ACADEMY,
+        self::TYPE_ACADEMY_BATCH => self::DEPARTMENT_ACADEMY,
+        // Board / finance
+        self::TYPE_BUDGET_LOAN => self::DEPARTMENT_BOARD,
+        self::TYPE_STADIUM => self::DEPARTMENT_BOARD,
+        self::TYPE_COMMERCIAL => self::DEPARTMENT_BOARD,
+        self::TYPE_JOB_OFFER_RECEIVED => self::DEPARTMENT_BOARD,
+        // Competition
+        self::TYPE_COMPETITION_ADVANCEMENT => self::DEPARTMENT_COMPETITION,
+        self::TYPE_COMPETITION_ELIMINATION => self::DEPARTMENT_COMPETITION,
+        self::TYPE_TOURNAMENT_WELCOME => self::DEPARTMENT_COMPETITION,
+    ];
+
     protected $fillable = [
         'id',
         'game_id',
@@ -230,6 +293,46 @@ class GameNotification extends Model
     }
 
     /**
+     * The club department that owns this notification, derived from its type.
+     * Used to filter the inbox by department. Falls back to the first team for
+     * any unmapped type (matching the navigation default).
+     */
+    public function getDepartment(): string
+    {
+        return self::DEPARTMENT_MAP[$this->type] ?? self::DEPARTMENT_SPORTING;
+    }
+
+    /**
+     * Build an ordered department summary for a set of notifications, used to
+     * render the inbox department tabs. Only departments present in the given
+     * collection are returned, in canonical DEPARTMENTS order; each entry
+     * carries the total and unread counts so a tab can show an unread badge.
+     *
+     * @param  Collection<int, self>  $notifications
+     * @return list<array{key: string, total: int, unread: int}>
+     */
+    public static function departmentSummary(Collection $notifications): array
+    {
+        $byDepartment = $notifications->groupBy(fn (self $n) => $n->getDepartment());
+
+        $summary = [];
+        foreach (self::DEPARTMENTS as $department) {
+            $group = $byDepartment->get($department);
+            if (!$group || $group->isEmpty()) {
+                continue;
+            }
+
+            $summary[] = [
+                'key' => $department,
+                'total' => $group->count(),
+                'unread' => $group->filter(fn (self $n) => $n->isUnread())->count(),
+            ];
+        }
+
+        return $summary;
+    }
+
+    /**
      * Get the route name for navigation based on notification type.
      */
     public function getNavigationRoute(): string
@@ -300,142 +403,114 @@ class GameNotification extends Model
             self::TYPE_PLAYER_INJURED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_PLAYER_SUSPENDED => [
                 'icon_bg' => 'bg-orange-500/10',
                 'icon_text' => 'text-orange-500',
-                'dot' => 'bg-orange-500',
             ],
             self::TYPE_PLAYER_RECOVERED => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_LOW_FITNESS => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_TRANSFER_OFFER_RECEIVED => [
                 'icon_bg' => 'bg-blue-500/10',
                 'icon_text' => 'text-blue-500',
-                'dot' => 'bg-blue-500',
             ],
             self::TYPE_TRANSFER_OFFER_EXPIRING => [
                 'icon_bg' => 'bg-indigo-500/10',
                 'icon_text' => 'text-indigo-500',
-                'dot' => 'bg-indigo-500',
             ],
             self::TYPE_TRANSFER_COMPLETE => [
                 'icon_bg' => 'bg-sky-500/10',
                 'icon_text' => 'text-sky-500',
-                'dot' => 'bg-sky-500',
             ],
             self::TYPE_TRANSFER_FAILED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_SCOUT_REPORT_COMPLETE => [
                 'icon_bg' => 'bg-teal-500/10',
                 'icon_text' => 'text-teal-500',
-                'dot' => 'bg-teal-500',
             ],
             self::TYPE_CONTRACT_EXPIRING => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_LOAN_RETURN => [
                 'icon_bg' => 'bg-violet-500/10',
                 'icon_text' => 'text-violet-500',
-                'dot' => 'bg-violet-500',
             ],
             self::TYPE_LOAN_DESTINATION_FOUND => [
                 'icon_bg' => 'bg-purple-500/10',
                 'icon_text' => 'text-purple-500',
-                'dot' => 'bg-purple-500',
             ],
             self::TYPE_LOAN_SEARCH_FAILED => [
                 'icon_bg' => 'bg-slate-500/10',
                 'icon_text' => 'text-slate-400',
-                'dot' => 'bg-slate-400',
             ],
             self::TYPE_COMPETITION_ADVANCEMENT => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_COMPETITION_ELIMINATION => [
                 'icon_bg' => 'bg-rose-500/10',
                 'icon_text' => 'text-rose-500',
-                'dot' => 'bg-rose-500',
             ],
             self::TYPE_ACADEMY_PROSPECT, self::TYPE_ACADEMY_BATCH => [
                 'icon_bg' => 'bg-lime-500/10',
                 'icon_text' => 'text-lime-500',
-                'dot' => 'bg-lime-500',
             ],
             self::TYPE_LOAN_REQUEST_RESULT => [
                 'icon_bg' => 'bg-purple-500/10',
                 'icon_text' => 'text-purple-500',
-                'dot' => 'bg-purple-500',
             ],
             self::TYPE_TOURNAMENT_WELCOME => [
                 'icon_bg' => 'bg-yellow-500/10',
                 'icon_text' => 'text-yellow-500',
-                'dot' => 'bg-yellow-500',
             ],
             self::TYPE_AI_TRANSFER_ACTIVITY => [
                 'icon_bg' => 'bg-cyan-500/10',
                 'icon_text' => 'text-cyan-500',
-                'dot' => 'bg-cyan-500',
             ],
             self::TYPE_TRANSFER_WINDOW_OPEN => [
                 'icon_bg' => 'bg-emerald-500/10',
                 'icon_text' => 'text-emerald-500',
-                'dot' => 'bg-emerald-500',
             ],
             self::TYPE_PLAYER_RELEASED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_EMERGENCY_SIGNING => [
                 'icon_bg' => 'bg-orange-500/10',
                 'icon_text' => 'text-orange-500',
-                'dot' => 'bg-orange-500',
             ],
             self::TYPE_MATCH_FORFEIT => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_BUDGET_LOAN => [
                 'icon_bg' => 'bg-amber-500/10',
                 'icon_text' => 'text-amber-500',
-                'dot' => 'bg-amber-500',
             ],
             self::TYPE_SQUAD_REGISTRATION_REQUIRED => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             self::TYPE_JOB_OFFER_RECEIVED => [
                 'icon_bg' => 'bg-indigo-500/10',
                 'icon_text' => 'text-indigo-500',
-                'dot' => 'bg-indigo-500',
             ],
             self::TYPE_PLAYER_LEFT_VIA_RELEASE_CLAUSE => [
                 'icon_bg' => 'bg-red-500/10',
                 'icon_text' => 'text-red-500',
-                'dot' => 'bg-red-500',
             ],
             default => [
                 'icon_bg' => 'bg-slate-500/10',
                 'icon_text' => 'text-slate-400',
-                'dot' => 'bg-slate-400',
             ],
         };
     }

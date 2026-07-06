@@ -732,7 +732,7 @@
     {{-- Notification Row --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Notification Row <code class="text-xs text-accent-blue font-mono">&lt;x-notification-row&gt;</code></h3>
-        <p class="text-sm text-text-secondary mb-4">A single notification entry in the inbox. Renders as a clickable row with a translucent icon, title, message, timestamp, priority badge, and an unread dot indicator. Rows are stacked inside a <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">divide-y</code> container within a section card. Clicking marks the notification as read.</p>
+        <p class="text-sm text-text-secondary mb-4">A single notification entry in the inbox. Renders as a clickable row with a translucent type-colored icon, title, message, timestamp, and priority badge. Rows are stacked inside a <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">divide-y</code> container within a section card. The inbox holds the current matchday's notifications (they clear automatically on the next advance), so there is no per-row read state; clicking a row opens the related page (transfers, lineup, etc.).</p>
 
         {{-- Props table --}}
         <div class="overflow-x-auto mb-4">
@@ -819,6 +819,42 @@
         @@endforeach
     &lt;/div&gt;
 &lt;/x-section-card&gt;</code></pre>
+        </div>
+    </div>
+
+    {{-- Notification Department Tabs --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Notification Department Tabs <code class="text-xs text-accent-blue font-mono">&lt;x-notification-department-tabs&gt;</code></h3>
+        <p class="text-sm text-text-secondary mb-4">A horizontal filter strip for the inbox, letting the user narrow notifications to a single club department (first team, transfers, scouting, academy, board, competition). Each notification's department is derived from its type via <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">GameNotification::getDepartment()</code>. The strip drives an Alpine <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">dept</code> property on a surrounding <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-data</code> scope and rows filter client-side with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-show</code>. Only departments present in the list get a tab; the strip renders nothing when a single department is present. The active tab shows an unread-count badge. In practice, drop the whole inbox body — tabs, Alpine scope and filtered rows — with the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-notification-inbox-list&gt;</code> wrapper below; it composes this strip internally.</p>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mb-4">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-[10px] text-text-muted uppercase tracking-widest border-b border-border-default">
+                        <th class="px-3 py-2 font-semibold">Prop</th>
+                        <th class="px-3 py-2 font-semibold">Type</th>
+                        <th class="px-3 py-2 font-semibold">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="text-text-secondary">
+                    <tr class="border-b border-border-default">
+                        <td class="px-3 py-2 font-mono text-accent-blue text-xs">notifications</td>
+                        <td class="px-3 py-2">Collection&lt;GameNotification&gt;</td>
+                        <td class="px-3 py-2">The notifications being rendered, used to derive which department tabs to show and their unread counts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div x-data="{ copied: false }" class="relative">
+            <button @click="navigator.clipboard.writeText($refs.notifTabsCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-text-body bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="notifTabsCode">{{-- Recommended: the wrapper composes the tabs + filtered rows --}}
+&lt;x-notification-inbox-list :notifications="$notifications" :game="$game" /&gt;</code></pre>
         </div>
     </div>
 

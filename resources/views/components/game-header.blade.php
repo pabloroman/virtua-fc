@@ -8,9 +8,11 @@
             ->pluck('competition_id')
     )->orderBy('tier')->get();
 
-    // Notifications for mobile bell icon + modal
+    // Notifications for mobile bell icon + modal. The modal mirrors the
+    // dashboard inbox: the current matchday's (unread) notifications only, since
+    // markAllAsRead on each advance clears the previous matchday's.
     $unreadCount = $game->notifications()->whereNull('read_at')->count();
-    $recentNotifications = $game->notifications()->orderByDesc('game_date')->limit(20)->get();
+    $recentNotifications = $game->notifications()->unread()->orderByDesc('game_date')->limit(20)->get();
 
     // Highest-stakes (CRITICAL) notifications that haven't been acknowledged yet
     // surface as a blocking, must-dismiss popup on the next page load so they
@@ -267,16 +269,10 @@
             <x-modal-header modalName="notifications-mobile">{{ __('notifications.inbox') }}</x-modal-header>
 
             @if($unreadCount > 0)
-            <div class="px-4 py-2.5 border-b border-border-default flex items-center justify-between">
+            <div class="px-4 py-2.5 border-b border-border-default">
                 <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[10px] font-semibold text-accent-blue">
                     {{ $unreadCount }} {{ __('notifications.new') }}
                 </span>
-                <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
-                        {{ __('notifications.mark_all_read') }}
-                    </button>
-                </form>
             </div>
             @endif
 
@@ -291,11 +287,7 @@
                     <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
                 </div>
                 @else
-                <div class="divide-y divide-border-default">
-                    @foreach($recentNotifications as $notification)
-                        <x-notification-row :notification="$notification" :game="$game" />
-                    @endforeach
-                </div>
+                <x-notification-inbox-list :notifications="$recentNotifications" :game="$game" />
                 @endif
             </div>
         </x-modal>

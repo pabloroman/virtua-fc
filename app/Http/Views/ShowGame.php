@@ -168,7 +168,12 @@ class ShowGame
             return redirect()->route('game.tournament-end', $gameId);
         }
 
-        $notifications = $this->notificationService->getNotifications($game->id, true, 15);
+        // The inbox holds the current matchday's notifications. Everything is
+        // marked read at the start of each advance (MatchdayOrchestrator::advance),
+        // so an unread-only query auto-clears the feed every matchday. Rows no
+        // longer mark themselves read on click, so notifications persist through
+        // the matchday — clicking one navigates without dismissing it.
+        $notifications = $this->notificationService->getNotifications($game->id, true, 20);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
         $dashboardContext = $this->competitionViewService->resolveDashboardContext($game, $nextMatch);
@@ -187,9 +192,13 @@ class ShowGame
             'dashboardContext' => $dashboardContext,
         ];
 
-        // Generate pre-match narrative snippets (tournament mode only for now)
-        if ($nextMatch && $game->isTournamentMode()) {
+        // Generate pre-match narrative snippets. Tournament mode renders 1-2 in
+        // the next-match card; season-based modes surface a few more as the
+        // wide-column "match preview" lead on the dashboard. Category diversity
+        // in selectTop() keeps the mix varied (at most one per category).
+        if ($nextMatch) {
             $isHome = $nextMatch->home_team_id === $game->team_id;
+
             $viewData['narratives'] = $this->narrativeService->generate(
                 $game,
                 $nextMatch,
@@ -197,8 +206,18 @@ class ShowGame
                 $isHome ? $viewData['awayStanding'] : $viewData['homeStanding'],
                 $viewData['playerForm'],
                 $viewData['opponentForm'],
+                limit: $game->isTournamentMode() ? 2 : 4,
             );
         }
+
+        // Wide-column ordering: the notifications inbox leads (actionable
+        // per-matchday events), with News below as the atmospheric layer. The
+        // empty inbox is hidden only when News can lead in its place; in
+        // tournament mode News isn't rendered here (it stays in the next-match
+        // card), so the inbox stays even when empty to keep the column populated.
+        $showNews = !empty($viewData['narratives'] ?? null) && !$game->isTournamentMode();
+        $viewData['showNews'] = $showNews;
+        $viewData['showInbox'] = $groupedNotifications->isNotEmpty() || !$showNews;
 
         // Add knockout progress for tournament mode
         if ($game->isTournamentMode()) {

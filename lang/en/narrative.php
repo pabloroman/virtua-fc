@@ -53,14 +53,17 @@ return [
     'top_of_table_v1' => 'Top of the league. All eyes are on you.',
     'top_of_table_v2' => 'Leading the table — the pressure of expectation grows with every match.',
 
-    'title_race_v1' => 'Just :points points off the top. Every match is a title decider now.',
-    'title_race_v2' => 'The title race is alive. :points points separate you from the summit.',
+    // Reusable pluralised points fragment fed into :points below via trans_choice.
+    'points_count' => ':count point|:count points',
 
-    'relegation_v1' => ':position in the table. This is a must-win.',
+    'title_race_v1' => 'Just :points off the top. Every point counts in the fight for first.',
+    'title_race_v2' => 'The title race is alive. :points separate you from the summit.',
+
+    'relegation_v1' => ':position in the table. The fight to climb out of the drop zone is on.',
     'relegation_v2' => 'Deep in the relegation zone. Three points could change everything.',
 
-    'direct_rival_v1' => ':opponent are just :points points away in the table. A six-pointer.',
-    'direct_rival_v2' => 'A crucial clash — :opponent sit just :points points adrift.',
+    'direct_rival_v1' => ':opponent are just :points away in the table. A six-pointer.',
+    'direct_rival_v2' => 'A crucial clash with :opponent — just :points between you in the table.',
 
     'goal_behind_v1' => 'Currently :position — :diff places off the season target. Work to do.',
     'goal_behind_v2' => 'The board expected better. :diff positions separate you from the target.',
@@ -96,11 +99,71 @@ return [
     'opponent_weak_v1' => ':opponent are struggling at :position. An opportunity to pick up points.',
     'opponent_weak_v2' => ':opponent sit :position — a chance to take three points.',
 
-    'opponent_poor_form_v1' => ':opponent have won just :wins of their last :total. Vulnerability beckons.',
-    'opponent_poor_form_v2' => ':opponent arrive in poor form — :wins wins from :total matches.',
+    'opponent_winless_v1' => ':opponent have gone :total matches without a win. Vulnerability beckons.',
+    'opponent_winless_v2' => ':opponent arrive winless from their last :total. Ripe for the taking.',
+
+    'opponent_poor_form_v1' => ':opponent have won just one of their last :total. Vulnerability beckons.',
+    'opponent_poor_form_v2' => ':opponent arrive in poor form — a single win from :total matches.',
 
     'opponent_hot_v1' => ':opponent arrive in fine form — :wins wins from their last :total.',
     'opponent_hot_v2' => 'Watch out: :opponent are on a hot streak with :wins wins in :total.',
+
+    'opponent_preview_home_v1' => 'Today you welcome :opponent to your turf.',
+    'opponent_preview_home_v2' => 'Home advantage as :opponent come to visit.',
+    'opponent_preview_home_v3' => ':opponent are the visitors — make home count.',
+    'opponent_preview_home_v4' => 'A home date with :opponent, with the crowd behind you.',
+
+    'opponent_preview_away_v1' => 'A trip to face :opponent on their patch.',
+    'opponent_preview_away_v2' => 'On the road to take on :opponent.',
+    'opponent_preview_away_v3' => 'Away from home against :opponent — a different test.',
+    'opponent_preview_away_v4' => ':opponent host you. Quieten their crowd.',
+
+    // ── European Nights ─────────────────────────────────────────────
+
+    'euro_final_v1' => 'The :competition final against :opponent. One night to write your name in history.',
+    'euro_final_v2' => 'This is it — the :competition final against :opponent. Glory or heartbreak.',
+
+    'euro_semi_home_v1' => 'A :competition semi-final at home against :opponent. One step from the final.',
+    'euro_semi_home_v2' => 'The last four of the :competition: you host :opponent with a final at stake.',
+    'euro_semi_away_v1' => 'A :competition semi-final away to :opponent. One step from the final.',
+    'euro_semi_away_v2' => 'The last four of the :competition: you visit :opponent with a final at stake.',
+
+    'euro_knockout_home_v1' => 'A :competition knockout tie at home against :opponent — win or go home.',
+    'euro_knockout_home_v2' => 'European knockout football under your lights: :opponent visit, no room for error.',
+    'euro_knockout_away_v1' => 'A :competition knockout tie away to :opponent — win or go home.',
+    'euro_knockout_away_v2' => 'A European knockout night at :opponent — no room for error under the lights.',
+
+    'euro_group_home_v1' => 'A :competition night under the lights — you host :opponent, the continent watching.',
+    'euro_group_home_v2' => ':competition football returns to your ground: :opponent visit.',
+    'euro_group_away_v1' => 'A :competition night on the road — you visit :opponent under the lights.',
+    'euro_group_away_v2' => 'A European away night against :opponent in the :competition.',
+
+    // ── Rivalry & Head-to-Head ──────────────────────────────────────
+
+    'rivalry_won_reverse_v1' => 'You beat :opponent :score in the reverse fixture — do it again.',
+    'rivalry_won_reverse_v2' => 'The last meeting went your way (:score vs :opponent). Confidence is high.',
+
+    'rivalry_lost_reverse_v1' => ':opponent won the reverse :score. Time for revenge.',
+    'rivalry_lost_reverse_v2' => 'A score to settle — :opponent took the points :score last time.',
+
+    'rivalry_drew_reverse_v1' => 'Honours even with :opponent last time. A chance to settle it.',
+    'rivalry_drew_reverse_v2' => 'The reverse fixture with :opponent ended level — break the deadlock.',
+
+    // ── Transfer Market & Buzz ──────────────────────────────────────
+
+    'market_courted_v1' => ':club have made a move for :player. Eyes on the dressing room.',
+    'market_courted_v2' => 'Speculation surrounds :player as :club come calling.',
+    'market_courted_v3' => 'The rumour mill links :player with a move to :club.',
+
+    'market_precontract_v1' => ':club are circling :player on a pre-contract. His future is in doubt.',
+    'market_precontract_v2' => ':player is being tapped up by :club — unsettling news.',
+    'market_precontract_v3' => ':club are reportedly preparing a pre-contract approach for :player.',
+
+    'market_multiple_targets_v1' => 'Vultures circling: :count of your players are drawing interest.',
+    'market_multiple_targets_v2' => ':count squad members have suitors. The market is testing your resolve.',
+
+    'market_window_closing_v1' => 'The transfer window is about to slam shut — last chance to do business.',
+    'market_window_closing_v2' => 'Deadline looms. The window closes within a couple of matches.',
 
     // ── Tournament: Group Stage ─────────────────────────────────────
 
@@ -142,7 +205,7 @@ return [
     'wc_knockout_r16_v2' => 'Into the last 16. The level of opposition rises from here.',
     'wc_knockout_r16_v3' => 'SWEET SIXTEEN. The World Cup is heating up.',
 
-    'wc_knockout_qf_v1' => 'Quarter-finals. Four matches stand between you and the trophy.',
+    'wc_knockout_qf_v1' => 'Quarter-finals. Three matches stand between you and the trophy.',
     'wc_knockout_qf_v2' => 'Among the last eight. A semi-final place is at stake.',
     'wc_knockout_qf_v3' => 'ELITE COMPANY. Eight teams remain. Four go home.',
 

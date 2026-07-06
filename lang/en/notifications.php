@@ -4,8 +4,16 @@ return [
     // Inbox
     'inbox' => 'Notifications',
     'new' => 'new',
-    'mark_all_read' => 'Mark all as read',
     'all_caught_up' => 'You\'re all caught up',
+
+    // Department inbox tabs
+    'dept_all' => 'All',
+    'dept_sporting' => 'First team',
+    'dept_transfers' => 'Transfers',
+    'dept_scouting' => 'Scouting',
+    'dept_academy' => 'Academy',
+    'dept_board' => 'Board',
+    'dept_competition' => 'Competition',
 
     // Critical-alert popup (blocking, must-dismiss)
     'alert_heading' => 'Important alert',

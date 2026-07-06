@@ -4,20 +4,20 @@ return [
 
     // ── Copa / Eliminatorias ───────────────────────────────────────────
 
-    'cup_final_v1' => 'La final de la :competition. Todo el camino ha conducido a este momento.',
-    'cup_final_v2' => 'Un partido para la gloria. La final de la :competition os espera.',
+    'cup_final_v1' => 'La final :competition_de. Todo el camino ha conducido a este momento.',
+    'cup_final_v2' => 'Un partido para la gloria. La final :competition_de os espera.',
 
-    'cup_semi_v1' => 'Semifinal de la :competition. A un paso de la final.',
-    'cup_semi_v2' => 'Tan cerca de la final. La semifinal de la :competition está aquí.',
+    'cup_semi_v1' => 'Semifinal :competition_de. A un paso de la final.',
+    'cup_semi_v2' => 'Tan cerca de la final. La semifinal :competition_de está aquí.',
 
-    'cup_semi_second_leg_v1' => 'Vuelta de la semifinal de la :competition. La final está al alcance.',
-    'cup_semi_second_leg_v2' => 'A noventa minutos de una final de :competition. La afición cree.',
+    'cup_semi_second_leg_v1' => 'Vuelta de la semifinal :competition_de. La final está al alcance.',
+    'cup_semi_second_leg_v2' => 'A noventa minutos de una final :competition_de. La afición cree.',
 
-    'cup_quarter_v1' => 'Cuartos de final de la :competition. Empieza lo serio.',
-    'cup_quarter_v2' => 'Entre los ocho mejores de la :competition. Gran noche por delante.',
+    'cup_quarter_v1' => 'Cuartos de final :competition_de. Empieza lo serio.',
+    'cup_quarter_v2' => 'Entre los ocho mejores :competition_de. Gran noche por delante.',
 
-    'cup_round_of_16_v1' => 'Octavos de final de la :competition. La fase eliminatoria arranca de verdad.',
-    'cup_round_of_16_v2' => 'Los dieciseisavos de la :competition. Momento de demostrar carácter.',
+    'cup_round_of_16_v1' => 'Octavos de final :competition_de. La fase eliminatoria arranca de verdad.',
+    'cup_round_of_16_v2' => 'Los dieciseisavos :competition_de. Momento de demostrar carácter.',
 
     'cup_second_leg_ahead_v1' => 'Ventaja de :score en la ida. A defender el resultado.',
     'cup_second_leg_ahead_v2' => ':score a favor tras la ida. Mantened la concentración.',
@@ -29,7 +29,7 @@ return [
     'cup_second_leg_drawn_v2' => 'Empate en el global. La vuelta decidirá quién avanza.',
 
     'cup_generic_v1' => ':competition — :round. El fútbol de copa es impredecible.',
-    'cup_generic_v2' => ':round de la :competition. En copa todo puede pasar.',
+    'cup_generic_v2' => ':round :competition_de. En copa todo puede pasar.',
 
     // ── Forma y Rachas ──────────────────────────────────────────────
 
@@ -53,14 +53,17 @@ return [
     'top_of_table_v1' => 'Líderes de la clasificación. Todas las miradas puestas en vosotros.',
     'top_of_table_v2' => 'En lo más alto de la tabla — la presión de la expectativa crece con cada jornada.',
 
-    'title_race_v1' => 'A solo :points puntos del líder. Cada partido es una final.',
-    'title_race_v2' => 'La lucha por el título sigue viva. :points puntos os separan de la cima.',
+    // Reusable pluralised points fragment fed into :points below via trans_choice.
+    'points_count' => ':count punto|:count puntos',
 
-    'relegation_v1' => ':position en la tabla. Esto es una final.',
+    'title_race_v1' => 'A solo :points del líder. Cada punto cuenta en la pelea por lo más alto.',
+    'title_race_v2' => 'La lucha por el liderato sigue viva. :points os separan de la cima.',
+
+    'relegation_v1' => ':position en la tabla. La pelea por salir del descenso está en marcha.',
     'relegation_v2' => 'En zona de descenso. Tres puntos pueden cambiarlo todo.',
 
-    'direct_rival_v1' => ':opponent están a solo :points puntos en la clasificación. Un duelo directo.',
-    'direct_rival_v2' => 'Un choque crucial — :opponent están a solo :points puntos.',
+    'direct_rival_v1' => ':Opponent_el está a solo :points en la clasificación. Un duelo directo.',
+    'direct_rival_v2' => 'Un choque crucial — :opponent_el está a solo :points.',
 
     'goal_behind_v1' => 'Actualmente :position — a :diff posiciones del objetivo de temporada.',
     'goal_behind_v2' => 'La directiva esperaba más. :diff posiciones os separan del objetivo.',
@@ -90,17 +93,77 @@ return [
 
     // ── Análisis del Rival ──────────────────────────────────────────
 
-    'opponent_strong_v1' => ':opponent es :position en la liga — se espera un duro examen.',
-    'opponent_strong_v2' => 'Un reto exigente: :opponent es :position en la clasificación.',
+    'opponent_strong_v1' => ':Opponent_el es :position en la liga — se espera un duro examen.',
+    'opponent_strong_v2' => 'Un reto exigente: :opponent_el es :position en la clasificación.',
 
-    'opponent_weak_v1' => ':opponent está :position en la tabla. Oportunidad para sumar de tres.',
-    'opponent_weak_v2' => ':opponent es :position — una ocasión para sumar los tres puntos.',
+    'opponent_weak_v1' => ':Opponent_el está :position en la tabla. Oportunidad para sumar de tres.',
+    'opponent_weak_v2' => ':Opponent_el es :position — una ocasión para sumar los tres puntos.',
 
-    'opponent_poor_form_v1' => ':opponent solo ha ganado :wins de sus últimos :total partidos. Se huele la debilidad.',
-    'opponent_poor_form_v2' => ':opponent llega en baja forma — :wins victorias en :total partidos.',
+    'opponent_winless_v1' => ':Opponent_el lleva :total partidos sin ganar. Se huele la debilidad.',
+    'opponent_winless_v2' => ':Opponent_el llega en baja forma — :total partidos sin ganar.',
 
-    'opponent_hot_v1' => ':opponent llega en gran forma — :wins victorias en sus últimos :total partidos.',
-    'opponent_hot_v2' => 'Ojo con :opponent: en racha con :wins triunfos en :total encuentros.',
+    'opponent_poor_form_v1' => ':Opponent_el solo ha ganado uno de sus últimos :total partidos. Se huele la debilidad.',
+    'opponent_poor_form_v2' => ':Opponent_el llega en baja forma — una sola victoria en :total partidos.',
+
+    'opponent_hot_v1' => ':Opponent_el llega en gran forma — :wins victorias en sus últimos :total partidos.',
+    'opponent_hot_v2' => 'Ojo con :opponent_el: en racha con :wins triunfos en :total encuentros.',
+
+    'opponent_preview_home_v1' => 'Hoy recibes :opponent_a en tu feudo.',
+    'opponent_preview_home_v2' => 'Juegas en casa ante la visita :opponent_de.',
+    'opponent_preview_home_v3' => ':Opponent_el visita tu estadio — haz valer la localía.',
+    'opponent_preview_home_v4' => 'Cita en casa con :opponent_el, con la afición empujando.',
+
+    'opponent_preview_away_v1' => 'Visita complicada al campo :opponent_de.',
+    'opponent_preview_away_v2' => 'Toca viajar para medirte :opponent_a.',
+    'opponent_preview_away_v3' => 'Lejos de casa ante :opponent_el, otro tipo de examen.',
+    'opponent_preview_away_v4' => ':Opponent_el ejerce de local. Toca silenciar su grada.',
+
+    // ── Noches Europeas ─────────────────────────────────────────────
+
+    'euro_final_v1' => 'La final :competition_de ante :opponent_el. Una noche para entrar en la historia.',
+    'euro_final_v2' => 'Es la final :competition_de ante :opponent_el. Gloria o decepción.',
+
+    'euro_semi_home_v1' => 'Semifinal :competition_de en tu estadio ante :opponent_el. A un paso de la final.',
+    'euro_semi_home_v2' => 'Entre los cuatro mejores :competition_de: recibes :opponent_a con la final en juego.',
+    'euro_semi_away_v1' => 'Semifinal :competition_de a domicilio ante :opponent_el. A un paso de la final.',
+    'euro_semi_away_v2' => 'Entre los cuatro mejores :competition_de: visitas :opponent_a con la final en juego.',
+
+    'euro_knockout_home_v1' => 'Eliminatoria :competition_de en tu estadio. Recibes :opponent_a: ganar o caer.',
+    'euro_knockout_home_v2' => 'Cruce europeo a vida o muerte ante :opponent_el en casa. Sin margen de error.',
+    'euro_knockout_away_v1' => 'Eliminatoria :competition_de a domicilio. Visitas :opponent_a: ganar o caer.',
+    'euro_knockout_away_v2' => 'Cruce europeo a vida o muerte en el campo :opponent_de. Sin margen de error.',
+
+    'euro_group_home_v1' => 'Noche :competition_de bajo los focos. Recibes :opponent_a con el continente en juego.',
+    'euro_group_home_v2' => 'Vuelve :competition_el a tu estadio: recibes :opponent_a.',
+    'euro_group_away_v1' => 'Noche :competition_de a domicilio. Visitas :opponent_a bajo los focos.',
+    'euro_group_away_v2' => 'Duelo europeo a domicilio ante :opponent_el en :competition_el.',
+
+    // ── Rivalidad y Cara a Cara ─────────────────────────────────────
+
+    'rivalry_won_reverse_v1' => 'Ganaste :opponent_a :score en la ida. A repetirlo.',
+    'rivalry_won_reverse_v2' => 'El último duelo cayó de tu lado (:score ante :opponent_el). Moral alta.',
+
+    'rivalry_lost_reverse_v1' => ':Opponent_el ganó la ida :score. Toca la revancha.',
+    'rivalry_lost_reverse_v2' => 'Hay cuentas pendientes: :opponent_el se llevó los puntos :score la última vez.',
+
+    'rivalry_drew_reverse_v1' => 'Empate con :opponent_el en la ida. Ocasión para decantar la balanza.',
+    'rivalry_drew_reverse_v2' => 'El duelo de ida con :opponent_el acabó igualado — rompe la igualdad.',
+
+    // ── Mercado de Fichajes ─────────────────────────────────────────
+
+    'market_courted_v1' => ':Club_el ha movido ficha por :player. Ojo al vestuario.',
+    'market_courted_v2' => 'Crece la especulación sobre :player con el interés :club_de.',
+    'market_courted_v3' => 'Los rumores vinculan a :player con :club_el.',
+
+    'market_precontract_v1' => ':Club_el ronda a :player para un precontrato. Su futuro está en el aire.',
+    'market_precontract_v2' => ':Club_el tantea a :player — noticias que inquietan.',
+    'market_precontract_v3' => ':Club_el prepararía una oferta de precontrato por :player.',
+
+    'market_multiple_targets_v1' => 'Buitres al acecho: :count de tus jugadores despiertan interés.',
+    'market_multiple_targets_v2' => ':count futbolistas tienen pretendientes. El mercado pone a prueba tu temple.',
+
+    'market_window_closing_v1' => 'El mercado está a punto de cerrar — última oportunidad para operar.',
+    'market_window_closing_v2' => 'El cierre acecha. El mercado se cierra en un par de jornadas.',
 
     // ── Torneo: Fase de Grupos ──────────────────────────────────────
 

@@ -42,8 +42,6 @@ use App\Http\Actions\SimulateTournament;
 use App\Http\Actions\CancelLoanSearch;
 use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\AcknowledgeCriticalAlerts;
-use App\Http\Actions\MarkAllNotificationsRead;
-use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\ViewCriticalAlerts;
 use App\Http\Actions\SaveClubInvestment;
 use App\Http\Actions\StageInvestmentDowngrade;
@@ -337,9 +335,10 @@ Route::middleware('auth')->group(function () {
         // Game Setup Status (polling endpoint)
         Route::get('/game/{gameId}/setup-status', GameSetupStatus::class)->name('game.setup-status');
 
-        // Notifications
-        Route::post('/game/{gameId}/notifications/{notificationId}/read', MarkNotificationRead::class)->name('game.notifications.read');
-        Route::post('/game/{gameId}/notifications/read-all', MarkAllNotificationsRead::class)->name('game.notifications.read-all');
+        // Notifications. Reads are automatic — the inbox is a persistent feed
+        // and markAllAsRead runs at the start of each matchday advance (see
+        // MatchdayOrchestrator::advance) — so only the blocking critical-alert
+        // acknowledgements have explicit routes.
         Route::post('/game/{gameId}/notifications/acknowledge-critical', AcknowledgeCriticalAlerts::class)->name('game.notifications.acknowledge-critical');
         Route::post('/game/{gameId}/notifications/view-critical', ViewCriticalAlerts::class)->name('game.notifications.view-critical');
     });

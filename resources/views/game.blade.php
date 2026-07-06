@@ -25,8 +25,10 @@
 
         @if($nextMatch)
         <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-            {{-- Left Column (2/3) - Main Content --}}
-            <div class="md:col-span-2 space-y-8">
+            {{-- Context rail: next match + fixtures + standings. The narrow 1/3
+                 column on desktop (md:order-2); on mobile it stacks first (DOM
+                 order) so the "play match" flow stays at the top. --}}
+            <div class="space-y-8 md:order-2 md:col-span-1">
                 {{-- Highlighted Next Match Card --}}
                 @include('partials.next-match-card')
 
@@ -40,7 +42,7 @@
                     </x-slot>
                     <div class="divide-y divide-border-default">
                         @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
-                            <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
+                            <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" :short-competition="true" />
                         @endforeach
                     </div>
                 </x-section-card>
@@ -67,47 +69,6 @@
                     </div>
                 </x-section-card>
                 @endif
-            </div>
-
-            <hr class="border-border-strong md:hidden" />
-
-            {{-- Right Column (1/3) - Notifications & Standings --}}
-            <div class="space-y-8">
-                {{-- Notifications Inbox --}}
-                <x-section-card :title="__('notifications.inbox')">
-                    <x-slot name="badge">
-                        <div class="flex items-center gap-2">
-                            @if($unreadNotificationCount > 0)
-                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
-                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
-                            </span>
-                            @endif
-                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
-                            </form>
-                        </div>
-                    </x-slot>
-
-                    @if($groupedNotifications->isEmpty())
-                    <div class="text-center py-8 px-4">
-                        <div class="text-text-faint mb-2">
-                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
-                    </div>
-                    @else
-                    <div class="divide-y divide-border-default">
-                        @foreach($groupedNotifications->flatten() as $notification)
-                            <x-notification-row :notification="$notification" :game="$game" />
-                        @endforeach
-                    </div>
-                    @endif
-                </x-section-card>
-
-                <hr class="border-border-strong md:hidden" />
 
                 {{-- Contextual standings or cup-path card (hidden during pre-season).
                      The card follows the competition of the *next* match, not the
@@ -154,6 +115,44 @@
                         :final-venue="$dashboardContext['finalVenue']"
                     />
                     @endif
+                @endif
+            </div>
+
+            <hr class="border-border-strong md:hidden" />
+
+            {{-- Wide 2/3 column on desktop (md:order-1): the notifications inbox
+                 leads with actionable per-matchday events, then News sets the scene. --}}
+            <div class="space-y-4 md:space-y-6 md:order-1 md:col-span-2">
+                @if($showInbox)
+                <x-section-card :title="__('notifications.inbox')">
+                    <x-slot name="badge">
+                        @if($unreadNotificationCount > 0)
+                        <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                            {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                        </span>
+                        @endif
+                    </x-slot>
+
+                    @if($groupedNotifications->isEmpty())
+                    <div class="flex items-center gap-2 px-5 py-2.5 text-xs text-text-muted">
+                        <svg class="w-4 h-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ __('notifications.all_caught_up') }}</span>
+                    </div>
+                    @else
+                    <x-notification-inbox-list :notifications="$groupedNotifications->flatten()" :game="$game" />
+                    @endif
+                </x-section-card>
+                @endif
+
+                {{-- News: the league narrative engine surfaced as icon-tagged story
+                     items (transfer buzz, rivalry, European nights, form, mood…).
+                     Season-based modes surface it here; tournament mode keeps the
+                     prose in the next-match card. Leads the column on quiet
+                     matchdays when the inbox is empty and hidden. --}}
+                @if($showNews)
+                    <x-news :narratives="$narratives" :game="$game" />
                 @endif
             </div>
         </div>
@@ -207,34 +206,22 @@
             <div class="space-y-8">
                 <x-section-card :title="__('notifications.inbox')">
                     <x-slot name="badge">
-                        <div class="flex items-center gap-2">
-                            @if($unreadNotificationCount > 0)
-                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
-                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
-                            </span>
-                            @endif
-                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
-                            </form>
-                        </div>
+                        @if($unreadNotificationCount > 0)
+                        <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                            {{ $unreadNotificationCount }} {{ __('notifications.new') }}
+                        </span>
+                        @endif
                     </x-slot>
 
                     @if($groupedNotifications->isEmpty())
-                    <div class="text-center py-8 px-4">
-                        <div class="text-text-faint mb-2">
-                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
+                    <div class="flex items-center gap-2 px-5 py-2.5 text-xs text-text-muted">
+                        <svg class="w-4 h-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ __('notifications.all_caught_up') }}</span>
                     </div>
                     @else
-                    <div class="divide-y divide-border-default">
-                        @foreach($groupedNotifications->flatten() as $notification)
-                            <x-notification-row :notification="$notification" :game="$game" />
-                        @endforeach
-                    </div>
+                    <x-notification-inbox-list :notifications="$groupedNotifications->flatten()" :game="$game" />
                     @endif
                 </x-section-card>
             </div>
