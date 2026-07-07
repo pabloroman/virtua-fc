@@ -13,6 +13,7 @@
         <div x-data="{
                 mode: @js($hasCareerAccess ? 'career' : ($hasTournamentMode ? 'tournament' : 'career')),
                 openTab: '{{ $firstId }}',
+                tournamentId: 'WC2026',
                 loading: false,
             }">
             <form method="post" action="{{ route('init-game') }}" @submit="loading = true" class="space-y-6">
@@ -23,6 +24,9 @@
 
                 {{-- Hidden game_mode field --}}
                 <input type="hidden" name="game_mode" :value="mode">
+
+                {{-- Hidden tournament format field (only meaningful in tournament mode) --}}
+                <input type="hidden" name="tournament_id" :value="tournamentId">
 
                 {{-- Mode selector. Career card always renders (locked or unlocked), so
                      we have a tab as long as there's at least one more mode available. --}}
@@ -248,6 +252,38 @@
                 {{-- ===================== TOURNAMENT MODE: National teams ===================== --}}
                 @if($hasTournamentMode)
                     <div x-show="mode === 'tournament'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6">
+
+                        {{-- Format selector: classic group stage vs. Swiss league phase.
+                             Both formats field the same national teams, so the toggle only
+                             swaps the tournament competition the game is created against. --}}
+                        @if($hasSwissTournament)
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <button type="button"
+                                        @click="tournamentId = 'WC2026'"
+                                        :class="tournamentId === 'WC2026'
+                                            ? 'ring-2 ring-accent-gold border-accent-gold/30 bg-accent-gold/5'
+                                            : 'border-border-strong hover:bg-surface-700/50'"
+                                        class="relative flex flex-col gap-1 p-4 rounded-xl border transition-all duration-200 text-left">
+                                    <h3 class="font-heading font-bold text-sm md:text-base uppercase tracking-wide"
+                                        :class="tournamentId === 'WC2026' ? 'text-accent-gold' : 'text-text-body'">
+                                        {{ __('game.tournament_format_group') }}
+                                    </h3>
+                                    <p class="text-xs md:text-sm text-text-muted">{{ __('game.tournament_format_group_desc') }}</p>
+                                </button>
+                                <button type="button"
+                                        @click="tournamentId = 'WCSWISS'"
+                                        :class="tournamentId === 'WCSWISS'
+                                            ? 'ring-2 ring-accent-gold border-accent-gold/30 bg-accent-gold/5'
+                                            : 'border-border-strong hover:bg-surface-700/50'"
+                                        class="relative flex flex-col gap-1 p-4 rounded-xl border transition-all duration-200 text-left">
+                                    <h3 class="font-heading font-bold text-sm md:text-base uppercase tracking-wide"
+                                        :class="tournamentId === 'WCSWISS' ? 'text-accent-gold' : 'text-text-body'">
+                                        {{ __('game.tournament_format_swiss') }}
+                                    </h3>
+                                    <p class="text-xs md:text-sm text-text-muted">{{ __('game.tournament_format_swiss_desc') }}</p>
+                                </button>
+                            </div>
+                        @endif
 
                         {{-- Featured teams (larger cards) --}}
                         @if($wcFeaturedTeams->isNotEmpty())

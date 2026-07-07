@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Log;
 /**
  * Generates league phase fixtures for Swiss format competitions.
  *
- * 36 teams in 4 pots of 9. Each team plays 8 matches (4 home, 4 away):
+ * The field is split into 4 equal pots (9 teams each for the 36-team UCL,
+ * 12 each for the 48-team national-teams tournament). Each team plays 8
+ * matches (4 home, 4 away):
  * - 2 opponents from each pot (1 home, 1 away)
  * - Country protection: teams from the same country never face each other
+ *   (for national-team fields, "country" carries the confederation, so this
+ *   avoids same-confederation matchups)
  * - Diversity cap: max 2 opponents from any single foreign country
  *
  * Uses progressive constraint relaxation to guarantee fixture generation:
@@ -24,7 +28,7 @@ use Illuminate\Support\Facades\Log;
  */
 class SwissDrawService
 {
-    private const TEAMS_PER_POT = 9;
+    private const POT_COUNT = 4;
     private const MATCHES_PER_TEAM = 8;
     private const MATCHDAYS = 8;
 
@@ -45,10 +49,20 @@ class SwissDrawService
             $pots[$team['pot']][] = $team;
         }
 
-        foreach ([1, 2, 3, 4] as $pot) {
-            if (!isset($pots[$pot]) || count($pots[$pot]) !== self::TEAMS_PER_POT) {
+        // Pot size is derived from the field so the same engine serves both the
+        // 36-team UCL (9 per pot) and the 48-team national tournament (12 per pot).
+        $teamCount = count($teams);
+        if ($teamCount % self::POT_COUNT !== 0) {
+            throw new \InvalidArgumentException(
+                "Team count ({$teamCount}) must be divisible by " . self::POT_COUNT . " pots"
+            );
+        }
+        $teamsPerPot = intdiv($teamCount, self::POT_COUNT);
+
+        foreach (range(1, self::POT_COUNT) as $pot) {
+            if (!isset($pots[$pot]) || count($pots[$pot]) !== $teamsPerPot) {
                 throw new \InvalidArgumentException(
-                    "Pot {$pot} must have exactly " . self::TEAMS_PER_POT . " teams, got " . count($pots[$pot] ?? [])
+                    "Pot {$pot} must have exactly {$teamsPerPot} teams, got " . count($pots[$pot] ?? [])
                 );
             }
         }
@@ -106,8 +120,8 @@ class SwissDrawService
     /**
      * Generate fixtures using the circle (polygon) method — guaranteed to succeed.
      *
-     * 1. Fix teams[0], rotate teams[1..35] through 35 rounds, pick 8 rounds
-     * 2. Each round produces 18 undirected pairings (no conflicts)
+     * 1. Fix teams[0], rotate the remaining n-1 teams through n-1 rounds, pick 8 rounds
+     * 2. Each round produces n/2 undirected pairings (no conflicts)
      * 3. Orient using Euler circuit for exactly 4H/4A per team
      * 4. Map directed edges back to their original round assignments
      *
@@ -122,8 +136,8 @@ class SwissDrawService
 
         // Fix the first team, rotate the rest (circle method)
         $fixed = $teamIds[0];
-        $rotating = array_slice($teamIds, 1); // 35 elements
-        $n = count($teamIds); // 36
+        $rotating = array_slice($teamIds, 1); // n-1 elements
+        $n = count($teamIds);
 
         // Generate all 35 possible rounds
         $allRounds = [];
@@ -221,7 +235,7 @@ class SwissDrawService
     // ──────────────────────────────────────────────────────────────────────
 
     /**
-     * Try to assign opponents pot-by-pot. Returns 144 matches or null on failure.
+     * Try to assign opponents pot-by-pot. Returns all matches or null on failure.
      *
      * For each team, assigns 2 opponents from each pot. Assignments are bidirectional:
      * when A picks B, B also gets A. This means a team can accumulate opponents from
@@ -392,7 +406,8 @@ class SwissDrawService
     // ──────────────────────────────────────────────────────────────────────
 
     /**
-     * Schedule 144 matches into 8 rounds of 18, with no team playing twice per round.
+     * Schedule all matches into 8 rounds (each a perfect matching over the
+     * field), with no team playing twice per round.
      *
      * Extracts one perfect matching per round using greedy + augmenting paths.
      * Retries with different random seeds since some extraction orders can fail.
@@ -432,7 +447,7 @@ class SwissDrawService
     }
 
     /**
-     * Find a perfect matching (18 edges covering all 36 teams) in the available edges.
+     * Find a perfect matching (covering all teams, one edge each) in the available edges.
      *
      * Phase 1 — Greedy: pick random edges where both endpoints are free.
      * Phase 2 — Augment: for each still-free team, BFS for an augmenting path
