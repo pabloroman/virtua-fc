@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      font-family: 'DM Sans', sans-serif;
+      background: #0a0f1a;
+      color: #e0e4ec;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a2744 0%, #0d1829 100%);
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(99, 179, 237, 0.15);
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #63b3ed;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #718096;
+      margin-top: 3px;
+    }
+
+    .content {
+      padding: 16px 20px;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(99, 179, 237, 0.06);
+      border: 1px solid rgba(99, 179, 237, 0.12);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #718096;
+      flex-shrink: 0;
+    }
+
+    .status-dot.ready { background: #48bb78; box-shadow: 0 0 6px rgba(72, 187, 120, 0.4); }
+    .status-dot.working { background: #ed8936; box-shadow: 0 0 6px rgba(237, 137, 54, 0.4); animation: pulse 1s infinite; }
+    .status-dot.error { background: #fc8181; box-shadow: 0 0 6px rgba(252, 129, 129, 0.4); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3182ce, #2b6cb0);
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary:hover { background: linear-gradient(135deg, #4299e1, #3182ce); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: rgba(99, 179, 237, 0.08);
+      color: #63b3ed;
+      border: 1px solid rgba(99, 179, 237, 0.2);
+    }
+
+    .btn-secondary:hover { background: rgba(99, 179, 237, 0.14); }
+    .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .preview {
+      margin-top: 14px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #0d1321;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #a0aec0;
+      white-space: pre-wrap;
+      word-break: break-all;
+      display: none;
+    }
+
+    .preview::-webkit-scrollbar { width: 6px; }
+    .preview::-webkit-scrollbar-track { background: transparent; }
+    .preview::-webkit-scrollbar-thumb { background: rgba(99, 179, 237, 0.2); border-radius: 3px; }
+
+    .count-badge {
+      display: inline-block;
+      background: rgba(72, 187, 120, 0.15);
+      color: #48bb78;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    .info {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(237, 137, 54, 0.06);
+      border: 1px solid rgba(237, 137, 54, 0.15);
+      border-radius: 8px;
+      font-size: 11px;
+      color: #a0aec0;
+      line-height: 1.5;
+    }
+
+    .info strong {
+      color: #ed8936;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(99, 179, 237, 0.12);
+      margin: 16px 0;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #63b3ed;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-row .btn {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .btn-danger {
+      background: rgba(252, 129, 129, 0.1);
+      color: #fc8181;
+      border: 1px solid rgba(252, 129, 129, 0.2);
+    }
+
+    .btn-danger:hover { background: rgba(252, 129, 129, 0.18); }
+    .btn-danger:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn-warning {
+      background: rgba(237, 137, 54, 0.1);
+      color: #ed8936;
+      border: 1px solid rgba(237, 137, 54, 0.2);
+    }
+
+    .btn-warning:hover { background: rgba(237, 137, 54, 0.18); }
+    .btn-warning:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(99, 179, 237, 0.1);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3182ce, #63b3ed);
+      border-radius: 2px;
+      transition: width 0.3s;
+      width: 0%;
+    }
+
+    .tf-input {
+      width: 100%;
+      padding: 8px 12px;
+      background: #0d1321;
+      color: #e0e4ec;
+      border: 1px solid rgba(99, 179, 237, 0.2);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .tf-input::placeholder { color: #4a5568; }
+
+    .info a { color: #63b3ed; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Transfermarkt Scraper</h1>
+    <p>Extract club &amp; player data to JSON</p>
+  </div>
+
+  <div class="content">
+    <!-- GitHub settings -->
+    <details id="settings" style="margin-bottom: 14px;">
+      <summary style="cursor: pointer; font-size: 12px; font-weight: 700; color: #63b3ed; letter-spacing: 0.3px;">⚙ GITHUB SETTINGS</summary>
+      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <input id="ghToken" class="tf-input" type="password" placeholder="Fine-grained PAT (Contents + Pull requests)" autocomplete="off">
+        <input id="ghSeason" class="tf-input" type="text" placeholder="Target season (e.g. 2026)">
+        <input id="ghRepo" class="tf-input" type="text" placeholder="owner/repo">
+        <input id="ghBaseBranch" class="tf-input" type="text" placeholder="Base branch (main)">
+        <button class="btn btn-secondary" id="saveSettingsBtn">Save settings</button>
+        <span id="settingsStatus" style="font-size: 11px; color: #718096;"></span>
+      </div>
+    </details>
+
+    <div class="divider"></div>
+
+    <!-- Page scraper section -->
+    <div class="section-title">PAGE SCRAPER</div>
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Ready</span>
+      <span class="count-badge" id="countBadge" style="display:none"></span>
+    </div>
+
+    <button class="btn btn-primary" id="scrapeBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      Scrape This Page
+    </button>
+
+    <button class="btn btn-secondary" id="downloadBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download JSON
+    </button>
+
+    <select id="poolSelect" style="
+      display:none; width:100%; margin-bottom:8px; padding:8px 12px;
+      background:#0d1321; color:#e0e4ec; border:1px solid rgba(99,179,237,0.2);
+      border-radius:6px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; outline:none;">
+      <option value="EUR">EUR pool (European clubs)</option>
+      <option value="INT">INT pool (International clubs)</option>
+    </select>
+
+    <button class="btn btn-primary" id="pushBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v12"/><circle cx="5" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+      Push to GitHub
+    </button>
+
+    <div id="pushResult" class="info" style="display:none"></div>
+
+    <pre class="preview" id="preview"></pre>
+
+    <div class="divider"></div>
+
+    <!-- Season refresh section -->
+    <div class="section-title">SEASON REFRESH</div>
+    <p style="font-size: 11px; color: #718096; margin-bottom: 10px; line-height: 1.5;">
+      Scrapes every league for the target season and pushes them to the
+      <code>season-data</code> branch in one commit + PR.
+    </p>
+
+    <div class="status-bar">
+      <span class="status-dot" id="refreshStatusDot"></span>
+      <span id="refreshStatusText">Idle</span>
+      <span class="count-badge" id="refreshCountBadge" style="display:none"></span>
+    </div>
+    <div class="progress-bar" id="refreshProgressBar" style="display:none">
+      <div class="progress-bar__fill" id="refreshProgressFill"></div>
+    </div>
+
+    <div class="btn-row" style="margin-top: 10px">
+      <button class="btn btn-primary" id="refreshStartBtn">Refresh all leagues</button>
+      <button class="btn btn-warning" id="refreshStopBtn" disabled>Stop</button>
+    </div>
+    <div id="refreshResult" class="info" style="display:none"></div>
+
+    <div class="divider"></div>
+
+    <!-- Batch positions section -->
+    <div class="section-title">BATCH PLAYER POSITIONS</div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="csvSelect" style="font-size: 11px; color: #718096; display: block; margin-bottom: 4px;">Player list</label>
+      <select id="csvSelect" style="
+        width: 100%;
+        padding: 8px 12px;
+        background: #0d1321;
+        color: #e0e4ec;
+        border: 1px solid rgba(99, 179, 237, 0.2);
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        cursor: pointer;
+        outline: none;
+      ">
+        <option value="esp-player-ids.csv">ESP Player IDs</option>
+        <option value="wolrld-cup-player-ids.csv">World Cup Player IDs</option>
+      </select>
+    </div>
+
+    <div class="status-bar">
+      <span class="status-dot" id="batchStatusDot"></span>
+      <span id="batchStatusText">Idle</span>
+      <span class="count-badge" id="batchCountBadge" style="display:none"></span>
+    </div>
+    <div class="progress-bar" id="batchProgressBar" style="display:none">
+      <div class="progress-bar__fill" id="batchProgressFill"></div>
+    </div>
+
+    <div class="btn-row" style="margin-top: 10px">
+      <button class="btn btn-primary" id="batchStartBtn">Start / Resume</button>
+      <button class="btn btn-warning" id="batchStopBtn" disabled>Stop</button>
+    </div>
+    <div class="btn-row" style="margin-top: 8px">
+      <button class="btn btn-secondary" id="batchDownloadBtn" disabled>Download JSON</button>
+      <button class="btn btn-danger" id="batchResetBtn">Reset</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="info">
+      <strong>Supported pages:</strong><br>
+      • Stadiums (<code>/stadien/wettbewerb/</code>) — clubs + players<br>
+      • League fixtures (<code>/gesamtspielplan/wettbewerb/</code>) — matchdays<br>
+      • Cup fixtures (<code>/gesamtspielplan/pokalwettbewerb/</code>) — teams<br>
+      • Squad (<code>/kader/verein/</code>) — single club<br>
+      • Schedule (<code>/spielplan/verein/</code>) — redirects to squad
+    </div>
+  </div>
+
+  <script src="season-config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

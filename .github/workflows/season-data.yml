@@ -1,0 +1,112 @@
+name: Season Data
+
+# Validates and canonicalizes season reference-data refreshes. The browser
+# scraper pushes squad files to a `season-data/{year}` branch and opens a PR;
+# this workflow normalizes them (committing the canonical form back), gates the
+# merge on app:validate-season, and posts a transfer diff as a PR comment.
+on:
+  pull_request:
+    paths:
+      - 'data/**'
+
+# Let a newer push supersede an in-flight run on the same PR.
+concurrency:
+  group: season-data-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write        # push the normalized commit back to the PR branch
+  pull-requests: write   # upsert the transfer-diff comment
+
+jobs:
+  season-data:
+    runs-on: ubuntu-latest
+    # Same-repo PRs only — fork PRs lack a write token, and the scraper pushes
+    # to a branch in this repo anyway.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, xml
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Determine refreshed season
+        id: season
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags origin "$BASE_SHA"
+          seasons=$(git diff --name-only "$BASE_SHA" HEAD -- 'data/**' \
+            | sed -nE 's#^data/([0-9]{4})/.*#\1#p' | sort -u)
+          count=$(printf '%s\n' "$seasons" | grep -c . || true)
+          if [ "$count" -eq 0 ]; then
+            echo "No season folder changed; nothing to do."
+            echo "season=" >> "$GITHUB_OUTPUT"
+          elif [ "$count" -gt 1 ]; then
+            echo "::error::PR touches multiple season folders ($seasons); refresh one season at a time."
+            exit 1
+          else
+            echo "season=$seasons" >> "$GITHUB_OUTPUT"
+            echo "Refreshing season $seasons"
+          fi
+
+      - name: Normalize squad files and commit back
+        if: steps.season.outputs.season != ''
+        env:
+          SEASON: ${{ steps.season.outputs.season }}
+        run: |
+          php artisan app:normalize-season "$SEASON"
+          if ! git diff --quiet -- data/; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Canonicalize season $SEASON squad data"
+            git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+          fi
+
+      - name: Validate season data
+        if: steps.season.outputs.season != ''
+        env:
+          SEASON: ${{ steps.season.outputs.season }}
+        run: php artisan app:validate-season "$SEASON"
+
+      - name: Build transfer diff
+        if: steps.season.outputs.season != ''
+        env:
+          SEASON: ${{ steps.season.outputs.season }}
+        run: php artisan app:diff-season "$SEASON" --format=md > /tmp/season-diff.md
+
+      - name: Post transfer diff comment
+        if: steps.season.outputs.season != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- season-data-diff -->';
+            const body = `${marker}\n` + fs.readFileSync('/tmp/season-diff.md', 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
