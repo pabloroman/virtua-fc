@@ -425,6 +425,11 @@ return [
     'mode_tournament_desc' => 'Take a nation to the World Cup.',
     'mode_tournament_badge' => 'World Cup',
     'wc2026_name' => 'World Cup 2026',
+    'wcswiss_name' => 'World Cup — Swiss Format',
+    'tournament_format_group' => 'Group stage',
+    'tournament_format_group_desc' => 'Classic World Cup: 12 groups of 4, then a straight knockout.',
+    'tournament_format_swiss' => 'Swiss format',
+    'tournament_format_swiss_desc' => 'One 48-team league phase — 8 games each, top 24 reach the knockout.',
     'career_unlock_hint' => 'Win the World Cup to unlock',
     'b_team_not_playable' => 'B teams are not playable',
     'primera_federacion' => 'Primera Federación',
@@ -466,6 +471,9 @@ return [
     // UEFA Swiss Format - Standings Zones (UCL)
     'ucl_direct_knockout' => 'Direct qualification to round of 16',
     'ucl_eliminated' => 'Eliminated',
+    'wcswiss_direct_knockout' => 'Direct to Round of 16',
+    'wcswiss_knockout_playoff' => 'Knockout playoff',
+    'wcswiss_eliminated' => 'Eliminated',
 
     // UEFA Swiss Format - Standings Zones (UEL)
     'uel_direct_knockout' => 'Direct qualification to round of 16',

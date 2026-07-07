@@ -30,6 +30,7 @@ class InitGame
         $request->validate([
             'team_id' => ['required', 'uuid'],
             'game_mode' => ['sometimes', Rule::in([Game::MODE_CAREER, Game::MODE_TOURNAMENT, Game::MODE_CAREER_PRO])],
+            'tournament_id' => ['sometimes', Rule::in(['WC2026', 'WCSWISS'])],
         ]);
 
         $gameMode = $request->get('game_mode', Game::MODE_CAREER);
@@ -70,6 +71,7 @@ class InitGame
             $game = $this->tournamentCreationService->create(
                 userId: (string) $request->user()->id,
                 teamId: $request->get('team_id'),
+                competitionId: $request->get('tournament_id', 'WC2026'),
             );
 
             $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id, Game::MODE_TOURNAMENT);

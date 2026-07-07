@@ -425,6 +425,11 @@ return [
     'mode_tournament_desc' => 'Lleva a una selección al Mundial.',
     'mode_tournament_badge' => 'Copa del Mundo',
     'wc2026_name' => 'Copa del Mundo 2026',
+    'wcswiss_name' => 'Mundial — Formato Suizo',
+    'tournament_format_group' => 'Fase de grupos',
+    'tournament_format_group_desc' => 'Mundial clásico: 12 grupos de 4 y luego eliminatorias directas.',
+    'tournament_format_swiss' => 'Formato suizo',
+    'tournament_format_swiss_desc' => 'Una liga única de 48 selecciones — 8 partidos cada una, las 24 mejores pasan a eliminatorias.',
     'career_unlock_hint' => 'Gana el Mundial para desbloquearlo',
     'b_team_not_playable' => 'Las filiales no son jugables',
     'primera_federacion' => 'Primera Federación',
@@ -466,6 +471,9 @@ return [
     // UEFA Swiss Format - Standings Zones (UCL)
     'ucl_direct_knockout' => 'Clasificación directa a octavos',
     'ucl_eliminated' => 'Eliminado',
+    'wcswiss_direct_knockout' => 'Directo a octavos',
+    'wcswiss_knockout_playoff' => 'Play-off de eliminatorias',
+    'wcswiss_eliminated' => 'Eliminado',
 
     // UEFA Swiss Format - Standings Zones (UEL)
     'uel_direct_knockout' => 'Clasificación directa a octavos',

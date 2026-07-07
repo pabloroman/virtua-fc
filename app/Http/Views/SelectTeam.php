@@ -61,6 +61,10 @@ final class SelectTeam
         $wcFeaturedTeams = collect();
         $hasTournamentMode = $request->user()->canPlayTournamentMode() && Competition::where('id', 'WC2026')->exists();
 
+        // The Swiss-format World Cup fields the same national teams; when its
+        // competition is seeded, the tournament section offers a format toggle.
+        $hasSwissTournament = $hasTournamentMode && Competition::where('id', 'WCSWISS')->exists();
+
         if ($hasTournamentMode) {
             $locale = app()->getLocale();
             $allWcTeams = Cache::remember("wc2026_selectable_teams:{$locale}", 600, function () {
@@ -91,6 +95,7 @@ final class SelectTeam
             'wcTeams' => $wcTeams,
             'wcFeaturedTeams' => $wcFeaturedTeams,
             'hasTournamentMode' => $hasTournamentMode,
+            'hasSwissTournament' => $hasSwissTournament,
             'hasCareerAccess' => $hasCareerAccess,
             'proManagerTeams' => $proManagerTeams,
         ]);
