@@ -63,7 +63,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($areaData as $area)
-                <div class="bg-surface-800 border border-border-default rounded-xl p-4" x-data="{ showUpgrade: false, showReduce: false }">
+                <div class="bg-surface-800 border border-border-default rounded-lg p-4" x-data="{ showUpgrade: false, showReduce: false }">
                     {{-- Header --}}
                     <div class="flex items-center justify-between mb-2">
                         <h4 class="font-heading text-sm font-semibold text-text-primary">{{ __('finances.' . $area['key']) }}</h4>

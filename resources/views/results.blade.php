@@ -32,7 +32,7 @@
         @endif
 
         {{-- All Results --}}
-        <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
+        <div class="bg-surface-800 rounded-lg border border-border-default p-4 md:p-6">
             <div class="space-y-1">
                 @foreach($matches as $match)
                     <div class="flex items-center py-3 px-4 rounded-lg {{ $match->id === $playerMatch?->id ? 'bg-surface-600' : 'bg-surface-700/50' }}">

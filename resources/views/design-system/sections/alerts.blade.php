@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Flash Messages</h3>
         <p class="text-sm text-text-secondary mb-4">Used for session-based success/error feedback after form submissions. Left border accent with tinted dark backgrounds.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-3 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-3 mb-3">
             {{-- Success --}}
             <div class="flex items-start gap-3 border-l-4 border-l-emerald-500 bg-emerald-500/10 py-3 pl-4 pr-4 rounded-r-lg">
                 <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Banner Alerts</h3>
         <p class="text-sm text-text-secondary mb-4">Full-width banners for app-level notices. Used for beta mode and admin impersonation.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl overflow-hidden mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg overflow-hidden mb-3">
             <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-400 text-center text-sm py-1.5 px-4">
                 <span class="font-semibold">BETA</span> &mdash; This game is in beta. Your progress may be reset.
             </div>
@@ -173,7 +173,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Status Banners</h3>
         <p class="text-sm text-text-secondary mb-4">Contextual banners with icon, title, optional description, and action slot. Used for pre-season notices, action-required alerts, and other page-level status messages.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-3 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-3 mb-3">
             {{-- Warning with action --}}
             <x-status-banner color="gold" title="Action required">
                 <x-slot name="icon">
@@ -293,7 +293,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Actionable Warning Card</h3>
         <p class="text-sm text-text-secondary mb-4">Dashed border variant used when an action is required from the user (e.g., budget not allocated).</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="text-center py-6 border-2 border-dashed border-amber-500/30 bg-amber-500/5 rounded-xl">
                 <div class="text-sm text-amber-400 font-medium mb-2">Budget not allocated</div>
                 <div class="text-3xl font-bold text-text-primary mb-1">&euro;42.5M</div>
@@ -324,7 +324,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Tip List</h3>
         <p class="text-sm text-text-secondary mb-4">Compact recommendation / coach-tip list. Tiny colored dot bullet (sky / amber / red) plus secondary text. Used inside <code class="font-mono text-xs">&lt;x-section-card&gt;</code> bodies for the opponent analysis recommendations and the squad planner sidebar.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 max-w-md">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3 max-w-md">
             <x-tip-list :tips="[
                 ['type' => 'warning', 'message' => 'Renueva a Pedri — contrato hasta 2026 y aún sin acuerdo.'],
                 ['type' => 'info',    'message' => 'Da minutos a Lamine Yamal, Cubarsí para maximizar su desarrollo.'],

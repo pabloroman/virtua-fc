@@ -19,7 +19,7 @@
         : 'border-border-default';
 @endphp
 
-<div class="bg-surface-700 border {{ $borderClass }} rounded-xl overflow-hidden flex flex-col">
+<div class="bg-surface-700 border {{ $borderClass }} rounded-lg overflow-hidden flex flex-col">
     {{-- Header: crest + team name + competition --}}
     <div class="px-5 pt-5 pb-4 flex items-start gap-4">
         @if($team)

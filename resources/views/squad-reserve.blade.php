@@ -67,7 +67,7 @@
                 <p class="text-text-muted text-sm">{{ __('squad.no_reserve_players') }}</p>
             </div>
         @else
-            <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+            <div x-data class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                 {{-- Table header --}}
                 <div class="hidden md:block">
                     <div class="grid grid-cols-[40px_1fr_48px_56px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">

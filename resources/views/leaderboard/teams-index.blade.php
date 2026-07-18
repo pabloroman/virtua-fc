@@ -36,7 +36,7 @@
                             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
                                 @foreach($group['teams'] as $team)
                                     <a href="{{ route('leaderboard.team', $team->slug) }}"
-                                       class="group flex flex-col items-center gap-2 p-3 rounded-xl border border-transparent hover:border-border-default hover:bg-surface-700/50 transition-all">
+                                       class="group flex flex-col items-center gap-2 p-3 rounded-lg border border-transparent hover:border-border-default hover:bg-surface-700/50 transition-all">
                                         <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center shrink-0">
                                             <x-team-crest :team="$team" class="max-w-full max-h-full object-contain" />
                                         </div>

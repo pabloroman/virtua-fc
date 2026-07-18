@@ -22,7 +22,7 @@
              it reads as a true hero for the page, not just another card in the column.
              The decorative SVG silhouette is hero-only by design (one image, behind
              the name) and must not be repeated on other cards. --}}
-        <div class="relative overflow-hidden bg-surface-800 border border-border-default rounded-xl mt-6">
+        <div class="relative overflow-hidden bg-surface-800 border border-border-default rounded-lg mt-6">
 
             <div class="relative px-5 py-6 md:px-7 md:py-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
                 <div class="min-w-0" x-data>

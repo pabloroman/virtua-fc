@@ -30,7 +30,7 @@
 
         {{-- Post-season results banner --}}
         @if($finances->actual_total_revenue > 0)
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4 md:p-5 mb-6">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4 md:p-5 mb-6">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-4 md:gap-6">
                     <div>
@@ -231,7 +231,7 @@
                 </x-section-card>
                 @else
                 {{-- Budget not allocated --}}
-                <div class="bg-surface-800 border-2 border-dashed border-accent-gold/30 rounded-xl text-center py-8 px-6">
+                <div class="bg-surface-800 border-2 border-dashed border-accent-gold/30 rounded-lg text-center py-8 px-6">
                     <div class="text-sm text-accent-gold font-medium mb-2">{{ __('finances.budget_not_set') }}</div>
                     <div class="font-heading text-3xl font-bold text-text-primary mb-1">{{ $finances->formatted_available_surplus }}</div>
                     <div class="text-sm text-text-muted mb-4">{{ __('finances.surplus_to_allocate') }}</div>

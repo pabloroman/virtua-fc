@@ -10,7 +10,7 @@
     $isFull = $mode === MatchSummaryPresenter::MODE_FULL;
 @endphp
 
-<div class="rounded-xl border border-border-default bg-surface-800 overflow-hidden">
+<div class="rounded-lg border border-border-default bg-surface-800 overflow-hidden">
     {{-- Optional header: competition pill + venue · date --}}
     @if($showHeader)
         <div class="px-4 py-3 md:py-4 border-b border-border-default">

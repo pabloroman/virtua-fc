@@ -270,7 +270,7 @@
             </div>
         </div>
     @empty
-        <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-8 text-center">
             <p class="text-sm text-text-muted">{{ __('admin.no_data') }}</p>
         </div>
     @endforelse

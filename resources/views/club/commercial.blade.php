@@ -17,7 +17,7 @@
         <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
         {{-- Intro: this is where you grow recurring income. --}}
-        <div class="mt-6 bg-surface-800 border border-border-default rounded-xl px-5 py-5">
+        <div class="mt-6 bg-surface-800 border border-border-default rounded-lg px-5 py-5">
             <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary">{{ __('club.commercial.title') }}</h3>
             <p class="mt-2 text-sm text-text-secondary leading-relaxed">{{ __('club.commercial.intro') }}</p>
         </div>

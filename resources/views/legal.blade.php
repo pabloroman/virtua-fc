@@ -30,7 +30,7 @@
 
             {{-- Content --}}
             <main class="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 pb-12">
-                <div class="bg-surface-800 border border-border-default rounded-xl p-6 sm:p-10">
+                <div class="bg-surface-800 border border-border-default rounded-lg p-6 sm:p-10">
                     <h1 class="font-heading text-2xl sm:text-3xl font-bold uppercase tracking-wide text-text-primary mb-8">Aviso Legal</h1>
 
                     <div class="space-y-5 text-sm sm:text-base leading-relaxed text-text-body">

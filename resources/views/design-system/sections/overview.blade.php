@@ -51,7 +51,7 @@
                     'color' => 'text-accent-orange',
                 ],
             ] as $principle)
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center gap-2 mb-2">
                     <div class="w-2 h-2 rounded-full {{ $principle['color'] }} bg-current"></div>
                     <h3 class="font-heading font-bold text-sm text-text-primary uppercase tracking-wide">{{ $principle['title'] }}</h3>
@@ -67,7 +67,7 @@
         <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-5">Typefaces</h2>
 
         {{-- Barlow Condensed --}}
-        <div class="bg-surface-800 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1">
                 <h3 class="font-heading text-3xl font-bold text-text-primary uppercase tracking-wide">Barlow Condensed</h3>
                 <div class="text-[10px] text-text-muted uppercase tracking-widest mt-1 md:mt-0">font-heading</div>
@@ -94,7 +94,7 @@
         </div>
 
         {{-- Inter --}}
-        <div class="bg-surface-800 border border-border-default rounded-xl p-6">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-6">
             <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1">
                 <h3 class="font-heading text-3xl font-bold text-text-primary uppercase tracking-wide">Inter</h3>
                 <div class="text-[10px] text-text-muted uppercase tracking-widest mt-1 md:mt-0">font-sans / font-body</div>

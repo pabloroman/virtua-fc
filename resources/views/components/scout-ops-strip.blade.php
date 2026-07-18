@@ -9,7 +9,7 @@
     link to the club investment page. Permanent context for what your scouting
     department can reach and how to widen it.
 --}}
-<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 rounded-xl border border-border-default bg-surface-800">
+<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 rounded-lg border border-border-default bg-surface-800">
     <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 min-w-0">
         <span class="flex items-center gap-2 text-sm font-semibold text-text-primary">
             <svg class="w-4 h-4 text-text-secondary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

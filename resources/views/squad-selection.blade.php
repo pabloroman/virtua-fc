@@ -33,7 +33,7 @@ $tabs = [
             <x-flash-message type="error" :message="session('error')" class="mb-4" />
 
             {{-- Main Card --}}
-            <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-xs border border-border-strong overflow-hidden">
 
                 {{-- Title Bar --}}
                 <div class="p-4 md:p-6 border-b border-border-strong">

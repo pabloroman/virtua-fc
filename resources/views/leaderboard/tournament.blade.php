@@ -31,11 +31,11 @@
 
             {{-- Summary Cards --}}
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.total_players') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ number_format($totalPlayers) }}</div>
                 </div>
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.total_tournaments') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ number_format($totalTournaments) }}</div>
                 </div>

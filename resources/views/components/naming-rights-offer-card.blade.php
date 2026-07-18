@@ -5,7 +5,7 @@
 
 @use(App\Support\Money)
 
-<div class="bg-surface-700 border border-border-default rounded-xl overflow-hidden flex flex-col">
+<div class="bg-surface-700 border border-border-default rounded-lg overflow-hidden flex flex-col">
     {{-- Header: sponsor + the stadium name it imposes --}}
     <div class="px-5 pt-5 pb-3">
         @if($offer['is_renewal'] ?? false)

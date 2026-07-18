@@ -9,7 +9,7 @@
         <x-help-toggle :label="$label" />
     @endisset
 
-    <div x-show="helpOpen" x-transition x-cloak class="mt-3 bg-surface-800 border border-border-default rounded-xl p-4 text-sm">
+    <div x-show="helpOpen" x-transition x-cloak class="mt-3 bg-surface-800 border border-border-default rounded-lg p-4 text-sm">
         {{ $slot }}
     </div>
 </div>

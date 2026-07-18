@@ -27,7 +27,7 @@
 
             {{-- Content --}}
             <main class="flex-1 flex items-center justify-center max-w-3xl mx-auto w-full px-4 sm:px-6 pb-12">
-                <div class="bg-surface-800 border border-border-default rounded-xl p-6 sm:p-10 w-full text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg p-6 sm:p-10 w-full text-center">
                     {{-- Icon --}}
                     <div class="flex justify-center mb-6">
                         <div class="w-16 h-16 rounded-full bg-accent-orange/15 flex items-center justify-center">

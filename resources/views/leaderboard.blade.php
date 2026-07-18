@@ -33,11 +33,11 @@
 
             {{-- Summary Cards --}}
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.total_managers') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ number_format($totalManagers) }}</div>
                 </div>
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.total_matches') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ number_format($totalMatches) }}</div>
                 </div>

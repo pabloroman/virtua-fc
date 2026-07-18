@@ -20,7 +20,7 @@
     {{-- Logo Sizes --}}
     <h3 class="text-lg font-semibold text-text-primary mb-3">Logo Sizes</h3>
     <p class="text-sm text-text-secondary mb-4">The logo scales across contexts -- from navigation headers to compact footers. Use the Tailwind/HTML implementation for in-app rendering.</p>
-    <div class="bg-surface-800 border border-border-default rounded-xl p-6 space-y-6 mb-4">
+    <div class="bg-surface-800 border border-border-default rounded-lg p-6 space-y-6 mb-4">
         {{-- Default (responsive sm:text-3xl) --}}
         <div class="flex flex-col md:flex-row md:items-center gap-3">
             <div class="w-32 shrink-0">
@@ -92,7 +92,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {{-- Avatar --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-surface-900 min-h-[120px]">
                 <img src="/img/social/avatar.svg" alt="VirtuaFC social media avatar" class="w-32 h-32">
             </div>
@@ -105,7 +105,7 @@
             </div>
         </div>
         {{-- OG Card --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-surface-900 min-h-[120px]">
                 <img src="/img/social/og-card.svg" alt="VirtuaFC Open Graph card" class="w-full max-w-[320px]">
             </div>
@@ -121,7 +121,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
         {{-- Banner --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-4 flex items-center justify-center bg-surface-900 min-h-[100px]">
                 <img src="/img/social/banner.svg" alt="VirtuaFC social media banner" class="w-full">
             </div>
@@ -134,7 +134,7 @@
             </div>
         </div>
         {{-- Story --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-4 flex items-center justify-center bg-surface-900 min-h-[100px]">
                 <img src="/img/social/story.svg" alt="VirtuaFC story template" class="h-48">
             </div>
@@ -152,19 +152,19 @@
     <h3 class="text-lg font-semibold text-text-primary mb-3">Brand Anatomy</h3>
     <p class="text-sm text-text-secondary mb-4">The core elements that make up the VirtuaFC visual identity.</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 -skew-x-12"></div>
             <h4 class="font-semibold text-sm text-text-primary mb-1">Skewed Parallelogram</h4>
             <p class="text-xs text-text-secondary leading-relaxed">The -12deg skew is the signature shape. Applied via <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">-skew-x-12</code> in Tailwind or <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">skewX(-12deg)</code> in SVG.</p>
         </div>
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 flex items-center justify-center">
                 <span class="text-white text-xs font-bold">#dc2626</span>
             </div>
             <h4 class="font-semibold text-sm text-text-primary mb-1">Brand Red</h4>
             <p class="text-xs text-text-secondary leading-relaxed">Tailwind's <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">red-600</code> (#dc2626) is the primary brand color. Used for the logo background and primary CTA buttons.</p>
         </div>
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <div class="h-10 mb-3 flex items-center">
                 <span class="text-2xl font-extrabold text-text-primary tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Barlow SC</span>
             </div>
@@ -207,7 +207,7 @@
     {{-- Inline SVG Logo (for external use) --}}
     <h3 class="text-lg font-semibold text-text-primary mt-10 mb-3">SVG Logo (for external use)</h3>
     <p class="text-sm text-text-secondary mb-4">A self-contained SVG for use outside the app (social media, documentation, external sites). No Tailwind dependency.</p>
-    <div class="bg-surface-700/30 border border-border-default rounded-xl p-8 flex items-center justify-center mb-4">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg p-8 flex items-center justify-center mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143 46" class="h-14">
             <defs>
                 <style>
@@ -242,7 +242,7 @@
     <h4 class="text-sm font-semibold text-text-body mb-3">Wordmark</h4>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {{-- Dark variant (surface-900) --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-surface-900 min-h-[120px]">
                 <img src="/img/brand/logo-dark.png" alt="VirtuaFC logo on dark background" class="h-12">
             </div>
@@ -259,7 +259,7 @@
             </div>
         </div>
         {{-- Light variant --}}
-        <div class="border border-border-default rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-lg overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-white min-h-[120px]">
                 <img src="/img/brand/logo.png" alt="VirtuaFC logo" class="h-12">
             </div>
@@ -279,7 +279,7 @@
 
     {{-- Icon PNGs --}}
     <h4 class="text-sm font-semibold text-text-body mb-3">App Icon</h4>
-    <div class="border border-border-default rounded-xl overflow-hidden mb-4">
+    <div class="border border-border-default rounded-lg overflow-hidden mb-4">
         <div class="p-6 bg-surface-800">
             <div class="flex flex-wrap items-end gap-6">
                 @foreach([

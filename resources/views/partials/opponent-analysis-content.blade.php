@@ -30,7 +30,7 @@
 @unless($inModal)
     {{-- Match meta strip (page-only; the modal already lives inside the
          pre-match flow and doesn't need to repeat the fixture metadata). --}}
-    <div class="rounded-xl border border-border-default bg-surface-800 px-4 py-3 mb-4">
+    <div class="rounded-lg border border-border-default bg-surface-800 px-4 py-3 mb-4">
         <x-match-card-header :match="$match" />
     </div>
 @endunless
@@ -40,7 +40,7 @@
     $sideLayout = 'flex items-center gap-3 min-w-0';
     $formPill = 'w-4 h-4 rounded-xs text-[9px] font-bold flex items-center justify-center';
 @endphp
-<div class="rounded-xl border border-border-default bg-surface-800 px-3 py-3 md:px-4 md:py-3 mb-5">
+<div class="rounded-lg border border-border-default bg-surface-800 px-3 py-3 md:px-4 md:py-3 mb-5">
     <div class="flex items-center justify-between gap-3">
         {{-- User --}}
         <div class="flex-1 {{ $sideLayout }}">

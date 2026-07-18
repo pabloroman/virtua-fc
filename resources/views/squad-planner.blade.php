@@ -133,11 +133,11 @@
                     </h3>
 
                     @if($nextSeasonCount === 0)
-                        <div class="bg-surface-800 border border-border-default rounded-xl px-5 py-8 text-center text-sm text-text-muted">
+                        <div class="bg-surface-800 border border-border-default rounded-lg px-5 py-8 text-center text-sm text-text-muted">
                             {{ __('planner.empty_staying') }}
                         </div>
                     @else
-                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                        <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                             @include('partials.squad-planner.column-header')
                             @foreach($positionGroups as $group)
                                 @php
@@ -172,7 +172,7 @@
                     </h3>
 
                     @if($outgoing->isNotEmpty())
-                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                        <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                             @include('partials.squad-planner.column-header')
                             @foreach($outgoing as $gp)
                                 @include('partials.squad-planner.player-row', ['gp' => $gp, 'group' => $gp->position_group, 'game' => $game])

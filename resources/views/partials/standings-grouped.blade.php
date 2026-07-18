@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         @foreach($groupedStandings as $groupLabel => $groupStandings)
             <div>
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-fixed text-right">
                             <thead>

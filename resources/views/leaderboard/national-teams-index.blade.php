@@ -27,11 +27,11 @@
 
             {{-- Summary Cards --}}
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.national_teams_title') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ $totalTeams }}</div>
                 </div>
-                <div class="bg-surface-800 border border-border-default rounded-xl px-4 py-3 text-center">
+                <div class="bg-surface-800 border border-border-default rounded-lg px-4 py-3 text-center">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('leaderboard.total_tournaments') }}</div>
                     <div class="font-heading text-xl font-bold text-text-primary mt-0.5">{{ number_format($totalTournaments) }}</div>
                 </div>
@@ -50,7 +50,7 @@
                         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
                             @foreach($teams as $team)
                                 <a href="{{ route('leaderboard.national-team', $team->slug) }}"
-                                   class="group flex flex-col items-center gap-2 p-3 rounded-xl border border-transparent hover:border-border-default hover:bg-surface-700/50 transition-all">
+                                   class="group flex flex-col items-center gap-2 p-3 rounded-lg border border-transparent hover:border-border-default hover:bg-surface-700/50 transition-all">
                                     <div class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center shrink-0">
                                         <x-team-crest :team="$team" class="max-w-full max-h-full object-contain" />
                                     </div>

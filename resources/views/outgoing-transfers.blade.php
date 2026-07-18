@@ -105,7 +105,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.unsolicited_offers_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($unsolicitedOffers as $offer)
-                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-xl p-4">
+                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -171,7 +171,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.pre_contract_offers_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($preContractOffers as $offer)
-                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-xl p-4">
+                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -235,7 +235,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.offers_received_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($listedOffers as $offer)
-                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
+                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -307,7 +307,7 @@
                                 </p>
                                 <div class="space-y-3">
                                     @foreach($agreedTransfers as $transfer)
-                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
+                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -338,7 +338,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.players_leaving_free_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($agreedPreContracts as $transfer)
-                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
+                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -369,7 +369,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.loan_offers_received_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($loanOffers as $offer)
-                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4">
+                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -408,7 +408,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.loan_searches_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($loanSearches as $gamePlayer)
-                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4">
+                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center shrink-0">
@@ -452,7 +452,7 @@
                                 </p>
                                 <div class="space-y-3">
                                     @foreach($listedPlayers as $player)
-                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
+                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-full bg-accent-gold/20 flex items-center justify-center shrink-0">

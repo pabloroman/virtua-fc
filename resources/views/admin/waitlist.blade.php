@@ -7,19 +7,19 @@
     <x-flash-message type="error" :message="session('error')" class="mb-4" />
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.waitlist_total') }}</div>
             <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($total) }}</div>
         </div>
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.waitlist_pending') }}</div>
             <div class="font-heading text-2xl font-bold text-accent-gold">{{ number_format($pending) }}</div>
         </div>
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.waitlist_invited') }}</div>
             <div class="font-heading text-2xl font-bold text-accent-blue">{{ number_format($invited) }}</div>
         </div>
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.waitlist_registered') }}</div>
             <div class="font-heading text-2xl font-bold text-accent-green">{{ number_format($registered) }}</div>
         </div>

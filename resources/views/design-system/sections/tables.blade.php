@@ -7,8 +7,8 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Player List Table</h3>
         <p class="text-sm text-text-secondary mb-4">The primary player data table. On mobile, rows collapse into card-like layouts with avatar, name, position badge, and rating. On desktop, a multi-column grid shows full details.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                 {{-- Table Header --}}
                 <div class="hidden lg:grid grid-cols-[2fr_0.8fr_0.6fr_0.6fr_1fr_0.6fr] gap-2 px-4 py-2.5 border-b border-border-default">
                     <div class="text-[10px] text-text-muted uppercase tracking-wider">Player</div>
@@ -130,7 +130,7 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="playerTableCode">&lt;div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden"&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="playerTableCode">&lt;div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden"&gt;
     &lt;!-- Table Header (desktop only) --&gt;
     &lt;div class="hidden lg:grid grid-cols-[2fr_0.8fr_0.6fr_0.6fr_1fr_0.6fr] gap-2 px-4 py-2.5 border-b border-border-default"&gt;
         &lt;div class="text-[10px] text-text-muted uppercase tracking-wider"&gt;Player&lt;/div&gt;
@@ -162,8 +162,8 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Group Headers</h3>
         <p class="text-sm text-text-secondary mb-4">Surface-700/30 background rows used to group table rows by category (e.g., position groups in squad). Uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">font-heading</code> with extra tracking.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                 <div class="bg-surface-700/30 border-b border-border-default px-4 py-2">
                     <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-muted">Goalkeepers</span>
                 </div>
@@ -213,8 +213,8 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Financial Table</h3>
         <p class="text-sm text-text-secondary mb-4">Line-item table with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-accent-green</code> for income and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-accent-red</code> for expenses. Used in the finances page budget flow.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-border-default">
                     <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-text-muted">Revenue</span>
                 </div>

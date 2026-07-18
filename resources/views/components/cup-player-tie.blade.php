@@ -15,7 +15,7 @@
     }
 @endphp
 
-<div class="mb-8 rounded-xl overflow-hidden border
+<div class="mb-8 rounded-lg overflow-hidden border
     {{ $accentColor === 'blue' ? 'border-accent-blue/20' : ($accentColor === 'green' ? 'border-accent-green/20' : 'border-accent-red/20') }}">
 
     {{-- Header bar --}}

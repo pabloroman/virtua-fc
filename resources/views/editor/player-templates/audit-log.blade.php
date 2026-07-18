@@ -10,12 +10,12 @@
     </div>
 
     @if($audits->isEmpty())
-        <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-8 text-center">
             <p class="text-sm text-text-muted">{{ __('admin.audit_empty') }}</p>
         </div>
     @else
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-border-default bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+            <table class="min-w-full divide-y divide-border-default bg-surface-800 border border-border-default rounded-lg overflow-hidden">
                 <thead>
                     <tr>
                         <th class="px-4 py-3 text-left text-[10px] text-text-muted uppercase tracking-wider">{{ __('admin.tpl_date') }}</th>

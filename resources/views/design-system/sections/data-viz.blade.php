@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Ability Bar</h3>
         <p class="text-sm text-text-secondary mb-4">Displays a player stat value with a colored progress bar. Color-coded by threshold: green (80+), lime (70+), amber (60+), orange (below 60). Supports single values and ranges (for scouting reports). Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-ability-bar</code> component.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-4 mb-3">
             <div>
                 <div class="text-xs text-text-muted mb-2">Size: md (default)</div>
                 <div class="space-y-2">
@@ -118,7 +118,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Stat Bar</h3>
         <p class="text-sm text-text-secondary mb-4">Thin 3px stat bar using <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.stat-bar-track</code> and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.stat-bar-fill</code> CSS classes. Track background is <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">rgba(255,255,255,0.06)</code> for minimal visibility on dark surfaces.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-4 mb-3">
             <div class="max-w-sm space-y-3">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-text-secondary w-16">Pace</span>
@@ -188,7 +188,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Fitness Bar</h3>
         <p class="text-sm text-text-secondary mb-4">Inline bar for player fitness levels. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-fitness-bar</code> component with automatic color thresholds: green (80+), gold (60+), orange (40+), red (&lt;40).</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-4 mb-3">
             <div class="max-w-xs space-y-3">
                 <div class="flex items-center gap-3">
                     <span class="text-xs text-text-secondary w-16">Healthy</span>
@@ -290,7 +290,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Progress Bar</h3>
         <p class="text-sm text-text-secondary mb-4">Generic percentage bar for wage/revenue ratios and other metrics. Same structure as fitness bar but used for non-player data.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-4 mb-3">
             <div class="max-w-xs space-y-3">
                 <div class="flex items-center gap-3">
                     <span class="text-xs text-text-secondary w-24">Wage ratio</span>
@@ -333,7 +333,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Tier Dots</h3>
         <p class="text-sm text-text-secondary mb-4">Used for infrastructure investment levels (1-4 tiers). Filled dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-accent-green</code>, empty dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-600</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-4 mb-3">
             @foreach([
                 ['label' => 'Youth Academy', 'tier' => 3, 'cost' => '1.8M'],
                 ['label' => 'Medical', 'tier' => 2, 'cost' => '1.2M'],
@@ -375,7 +375,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Range Slider</h3>
         <p class="text-sm text-text-secondary mb-4">Custom-styled range input using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.tier-range</code> CSS class. Accent-blue thumb with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-600</code> track.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3" x-data="{ value: 2 }">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3" x-data="{ value: 2 }">
             <div class="max-w-sm">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-sm font-medium text-text-primary">Investment Level</span>
@@ -411,7 +411,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Morale Indicator</h3>
         <p class="text-sm text-text-secondary mb-4">Colored dot with text label using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-morale-indicator</code> component. Automatically maps morale value to color and label.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex flex-wrap items-center gap-6">
                 <x-morale-indicator :value="95" />
                 <x-morale-indicator :value="80" />

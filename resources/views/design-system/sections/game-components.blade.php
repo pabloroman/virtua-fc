@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Player Avatar</h3>
         <p class="text-sm text-text-secondary mb-4">Position-colored gradient circle with player initials. Optional position sub-badge. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-player-avatar</code> component. Colors: GK = amber, DEF = blue, MID = green, FWD = rose.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             {{-- Size variants --}}
             <div class="mb-6">
                 <div class="text-[10px] text-text-muted uppercase tracking-wider mb-3">Sizes</div>
@@ -128,7 +128,7 @@
         <p class="text-sm text-text-secondary mb-4">Renders a player's "market reference" figure for list surfaces: the <strong>release clause</strong> in countries where clauses are mandatory (e.g. Spain), otherwise the <strong>market value</strong>. The swap decision and the formatted value both come from the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">GamePlayer</code> model, so display and clause-calculation never diverge. On mixed-owner lists (explore, scouting) a swapped value is flagged with an info-icon tooltip; on a uniform own-squad list pass <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">:tooltip="false"</code> and relabel the column header to "Cláusula" instead.</p>
 
         {{-- Visual anatomy --}}
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex items-center gap-10">
                 <div class="text-center">
                     <div class="text-text-secondary tabular-nums">&euro; 45M</div>
@@ -194,7 +194,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Summary Card</h3>
         <p class="text-sm text-text-secondary mb-4">Compact stat card with micro-label and bold value. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-summary-card</code> component. Designed for horizontal scroll rows.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
                 <x-summary-card label="SQUAD" value="24" />
                 <x-summary-card label="AVG AGE" value="26.3" />
@@ -365,8 +365,8 @@
         </div>
 
         {{-- Visual anatomy --}}
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden max-w-md">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden max-w-md">
                 <div class="divide-y divide-border-default">
                     {{-- Played match — win --}}
                     <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-700/30 transition-colors">
@@ -678,7 +678,7 @@
             </table>
         </div>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex items-center gap-4">
                 <div class="text-center">
                     <x-notification-icon icon="injury" icon-bg="bg-red-500/10" icon-text="text-red-500" />
@@ -760,8 +760,8 @@
         </div>
 
         {{-- Visual anatomy --}}
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden max-w-md">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden max-w-md">
                 <div class="divide-y divide-border-default">
                     {{-- Simulated unread notification --}}
                     <div class="px-4 py-3 hover:bg-surface-700/30 transition-colors cursor-pointer">
@@ -898,8 +898,8 @@
         </div>
 
         {{-- Visual anatomy --}}
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden max-w-md">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
+            <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden max-w-md">
                 {{-- Column headers --}}
                 <div class="grid grid-cols-[24px_1fr_28px_28px_28px_32px_36px] gap-1 px-4 py-2 text-[9px] text-text-faint uppercase tracking-wider border-b border-border-default">
                     <span>#</span>
@@ -1004,7 +1004,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Help Disclosure</h3>
         <p class="text-sm text-text-secondary mb-4">Collapsible help panel with an info/chevron toggle. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-help-disclosure&gt;</code> for "How it works" explanations at the top of a page. The component handles <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-data</code>, <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-show</code>, transitions and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-cloak</code> (no load-time flash). Pair with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-help-toggle&gt;</code> when the trigger needs to live inside a nav or custom header.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <x-help-disclosure :label="'How it works'">
                 <p class="text-text-secondary mb-3">Panels are hidden by default and reveal on click. Keep copy concise — this is for orientation, not documentation.</p>
                 <ul class="space-y-1 text-text-secondary">

@@ -158,7 +158,7 @@
         </div>
         @elseif($hasRemainingMatches)
         {{-- AI Matches Remaining State --}}
-        <div class="mt-6 bg-surface-800 rounded-xl border border-border-default p-4 md:p-8 text-center">
+        <div class="mt-6 bg-surface-800 rounded-lg border border-border-default p-4 md:p-8 text-center">
             <div class="text-text-body mb-4">
                 <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>

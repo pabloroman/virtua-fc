@@ -89,7 +89,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.active_negotiations_description') }}</p>
                                 <div class="space-y-3">
                                     @foreach($activeNegotiations as $offer)
-                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
+                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($offer->sellingTeam)
@@ -179,7 +179,7 @@
                                 </p>
                                 <div class="space-y-3">
                                     @foreach($incomingAgreedTransfers as $transfer)
-                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
+                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($transfer->sellingTeam)

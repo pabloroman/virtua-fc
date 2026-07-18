@@ -5,7 +5,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {{-- Club Popularity --}}
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-text-primary mb-4">
                 {{ __('admin.club_popularity') }}
             </h2>
@@ -35,7 +35,7 @@
         </div>
 
         {{-- National Team Popularity --}}
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-text-primary mb-4">
                 {{ __('admin.national_team_popularity') }}
             </h2>
@@ -66,7 +66,7 @@
     </div>
 
     {{-- Season Progress --}}
-    <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+    <div class="bg-surface-800 border border-border-default rounded-lg p-5">
         <h2 class="font-heading text-sm font-bold uppercase tracking-wider text-text-primary mb-4">
             {{ __('admin.season_progress') }}
         </h2>

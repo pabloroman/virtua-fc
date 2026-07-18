@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Interactive Demo</h3>
         <p class="text-sm text-text-secondary mb-4">Click the buttons below to open modals. Press Escape or click the backdrop to close.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button type="button" color="blue" @click="$dispatch('open-modal', 'ds-demo-modal')">Open Modal</x-primary-button>
                 <x-secondary-button type="button" @click="$dispatch('open-modal', 'ds-demo-modal-sm')">Small Modal</x-secondary-button>
@@ -134,7 +134,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Modal Header Component</h3>
         <p class="text-sm text-text-secondary mb-4">Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-modal-header&gt;</code> for a consistent header that sits outside the scrollable body so it stays fixed at the top. By default it renders a title and a close button; it also supports an optional leading <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">icon</code> slot, a <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">tone</code> (default / danger / success / info), an <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">eyebrow</code> label style, and omitting <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">modal-name</code> to hide the close button (for blocking, must-act dialogs).</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button type="button" color="blue" @click="$dispatch('open-modal', 'ds-demo-panel')">Open Panel Modal</x-primary-button>
                 <x-secondary-button type="button" @click="$dispatch('open-modal', 'ds-demo-alert')">Open Alert Header</x-secondary-button>

@@ -40,7 +40,7 @@
                 {{-- Body --}}
                 <div class="p-4 md:p-5 space-y-4">
                     {{-- Market reference (or release clause) + contract --}}
-                    <div class="rounded-xl border border-border-default bg-surface-700/40 p-4 space-y-1.5">
+                    <div class="rounded-lg border border-border-default bg-surface-700/40 p-4 space-y-1.5">
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-xs text-text-muted" x-text="detail.marketReferenceLabel"></span>
                             <span class="text-xs font-semibold text-text-body tabular-nums" x-text="detail.marketReferenceValue"></span>
@@ -55,7 +55,7 @@
 
                     {{-- Financial details + scout intel — only when the surface supplies them --}}
                     <template x-if="detail.formattedAskingPrice || detail.formattedWageDemand || detail.formattedTransferBudget || detail.rivalInterest">
-                        <div class="rounded-xl border border-border-default bg-surface-700/40 p-4 space-y-3">
+                        <div class="rounded-lg border border-border-default bg-surface-700/40 p-4 space-y-3">
                             <p class="text-[10px] font-semibold text-text-muted uppercase tracking-wide">{{ __('transfers.financial_details') }}</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <template x-if="detail.formattedAskingPrice">

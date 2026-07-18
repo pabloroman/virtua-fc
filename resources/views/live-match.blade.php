@@ -741,7 +741,7 @@
 
                             {{-- Semi-final win: "You're in the Final!" --}}
                             <template x-if="tournamentResultType === 'to_final'">
-                                <div class="mb-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-xl text-center">
+                                <div class="mb-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg text-center">
                                     <div class="text-3xl mb-1">&#127942;</div>
                                     <h3 class="text-lg font-heading font-bold text-accent-gold" x-text="translations.tournamentToFinal"></h3>
                                 </div>
@@ -749,14 +749,14 @@
 
                             {{-- Semi-final loss: "Third-Place Match Awaits" --}}
                             <template x-if="tournamentResultType === 'to_third_place'">
-                                <div class="mb-4 p-4 bg-surface-700/50 border border-border-strong rounded-xl text-center">
+                                <div class="mb-4 p-4 bg-surface-700/50 border border-border-strong rounded-lg text-center">
                                     <h3 class="text-base font-semibold text-text-secondary" x-text="translations.tournamentToThirdPlace"></h3>
                                 </div>
                             </template>
 
                             {{-- R32/R16/QF win: "You Advance!" --}}
                             <template x-if="tournamentResultType === 'advance'">
-                                <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-xl text-center">
+                                <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-center">
                                     <h3 class="text-lg font-heading font-bold text-accent-green" x-text="translations.tournamentAdvance"></h3>
                                 </div>
                             </template>

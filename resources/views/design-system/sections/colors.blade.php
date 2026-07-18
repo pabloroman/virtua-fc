@@ -13,7 +13,7 @@
                 ['bg' => 'bg-surface-700', 'name' => 'surface-700', 'hex' => '#1E293B', 'usage' => 'Code blocks, inputs'],
                 ['bg' => 'bg-surface-600', 'name' => 'surface-600', 'hex' => '#334155', 'usage' => 'Elevated elements'],
             ] as $color)
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-4">
                 <div class="w-full h-16 rounded-lg {{ $color['bg'] }} border border-border-strong mb-3"></div>
                 <div class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">{{ $color['name'] }}</div>
                 <div class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
@@ -35,7 +35,7 @@
                 ['bg' => 'bg-accent-red', 'name' => 'accent-red', 'hex' => '#EF4444', 'usage' => 'Danger, primary CTA'],
                 ['bg' => 'bg-accent-orange', 'name' => 'accent-orange', 'hex' => '#F97316', 'usage' => 'Warnings, energy'],
             ] as $color)
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-4">
                 <div class="w-full h-16 rounded-lg {{ $color['bg'] }} mb-3"></div>
                 <div class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">{{ $color['name'] }}</div>
                 <div class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
@@ -55,7 +55,7 @@
                 ['bg' => 'bg-pitch-base', 'name' => 'pitch-base', 'hex' => '#1e6b31', 'usage' => 'Primary pitch surface'],
                 ['bg' => 'bg-pitch-light', 'name' => 'pitch-light', 'hex' => '#22783a', 'usage' => 'Pitch highlights, stripes'],
             ] as $color)
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-4">
                 <div class="w-full h-16 rounded-lg {{ $color['bg'] }} mb-3"></div>
                 <div class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">{{ $color['name'] }}</div>
                 <div class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
@@ -65,7 +65,7 @@
         </div>
 
         {{-- Pitch preview --}}
-        <div class="mt-4 bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="mt-4 bg-surface-800 border border-border-default rounded-lg p-4">
             <div class="text-[10px] text-text-muted uppercase tracking-widest mb-3">Pitch Preview</div>
             <div class="h-32 rounded-lg overflow-hidden flex">
                 <div class="flex-1 bg-pitch-dark"></div>
@@ -86,7 +86,7 @@
         <p class="text-sm text-text-secondary mb-4">Borders use white at low opacity instead of solid colors. This creates subtle separation that adapts to any dark surface beneath it.</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center justify-between mb-3">
                     <div class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">border-border-default</div>
                     <div class="text-[10px] text-text-muted uppercase tracking-widest">Very subtle</div>
@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center justify-between mb-3">
                     <div class="font-heading font-semibold text-sm text-text-primary uppercase tracking-wide">border-border-strong</div>
                     <div class="text-[10px] text-text-muted uppercase tracking-widest">Subtle</div>
@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <div class="text-[10px] text-text-muted uppercase tracking-widest mb-3">Comparison</div>
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1 bg-surface-700/50 border border-border-default rounded-lg p-3 text-center">
@@ -149,7 +149,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {{-- Success --}}
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-accent-green/20 border border-accent-green/30 flex items-center justify-center">
                         <svg class="w-5 h-5 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
@@ -168,7 +168,7 @@
             </div>
 
             {{-- Danger --}}
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-accent-red/20 border border-accent-red/30 flex items-center justify-center">
                         <svg class="w-5 h-5 text-accent-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -187,7 +187,7 @@
             </div>
 
             {{-- Warning --}}
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-accent-gold/20 border border-accent-gold/30 flex items-center justify-center">
                         <svg class="w-5 h-5 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
@@ -206,7 +206,7 @@
             </div>
 
             {{-- Interactive --}}
-            <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-accent-blue/20 border border-accent-blue/30 flex items-center justify-center">
                         <svg class="w-5 h-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
@@ -231,7 +231,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Text Color Hierarchy</h3>
         <p class="text-sm text-text-secondary mb-4">Text colors create a clear visual hierarchy on dark surfaces. Use these consistently.</p>
 
-        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-5">
             <div class="space-y-4">
                 <div class="flex items-center gap-4">
                     <div class="w-32 shrink-0">
@@ -275,7 +275,7 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="codeCard">&lt;div class="bg-surface-800 border border-border-default rounded-xl p-5"&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="codeCard">&lt;div class="bg-surface-800 border border-border-default rounded-lg p-5"&gt;
     &lt;!-- Card content --&gt;
 &lt;/div&gt;</code></pre>
         </div>

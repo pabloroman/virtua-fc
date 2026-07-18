@@ -9,7 +9,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Primary Button</h3>
         <p class="text-sm text-text-secondary mb-4">The main call-to-action. Defaults to accent-blue. Seven color variants available for semantic differentiation. Defaults to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">type="submit"</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button type="button" color="blue">Blue (default)</x-primary-button>
                 <x-primary-button type="button" color="red">Red</x-primary-button>
@@ -72,7 +72,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Secondary Button</h3>
         <p class="text-sm text-text-secondary mb-4">Used for secondary actions. Surface background with a subtle border. Text lightens on hover.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-secondary-button>Cancel</x-secondary-button>
                 <x-secondary-button size="sm">Compact (sm)</x-secondary-button>
@@ -99,7 +99,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Danger Button</h3>
         <p class="text-sm text-text-secondary mb-4">For destructive actions like deleting accounts or removing players. Uses accent-red background.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <x-danger-button>Delete Account</x-danger-button>
         </div>
 
@@ -120,7 +120,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Ghost Button</h3>
         <p class="text-sm text-text-secondary mb-4">Text-only buttons with no background. Shows a subtle tinted background on hover. Five color variants for different contexts.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-ghost-button color="blue">Blue (default)</x-ghost-button>
                 <x-ghost-button color="red">Red</x-ghost-button>
@@ -177,7 +177,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Icon Button</h3>
         <p class="text-sm text-text-secondary mb-4">Square touch-target button for icon-only actions (close, dismiss, expand). Default size provides 44&times;44px minimum. The <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">sm</code> size removes minimum dimensions for compact contexts like table rows.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap items-center gap-4">
                 <div class="text-center space-y-2">
                     <x-icon-button>
@@ -239,7 +239,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Tab Button</h3>
         <p class="text-sm text-text-secondary mb-4">Navigation tabs with a bottom border indicator. Active state is applied via Alpine.js <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">:class</code> binding. Used for section switching within a page (e.g., Swiss standings league/knockout toggle, competition group/knockout views).</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div x-data="{ tab: 'league' }" class="flex gap-1 border-b border-border-default">
                 <x-tab-button @click="tab = 'league'" x-bind:class="tab === 'league' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">League</x-tab-button>
                 <x-tab-button @click="tab = 'knockout'" x-bind:class="tab === 'knockout' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">Knockout</x-tab-button>
@@ -294,7 +294,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Pill Button</h3>
         <p class="text-sm text-text-secondary mb-4">Compact toggle buttons used in groups (view modes, formation options, speed controls). No built-in color &mdash; apply active state colors via Alpine.js <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">:class</code> binding.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div x-data="{ mode: 'tactical' }" class="flex gap-1.5">
                 <x-pill-button size="xs" @click="mode = 'tactical'" x-bind:class="mode === 'tactical' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'">Tactical</x-pill-button>
                 <x-pill-button size="xs" @click="mode = 'stats'" x-bind:class="mode === 'stats' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'">Stats</x-pill-button>
@@ -344,7 +344,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Action Button</h3>
         <p class="text-sm text-text-secondary mb-4">Tinted outline buttons for contextual actions in cards and detail panels. Uses a subtle colored background with matching border and text.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-action-button color="blue">View Details</x-action-button>
                 <x-action-button color="green">Accept</x-action-button>
@@ -395,7 +395,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Button with Spinner</h3>
         <p class="text-sm text-text-secondary mb-4">Shows a loading spinner during form submission. Requires an Alpine.js <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">loading</code> state on the parent. The button auto-disables while loading.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4" x-data="{ loading: false }">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4" x-data="{ loading: false }">
             <div class="flex items-center gap-4">
                 <x-primary-button-spin @click="loading = !loading">Submit</x-primary-button-spin>
                 <span class="text-xs text-text-muted">Click to toggle loading state</span>
@@ -423,7 +423,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Button as Link</h3>
         <p class="text-sm text-text-secondary mb-4">Renders an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;a&gt;</code> tag styled as a button. Use for navigation that should look like a button.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button-link href="#" color="blue">View Squad</x-primary-button-link>
                 <x-primary-button-link href="#" color="green">Start Season</x-primary-button-link>
@@ -452,7 +452,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Disabled States</h3>
         <p class="text-sm text-text-secondary mb-4">All button components support a <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">disabled</code> attribute. Disabled buttons drop to 50% opacity and show a not-allowed cursor.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button disabled type="button">Disabled Primary</x-primary-button>
                 <x-secondary-button disabled>Disabled Secondary</x-secondary-button>
@@ -483,7 +483,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Size Patterns</h3>
         <p class="text-sm text-text-secondary mb-4">Components support a <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">size</code> prop. For larger or full-width buttons, override with Tailwind classes.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-4">
             <div class="flex flex-wrap items-end gap-4">
                 <div class="text-center space-y-2">
                     <x-primary-button type="button" size="xs">Extra Small</x-primary-button>
@@ -525,7 +525,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Semantic Roles</h3>
         <p class="text-sm text-text-secondary mb-4">Each button type and color variant has a specific semantic purpose. Use the component and color that matches the action's intent.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl overflow-hidden">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg overflow-hidden">
             <table class="w-full text-sm">
                 <thead class="text-left border-b border-border-strong">
                     <tr>

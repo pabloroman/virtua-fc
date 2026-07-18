@@ -32,7 +32,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 };
 @endphp
 
-<div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+<div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full table-fixed text-right">
             <thead>

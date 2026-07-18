@@ -11,7 +11,7 @@
 
     {{-- Filters --}}
     <form method="GET" action="{{ route('editor.player-templates.index') }}"
-          class="bg-surface-800 border border-border-default rounded-xl p-4 mb-6">
+          class="bg-surface-800 border border-border-default rounded-lg p-4 mb-6">
         <div class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1">
                 <x-text-input
@@ -39,14 +39,14 @@
 
     {{-- Team Grid --}}
     @if($teams->isEmpty())
-        <div class="bg-surface-800 border border-border-default rounded-xl p-8 text-center">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-8 text-center">
             <p class="text-sm text-text-muted">{{ __('admin.no_data') }}</p>
         </div>
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach($teams as $team)
                 <a href="{{ route('editor.player-templates.squad', ['teamId' => $team->id, 'season' => $selectedSeason]) }}"
-                   class="bg-surface-800 border border-border-default rounded-xl p-4 hover:bg-surface-700 transition-colors flex items-center gap-4 min-h-[44px]">
+                   class="bg-surface-800 border border-border-default rounded-lg p-4 hover:bg-surface-700 transition-colors flex items-center gap-4 min-h-[44px]">
                     @if($team->image)
                         <img src="{{ $team->image }}" alt="" class="w-8 h-8 shrink-0">
                     @else

@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Desktop Nav Bar</h3>
         <p class="text-sm text-text-secondary mb-4">Top-level navigation using the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.nav-item</code> class pattern. Active items show a blue underline via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.active::after</code> pseudo-element and white text. Inactive items are <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-text-muted</code> with hover to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-text-body</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="bg-surface-900/95 backdrop-blur-md border-b border-border-default rounded-lg px-4 py-3">
                 <nav class="flex items-center gap-1">
                     <a href="#" class="nav-item active px-3 py-2 text-xs font-medium uppercase tracking-wider text-text-primary">Dashboard</a>
@@ -44,7 +44,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Section Nav (Tabs)</h3>
         <p class="text-sm text-text-secondary mb-4">Horizontal scrollable tab navigation for sub-sections within a page. Active tab has an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">accent-blue</code> bottom border and white text. Supports optional badge counts in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">accent-red</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <x-section-nav :items="[
                 ['href' => '#', 'label' => 'Squad', 'active' => true],
                 ['href' => '#', 'label' => 'Development', 'active' => false],
@@ -96,7 +96,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Mobile Bottom Tab Bar</h3>
         <p class="text-sm text-text-secondary mb-4">On mobile (<code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">lg:hidden</code>), navigation uses a fixed bottom tab bar with 5 tabs: Dashboard, Squad, Starting XI, Calendar, and More. The "More" tab opens a slide-up panel with secondary items (Finances, Transfers, Competitions). Implemented in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bottom-tab-bar.blade.php</code>, included via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">game-header.blade.php</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             {{-- Simulated mobile layout --}}
             <div class="max-w-sm mx-auto">
                 {{-- Simulated header --}}
@@ -163,7 +163,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Dropdown</h3>
         <p class="text-sm text-text-secondary mb-4">Alpine.js powered dropdown menu with click-outside close and smooth scale transitions. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-800 border border-border-strong</code>. Links highlight with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">hover:bg-surface-700</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <x-dropdown align="left" width="48">
                 <x-slot name="trigger">
                     <button class="inline-flex items-center gap-1.5 px-3 py-2 bg-surface-700 border border-border-strong rounded-lg text-sm text-text-body hover:text-text-primary hover:bg-surface-600 transition-colors">
@@ -208,7 +208,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Context Menu (Three-Dot)</h3>
         <p class="text-sm text-text-secondary mb-4">Inline action menu used in table rows and card actions. Dark dropdown panel with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-700 border border-border-default</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             {{-- Simulated table row context --}}
             <div class="flex items-center justify-between bg-surface-800 rounded-lg px-4 py-3 max-w-md">
                 <div class="flex items-center gap-3">
@@ -257,7 +257,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Filter Pills</h3>
         <p class="text-sm text-text-secondary mb-4">Pill-style toggle buttons for filtering a list. Active pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-accent-blue text-white</code>; inactive pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-700 text-text-secondary</code>. Selection state is managed by the caller via Alpine.js — the component takes the active condition as an Alpine expression. Uses the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-filter-pill</code> component.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 space-y-5">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3 space-y-5">
             {{-- Default usage --}}
             <div>
                 <div class="text-[10px] text-text-muted uppercase tracking-wider mb-3">Default</div>
@@ -347,7 +347,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Competition Dropdown (Nav Bar)</h3>
         <p class="text-sm text-text-secondary mb-4">Inline dropdown used in the desktop nav bar for competition selection. Combines the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">.nav-item</code> styling with an Alpine.js dropdown. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-800 border border-border-strong</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="bg-surface-900/95 backdrop-blur-md border-b border-border-default rounded-lg px-4 py-3">
                 <nav class="flex items-center gap-1">
                     <a href="#" class="nav-item px-3 py-2 text-xs font-medium uppercase tracking-wider text-text-muted hover:text-text-body">Dashboard</a>

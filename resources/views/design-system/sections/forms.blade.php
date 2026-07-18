@@ -7,7 +7,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Text Input</h3>
         <p class="text-sm text-text-secondary mb-4">Standard text input on dark surface with blue focus ring. Supports all HTML input attributes plus <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">disabled</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">readonly</code> states.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 space-y-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3 space-y-4">
             <div class="max-w-sm">
                 <x-input-label for="demo-input" value="Player Name" />
                 <x-text-input id="demo-input" type="text" class="mt-1 block w-full" placeholder="Enter player name..." />
@@ -39,7 +39,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Select Input</h3>
         <p class="text-sm text-text-secondary mb-4">Same dark styling as text inputs. Options inherit the dark background. Supports disabled state.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="max-w-sm space-y-4">
                 <div>
                     <x-input-label for="demo-select" value="Formation" />
@@ -80,7 +80,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Checkbox</h3>
         <p class="text-sm text-text-secondary mb-4">Dark-surfaced checkbox with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">accent-blue</code> checkmark color and matching focus ring. Ring offset uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">surface-900</code> to blend with the dark background.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="space-y-3">
                 <label class="flex items-center gap-2 cursor-pointer">
                     <x-checkbox-input name="demo-check-1" checked />
@@ -115,7 +115,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Money Input</h3>
         <p class="text-sm text-text-secondary mb-4">Stepper-style money input with increment/decrement buttons. Supports hold-to-repeat and auto-adjusting step size (10K below 1M, 100K above). Available in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">md</code> (default) and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">sm</code> sizes.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 space-y-4">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3 space-y-4">
             <div>
                 <x-input-label value="Transfer Budget (default)" class="mb-1" />
                 <x-money-input name="demo-money" :value="5000000" :min="100000" />
@@ -182,7 +182,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Input Error</h3>
         <p class="text-sm text-text-secondary mb-4">Displays validation error messages below form fields in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">accent-red</code>.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="max-w-sm">
                 <x-input-label for="demo-error" value="Email" />
                 <x-text-input id="demo-error" type="email" class="mt-1 block w-full border-accent-red/50 focus:border-accent-red focus:ring-accent-red" value="invalid-email" />
@@ -206,7 +206,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Search Input</h3>
         <p class="text-sm text-text-secondary mb-4">Compact search field with an icon prefix. Used in table toolbars and filter bars. Not a Blade component -- built inline with utility classes.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="max-w-xs">
                 <div class="relative">
                     <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +238,7 @@
         <h3 class="text-lg font-semibold text-text-primary mb-2">Complete Form Group</h3>
         <p class="text-sm text-text-secondary mb-4">Standard form pattern composing label, input, select, checkbox, and error components together on a dark surface.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+        <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 mb-3">
             <div class="max-w-md space-y-4">
                 <div>
                     <x-input-label for="form-name" value="Team Name" />

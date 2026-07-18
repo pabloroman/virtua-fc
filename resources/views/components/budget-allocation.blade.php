@@ -26,7 +26,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 
     {{-- Budget breakdown — one live summary (available → infrastructure → transfers),
          so the figure isn't repeated across separate banners. --}}
-    <div class="mb-6 grid grid-cols-3 divide-x divide-border-default bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+    <div class="mb-6 grid grid-cols-3 divide-x divide-border-default bg-surface-800 border border-border-default rounded-lg overflow-hidden">
         <div class="px-4 py-3">
             <div class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.available') }}</div>
             <div class="font-heading text-lg md:text-xl font-bold text-text-primary mt-0.5">{{ \App\Support\Money::format($availableSurplus) }}</div>

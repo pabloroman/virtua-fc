@@ -74,7 +74,7 @@
                     'mode' => 'full',
                 ])
             @else
-                <div class="rounded-xl border border-border-default bg-surface-800/60 px-4 py-6 text-center text-xs text-text-muted">
+                <div class="rounded-lg border border-border-default bg-surface-800/60 px-4 py-6 text-center text-xs text-text-muted">
                     {{ __('game.fast_mode_no_last_match') }}
                 </div>
             @endif

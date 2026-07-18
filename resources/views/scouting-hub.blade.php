@@ -77,7 +77,7 @@
             {{-- Intake: active search progress, otherwise the search action --}}
             @if($searchingReport)
                 @php $progress = (($searchingReport->weeks_total - $searchingReport->weeks_remaining) / max(1, $searchingReport->weeks_total)) * 100; @endphp
-                <div class="mt-4 border border-accent-blue/20 rounded-xl p-4 md:p-5 bg-accent-blue/10">
+                <div class="mt-4 border border-accent-blue/20 rounded-lg p-4 md:p-5 bg-accent-blue/10">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                         <svg class="w-9 h-9 shrink-0 text-accent-blue animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -120,7 +120,7 @@
 
             {{-- Zero-state hero: shown only at true cold start — no completed search, no shortlist, not searching. --}}
             @unless($searchingReport || $latestReport)
-                <div x-show="players.length === 0" x-cloak class="mt-4 border border-dashed border-border-default rounded-xl px-6 py-12 text-center">
+                <div x-show="players.length === 0" x-cloak class="mt-4 border border-dashed border-border-default rounded-lg px-6 py-12 text-center">
                     <x-primary-button type="button" @click="$dispatch('open-modal', 'scout-search')" class="gap-2 mx-auto">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -134,7 +134,7 @@
             @endunless
 
             {{-- Shortlist: one list, most actionable targets first. --}}
-            <div x-show="players.length > 0" x-cloak class="mt-4 border border-border-default rounded-xl overflow-hidden bg-surface-800">
+            <div x-show="players.length > 0" x-cloak class="mt-4 border border-border-default rounded-lg overflow-hidden bg-surface-800">
                 <div class="flex items-center justify-between gap-2 px-4 py-3 border-b border-border-default">
                     <h3 class="font-semibold text-sm text-text-primary flex items-center gap-2">
                         {{ __('transfers.shortlist') }}
@@ -166,7 +166,7 @@
 
             {{-- Shortlist empty but a search has run: point the user at the results below instead of the cold-start hero. --}}
             @if($latestReport)
-                <div x-show="players.length === 0" x-cloak class="mt-4 border border-dashed border-border-default rounded-xl px-4 py-6 text-center text-sm text-text-muted">
+                <div x-show="players.length === 0" x-cloak class="mt-4 border border-dashed border-border-default rounded-lg px-4 py-6 text-center text-sm text-text-muted">
                     {{ __('transfers.board_shortlist_hint') }}
                 </div>
             @endif
@@ -174,7 +174,7 @@
             {{-- Latest search results — the "fresh catch", below the watchlist summary. Lazy-loads the existing
                  results partial (same as the modal) so the hub stays fast; ★-ing a player live-adds them to the board above. --}}
             @if($latestReport)
-                <div class="mt-4 border border-border-default rounded-xl overflow-hidden bg-surface-800"
+                <div class="mt-4 border border-border-default rounded-lg overflow-hidden bg-surface-800"
                      x-data="fragmentLoader({ url: @js(route('game.scouting.results', [$game->id, $latestReport->id]).'?inline=1') })">
                     <div x-show="loading" class="p-8 flex items-center justify-center">
                         <svg class="animate-spin h-7 w-7 text-text-secondary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -192,7 +192,7 @@
         @if($searchHistory->isNotEmpty())
             <div class="mt-6" x-data="{ open: false }">
                 <button type="button" @click="open = !open"
-                        class="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-xl border border-border-default bg-surface-800 hover:bg-surface-700/50 transition min-h-[44px]">
+                        class="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg border border-border-default bg-surface-800 hover:bg-surface-700/50 transition min-h-[44px]">
                     <span class="font-semibold text-sm text-text-primary flex items-center gap-2">
                         {{ __('transfers.search_history') }}
                         <span class="text-xs font-normal text-text-secondary">({{ $searchHistory->count() }})</span>
@@ -201,7 +201,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="open" x-collapse x-cloak class="mt-2 border border-border-default rounded-xl overflow-hidden">
+                <div x-show="open" x-collapse x-cloak class="mt-2 border border-border-default rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead class="text-left bg-surface-800 border-b border-border-default">

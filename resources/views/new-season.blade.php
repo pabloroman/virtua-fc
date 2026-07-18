@@ -23,7 +23,7 @@
             <x-flash-message type="error" :message="session('error')" class="mb-6" />
 
             {{-- Season objective (accent border card) --}}
-            <div class="border-l-4 border-l-accent-gold bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3.5 mb-6">
+            <div class="border-l-4 border-l-accent-gold bg-surface-800 border border-border-default rounded-r-lg pl-5 pr-4 py-3.5 mb-6">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider font-semibold">{{ __('game.season_objective') }}</span>
                 <div class="font-heading text-lg md:text-xl font-bold text-text-primary mt-1">{{ __($seasonGoalLabel ?? 'game.goal_top_half') }}</div>
                 <div class="text-sm text-text-secondary mt-0.5">{{ __('game.board_expects_position', ['position' => $seasonGoalTarget ?? 10]) }}</div>

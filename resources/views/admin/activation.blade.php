@@ -27,20 +27,20 @@
 
         {{-- Summary cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">
                     {{ $mode === \App\Models\Game::MODE_TOURNAMENT ? __('admin.funnel_access_granted') : __('admin.invites_sent') }}
                 </div>
                 <div class="text-2xl font-bold text-text-primary">{{ number_format($mode === \App\Models\Game::MODE_TOURNAMENT ? $totalRegistered : $totalInvites) }}</div>
             </div>
-            <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+            <div class="bg-surface-800 border border-border-default rounded-lg p-4">
                 <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.conversion_to_first_match') }}</div>
                 <div class="text-2xl font-bold text-accent-primary">{{ $overallConversion }}%</div>
             </div>
         </div>
 
         {{-- Funnel visualization --}}
-        <div class="bg-surface-800 border border-border-default rounded-xl p-4 md:p-6">
+        <div class="bg-surface-800 border border-border-default rounded-lg p-4 md:p-6">
             <h3 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-6">{{ __('admin.funnel_steps') }}</h3>
 
             <div class="space-y-3">
@@ -86,7 +86,7 @@
         </div>
 
         {{-- Mobile drop-off table --}}
-        <div class="mt-6 md:hidden bg-surface-800 border border-border-default rounded-xl p-4">
+        <div class="mt-6 md:hidden bg-surface-800 border border-border-default rounded-lg p-4">
             <h3 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">{{ __('admin.drop_off_rates') }}</h3>
             <div class="space-y-2">
                 @foreach($steps as $i => $step)

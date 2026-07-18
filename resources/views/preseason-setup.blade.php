@@ -31,7 +31,7 @@ $assetUrl = rtrim(Storage::disk('assets')->url(''), '/');
                 @else
                     <div class="space-y-4 mb-8">
                         @foreach($slots as $index => $date)
-                            <div class="bg-surface-800 border border-border-default rounded-xl p-4 md:p-5">
+                            <div class="bg-surface-800 border border-border-default rounded-lg p-4 md:p-5">
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="text-[10px] text-text-muted uppercase tracking-wider font-semibold">
                                         {{ __('game.preseason_setup_fixture', ['number' => $index + 1]) }}

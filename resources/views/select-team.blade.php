@@ -46,7 +46,7 @@
                                     :class="mode === 'career'
                                         ? 'ring-2 ring-accent-red border-accent-red/30 bg-accent-red/5'
                                         : 'border-border-strong hover:bg-surface-700/50'"
-                                    class="relative flex items-center gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-left">
+                                    class="relative flex items-center gap-4 p-4 md:p-5 rounded-lg border transition-all duration-200 text-left">
                                 <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center"
                                      :class="mode === 'career' ? 'bg-accent-red' : 'bg-surface-600'">
                                     <svg class="w-6 h-6 md:w-7 md:h-7" :class="mode === 'career' ? 'text-white' : 'text-text-muted'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -69,7 +69,7 @@
                             </button>
                         @else
                             {{-- Locked career mode card --}}
-                            <div class="relative flex items-center gap-4 p-4 md:p-5 rounded-xl border border-border-strong opacity-50 cursor-not-allowed">
+                            <div class="relative flex items-center gap-4 p-4 md:p-5 rounded-lg border border-border-strong opacity-50 cursor-not-allowed">
                                 <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-surface-600">
                                     <svg class="w-6 h-6 md:w-7 md:h-7 text-text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
@@ -98,7 +98,7 @@
                                     :class="mode === 'career_pro'
                                         ? 'ring-2 ring-accent-blue border-accent-blue/30 bg-accent-blue/5'
                                         : 'border-border-strong hover:bg-surface-700/50'"
-                                    class="relative flex items-center gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-left">
+                                    class="relative flex items-center gap-4 p-4 md:p-5 rounded-lg border transition-all duration-200 text-left">
                                 <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center"
                                      :class="mode === 'career_pro' ? 'bg-accent-blue' : 'bg-surface-600'">
                                     <svg class="w-6 h-6 md:w-7 md:h-7" :class="mode === 'career_pro' ? 'text-white' : 'text-text-muted'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -128,7 +128,7 @@
                                 :class="mode === 'tournament'
                                     ? 'ring-2 ring-accent-gold border-accent-gold/30 bg-accent-gold/5'
                                     : 'border-border-strong hover:bg-surface-700/50'"
-                                class="relative flex items-center gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-left">
+                                class="relative flex items-center gap-4 p-4 md:p-5 rounded-lg border transition-all duration-200 text-left">
                             <div class="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center"
                                  :class="mode === 'tournament' ? 'bg-accent-gold' : 'bg-surface-600'">
                                 <svg class="w-6 h-6 md:w-7 md:h-7" :class="mode === 'tournament' ? 'text-white' : 'text-text-muted'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -253,7 +253,7 @@
                         @if($wcFeaturedTeams->isNotEmpty())
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                             @foreach($wcFeaturedTeams as $team)
-                                <label class="flex flex-col items-center gap-2 rounded-xl border border-border-default p-4 md:p-5 cursor-pointer transition-all
+                                <label class="flex flex-col items-center gap-2 rounded-lg border border-border-default p-4 md:p-5 cursor-pointer transition-all
                                                hover:bg-accent-gold/5 hover:border-accent-gold/30
                                                has-checked:ring-2 has-checked:ring-accent-gold has-checked:border-accent-gold/30 has-checked:bg-accent-gold/5">
                                     <x-team-crest :team="$team" class="w-14 h-14 md:w-16 md:h-16" />

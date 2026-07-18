@@ -14,7 +14,7 @@
         <div>
             <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-secondary mb-3">Goalkeeper</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-border-default">
+                <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-lg border border-border-default">
                     <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
                         <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
                             <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">1</span>
@@ -35,7 +35,7 @@
                 <h3 class="font-heading text-lg font-bold uppercase tracking-wide text-text-secondary">{{ $groupLabel }}</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <template x-for="[name, tc] in teams" :key="name">
-                        <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-border-default">
+                        <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-lg border border-border-default">
                             <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
                                 <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
                                     <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)">10</span>

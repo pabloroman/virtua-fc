@@ -160,7 +160,7 @@
             <div class="mt-4 flex gap-6">
                 {{-- LEFT: Player List --}}
                 <div class="flex-1 min-w-0">
-                    <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                    <div class="bg-surface-800 border border-border-default rounded-lg overflow-hidden">
 
                         {{-- Desktop table header. Columns must stay in sync with the mobile sort strip above. --}}
                         <div class="hidden lg:block">

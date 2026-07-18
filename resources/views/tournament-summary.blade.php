@@ -166,7 +166,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                     $awayIsWinner = $championTeamId === $finalMatch['away_team_id'];
                 @endphp
                 @if($homeTeam && $awayTeam)
-                <div class="bg-slate-900/70 backdrop-blur-xs rounded-xl border border-white/10 p-4 md:p-6 max-w-lg mx-auto">
+                <div class="bg-slate-900/70 backdrop-blur-xs rounded-lg border border-white/10 p-4 md:p-6 max-w-lg mx-auto">
                     <div class="text-[10px] md:text-xs font-heading uppercase tracking-widest {{ $isChampion ? 'text-amber-300/70' : 'text-white/40' }} font-semibold mb-3">
                         {{ __('season.the_final') }}
                     </div>
@@ -247,7 +247,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                 <x-ghost-button
                     color="slate"
                     @click="showResults = !showResults"
-                    class="w-full bg-surface-800 rounded-xl border border-border-default p-4 justify-between gap-3"
+                    class="w-full bg-surface-800 rounded-lg border border-border-default p-4 justify-between gap-3"
                 >
                     <span class="text-sm font-semibold text-text-secondary">{{ __('season.full_tournament_results') }}</span>
                     <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" :class="showResults && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">

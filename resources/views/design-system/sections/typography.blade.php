@@ -7,7 +7,7 @@
     {{-- ================================================================== --}}
     <h3 class="text-lg font-semibold text-text-primary mb-4">Headings</h3>
 
-    <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-6 mb-4">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-6 mb-4">
         {{-- Page title --}}
         <div>
             <span class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">Page Title</span>
@@ -56,7 +56,7 @@
     {{-- ================================================================== --}}
     <h3 class="text-lg font-semibold text-text-primary mb-4">Labels</h3>
 
-    <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-6 mb-4">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-6 mb-4">
         {{-- Micro-label --}}
         <div>
             <span class="text-[10px] text-text-muted uppercase tracking-widest">La Liga &middot; Season 2025/26</span>
@@ -121,7 +121,7 @@
     {{-- ================================================================== --}}
     <h3 class="text-lg font-semibold text-text-primary mb-4">Body Text</h3>
 
-    <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-5 mb-4">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-5 mb-4">
         {{-- Player name --}}
         <div>
             <span class="text-sm font-medium text-text-primary">Lamine Yamal</span>
@@ -175,7 +175,7 @@
     {{-- ================================================================== --}}
     <h3 class="text-lg font-semibold text-text-primary mb-4">Numbers &amp; Values</h3>
 
-    <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-6 mb-4">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg p-6 space-y-6 mb-4">
         {{-- Rating number --}}
         <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-lg bg-accent-blue/20 flex items-center justify-center">
@@ -249,7 +249,7 @@
     {{-- ================================================================== --}}
     <h3 class="text-lg font-semibold text-text-primary mb-4">Font Size Scale</h3>
 
-    <div class="bg-surface-700/30 border border-border-default rounded-xl overflow-hidden mb-12">
+    <div class="bg-surface-700/30 border border-border-default rounded-lg overflow-hidden mb-12">
         @foreach([
             ['class' => 'text-xs', 'name' => 'text-xs', 'size' => '0.8rem', 'usage' => 'Metadata, timestamps, badges'],
             ['class' => 'text-sm', 'name' => 'text-sm', 'size' => '1rem', 'usage' => 'Body text, table cells, labels'],
@@ -274,7 +274,7 @@
     {{-- ================================================================== --}}
     {{-- MOBILE SCALING NOTE --}}
     {{-- ================================================================== --}}
-    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4 text-sm text-text-body">
+    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-lg p-4 text-sm text-text-body">
         <span class="font-semibold text-text-primary">Mobile scaling:</span> The root font-size drops to 14px on screens narrower than 768px (from the default ~20px). All rem-based sizes scale proportionally. Never use fixed <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">px</code> values for font sizes &mdash; use Tailwind's <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-*</code> utilities. Arbitrary pixel sizes like <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-[10px]</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-[9px]</code> are exceptions used only for micro-labels that should remain fixed across breakpoints.
     </div>
 </section>
