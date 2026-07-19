@@ -5,107 +5,6 @@
   "players": [
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jun 16, 1986",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "58088",
-      "marketValue": "€750k",
-      "name": "Fernando Muslera",
-      "nationality": [
-        "Uruguay",
-        "Italy"
-      ],
-      "number": "16",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jan 29, 2002",
-      "foot": "left",
-      "height": "1,98m",
-      "id": "1050051",
-      "marketValue": "€500k",
-      "name": "Fabricio Iacovich",
-      "nationality": [
-        "Argentina",
-        "Croatia"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Oct 21, 2004",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "1181926",
-      "name": "Rodrigo Borzone",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "12",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 28, 2003",
-      "foot": "left",
-      "height": "1,96m",
-      "id": "993645",
-      "marketValue": "€4.50m",
-      "name": "Tomás Palacios",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "24",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Apr 29, 2000",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "959208",
-      "marketValue": "€2.00m",
-      "name": "Santiago Núñez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 26, 1992",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "113130",
-      "marketValue": "€375k",
-      "name": "Leandro González Pírez",
-      "nationality": [
-        "Argentina",
-        "Portugal"
-      ],
-      "number": "14",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Feb 22, 2006",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "1000685",
-      "marketValue": "€200k",
-      "name": "Valente Pierani",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "35",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
       "dateOfBirth": "Mar 5, 1991",
       "foot": "left",
       "height": "1,87m",
@@ -118,147 +17,6 @@
       ],
       "number": "26",
       "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 5, 1998",
-      "foot": "left",
-      "height": "1,72m",
-      "id": "520947",
-      "marketValue": "€2.50m",
-      "name": "Santiago Arzamendia",
-      "nationality": [
-        "Paraguay",
-        "Argentina"
-      ],
-      "number": "15",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 29, 2001",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "843156",
-      "marketValue": "€2.00m",
-      "name": "Gastón Benedetti",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "13",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 17, 1999",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "888545",
-      "marketValue": "€3.20m",
-      "name": "Eros Mancuso",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "40",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Apr 8, 1999",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "830857",
-      "marketValue": "€2.20m",
-      "name": "Eric Meza",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "20",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Aug 11, 1997",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "454181",
-      "marketValue": "€1.30m",
-      "name": "Gabriel Neves",
-      "nationality": [
-        "Uruguay"
-      ],
-      "number": "8",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Aug 20, 1992",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "487346",
-      "marketValue": "€900k",
-      "name": "Ezequiel Piovi",
-      "nationality": [
-        "Argentina",
-        "Spain"
-      ],
-      "number": "21",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jan 6, 2005",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "1283311",
-      "marketValue": "€1.50m",
-      "name": "Mikel Amondarain",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "32",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Oct 18, 1994",
-      "foot": "left",
-      "height": "1,83m",
-      "id": "364602",
-      "marketValue": "€1.20m",
-      "name": "Alexis Castro",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "22",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 1, 2005",
-      "foot": "left",
-      "height": "1,74m",
-      "id": "1298375",
-      "name": "Lucas Cornejo",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "39",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Aug 28, 2002",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "728221",
-      "marketValue": "€2.50m",
-      "name": "Facundo Farías",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "11",
-      "position": "Attacking Midfield"
     },
     {
       "contract": "Dec 31, 2026",
@@ -276,89 +34,33 @@
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 6, 2003",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "668549",
-      "marketValue": "€3.80m",
-      "name": "Brian Aguirre",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "28",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 1, 1998",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "470390",
-      "marketValue": "€3.00m",
-      "name": "Edwuin Cetré",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "18",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Dec 14, 2004",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "1298369",
-      "marketValue": "€1.80m",
-      "name": "Joaquín Tobio Burgos",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "17",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 28, 2001",
-      "foot": "left",
-      "height": "1,67m",
-      "id": "755457",
-      "marketValue": "€4.50m",
-      "name": "Tiago Palacios",
-      "nationality": [
-        "Uruguay",
-        "Argentina"
-      ],
-      "number": "10",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Dec 7, 2005",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "1298374",
-      "marketValue": "€2.00m",
-      "name": "Fabricio Pérez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "29",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Feb 26, 1999",
+      "dateOfBirth": "Jun 16, 1986",
       "foot": "right",
       "height": "1,90m",
-      "id": "608469",
-      "marketValue": "€800k",
-      "name": "Adolfo Gaich",
+      "id": "58088",
+      "marketValue": "€750k",
+      "name": "Fernando Muslera",
       "nationality": [
-        "Argentina",
+        "Uruguay",
         "Italy"
       ],
-      "number": "19",
-      "position": "Centre-Forward"
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 26, 1992",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "113130",
+      "marketValue": "€375k",
+      "name": "Leandro González Pírez",
+      "nationality": [
+        "Argentina",
+        "Portugal"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2026",
@@ -389,6 +91,304 @@
       ],
       "number": "27",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 18, 1994",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "364602",
+      "marketValue": "€1.20m",
+      "name": "Alexis Castro",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 11, 1997",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "454181",
+      "marketValue": "€1.30m",
+      "name": "Gabriel Neves",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 1, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "470390",
+      "marketValue": "€3.00m",
+      "name": "Edwuin Cetré",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 20, 1992",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "487346",
+      "marketValue": "€900k",
+      "name": "Ezequiel Piovi",
+      "nationality": [
+        "Argentina",
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 5, 1998",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "520947",
+      "marketValue": "€2.50m",
+      "name": "Santiago Arzamendia",
+      "nationality": [
+        "Paraguay",
+        "Argentina"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 26, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "608469",
+      "marketValue": "€800k",
+      "name": "Adolfo Gaich",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 6, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "668549",
+      "marketValue": "€3.80m",
+      "name": "Brian Aguirre",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "28",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 28, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "728221",
+      "marketValue": "€2.50m",
+      "name": "Facundo Farías",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 28, 2001",
+      "foot": "left",
+      "height": "1,67m",
+      "id": "755457",
+      "marketValue": "€4.50m",
+      "name": "Tiago Palacios",
+      "nationality": [
+        "Uruguay",
+        "Argentina"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 8, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "830857",
+      "marketValue": "€2.20m",
+      "name": "Eric Meza",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 29, 2001",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "843156",
+      "marketValue": "€2.00m",
+      "name": "Gastón Benedetti",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 17, 1999",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "888545",
+      "marketValue": "€3.20m",
+      "name": "Eros Mancuso",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "40",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 29, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "959208",
+      "marketValue": "€2.00m",
+      "name": "Santiago Núñez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 28, 2003",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "993645",
+      "marketValue": "€4.50m",
+      "name": "Tomás Palacios",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 22, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1000685",
+      "marketValue": "€200k",
+      "name": "Valente Pierani",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 29, 2002",
+      "foot": "left",
+      "height": "1,98m",
+      "id": "1050051",
+      "marketValue": "€500k",
+      "name": "Fabricio Iacovich",
+      "nationality": [
+        "Argentina",
+        "Croatia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 21, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1181926",
+      "name": "Rodrigo Borzone",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 6, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1283311",
+      "marketValue": "€1.50m",
+      "name": "Mikel Amondarain",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "32",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 14, 2004",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1298369",
+      "marketValue": "€1.80m",
+      "name": "Joaquín Tobio Burgos",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 7, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1298374",
+      "marketValue": "€2.00m",
+      "name": "Fabricio Pérez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "29",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 1, 2005",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "1298375",
+      "name": "Lucas Cornejo",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "39",
+      "position": "Central Midfield"
     },
     {
       "contract": "-",

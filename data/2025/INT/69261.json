@@ -4,6 +4,93 @@
   "country": "US",
   "players": [
     {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 24, 1987",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "28003",
+      "marketValue": "€20.00m",
+      "name": "Lionel Messi",
+      "nationality": [
+        "Argentina",
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 24, 1987",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "44352",
+      "marketValue": "€1.50m",
+      "name": "Luis Suárez",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 24, 1994",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "255901",
+      "marketValue": "€15.00m",
+      "name": "Rodrigo De Paul",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 16, 1996",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "282429",
+      "marketValue": "€4.00m",
+      "name": "Sergio Reguilón",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 13, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "401572",
+      "marketValue": "€12.00m",
+      "name": "Germán Berterame",
+      "nationality": [
+        "Mexico",
+        "Argentina"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 1, 1997",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "437993",
+      "marketValue": "€1.80m",
+      "name": "Maximiliano Falcón",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Dec 31, 2026",
       "dateOfBirth": "May 9, 1997",
       "foot": "left",
@@ -19,19 +106,32 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jun 4, 2002",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "661126",
-      "marketValue": "€600k",
-      "name": "Rocco Ríos Novo",
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 3, 2001",
+      "height": "1,83m",
+      "id": "634692",
+      "marketValue": "€1.50m",
+      "name": "Yannick Bright",
       "nationality": [
-        "Argentina",
+        "Italy",
         "United States"
       ],
-      "number": "34",
-      "position": "Goalkeeper"
+      "number": "42",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 23, 1999",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "642759",
+      "marketValue": "€2.00m",
+      "name": "Facundo Mura",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "4",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -49,6 +149,79 @@
     },
     {
       "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 26, 2002",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "661094",
+      "marketValue": "€3.00m",
+      "name": "David Ayala",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 4, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "661126",
+      "marketValue": "€600k",
+      "name": "Rocco Ríos Novo",
+      "nationality": [
+        "Argentina",
+        "United States"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 31, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "744586",
+      "marketValue": "€500k",
+      "name": "Ian Fray",
+      "nationality": [
+        "Jamaica",
+        "United States"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 28, 2004",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "819603",
+      "marketValue": "€1.80m",
+      "name": "Noah Allen",
+      "nationality": [
+        "Greece",
+        "United States"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 2, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "858719",
+      "marketValue": "€4.50m",
+      "name": "Telasco Segovia",
+      "nationality": [
+        "Venezuela"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
       "dateOfBirth": "Aug 12, 2000",
       "foot": "left",
       "height": "1,83m",
@@ -60,6 +233,21 @@
       ],
       "number": "16",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 20, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "872184",
+      "marketValue": "€5.00m",
+      "name": "Tadeo Allende",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "21",
+      "position": "Right Winger"
     },
     {
       "contract": "Dec 31, 2027",
@@ -78,32 +266,18 @@
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 1, 1997",
+      "dateOfBirth": "Feb 8, 2004",
       "foot": "right",
-      "height": "1,79m",
-      "id": "437993",
-      "marketValue": "€1.80m",
-      "name": "Maximiliano Falcón",
+      "height": "1,81m",
+      "id": "914681",
+      "marketValue": "€2.00m",
+      "name": "David Ruíz",
       "nationality": [
-        "Uruguay"
-      ],
-      "number": "37",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Aug 31, 2002",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "744586",
-      "marketValue": "€500k",
-      "name": "Ian Fray",
-      "nationality": [
-        "Jamaica",
+        "Honduras",
         "United States"
       ],
-      "number": "17",
-      "position": "Centre-Back"
+      "number": "41",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2027",
@@ -122,59 +296,18 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Dec 16, 1996",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "282429",
-      "marketValue": "€4.00m",
-      "name": "Sergio Reguilón",
-      "nationality": [
-        "Spain"
-      ],
-      "number": "3",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Apr 28, 2004",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "819603",
-      "marketValue": "€1.80m",
-      "name": "Noah Allen",
-      "nationality": [
-        "Greece",
-        "United States"
-      ],
-      "number": "32",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Feb 21, 2006",
-      "id": "1046966",
-      "marketValue": "€100k",
-      "name": "Ezequiel Abadia-Reda",
+      "dateOfBirth": "Feb 9, 2007",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1007387",
+      "marketValue": "€125k",
+      "name": "Santiago Morales",
       "nationality": [
         "United States",
         "Argentina"
       ],
-      "number": "76",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Mar 23, 1999",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "642759",
-      "marketValue": "€2.00m",
-      "name": "Facundo Mura",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "4",
-      "position": "Right-Back"
+      "number": "20",
+      "position": "Central Midfield"
     },
     {
       "contract": "Dec 31, 2026",
@@ -193,118 +326,16 @@
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jul 26, 2002",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "661094",
-      "marketValue": "€3.00m",
-      "name": "David Ayala",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "22",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Feb 8, 2004",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "914681",
-      "marketValue": "€2.00m",
-      "name": "David Ruíz",
-      "nationality": [
-        "Honduras",
-        "United States"
-      ],
-      "number": "41",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Sep 3, 2001",
-      "height": "1,83m",
-      "id": "634692",
-      "marketValue": "€1.50m",
-      "name": "Yannick Bright",
-      "nationality": [
-        "Italy",
-        "United States"
-      ],
-      "number": "42",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "May 24, 1994",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "255901",
-      "marketValue": "€15.00m",
-      "name": "Rodrigo De Paul",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "7",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 2, 2003",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "858719",
-      "marketValue": "€4.50m",
-      "name": "Telasco Segovia",
-      "nationality": [
-        "Venezuela"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Feb 9, 2007",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "1007387",
-      "marketValue": "€125k",
-      "name": "Santiago Morales",
-      "nationality": [
-        "United States",
-        "Argentina"
-      ],
-      "number": "20",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 3, 2008",
-      "height": "1,80m",
-      "id": "1335512",
+      "dateOfBirth": "Feb 21, 2006",
+      "id": "1046966",
       "marketValue": "€100k",
-      "name": "Alexander Shaw",
+      "name": "Ezequiel Abadia-Reda",
       "nationality": [
         "United States",
-        "Colombia"
-      ],
-      "number": "88",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jan 14, 2006",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "1213080",
-      "marketValue": "€6.00m",
-      "name": "Mateo Silvetti",
-      "nationality": [
         "Argentina"
       ],
-      "number": "24",
-      "position": "Left Winger"
+      "number": "76",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -321,63 +352,32 @@
       "position": "Left Winger"
     },
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jun 24, 1987",
-      "foot": "left",
-      "height": "1,70m",
-      "id": "28003",
-      "marketValue": "€20.00m",
-      "name": "Lionel Messi",
-      "nationality": [
-        "Argentina",
-        "Spain"
-      ],
-      "number": "10",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Feb 20, 1999",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "872184",
-      "marketValue": "€5.00m",
-      "name": "Tadeo Allende",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "21",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Nov 13, 1998",
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 14, 2006",
       "foot": "right",
       "height": "1,75m",
-      "id": "401572",
-      "marketValue": "€12.00m",
-      "name": "Germán Berterame",
+      "id": "1213080",
+      "marketValue": "€6.00m",
+      "name": "Mateo Silvetti",
       "nationality": [
-        "Mexico",
         "Argentina"
       ],
-      "number": "19",
-      "position": "Centre-Forward"
+      "number": "24",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 24, 1987",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "44352",
-      "marketValue": "€1.50m",
-      "name": "Luis Suárez",
+      "dateOfBirth": "Apr 3, 2008",
+      "height": "1,80m",
+      "id": "1335512",
+      "marketValue": "€100k",
+      "name": "Alexander Shaw",
       "nationality": [
-        "Uruguay"
+        "United States",
+        "Colombia"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "88",
+      "position": "Central Midfield"
     }
   ],
   "stadiumName": "Nu Stadium",

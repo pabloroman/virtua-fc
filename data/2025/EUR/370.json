@@ -3,18 +3,46 @@
   "name": "Aberdeen FC",
   "players": [
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jan 22, 1997",
-      "foot": "right",
-      "height": "1,93m",
-      "id": "264302",
-      "marketValue": "€800k",
-      "name": "Dimitar Mitov",
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Aug 4, 1991",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "95950",
+      "marketValue": "€200k",
+      "name": "Graeme Shinnie",
       "nationality": [
-        "Bulgaria"
+        "Scotland"
       ],
-      "number": "1",
-      "position": "Goalkeeper"
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Mar 30, 1992",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "130765",
+      "marketValue": "€400k",
+      "name": "Stuart Armstrong",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 17, 1993",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "148215",
+      "marketValue": "€300k",
+      "name": "Nicky Devlin",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "2",
+      "position": "Right-Back"
     },
     {
       "contract": "May 31, 2027",
@@ -31,60 +59,32 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "May 31, 2028",
-      "dateOfBirth": "Feb 28, 2000",
-      "foot": "left",
-      "height": "1,97m",
-      "id": "477136",
-      "name": "Nick Suman",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 10, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "251309",
+      "marketValue": "€1.50m",
+      "name": "Dennis Geiger",
       "nationality": [
-        "Australia",
-        "England"
+        "Germany"
       ],
-      "number": "13",
-      "position": "Goalkeeper"
+      "number": "8",
+      "position": "Central Midfield"
     },
     {
-      "contract": "May 31, 2029",
-      "dateOfBirth": "Feb 10, 2003",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 1997",
       "foot": "right",
       "height": "1,93m",
-      "id": "808452",
-      "marketValue": "€1.20m",
-      "name": "Jack Milne",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "22",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "May 31, 2026",
-      "dateOfBirth": "Apr 7, 2003",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "567114",
-      "marketValue": "€1.00m",
-      "name": "Liam Morrison",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "23",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Dec 13, 2000",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "448883",
+      "id": "264302",
       "marketValue": "€800k",
-      "name": "Kristers Tobers",
+      "name": "Dimitar Mitov",
       "nationality": [
-        "Latvia"
+        "Bulgaria"
       ],
-      "number": "24",
-      "position": "Centre-Back"
+      "number": "1",
+      "position": "Goalkeeper"
     },
     {
       "contract": "May 31, 2029",
@@ -98,19 +98,6 @@
         "Netherlands"
       ],
       "number": "5",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "May 31, 2027",
-      "dateOfBirth": "Oct 19, 2001",
-      "foot": "left",
-      "id": "728478",
-      "marketValue": "€600k",
-      "name": "Gavin Molloy",
-      "nationality": [
-        "Ireland"
-      ],
-      "number": "21",
       "position": "Centre-Back"
     },
     {
@@ -129,6 +116,91 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 8, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "360661",
+      "marketValue": "€1.20m",
+      "name": "Kevin Nisbet",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "15",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Apr 6, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "371003",
+      "marketValue": "€550k",
+      "name": "Ante Palaversa",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Oct 14, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "434981",
+      "marketValue": "€500k",
+      "name": "Toyosi Olusanya",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 13, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "448883",
+      "marketValue": "€800k",
+      "name": "Kristers Tobers",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Feb 28, 2000",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "477136",
+      "name": "Nick Suman",
+      "nationality": [
+        "Australia",
+        "England"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 24, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "503865",
+      "marketValue": "€1.30m",
+      "name": "Alexander Jensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
       "contract": "Jun 30, 2026",
       "dateOfBirth": "Nov 29, 1998",
       "foot": "right",
@@ -142,6 +214,104 @@
       ],
       "number": "42",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 3, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "562409",
+      "marketValue": "€600k",
+      "name": "Afeez Aremu",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "32",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Apr 7, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "567114",
+      "marketValue": "€1.00m",
+      "name": "Liam Morrison",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Oct 10, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "624751",
+      "marketValue": "€1.50m",
+      "name": "Lyall Cameron",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 7, 2003",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "646189",
+      "marketValue": "€1.40m",
+      "name": "Topi Keskinen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "81",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 22, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "698548",
+      "marketValue": "€800k",
+      "name": "Marko Lazetić",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "27",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 19, 2001",
+      "foot": "left",
+      "id": "728478",
+      "marketValue": "€600k",
+      "name": "Gavin Molloy",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 14, 2001",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "794777",
+      "marketValue": "€600k",
+      "name": "Nicolas Milanovic",
+      "nationality": [
+        "Australia",
+        "Croatia"
+      ],
+      "number": "11",
+      "position": "Right Winger"
     },
     {
       "contract": "May 31, 2029",
@@ -160,45 +330,17 @@
     },
     {
       "contract": "May 31, 2029",
-      "dateOfBirth": "Jan 25, 2006",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "948938",
-      "marketValue": "€100k",
-      "name": "Mitchel Frame",
+      "dateOfBirth": "Feb 10, 2003",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "808452",
+      "marketValue": "€1.20m",
+      "name": "Jack Milne",
       "nationality": [
         "Scotland"
       ],
-      "number": "3",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Aug 24, 2001",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "503865",
-      "marketValue": "€1.30m",
-      "name": "Alexander Jensen",
-      "nationality": [
-        "Denmark"
-      ],
-      "number": "28",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "May 31, 2027",
-      "dateOfBirth": "Oct 17, 1993",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "148215",
-      "marketValue": "€300k",
-      "name": "Nicky Devlin",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "2",
-      "position": "Right-Back"
+      "number": "22",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -214,46 +356,18 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 3, 1999",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "562409",
-      "marketValue": "€600k",
-      "name": "Afeez Aremu",
-      "nationality": [
-        "Nigeria"
-      ],
-      "number": "32",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "May 31, 2027",
-      "dateOfBirth": "Apr 6, 2000",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "371003",
-      "marketValue": "€550k",
-      "name": "Ante Palaversa",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "18",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "May 31, 2026",
-      "dateOfBirth": "Aug 4, 1991",
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Jan 25, 2006",
       "foot": "left",
-      "height": "1,73m",
-      "id": "95950",
-      "marketValue": "€200k",
-      "name": "Graeme Shinnie",
+      "height": "1,78m",
+      "id": "948938",
+      "marketValue": "€100k",
+      "name": "Mitchel Frame",
       "nationality": [
         "Scotland"
       ],
-      "number": "4",
-      "position": "Defensive Midfield"
+      "number": "3",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2029",
@@ -269,62 +383,6 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 10, 1998",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "251309",
-      "marketValue": "€1.50m",
-      "name": "Dennis Geiger",
-      "nationality": [
-        "Germany"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "May 31, 2026",
-      "dateOfBirth": "Oct 10, 2002",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "624751",
-      "marketValue": "€1.50m",
-      "name": "Lyall Cameron",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "25",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "May 31, 2027",
-      "dateOfBirth": "Mar 30, 1992",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "130765",
-      "marketValue": "€400k",
-      "name": "Stuart Armstrong",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "16",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 7, 2003",
-      "foot": "both",
-      "height": "1,80m",
-      "id": "646189",
-      "marketValue": "€1.40m",
-      "name": "Topi Keskinen",
-      "nationality": [
-        "Finland"
-      ],
-      "number": "81",
-      "position": "Left Winger"
-    },
-    {
       "contract": "May 31, 2030",
       "dateOfBirth": "Jun 22, 2005",
       "foot": "left",
@@ -338,64 +396,6 @@
       ],
       "number": "14",
       "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Nov 14, 2001",
-      "foot": "left",
-      "height": "1,85m",
-      "id": "794777",
-      "marketValue": "€600k",
-      "name": "Nicolas Milanovic",
-      "nationality": [
-        "Australia",
-        "Croatia"
-      ],
-      "number": "11",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 8, 1997",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "360661",
-      "marketValue": "€1.20m",
-      "name": "Kevin Nisbet",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "15",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jan 22, 2004",
-      "foot": "right",
-      "height": "1,92m",
-      "id": "698548",
-      "marketValue": "€800k",
-      "name": "Marko Lazetić",
-      "nationality": [
-        "Serbia"
-      ],
-      "number": "27",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "May 31, 2026",
-      "dateOfBirth": "Oct 14, 1997",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "434981",
-      "marketValue": "€500k",
-      "name": "Toyosi Olusanya",
-      "nationality": [
-        "England",
-        "Nigeria"
-      ],
-      "number": "20",
-      "position": "Centre-Forward"
     }
   ],
   "stadiumName": "Pittodrie Stadium",

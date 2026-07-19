@@ -4,32 +4,18 @@
   "country": "BR",
   "players": [
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 24, 2001",
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 11, 1989",
       "foot": "right",
-      "height": "1,93m",
-      "id": "876739",
-      "marketValue": "€2.00m",
-      "name": "Matheus Cunha",
+      "height": "1,68m",
+      "id": "47592",
+      "marketValue": "€250k",
+      "name": "Fagner",
       "nationality": [
         "Brazil"
       ],
-      "number": "31",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Dec 27, 2005",
-      "foot": "right",
-      "height": "1,92m",
-      "id": "997947",
-      "marketValue": "€500k",
-      "name": "Otávio Costa",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "81",
-      "position": "Goalkeeper"
+      "number": "23",
+      "position": "Right-Back"
     },
     {
       "contract": "May 31, 2027",
@@ -46,6 +32,149 @@
       "position": "Goalkeeper"
     },
     {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 16, 1993",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "218118",
+      "marketValue": "€500k",
+      "name": "Lucas Silva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 5, 1996",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "225984",
+      "marketValue": "€14.00m",
+      "name": "Matheus Pereira",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 7, 1994",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "236202",
+      "marketValue": "€3.50m",
+      "name": "Wanderson",
+      "nationality": [
+        "Brazil",
+        "Belgium"
+      ],
+      "number": "94",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 19, 1994",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "240913",
+      "marketValue": "€1.80m",
+      "name": "Lucas Villalba",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 18, 1994",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "242201",
+      "marketValue": "€2.80m",
+      "name": "Lucas Romero",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "29",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 4, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "323954",
+      "marketValue": "€3.00m",
+      "name": "Walace",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "May 20, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "341705",
+      "marketValue": "€20.00m",
+      "name": "Gerson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 3, 1995",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "341710",
+      "marketValue": "€4.00m",
+      "name": "William",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "12",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 7, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "406766",
+      "marketValue": "€1.50m",
+      "name": "Bruno Rodrigues",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jan 2, 2004",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "432157",
+      "marketValue": "€500k",
+      "name": "Japa",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "77",
+      "position": "Central Midfield"
+    },
+    {
       "contract": "Dec 31, 2030",
       "dateOfBirth": "Feb 12, 1996",
       "foot": "right",
@@ -58,6 +187,90 @@
       ],
       "number": "15",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 17, 1999",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "512385",
+      "marketValue": "€11.00m",
+      "name": "Luis Sinisterra",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 19, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "552549",
+      "marketValue": "€4.50m",
+      "name": "Matheus Henrique",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 5, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "559602",
+      "marketValue": "€1.20m",
+      "name": "Chico da Costa",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jan 24, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "620477",
+      "marketValue": "€26.00m",
+      "name": "Kaio Jorge",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 19, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "658678",
+      "marketValue": "€10.00m",
+      "name": "Christian",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "88",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 7, 2003",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "668268",
+      "marketValue": "€3.00m",
+      "name": "Marquinhos",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Right Winger"
     },
     {
       "contract": "Dec 31, 2028",
@@ -74,6 +287,62 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 24, 2001",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "876739",
+      "marketValue": "€2.00m",
+      "name": "Matheus Cunha",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 8, 2003",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "879217",
+      "marketValue": "€12.00m",
+      "name": "Kaiki",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Dec 27, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "997947",
+      "marketValue": "€500k",
+      "name": "Otávio Costa",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "81",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 14, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "1074584",
+      "marketValue": "€9.00m",
+      "name": "Keny Arroyo",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "99",
+      "position": "Right Winger"
+    },
+    {
       "contract": "Jun 30, 2029",
       "dateOfBirth": "May 27, 2004",
       "foot": "right",
@@ -88,18 +357,18 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Aug 19, 1994",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "240913",
-      "marketValue": "€1.80m",
-      "name": "Lucas Villalba",
+      "contract": "Jan 31, 2029",
+      "dateOfBirth": "Mar 13, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1083245",
+      "marketValue": "€250k",
+      "name": "Murilo Rhikman",
       "nationality": [
-        "Argentina"
+        "Brazil"
       ],
-      "number": "25",
-      "position": "Centre-Back"
+      "number": "35",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2029",
@@ -129,231 +398,18 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 8, 2003",
-      "foot": "left",
-      "height": "1,72m",
-      "id": "879217",
-      "marketValue": "€12.00m",
-      "name": "Kaiki",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "6",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Aug 12, 2008",
-      "foot": "left",
-      "height": "1,84m",
-      "id": "1275068",
-      "marketValue": "€10.00m",
-      "name": "Kauã Prates",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "36",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 3, 1995",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "341710",
-      "marketValue": "€4.00m",
-      "name": "William",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "12",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Aug 31, 2030",
-      "dateOfBirth": "Sep 29, 2006",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "1388409",
-      "marketValue": "€500k",
-      "name": "Kauã Moraes",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "2",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jun 11, 1989",
-      "foot": "right",
-      "height": "1,68m",
-      "id": "47592",
-      "marketValue": "€250k",
-      "name": "Fagner",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "23",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Apr 4, 1995",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "323954",
-      "marketValue": "€3.00m",
-      "name": "Walace",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "5",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Apr 18, 1994",
-      "foot": "right",
-      "height": "1,67m",
-      "id": "242201",
-      "marketValue": "€2.80m",
-      "name": "Lucas Romero",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "29",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Feb 16, 1993",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "218118",
-      "marketValue": "€500k",
-      "name": "Lucas Silva",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "16",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jan 31, 2029",
-      "dateOfBirth": "Mar 13, 2006",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "1083245",
-      "marketValue": "€250k",
-      "name": "Murilo Rhikman",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "35",
-      "position": "Defensive Midfield"
-    },
-    {
       "contract": "Dec 31, 2030",
-      "dateOfBirth": "May 20, 1997",
-      "foot": "left",
-      "height": "1,84m",
-      "id": "341705",
-      "marketValue": "€20.00m",
-      "name": "Gerson",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "11",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Dec 19, 2000",
+      "dateOfBirth": "Apr 24, 2005",
       "foot": "right",
-      "height": "1,78m",
-      "id": "658678",
-      "marketValue": "€10.00m",
-      "name": "Christian",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "88",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Dec 19, 1997",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "552549",
-      "marketValue": "€4.50m",
-      "name": "Matheus Henrique",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Jan 2, 2004",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "432157",
-      "marketValue": "€500k",
-      "name": "Japa",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "77",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 5, 1996",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "225984",
-      "marketValue": "€14.00m",
-      "name": "Matheus Pereira",
-      "nationality": [
-        "Brazil",
-        "Portugal"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 17, 1999",
-      "foot": "right",
-      "height": "1,72m",
-      "id": "512385",
-      "marketValue": "€11.00m",
-      "name": "Luis Sinisterra",
+      "height": "1,86m",
+      "id": "1182665",
+      "marketValue": "€2.20m",
+      "name": "Néiser Villarreal",
       "nationality": [
         "Colombia"
       ],
-      "number": "17",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Oct 7, 1994",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "236202",
-      "marketValue": "€3.50m",
-      "name": "Wanderson",
-      "nationality": [
-        "Brazil",
-        "Belgium"
-      ],
-      "number": "94",
-      "position": "Left Winger"
+      "number": "22",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Dec 31, 2028",
@@ -371,88 +427,32 @@
       "position": "Left Winger"
     },
     {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 7, 1997",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "406766",
-      "marketValue": "€1.50m",
-      "name": "Bruno Rodrigues",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "9",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Feb 14, 2006",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "1074584",
-      "marketValue": "€9.00m",
-      "name": "Keny Arroyo",
-      "nationality": [
-        "Ecuador"
-      ],
-      "number": "99",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Apr 7, 2003",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "668268",
-      "marketValue": "€3.00m",
-      "name": "Marquinhos",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "7",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Jan 24, 2002",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "620477",
-      "marketValue": "€26.00m",
-      "name": "Kaio Jorge",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "19",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Apr 24, 2005",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "1182665",
-      "marketValue": "€2.20m",
-      "name": "Néiser Villarreal",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "22",
-      "position": "Centre-Forward"
-    },
-    {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 5, 1995",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "559602",
-      "marketValue": "€1.20m",
-      "name": "Chico da Costa",
+      "dateOfBirth": "Aug 12, 2008",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "1275068",
+      "marketValue": "€10.00m",
+      "name": "Kauã Prates",
       "nationality": [
         "Brazil"
       ],
-      "number": "91",
-      "position": "Centre-Forward"
+      "number": "36",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Aug 31, 2030",
+      "dateOfBirth": "Sep 29, 2006",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1388409",
+      "marketValue": "€500k",
+      "name": "Kauã Moraes",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "2",
+      "position": "Right-Back"
     }
   ],
   "stadiumName": "Estádio Governador Magalhães Pinto",

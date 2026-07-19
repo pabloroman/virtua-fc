@@ -4,32 +4,34 @@
   "country": "AZ",
   "players": [
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jul 25, 2000",
-      "height": "1,90m",
-      "id": "404055",
-      "marketValue": "€2.00m",
-      "name": "Mateusz Kochalski",
-      "nationality": [
-        "Poland"
-      ],
-      "number": "99",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 12, 1994",
+      "dateOfBirth": "Jul 11, 1991",
       "foot": "right",
       "height": "1,85m",
-      "id": "313078",
-      "marketValue": "€700k",
-      "name": "Shahrudin Mahammadaliyev",
+      "id": "198648",
+      "marketValue": "€125k",
+      "name": "Badavi Hüseynov",
       "nationality": [
         "Azerbaijan",
         "Russia"
       ],
-      "number": "1",
-      "position": "Goalkeeper"
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 9, 1995",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "222223",
+      "marketValue": "€800k",
+      "name": "Marko Jankovic",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -47,19 +49,34 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jan 20, 2003",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 5, 1991",
       "foot": "right",
-      "height": "1,92m",
-      "id": "669155",
-      "marketValue": "€150k",
-      "name": "Amin Ramazanov",
+      "height": "1,80m",
+      "id": "256973",
+      "marketValue": "€400k",
+      "name": "Abdellah Zoubir",
+      "nationality": [
+        "France",
+        "Morocco"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 15, 1996",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "263956",
+      "marketValue": "€700k",
+      "name": "Ramil Sheydayev",
       "nationality": [
         "Azerbaijan",
         "Russia"
       ],
-      "number": "89",
-      "position": "Goalkeeper"
+      "number": "77",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2027",
@@ -74,6 +91,35 @@
       ],
       "number": "13",
       "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 12, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "313078",
+      "marketValue": "€700k",
+      "name": "Shahrudin Mahammadaliyev",
+      "nationality": [
+        "Azerbaijan",
+        "Russia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 13, 1995",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "325666",
+      "marketValue": "€500k",
+      "name": "Abbas Hüseynov",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "30",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2026",
@@ -92,32 +138,73 @@
     },
     {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 9, 1993",
+      "dateOfBirth": "Sep 3, 1998",
       "foot": "left",
-      "height": "1,84m",
-      "id": "555808",
-      "marketValue": "€450k",
-      "name": "Kevin Medina",
+      "height": "1,73m",
+      "id": "343273",
+      "marketValue": "€700k",
+      "name": "Joni Montiel",
       "nationality": [
-        "Colombia"
+        "Spain"
       ],
-      "number": "81",
-      "position": "Centre-Back"
+      "number": "9",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 11, 1991",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "198648",
-      "marketValue": "€125k",
-      "name": "Badavi Hüseynov",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 25, 2000",
+      "height": "1,90m",
+      "id": "404055",
+      "marketValue": "€2.00m",
+      "name": "Mateusz Kochalski",
       "nationality": [
-        "Azerbaijan",
-        "Russia"
+        "Poland"
       ],
-      "number": "55",
-      "position": "Centre-Back"
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 29, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "404849",
+      "marketValue": "€1.80m",
+      "name": "Oleksiy Kashchuk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "21",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 2, 1996",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "484873",
+      "marketValue": "€2.50m",
+      "name": "Kady Borges",
+      "nationality": [
+        "Brazil",
+        "Poland"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 13, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "536688",
+      "marketValue": "€700k",
+      "name": "Musa Qurbanly",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "22",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2026",
@@ -148,19 +235,32 @@
       "position": "Left-Back"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 12, 2002",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 9, 1993",
       "foot": "left",
-      "height": "1,82m",
-      "id": "818933",
+      "height": "1,84m",
+      "id": "555808",
       "marketValue": "€450k",
-      "name": "Jérémie Gnali",
+      "name": "Kevin Medina",
       "nationality": [
-        "France",
-        "Congo"
+        "Colombia"
       ],
-      "number": "24",
-      "position": "Left-Back"
+      "number": "81",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 15, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "577439",
+      "marketValue": "€500k",
+      "name": "Chriso",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -178,34 +278,6 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jun 18, 1999",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "735790",
-      "marketValue": "€900k",
-      "name": "Dani Bolt",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "18",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 13, 1995",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "325666",
-      "marketValue": "€500k",
-      "name": "Abbas Hüseynov",
-      "nationality": [
-        "Azerbaijan"
-      ],
-      "number": "30",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
       "dateOfBirth": "Apr 23, 2001",
       "foot": "right",
       "height": "1,78m",
@@ -219,103 +291,19 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jul 9, 1995",
-      "foot": "left",
-      "height": "1,72m",
-      "id": "222223",
-      "marketValue": "€800k",
-      "name": "Marko Jankovic",
-      "nationality": [
-        "Montenegro",
-        "Serbia"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 15, 1999",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "577439",
-      "marketValue": "€500k",
-      "name": "Chriso",
-      "nationality": [
-        "Cote d'Ivoire"
-      ],
-      "number": "6",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 2, 1996",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "484873",
-      "marketValue": "€2.50m",
-      "name": "Kady Borges",
-      "nationality": [
-        "Brazil",
-        "Poland"
-      ],
-      "number": "20",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Sep 3, 1998",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "343273",
-      "marketValue": "€700k",
-      "name": "Joni Montiel",
-      "nationality": [
-        "Spain"
-      ],
-      "number": "9",
-      "position": "Attacking Midfield"
-    },
-    {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Aug 2, 2007",
-      "id": "1204489",
-      "marketValue": "€175k",
-      "name": "Hikmat Cabrayilzada",
-      "nationality": [
-        "Azerbaijan"
-      ],
-      "number": "32",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Aug 1, 2001",
+      "dateOfBirth": "Jan 20, 2003",
       "foot": "right",
-      "height": "1,73m",
-      "id": "944367",
-      "marketValue": "€1.50m",
-      "name": "Emmanuel Addai",
+      "height": "1,92m",
+      "id": "669155",
+      "marketValue": "€150k",
+      "name": "Amin Ramazanov",
       "nationality": [
-        "Ghana"
+        "Azerbaijan",
+        "Russia"
       ],
-      "number": "11",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 5, 1991",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "256973",
-      "marketValue": "€400k",
-      "name": "Abdellah Zoubir",
-      "nationality": [
-        "France",
-        "Morocco"
-      ],
-      "number": "10",
-      "position": "Left Winger"
+      "number": "89",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2027",
@@ -333,18 +321,33 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jun 29, 2000",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "404849",
-      "marketValue": "€1.80m",
-      "name": "Oleksiy Kashchuk",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 18, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "735790",
+      "marketValue": "€900k",
+      "name": "Dani Bolt",
       "nationality": [
-        "Ukraine"
+        "Brazil"
       ],
-      "number": "21",
-      "position": "Right Winger"
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 12, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "818933",
+      "marketValue": "€450k",
+      "name": "Jérémie Gnali",
+      "nationality": [
+        "France",
+        "Congo"
+      ],
+      "number": "24",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -361,6 +364,20 @@
       "position": "Centre-Forward"
     },
     {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 1, 2001",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "944367",
+      "marketValue": "€1.50m",
+      "name": "Emmanuel Addai",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
       "contract": "Jun 30, 2028",
       "dateOfBirth": "Feb 10, 2002",
       "foot": "left",
@@ -375,33 +392,16 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 13, 2002",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "536688",
-      "marketValue": "€700k",
-      "name": "Musa Qurbanly",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 2, 2007",
+      "id": "1204489",
+      "marketValue": "€175k",
+      "name": "Hikmat Cabrayilzada",
       "nationality": [
         "Azerbaijan"
       ],
-      "number": "22",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Mar 15, 1996",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "263956",
-      "marketValue": "€700k",
-      "name": "Ramil Sheydayev",
-      "nationality": [
-        "Azerbaijan",
-        "Russia"
-      ],
-      "number": "77",
-      "position": "Centre-Forward"
+      "number": "32",
+      "position": "Attacking Midfield"
     }
   ],
   "stadiumName": "Azersun Arena",

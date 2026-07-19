@@ -3,87 +3,33 @@
   "name": "NK Celje",
   "players": [
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 15, 2002",
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 12, 1992",
       "foot": "right",
-      "height": "1,88m",
-      "id": "605757",
-      "marketValue": "€600k",
-      "name": "Zan-Luk Leban",
+      "height": "1,75m",
+      "id": "166173",
+      "marketValue": "€200k",
+      "name": "Mario Kvesic",
       "nationality": [
-        "Slovenia"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 17, 1993",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "188201",
-      "marketValue": "€400k",
-      "name": "Simon Sluga",
-      "nationality": [
+        "Bosnia-Herzegovina",
         "Croatia"
       ],
-      "number": "21",
-      "position": "Goalkeeper"
+      "number": "8",
+      "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Sep 9, 2005",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 15, 1994",
       "foot": "right",
-      "id": "981082",
-      "marketValue": "€50k",
-      "name": "Luka Kolar",
+      "height": "1,74m",
+      "id": "168152",
+      "marketValue": "€400k",
+      "name": "Rudi Pozeg Vancas",
       "nationality": [
         "Slovenia"
       ],
-      "number": "12",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Aug 8, 2003",
-      "foot": "left",
-      "height": "1,89m",
-      "id": "647701",
-      "marketValue": "€800k",
-      "name": "Artemijus Tutyskinas",
-      "nationality": [
-        "Lithuania"
-      ],
-      "number": "6",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Oct 9, 1995",
-      "foot": "left",
-      "height": "1,92m",
-      "id": "513526",
-      "marketValue": "€400k",
-      "name": "David Castro",
-      "nationality": [
-        "Spain"
-      ],
-      "number": "15",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jan 11, 2002",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "554969",
-      "marketValue": "€400k",
-      "name": "Łukasz Bejger",
-      "nationality": [
-        "Poland"
-      ],
-      "number": "44",
-      "position": "Centre-Back"
+      "number": "94",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -100,18 +46,59 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jun 30, 2003",
-      "foot": "left",
-      "height": "1,92m",
-      "id": "842336",
-      "marketValue": "€50k",
-      "name": "Gasper Vodeb",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 17, 1993",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "188201",
+      "marketValue": "€400k",
+      "name": "Simon Sluga",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 15, 1992",
+      "foot": "right",
+      "id": "235360",
+      "marketValue": "€150k",
+      "name": "Matej Poplatnik",
       "nationality": [
         "Slovenia"
       ],
-      "number": "5",
-      "position": "Centre-Back"
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 3, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "327207",
+      "marketValue": "€400k",
+      "name": "Juanjo Nieto",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 4, 1995",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "382007",
+      "marketValue": "€400k",
+      "name": "Andrej Kotnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -142,32 +129,18 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Oct 3, 1994",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "327207",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 9, 1995",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "513526",
       "marketValue": "€400k",
-      "name": "Juanjo Nieto",
+      "name": "David Castro",
       "nationality": [
         "Spain"
       ],
-      "number": "2",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 27, 2000",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "577785",
-      "marketValue": "€500k",
-      "name": "Mark Zabukovnik",
-      "nationality": [
-        "Slovenia"
-      ],
-      "number": "19",
-      "position": "Defensive Midfield"
+      "number": "15",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -184,31 +157,45 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 12, 1999",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 11, 2002",
       "foot": "right",
-      "height": "1,87m",
-      "id": "641060",
-      "marketValue": "€250k",
-      "name": "Ivan Calusic",
+      "height": "1,90m",
+      "id": "554969",
+      "marketValue": "€400k",
+      "name": "Łukasz Bejger",
       "nationality": [
-        "Croatia"
+        "Poland"
       ],
-      "number": "27",
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 27, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "577785",
+      "marketValue": "€500k",
+      "name": "Mark Zabukovnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "19",
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 1, 2002",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 15, 2002",
       "foot": "left",
-      "id": "860297",
-      "marketValue": "€100k",
-      "name": "Papa Daniel",
+      "id": "587507",
+      "marketValue": "€300k",
+      "name": "Ivica Vidovic",
       "nationality": [
-        "Nigeria"
+        "Croatia"
       ],
-      "number": "13",
-      "position": "Central Midfield"
+      "number": "16",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Jun 30, 2030",
@@ -225,86 +212,18 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 6, 2005",
-      "foot": "right",
-      "id": "1170713",
-      "marketValue": "€400k",
-      "name": "Florjan Jevsenak",
-      "nationality": [
-        "Slovenia"
-      ],
-      "number": "7",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Aug 4, 1995",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "382007",
-      "marketValue": "€400k",
-      "name": "Andrej Kotnik",
-      "nationality": [
-        "Slovenia"
-      ],
-      "number": "17",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 13, 2001",
-      "foot": "right",
-      "id": "653719",
-      "marketValue": "€400k",
-      "name": "Jakov Pranjic",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "22",
-      "position": "Attacking Midfield"
-    },
-    {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 15, 1994",
+      "dateOfBirth": "Dec 15, 2002",
       "foot": "right",
-      "height": "1,74m",
-      "id": "168152",
-      "marketValue": "€400k",
-      "name": "Rudi Pozeg Vancas",
+      "height": "1,88m",
+      "id": "605757",
+      "marketValue": "€600k",
+      "name": "Zan-Luk Leban",
       "nationality": [
         "Slovenia"
       ],
-      "number": "94",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Feb 15, 2002",
-      "foot": "left",
-      "id": "587507",
-      "marketValue": "€300k",
-      "name": "Ivica Vidovic",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "16",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jan 12, 1992",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "166173",
-      "marketValue": "€200k",
-      "name": "Mario Kvesic",
-      "nationality": [
-        "Bosnia-Herzegovina",
-        "Croatia"
-      ],
-      "number": "8",
-      "position": "Attacking Midfield"
+      "number": "1",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2026",
@@ -336,6 +255,47 @@
     },
     {
       "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 12, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "641060",
+      "marketValue": "€250k",
+      "name": "Ivan Calusic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 8, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "647701",
+      "marketValue": "€800k",
+      "name": "Artemijus Tutyskinas",
+      "nationality": [
+        "Lithuania"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 13, 2001",
+      "foot": "right",
+      "id": "653719",
+      "marketValue": "€400k",
+      "name": "Jakov Pranjic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
       "dateOfBirth": "Feb 27, 2003",
       "foot": "right",
       "height": "1,94m",
@@ -349,17 +309,57 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 15, 1992",
-      "foot": "right",
-      "id": "235360",
-      "marketValue": "€150k",
-      "name": "Matej Poplatnik",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 30, 2003",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "842336",
+      "marketValue": "€50k",
+      "name": "Gasper Vodeb",
       "nationality": [
         "Slovenia"
       ],
-      "number": "99",
-      "position": "Centre-Forward"
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 1, 2002",
+      "foot": "left",
+      "id": "860297",
+      "marketValue": "€100k",
+      "name": "Papa Daniel",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 9, 2005",
+      "foot": "right",
+      "id": "981082",
+      "marketValue": "€50k",
+      "name": "Luka Kolar",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 6, 2005",
+      "foot": "right",
+      "id": "1170713",
+      "marketValue": "€400k",
+      "name": "Florjan Jevsenak",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "7",
+      "position": "Attacking Midfield"
     }
   ],
   "stadiumName": "Stadion Z'dežele",

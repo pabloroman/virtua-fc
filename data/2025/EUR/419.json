@@ -4,6 +4,49 @@
   "players": [
     {
       "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 28, 1989",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "60603",
+      "marketValue": "€250k",
+      "name": "Kévin Théophile-Catherine",
+      "nationality": [
+        "Martinique",
+        "France"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 7, 1987",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "131310",
+      "marketValue": "€50k",
+      "name": "Danijel Zagorac",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 1, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "149829",
+      "marketValue": "€1.30m",
+      "name": "Miha Zajc",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
       "dateOfBirth": "Jan 9, 1995",
       "foot": "right",
       "height": "1,88m",
@@ -17,18 +60,18 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jul 31, 1998",
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 28, 1994",
       "foot": "right",
-      "height": "1,95m",
-      "id": "293185",
-      "marketValue": "€1.00m",
-      "name": "Ivan Nevistic",
+      "height": "1,87m",
+      "id": "227035",
+      "marketValue": "€1.20m",
+      "name": "Josip Misic",
       "nationality": [
         "Croatia"
       ],
-      "number": "33",
-      "position": "Goalkeeper"
+      "number": "27",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -45,30 +88,18 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 4, 2007",
-      "id": "1137943",
+      "contract": "Jun 15, 2026",
+      "dateOfBirth": "Jul 12, 1994",
+      "foot": "left",
+      "height": "1,98m",
+      "id": "240106",
       "marketValue": "€100k",
-      "name": "Antonio Rajic",
+      "name": "Dino Peric",
       "nationality": [
         "Croatia"
       ],
-      "number": "88",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Feb 7, 1987",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "131310",
-      "marketValue": "€50k",
-      "name": "Danijel Zagorac",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
+      "number": "55",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2029",
@@ -86,17 +117,89 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 11, 2001",
-      "foot": "left",
-      "height": "1,93m",
-      "id": "631222",
-      "marketValue": "€3.50m",
-      "name": "Raúl Torrente",
+      "dateOfBirth": "Jul 31, 1998",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "293185",
+      "marketValue": "€1.00m",
+      "name": "Ivan Nevistic",
       "nationality": [
-        "Spain"
+        "Croatia"
       ],
-      "number": "16",
-      "position": "Centre-Back"
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 1, 1997",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "351816",
+      "marketValue": "€9.00m",
+      "name": "Ismaël Bennacer",
+      "nationality": [
+        "Algeria",
+        "France"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 19, 2026",
+      "dateOfBirth": "Jun 13, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "410185",
+      "marketValue": "€2.50m",
+      "name": "Ronaël Pierre-Gabriel",
+      "nationality": [
+        "France",
+        "Martinique"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 17, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "414956",
+      "marketValue": "€1.30m",
+      "name": "Bruno Goda",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 6, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "458367",
+      "marketValue": "€2.50m",
+      "name": "Arbër Hoxha",
+      "nationality": [
+        "Albania",
+        "Kosovo"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 17, 2002",
+      "foot": "right",
+      "id": "502686",
+      "marketValue": "€2.00m",
+      "name": "Moris Valincic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "25",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2029",
@@ -115,158 +218,32 @@
     },
     {
       "contract": "Jun 30, 2029",
-      "dateOfBirth": "Apr 1, 2005",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "741258",
-      "marketValue": "€2.50m",
-      "name": "Sergi Domínguez",
-      "nationality": [
-        "Spain"
-      ],
-      "number": "36",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Oct 28, 1989",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "60603",
-      "marketValue": "€250k",
-      "name": "Kévin Théophile-Catherine",
-      "nationality": [
-        "Martinique",
-        "France"
-      ],
-      "number": "28",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 15, 2026",
-      "dateOfBirth": "Jul 12, 1994",
-      "foot": "left",
-      "height": "1,98m",
-      "id": "240106",
-      "marketValue": "€100k",
-      "name": "Dino Peric",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "55",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "May 24, 2005",
+      "dateOfBirth": "Dec 1, 2003",
       "foot": "right",
       "height": "1,80m",
-      "id": "946957",
-      "name": "Matija Ruskovacki",
-      "nationality": [
-        "Croatia"
-      ],
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Dec 18, 2005",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "920283",
+      "id": "604327",
       "marketValue": "€2.50m",
-      "name": "Matteo Pérez Vinlöf",
+      "name": "Gabriel Vidovic",
       "nationality": [
-        "Sweden",
-        "Peru"
+        "Croatia",
+        "Germany"
       ],
-      "number": "22",
-      "position": "Left-Back"
+      "number": "10",
+      "position": "Left Winger"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 17, 1998",
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 1, 2002",
       "foot": "left",
-      "height": "1,82m",
-      "id": "414956",
-      "marketValue": "€1.30m",
-      "name": "Bruno Goda",
+      "height": "1,95m",
+      "id": "618350",
+      "marketValue": "€4.00m",
+      "name": "Dion Beljo",
       "nationality": [
         "Croatia"
       ],
-      "number": "3",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 19, 2026",
-      "dateOfBirth": "Jun 13, 1998",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "410185",
-      "marketValue": "€2.50m",
-      "name": "Ronaël Pierre-Gabriel",
-      "nationality": [
-        "France",
-        "Martinique"
-      ],
-      "number": "18",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Nov 17, 2002",
-      "foot": "right",
-      "id": "502686",
-      "marketValue": "€2.00m",
-      "name": "Moris Valincic",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "25",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 27, 2007",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "1107315",
-      "marketValue": "€400k",
-      "name": "Noa Mikic",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "35",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jul 5, 2002",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "828467",
-      "marketValue": "€200k",
-      "name": "Paul Tabinas",
-      "nationality": [
-        "Philippines"
-      ],
-      "number": "13",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 1, 1997",
-      "foot": "left",
-      "height": "1,75m",
-      "id": "351816",
-      "marketValue": "€9.00m",
-      "name": "Ismaël Bennacer",
-      "nationality": [
-        "Algeria",
-        "France"
-      ],
-      "number": "4",
-      "position": "Defensive Midfield"
+      "number": "9",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2029",
@@ -284,32 +261,18 @@
       "position": "Defensive Midfield"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jun 28, 1994",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "227035",
-      "marketValue": "€1.20m",
-      "name": "Josip Misic",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 11, 2001",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "631222",
+      "marketValue": "€3.50m",
+      "name": "Raúl Torrente",
       "nationality": [
-        "Croatia"
+        "Spain"
       ],
-      "number": "27",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jul 1, 1994",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "149829",
-      "marketValue": "€1.30m",
-      "name": "Miha Zajc",
-      "nationality": [
-        "Slovenia"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
+      "number": "16",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 19, 2028",
@@ -327,50 +290,6 @@
     },
     {
       "contract": "Jun 30, 2029",
-      "dateOfBirth": "Dec 1, 2003",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "604327",
-      "marketValue": "€2.50m",
-      "name": "Gabriel Vidovic",
-      "nationality": [
-        "Croatia",
-        "Germany"
-      ],
-      "number": "10",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Oct 6, 1998",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "458367",
-      "marketValue": "€2.50m",
-      "name": "Arbër Hoxha",
-      "nationality": [
-        "Albania",
-        "Kosovo"
-      ],
-      "number": "11",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 29, 2008",
-      "foot": "right",
-      "id": "1134201",
-      "marketValue": "€1.00m",
-      "name": "Cardoso Varela",
-      "nationality": [
-        "Portugal",
-        "Angola"
-      ],
-      "number": "23",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2029",
       "dateOfBirth": "Jul 9, 2003",
       "foot": "right",
       "height": "1,78m",
@@ -382,6 +301,63 @@
       ],
       "number": "21",
       "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 1, 2005",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "741258",
+      "marketValue": "€2.50m",
+      "name": "Sergi Domínguez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "36",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 5, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "828467",
+      "marketValue": "€200k",
+      "name": "Paul Tabinas",
+      "nationality": [
+        "Philippines"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 13, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "854382",
+      "marketValue": "€2.00m",
+      "name": "Monsef Bakrar",
+      "nationality": [
+        "Algeria"
+      ],
+      "number": "71",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 18, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "920283",
+      "marketValue": "€2.50m",
+      "name": "Matteo Pérez Vinlöf",
+      "nationality": [
+        "Sweden",
+        "Peru"
+      ],
+      "number": "22",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2029",
@@ -398,6 +374,18 @@
       "position": "Right Winger"
     },
     {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 24, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "946957",
+      "name": "Matija Ruskovacki",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Jun 30, 2028",
       "dateOfBirth": "Jul 11, 2003",
       "foot": "left",
@@ -412,32 +400,44 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Mar 1, 2002",
-      "foot": "left",
-      "height": "1,95m",
-      "id": "618350",
-      "marketValue": "€4.00m",
-      "name": "Dion Beljo",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 27, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1107315",
+      "marketValue": "€400k",
+      "name": "Noa Mikic",
       "nationality": [
         "Croatia"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "35",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 13, 2001",
+      "dateOfBirth": "Oct 29, 2008",
       "foot": "right",
-      "height": "1,83m",
-      "id": "854382",
-      "marketValue": "€2.00m",
-      "name": "Monsef Bakrar",
+      "id": "1134201",
+      "marketValue": "€1.00m",
+      "name": "Cardoso Varela",
       "nationality": [
-        "Algeria"
+        "Portugal",
+        "Angola"
       ],
-      "number": "71",
-      "position": "Centre-Forward"
+      "number": "23",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 4, 2007",
+      "id": "1137943",
+      "marketValue": "€100k",
+      "name": "Antonio Rajic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "88",
+      "position": "Goalkeeper"
     }
   ],
   "stadiumName": "Maksimir",

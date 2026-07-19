@@ -4,58 +4,62 @@
   "country": "SA",
   "players": [
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 1, 1992",
-      "foot": "right",
-      "height": "1,94m",
-      "id": "442531",
-      "marketValue": "€4.50m",
-      "name": "Edouard Mendy",
-      "nationality": [
-        "Senegal",
-        "Guinea-Bissau"
-      ],
-      "number": "16",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Feb 3, 2001",
-      "id": "951628",
-      "marketValue": "€300k",
-      "name": "Abdulrahman Al-Sanbi",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jun 25, 2002",
-      "id": "1178314",
-      "marketValue": "€75k",
-      "name": "Abdullah Abdo",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "62",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Nov 23, 1998",
+      "dateOfBirth": "Feb 21, 1991",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "171424",
+      "marketValue": "€7.00m",
+      "name": "Riyad Mahrez",
+      "nationality": [
+        "Algeria",
+        "France"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 3, 1992",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "193159",
+      "marketValue": "€150k",
+      "name": "Abdullah Otayf",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 16, 1996",
       "foot": "right",
       "height": "1,85m",
-      "id": "524481",
-      "marketValue": "€17.00m",
-      "name": "Roger Ibañez",
+      "id": "251664",
+      "marketValue": "€20.00m",
+      "name": "Ivan Toney",
       "nationality": [
-        "Brazil",
+        "England",
+        "Jamaica"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 19, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "294808",
+      "marketValue": "€12.00m",
+      "name": "Franck Kessié",
+      "nationality": [
+        "Cote d'Ivoire",
         "Italy"
       ],
-      "number": "3",
-      "position": "Centre-Back"
+      "number": "79",
+      "position": "Central Midfield"
     },
     {
       "contract": "Jun 30, 2029",
@@ -73,157 +77,48 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 8, 2004",
-      "height": "1,80m",
-      "id": "1020859",
-      "marketValue": "€700k",
-      "name": "Mohammed Sulaiman",
+      "dateOfBirth": "Mar 1, 1992",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "442531",
+      "marketValue": "€4.50m",
+      "name": "Edouard Mendy",
       "nationality": [
-        "Saudi Arabia"
+        "Senegal",
+        "Guinea-Bissau"
       ],
-      "number": "5",
-      "position": "Centre-Back"
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 22, 1997",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "454121",
+      "marketValue": "€22.00m",
+      "name": "Galeno",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "13",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 13, 2002",
+      "dateOfBirth": "Nov 23, 1998",
       "foot": "right",
-      "height": "1,80m",
-      "id": "922536",
-      "marketValue": "€700k",
-      "name": "Rayan Hamed",
+      "height": "1,85m",
+      "id": "524481",
+      "marketValue": "€17.00m",
+      "name": "Roger Ibañez",
       "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "46",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Mar 9, 2004",
-      "foot": "left",
-      "height": "1,84m",
-      "id": "654918",
-      "marketValue": "€4.00m",
-      "name": "Matteo Dams",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "32",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jan 12, 2001",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "1057849",
-      "marketValue": "€1.00m",
-      "name": "Zakaria Hawsawi",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "2",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Oct 1, 1999",
-      "foot": "right",
-      "height": "1,69m",
-      "id": "672391",
-      "marketValue": "€1.20m",
-      "name": "Ali Majrashi",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "27",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 14, 2003",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "1169185",
-      "marketValue": "€500k",
-      "name": "Mohammed Abdulrahman",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "29",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Nov 11, 2001",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "901079",
-      "marketValue": "€800k",
-      "name": "Ziyad Al-Johani",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "30",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Dec 14, 2001",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "1130616",
-      "marketValue": "€400k",
-      "name": "Eid Al-Muwallad",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "14",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Aug 3, 1992",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "193159",
-      "marketValue": "€150k",
-      "name": "Abdullah Otayf",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Aug 25, 2005",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "923759",
-      "marketValue": "€18.00m",
-      "name": "Valentin Atangana",
-      "nationality": [
-        "France",
-        "Cameroon"
-      ],
-      "number": "6",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 19, 1996",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "294808",
-      "marketValue": "€12.00m",
-      "name": "Franck Kessié",
-      "nationality": [
-        "Cote d'Ivoire",
+        "Brazil",
         "Italy"
       ],
-      "number": "79",
-      "position": "Central Midfield"
+      "number": "3",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -242,18 +137,59 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 22, 1997",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "454121",
-      "marketValue": "€22.00m",
-      "name": "Galeno",
+      "dateOfBirth": "May 14, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "631922",
+      "marketValue": "€4.00m",
+      "name": "Firas Al-Buraikan",
       "nationality": [
-        "Brazil",
-        "Portugal"
+        "Saudi Arabia"
       ],
-      "number": "13",
-      "position": "Left Winger"
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 9, 2004",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "654918",
+      "marketValue": "€4.00m",
+      "name": "Matteo Dams",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 1, 1999",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "672391",
+      "marketValue": "€1.20m",
+      "name": "Ali Majrashi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 11, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "901079",
+      "marketValue": "€800k",
+      "name": "Ziyad Al-Johani",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "30",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Jun 30, 2028",
@@ -271,6 +207,47 @@
     },
     {
       "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 13, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "922536",
+      "marketValue": "€700k",
+      "name": "Rayan Hamed",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "46",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 25, 2005",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "923759",
+      "marketValue": "€18.00m",
+      "name": "Valentin Atangana",
+      "nationality": [
+        "France",
+        "Cameroon"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 3, 2001",
+      "id": "951628",
+      "marketValue": "€300k",
+      "name": "Abdulrahman Al-Sanbi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
       "dateOfBirth": "Aug 18, 2005",
       "foot": "left",
       "height": "1,75m",
@@ -284,47 +261,17 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 21, 1991",
-      "foot": "left",
-      "height": "1,79m",
-      "id": "171424",
-      "marketValue": "€7.00m",
-      "name": "Riyad Mahrez",
-      "nationality": [
-        "Algeria",
-        "France"
-      ],
-      "number": "7",
-      "position": "Right Winger"
-    },
-    {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 26, 2003",
-      "height": "1,76m",
-      "id": "1061025",
-      "marketValue": "€125k",
-      "name": "Yaseen Al-Zubaidi",
+      "dateOfBirth": "Apr 8, 2004",
+      "height": "1,80m",
+      "id": "1020859",
+      "marketValue": "€700k",
+      "name": "Mohammed Sulaiman",
       "nationality": [
         "Saudi Arabia"
       ],
-      "number": "26",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 16, 1996",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "251664",
-      "marketValue": "€20.00m",
-      "name": "Ivan Toney",
-      "nationality": [
-        "England",
-        "Jamaica"
-      ],
-      "number": "17",
-      "position": "Centre-Forward"
+      "number": "5",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2030",
@@ -341,18 +288,71 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "May 14, 2000",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 12, 2001",
       "foot": "left",
-      "height": "1,81m",
-      "id": "631922",
-      "marketValue": "€4.00m",
-      "name": "Firas Al-Buraikan",
+      "height": "1,73m",
+      "id": "1057849",
+      "marketValue": "€1.00m",
+      "name": "Zakaria Hawsawi",
       "nationality": [
         "Saudi Arabia"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 26, 2003",
+      "height": "1,76m",
+      "id": "1061025",
+      "marketValue": "€125k",
+      "name": "Yaseen Al-Zubaidi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "26",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 14, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1130616",
+      "marketValue": "€400k",
+      "name": "Eid Al-Muwallad",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 14, 2003",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1169185",
+      "marketValue": "€500k",
+      "name": "Mohammed Abdulrahman",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "29",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 25, 2002",
+      "id": "1178314",
+      "marketValue": "€75k",
+      "name": "Abdullah Abdo",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "62",
+      "position": "Goalkeeper"
     }
   ],
   "stadiumName": "King Abdullah Sports City",

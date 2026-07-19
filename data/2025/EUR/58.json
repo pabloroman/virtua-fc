@@ -3,6 +3,34 @@
   "name": "RSC Anderlecht",
   "players": [
     {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 18, 1993",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "92164",
+      "marketValue": "€750k",
+      "name": "Mats Rits",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 29, 1993",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "102226",
+      "marketValue": "€2.50m",
+      "name": "Thorgan Hazard",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
       "contract": "Jun 30, 2027",
       "dateOfBirth": "Aug 3, 1992",
       "foot": "right",
@@ -15,6 +43,92 @@
       ],
       "number": "26",
       "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 21, 1994",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "170646",
+      "marketValue": "€2.00m",
+      "name": "Ludwig Augustinsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 25, 1994",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "215114",
+      "marketValue": "€600k",
+      "name": "Thomas Foket",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 13, 2000",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "364896",
+      "marketValue": "€6.00m",
+      "name": "Adriano Bertaccini",
+      "nationality": [
+        "Belgium",
+        "Italy"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 18, 2000",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "395242",
+      "marketValue": "€400k",
+      "name": "Alexis Flips",
+      "nationality": [
+        "France"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 12, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "412945",
+      "marketValue": "€3.50m",
+      "name": "Enric Llansana",
+      "nationality": [
+        "Netherlands",
+        "Spain"
+      ],
+      "number": "24",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 16, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "417228",
+      "marketValue": "€5.00m",
+      "name": "Danylo Sikan",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2029",
@@ -31,33 +145,19 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Oct 9, 2001",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 2, 2002",
       "foot": "right",
-      "height": "1,83m",
-      "id": "502261",
-      "marketValue": "€250k",
-      "name": "Joachim Imbrechts",
+      "height": "1,74m",
+      "id": "454336",
+      "marketValue": "€5.00m",
+      "name": "Killian Sardella",
       "nationality": [
-        "Sweden",
-        "Belgium"
+        "Belgium",
+        "Cameroon"
       ],
-      "number": "73",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Apr 13, 2003",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "728924",
-      "marketValue": "€4.50m",
-      "name": "Lucas Hey",
-      "nationality": [
-        "Denmark"
-      ],
-      "number": "3",
-      "position": "Centre-Back"
+      "number": "54",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -76,76 +176,46 @@
     },
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 4, 2003",
+      "dateOfBirth": "Oct 9, 2001",
       "foot": "right",
-      "height": "1,92m",
-      "id": "845566",
-      "marketValue": "€2.50m",
-      "name": "Mihajlo Ilić",
+      "height": "1,83m",
+      "id": "502261",
+      "marketValue": "€250k",
+      "name": "Joachim Imbrechts",
       "nationality": [
-        "Serbia"
+        "Sweden",
+        "Belgium"
       ],
-      "number": "15",
-      "position": "Centre-Back"
+      "number": "73",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Nov 10, 2000",
-      "foot": "left",
-      "height": "1,85m",
-      "id": "694509",
-      "marketValue": "€1.50m",
-      "name": "Moussa Diarra",
-      "nationality": [
-        "Mali",
-        "France"
-      ],
-      "number": "93",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Apr 21, 2007",
-      "foot": "left",
-      "height": "1,90m",
-      "id": "1075579",
-      "marketValue": "€600k",
-      "name": "Mathys Angély",
-      "nationality": [
-        "France",
-        "Martinique"
-      ],
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 21, 1994",
-      "foot": "left",
-      "height": "1,81m",
-      "id": "170646",
-      "marketValue": "€2.00m",
-      "name": "Ludwig Augustinsson",
-      "nationality": [
-        "Sweden"
-      ],
-      "number": "6",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "May 2, 2002",
+      "dateOfBirth": "Jul 12, 2001",
       "foot": "right",
-      "height": "1,74m",
-      "id": "454336",
+      "height": "1,70m",
+      "id": "502302",
+      "marketValue": "€3.00m",
+      "name": "Yari Verschaeren",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 3, 2000",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "540315",
       "marketValue": "€5.00m",
-      "name": "Killian Sardella",
+      "name": "César Huerta",
       "nationality": [
-        "Belgium",
-        "Cameroon"
+        "Mexico"
       ],
-      "number": "54",
-      "position": "Right-Back"
+      "number": "21",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2030",
@@ -164,6 +234,106 @@
     },
     {
       "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 29, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "588866",
+      "marketValue": "€8.00m",
+      "name": "Mario Stroeykens",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 10, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "694509",
+      "marketValue": "€1.50m",
+      "name": "Moussa Diarra",
+      "nationality": [
+        "Mali",
+        "France"
+      ],
+      "number": "93",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 13, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "728924",
+      "marketValue": "€4.50m",
+      "name": "Lucas Hey",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 7, 2004",
+      "height": "1,80m",
+      "id": "842420",
+      "marketValue": "€4.50m",
+      "name": "Nathan-Dylan Saliba",
+      "nationality": [
+        "Canada",
+        "Haiti"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 4, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "845566",
+      "marketValue": "€2.50m",
+      "name": "Mihajlo Ilić",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 10, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "897510",
+      "marketValue": "€6.00m",
+      "name": "Mihajlo Cvetkovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2005",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "903513",
+      "marketValue": "€2.00m",
+      "name": "Tristan Degreef",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "83",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
       "dateOfBirth": "Mar 23, 2005",
       "foot": "right",
       "height": "1,82m",
@@ -178,47 +348,49 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Sep 25, 1994",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 26, 2002",
       "foot": "right",
-      "height": "1,77m",
-      "id": "215114",
-      "marketValue": "€600k",
-      "name": "Thomas Foket",
+      "height": "1,82m",
+      "id": "1033005",
+      "marketValue": "€2.50m",
+      "name": "Coba da Costa",
       "nationality": [
-        "Belgium"
+        "Guinea-Bissau",
+        "Spain"
       ],
-      "number": "25",
-      "position": "Right-Back"
+      "number": "77",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2029",
-      "dateOfBirth": "Apr 12, 2001",
+      "dateOfBirth": "Nov 20, 2006",
       "foot": "right",
       "height": "1,83m",
-      "id": "412945",
-      "marketValue": "€3.50m",
-      "name": "Enric Llansana",
+      "id": "1047103",
+      "marketValue": "€400k",
+      "name": "Elyèss Dao",
       "nationality": [
-        "Netherlands",
-        "Spain"
+        "Morocco",
+        "France"
       ],
-      "number": "24",
-      "position": "Defensive Midfield"
+      "number": "22",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 18, 1993",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "92164",
-      "marketValue": "€750k",
-      "name": "Mats Rits",
+      "dateOfBirth": "Apr 21, 2007",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "1075579",
+      "marketValue": "€600k",
+      "name": "Mathys Angély",
       "nationality": [
-        "Belgium"
+        "France",
+        "Martinique"
       ],
-      "number": "23",
-      "position": "Defensive Midfield"
+      "number": "4",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -232,20 +404,6 @@
         "Belgium"
       ],
       "number": "74",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Feb 7, 2004",
-      "height": "1,80m",
-      "id": "842420",
-      "marketValue": "€4.50m",
-      "name": "Nathan-Dylan Saliba",
-      "nationality": [
-        "Canada",
-        "Haiti"
-      ],
-      "number": "13",
       "position": "Central Midfield"
     },
     {
@@ -265,92 +423,6 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 29, 2004",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "588866",
-      "marketValue": "€8.00m",
-      "name": "Mario Stroeykens",
-      "nationality": [
-        "DR Congo",
-        "Belgium"
-      ],
-      "number": "29",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 12, 2001",
-      "foot": "right",
-      "height": "1,70m",
-      "id": "502302",
-      "marketValue": "€3.00m",
-      "name": "Yari Verschaeren",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Mar 29, 1993",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "102226",
-      "marketValue": "€2.50m",
-      "name": "Thorgan Hazard",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "11",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 18, 2000",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "395242",
-      "marketValue": "€400k",
-      "name": "Alexis Flips",
-      "nationality": [
-        "France"
-      ],
-      "number": "8",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Dec 3, 2000",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "540315",
-      "marketValue": "€5.00m",
-      "name": "César Huerta",
-      "nationality": [
-        "Mexico"
-      ],
-      "number": "21",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 26, 2002",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "1033005",
-      "marketValue": "€2.50m",
-      "name": "Coba da Costa",
-      "nationality": [
-        "Guinea-Bissau",
-        "Spain"
-      ],
-      "number": "77",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
       "dateOfBirth": "Oct 23, 2006",
       "foot": "right",
       "height": "1,72m",
@@ -362,78 +434,6 @@
       ],
       "number": "99",
       "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 19, 2005",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "903513",
-      "marketValue": "€2.00m",
-      "name": "Tristan Degreef",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "83",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jan 10, 2007",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "897510",
-      "marketValue": "€6.00m",
-      "name": "Mihajlo Cvetkovic",
-      "nationality": [
-        "Serbia"
-      ],
-      "number": "9",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Aug 13, 2000",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "364896",
-      "marketValue": "€6.00m",
-      "name": "Adriano Bertaccini",
-      "nationality": [
-        "Belgium",
-        "Italy"
-      ],
-      "number": "91",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Apr 16, 2001",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "417228",
-      "marketValue": "€5.00m",
-      "name": "Danylo Sikan",
-      "nationality": [
-        "Ukraine"
-      ],
-      "number": "14",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Nov 20, 2006",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "1047103",
-      "marketValue": "€400k",
-      "name": "Elyèss Dao",
-      "nationality": [
-        "Morocco",
-        "France"
-      ],
-      "number": "22",
-      "position": "Centre-Forward"
     }
   ],
   "stadiumName": "Lotto Park",

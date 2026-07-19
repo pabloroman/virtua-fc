@@ -4,20 +4,6 @@
   "country": "BR",
   "players": [
     {
-      "contract": "Jul 31, 2030",
-      "dateOfBirth": "Oct 9, 1998",
-      "foot": "left",
-      "height": "2,04m",
-      "id": "641458",
-      "marketValue": "€5.00m",
-      "name": "Carlos Miguel",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Dec 31, 2026",
       "dateOfBirth": "Dec 18, 1986",
       "foot": "right",
@@ -32,186 +18,18 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Feb 7, 2005",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "1093863",
-      "name": "Aranha",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "24",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 1, 1999",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "563692",
-      "marketValue": "€5.00m",
-      "name": "Bruno Fuchs",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "3",
-      "position": "Centre-Back"
-    },
-    {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 27, 1997",
+      "dateOfBirth": "Apr 15, 1993",
       "foot": "right",
-      "height": "1,88m",
-      "id": "458710",
-      "marketValue": "€5.00m",
-      "name": "Murilo",
+      "height": "1,75m",
+      "id": "159372",
+      "marketValue": "€2.00m",
+      "name": "Felipe Anderson",
       "nationality": [
         "Brazil"
       ],
-      "number": "26",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 6, 1993",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "215390",
-      "marketValue": "€4.00m",
-      "name": "Gustavo Gómez",
-      "nationality": [
-        "Paraguay"
-      ],
-      "number": "15",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jun 7, 2006",
-      "foot": "left",
-      "height": "1,97m",
-      "id": "1253807",
-      "marketValue": "€4.00m",
-      "name": "Luis Benedetti",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "43",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Aug 24, 1998",
-      "foot": "left",
-      "height": "1,84m",
-      "id": "496268",
-      "marketValue": "€12.00m",
-      "name": "Joaquín Piquerez",
-      "nationality": [
-        "Uruguay",
-        "Italy"
-      ],
-      "number": "22",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jul 31, 2030",
-      "dateOfBirth": "Dec 21, 2003",
-      "foot": "left",
-      "height": "1,83m",
-      "id": "851595",
-      "marketValue": "€4.00m",
-      "name": "Jefté",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "6",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Sep 4, 2005",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "1115722",
-      "name": "Arthur Gabriel",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "56",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Jan 16, 2004",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "849582",
-      "marketValue": "€10.00m",
-      "name": "Agustín Giay",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "4",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Feb 25, 2001",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "653348",
-      "marketValue": "€6.00m",
-      "name": "Khellven",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "12",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Aug 17, 1999",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "707447",
-      "marketValue": "€8.00m",
-      "name": "Emiliano Martínez",
-      "nationality": [
-        "Uruguay",
-        "Italy"
-      ],
-      "number": "32",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 27, 1995",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "364972",
-      "marketValue": "€6.00m",
-      "name": "Marlon Freitas",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "17",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Feb 2, 2008",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "1268048",
-      "marketValue": "€500k",
-      "name": "Luis Pacheco",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "50",
-      "position": "Defensive Midfield"
+      "number": "7",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2028",
@@ -230,6 +48,20 @@
     },
     {
       "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 6, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "215390",
+      "marketValue": "€4.00m",
+      "name": "Gustavo Gómez",
+      "nationality": [
+        "Paraguay"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
       "dateOfBirth": "Feb 6, 1995",
       "foot": "left",
       "height": "1,81m",
@@ -243,31 +75,117 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Dec 31, 2030",
-      "dateOfBirth": "Jul 10, 2005",
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 27, 1995",
       "foot": "right",
-      "height": "1,83m",
-      "id": "1116605",
-      "marketValue": "€400k",
-      "name": "Larson",
+      "height": "1,85m",
+      "id": "364972",
+      "marketValue": "€6.00m",
+      "name": "Marlon Freitas",
       "nationality": [
         "Brazil"
       ],
-      "number": "48",
-      "position": "Central Midfield"
+      "number": "17",
+      "position": "Defensive Midfield"
     },
     {
-      "contract": "Sep 30, 2026",
-      "dateOfBirth": "Mar 3, 2006",
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jul 15, 2000",
       "foot": "right",
       "height": "1,77m",
-      "id": "1004736",
-      "name": "Figueiredo",
+      "id": "428791",
+      "marketValue": "€11.00m",
+      "name": "Paulinho",
       "nationality": [
         "Brazil"
       ],
-      "number": "38",
-      "position": "Central Midfield"
+      "number": "10",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 27, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "458710",
+      "marketValue": "€5.00m",
+      "name": "Murilo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Aug 24, 1998",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "496268",
+      "marketValue": "€12.00m",
+      "name": "Joaquín Piquerez",
+      "nationality": [
+        "Uruguay",
+        "Italy"
+      ],
+      "number": "22",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 1, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "563692",
+      "marketValue": "€5.00m",
+      "name": "Bruno Fuchs",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 21, 1997",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "588989",
+      "marketValue": "€15.00m",
+      "name": "Jhon Arias",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jul 31, 2030",
+      "dateOfBirth": "Oct 9, 1998",
+      "foot": "left",
+      "height": "2,04m",
+      "id": "641458",
+      "marketValue": "€5.00m",
+      "name": "Carlos Miguel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 25, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "653348",
+      "marketValue": "€6.00m",
+      "name": "Khellven",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "12",
+      "position": "Right-Back"
     },
     {
       "contract": "Dec 31, 2028",
@@ -285,88 +203,19 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jan 21, 2007",
-      "foot": "left",
-      "height": "1,84m",
-      "id": "1180021",
-      "marketValue": "€1.00m",
-      "name": "Erick Belé",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "33",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Apr 15, 1993",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "159372",
-      "marketValue": "€2.00m",
-      "name": "Felipe Anderson",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "7",
-      "position": "Left Winger"
-    },
-    {
       "contract": "Dec 31, 2029",
-      "dateOfBirth": "Sep 15, 2006",
+      "dateOfBirth": "Aug 17, 1999",
       "foot": "right",
-      "height": "1,76m",
-      "id": "1124298",
-      "marketValue": "€1.00m",
-      "name": "Riquelme Fillipi",
+      "height": "1,85m",
+      "id": "707447",
+      "marketValue": "€8.00m",
+      "name": "Emiliano Martínez",
       "nationality": [
-        "Brazil"
+        "Uruguay",
+        "Italy"
       ],
-      "number": "37",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Sep 21, 1997",
-      "foot": "right",
-      "height": "1,68m",
-      "id": "588989",
-      "marketValue": "€15.00m",
-      "name": "Jhon Arias",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "11",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 19, 2004",
-      "foot": "left",
-      "height": "1,74m",
-      "id": "1082631",
-      "marketValue": "€15.00m",
-      "name": "Allan",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "40",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jul 15, 2000",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "428791",
-      "marketValue": "€11.00m",
-      "name": "Paulinho",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "10",
-      "position": "Second Striker"
+      "number": "32",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Jun 30, 2030",
@@ -385,6 +234,48 @@
     },
     {
       "contract": "Dec 31, 2029",
+      "dateOfBirth": "Dec 6, 2000",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "844797",
+      "marketValue": "€22.00m",
+      "name": "José Manuel López",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "42",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jan 16, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "849582",
+      "marketValue": "€10.00m",
+      "name": "Agustín Giay",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "4",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jul 31, 2030",
+      "dateOfBirth": "Dec 21, 2003",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "851595",
+      "marketValue": "€4.00m",
+      "name": "Jefté",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
       "dateOfBirth": "Feb 28, 2005",
       "foot": "right",
       "height": "1,74m",
@@ -398,18 +289,85 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Dec 6, 2000",
-      "foot": "left",
-      "height": "1,90m",
-      "id": "844797",
-      "marketValue": "€22.00m",
-      "name": "José Manuel López",
+      "contract": "Sep 30, 2026",
+      "dateOfBirth": "Mar 3, 2006",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1004736",
+      "name": "Figueiredo",
       "nationality": [
-        "Argentina"
+        "Brazil"
       ],
-      "number": "42",
-      "position": "Centre-Forward"
+      "number": "38",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 19, 2004",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "1082631",
+      "marketValue": "€15.00m",
+      "name": "Allan",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "40",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 7, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1093863",
+      "name": "Aranha",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 4, 2005",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1115722",
+      "name": "Arthur Gabriel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "56",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jul 10, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1116605",
+      "marketValue": "€400k",
+      "name": "Larson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "48",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 15, 2006",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1124298",
+      "marketValue": "€1.00m",
+      "name": "Riquelme Fillipi",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "37",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2029",
@@ -424,6 +382,48 @@
       ],
       "number": "31",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 21, 2007",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "1180021",
+      "marketValue": "€1.00m",
+      "name": "Erick Belé",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "33",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 7, 2006",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "1253807",
+      "marketValue": "€4.00m",
+      "name": "Luis Benedetti",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 2, 2008",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1268048",
+      "marketValue": "€500k",
+      "name": "Luis Pacheco",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "50",
+      "position": "Defensive Midfield"
     }
   ],
   "stadiumName": "Allianz Parque",

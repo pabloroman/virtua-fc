@@ -4,86 +4,19 @@
   "country": "SA",
   "players": [
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 5, 1991",
-      "foot": "left",
-      "height": "1,95m",
-      "id": "207834",
-      "marketValue": "€3.50m",
-      "name": "Yassine Bounou",
-      "nationality": [
-        "Morocco",
-        "Canada"
-      ],
-      "number": "37",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 20, 2004",
-      "foot": "left",
-      "height": "1,88m",
-      "id": "744934",
-      "marketValue": "€700k",
-      "name": "Mathieu Patouillet",
-      "nationality": [
-        "France"
-      ],
-      "number": "25",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Aug 14, 1997",
+      "dateOfBirth": "Dec 19, 1987",
       "foot": "right",
-      "height": "1,90m",
-      "id": "509914",
-      "marketValue": "€350k",
-      "name": "Mohammed Al-Yami",
+      "height": "1,85m",
+      "id": "18922",
+      "marketValue": "€6.00m",
+      "name": "Karim Benzema",
       "nationality": [
-        "Saudi Arabia"
+        "France",
+        "Algeria"
       ],
-      "number": "17",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Nov 2, 2003",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "1159156",
-      "marketValue": "€25k",
-      "name": "Ahmad Abu Rasen",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "40",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2031",
-      "dateOfBirth": "Jul 1, 2004",
-      "id": "1135428",
-      "name": "Rayan Al-Dossary",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "35",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jan 25, 2006",
-      "foot": "left",
-      "height": "1,93m",
-      "id": "1100642",
-      "marketValue": "€15.00m",
-      "name": "Yusuf Akçiçek",
-      "nationality": [
-        "Türkiye"
-      ],
-      "number": "4",
-      "position": "Centre-Back"
+      "number": "90",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2027",
@@ -101,6 +34,35 @@
       "position": "Centre-Back"
     },
     {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 19, 1991",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "195332",
+      "marketValue": "€1.30m",
+      "name": "Salem Al-Dawsari",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "29",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 5, 1991",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "207834",
+      "marketValue": "€3.50m",
+      "name": "Yassine Bounou",
+      "nationality": [
+        "Morocco",
+        "Canada"
+      ],
+      "number": "37",
+      "position": "Goalkeeper"
+    },
+    {
       "contract": "Jun 30, 2026",
       "dateOfBirth": "Aug 31, 1993",
       "foot": "left",
@@ -115,75 +77,18 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 9, 1999",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "509897",
-      "marketValue": "€1.80m",
-      "name": "Hassan Tambakti",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "87",
-      "position": "Centre-Back"
-    },
-    {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 24, 1996",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "264909",
-      "marketValue": "€800k",
-      "name": "Ali Lajami",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "78",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 6, 1997",
+      "dateOfBirth": "Oct 17, 1994",
       "foot": "left",
-      "height": "1,84m",
-      "id": "339808",
-      "marketValue": "€28.00m",
-      "name": "Theo Hernández",
-      "nationality": [
-        "France",
-        "Spain"
-      ],
-      "number": "19",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Feb 19, 2000",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "869509",
-      "marketValue": "€1.20m",
-      "name": "Moteb Al-Harbi",
+      "height": "1,72m",
+      "id": "210349",
+      "marketValue": "€400k",
+      "name": "Sultan Mandash",
       "nationality": [
         "Saudi Arabia"
       ],
-      "number": "24",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "May 17, 1999",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "267967",
-      "marketValue": "€450k",
-      "name": "Hamad Al-Yami",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "88",
-      "position": "Right-Back"
+      "number": "23",
+      "position": "Right Winger"
     },
     {
       "contract": "Jun 30, 2029",
@@ -201,6 +106,20 @@
     },
     {
       "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 24, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "264909",
+      "marketValue": "€800k",
+      "name": "Ali Lajami",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "78",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
       "dateOfBirth": "Feb 27, 1995",
       "foot": "right",
       "height": "1,92m",
@@ -215,17 +134,18 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 30, 2031",
-      "dateOfBirth": "Jun 3, 2001",
-      "height": "1,80m",
-      "id": "1161121",
-      "marketValue": "€1.50m",
-      "name": "Murad Al-Hawsawi",
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 17, 1999",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "267967",
+      "marketValue": "€450k",
+      "name": "Hamad Al-Yami",
       "nationality": [
         "Saudi Arabia"
       ],
-      "number": "18",
-      "position": "Central Midfield"
+      "number": "88",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -240,62 +160,6 @@
       ],
       "number": "28",
       "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 19, 1998",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "509911",
-      "marketValue": "€800k",
-      "name": "Nasser Al-Dawsari",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "16",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jun 1, 2006",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "955356",
-      "marketValue": "€15.00m",
-      "name": "Saïmon Bouabré",
-      "nationality": [
-        "France",
-        "Cote d'Ivoire"
-      ],
-      "number": "70",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Aug 19, 1991",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "195332",
-      "marketValue": "€1.30m",
-      "name": "Salem Al-Dawsari",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "29",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Apr 18, 2003",
-      "height": "1,84m",
-      "id": "1188907",
-      "marketValue": "€175k",
-      "name": "Abdulkarim Darisi",
-      "nationality": [
-        "Saudi Arabia"
-      ],
-      "number": "14",
-      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2027",
@@ -314,17 +178,60 @@
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 17, 1994",
+      "dateOfBirth": "Oct 6, 1997",
       "foot": "left",
-      "height": "1,72m",
-      "id": "210349",
-      "marketValue": "€400k",
-      "name": "Sultan Mandash",
+      "height": "1,84m",
+      "id": "339808",
+      "marketValue": "€28.00m",
+      "name": "Theo Hernández",
+      "nationality": [
+        "France",
+        "Spain"
+      ],
+      "number": "19",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 9, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "509897",
+      "marketValue": "€1.80m",
+      "name": "Hassan Tambakti",
       "nationality": [
         "Saudi Arabia"
       ],
-      "number": "23",
-      "position": "Right Winger"
+      "number": "87",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 19, 1998",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "509911",
+      "marketValue": "€800k",
+      "name": "Nasser Al-Dawsari",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 14, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "509914",
+      "marketValue": "€350k",
+      "name": "Mohammed Al-Yami",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "17",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2028",
@@ -355,6 +262,74 @@
       "position": "Centre-Forward"
     },
     {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 20, 2004",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "744934",
+      "marketValue": "€700k",
+      "name": "Mathieu Patouillet",
+      "nationality": [
+        "France"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 19, 2000",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "869509",
+      "marketValue": "€1.20m",
+      "name": "Moteb Al-Harbi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 1, 2006",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "955356",
+      "marketValue": "€15.00m",
+      "name": "Saïmon Bouabré",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "70",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 25, 2006",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "1100642",
+      "marketValue": "€15.00m",
+      "name": "Yusuf Akçiçek",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 1, 2004",
+      "id": "1135428",
+      "name": "Rayan Al-Dossary",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
       "contract": "Jun 30, 2029",
       "dateOfBirth": "Oct 11, 2007",
       "foot": "right",
@@ -370,19 +345,44 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 19, 1987",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 2, 2003",
       "foot": "right",
-      "height": "1,85m",
-      "id": "18922",
-      "marketValue": "€6.00m",
-      "name": "Karim Benzema",
+      "height": "1,90m",
+      "id": "1159156",
+      "marketValue": "€25k",
+      "name": "Ahmad Abu Rasen",
       "nationality": [
-        "France",
-        "Algeria"
+        "Saudi Arabia"
       ],
-      "number": "90",
-      "position": "Centre-Forward"
+      "number": "40",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 3, 2001",
+      "height": "1,80m",
+      "id": "1161121",
+      "marketValue": "€1.50m",
+      "name": "Murad Al-Hawsawi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 18, 2003",
+      "height": "1,84m",
+      "id": "1188907",
+      "marketValue": "€175k",
+      "name": "Abdulkarim Darisi",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "14",
+      "position": "Left Winger"
     }
   ],
   "stadiumName": "Kingdom Arena",

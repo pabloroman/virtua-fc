@@ -18,141 +18,62 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jul 9, 1999",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "487505",
-      "marketValue": "€200k",
-      "name": "Thomas Hasal",
-      "nationality": [
-        "Canada",
-        "Czech Republic"
-      ],
-      "number": "12",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jul 5, 2004",
-      "height": "1,88m",
-      "id": "999364",
-      "marketValue": "€50k",
-      "name": "Cabral Carter",
+      "dateOfBirth": "Jul 8, 1992",
+      "foot": "both",
+      "height": "1,84m",
+      "id": "91845",
+      "marketValue": "€17.00m",
+      "name": "Heung-min Son",
       "nationality": [
-        "United States"
+        "Korea, South"
       ],
-      "number": "31",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 25, 1999",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "446093",
-      "marketValue": "€3.00m",
-      "name": "Ryan Porteous",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "5",
-      "position": "Centre-Back"
+      "number": "7",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Feb 2, 1997",
+      "dateOfBirth": "Dec 30, 1994",
       "foot": "right",
-      "height": "1,78m",
-      "id": "459466",
-      "marketValue": "€1.80m",
-      "name": "Eddie Segura",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 23, 1997",
-      "height": "1,93m",
-      "id": "501877",
-      "marketValue": "€1.50m",
-      "name": "Nkosi Tafari",
+      "height": "1,83m",
+      "id": "203330",
+      "marketValue": "€500k",
+      "name": "Tyler Boyd",
       "nationality": [
         "United States",
-        "Ethiopia"
+        "New Zealand"
       ],
-      "number": "91",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Oct 12, 1992",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "271072",
-      "marketValue": "€800k",
-      "name": "Aaron Long",
-      "nationality": [
-        "United States"
-      ],
-      "number": "33",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 4, 2004",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "814476",
-      "marketValue": "€100k",
-      "name": "Lorenzo Dellavalle",
-      "nationality": [
-        "Italy"
-      ],
-      "number": "15",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Feb 13, 2002",
-      "height": "1,78m",
-      "id": "504152",
-      "marketValue": "€50k",
-      "name": "Kenny Nielsen",
-      "nationality": [
-        "United States"
-      ],
-      "number": "45",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 30, 2006",
-      "foot": "right",
-      "id": "1008508",
-      "name": "Christian Díaz",
-      "nationality": [
-        "United States"
-      ],
-      "number": "44",
-      "position": "Centre-Back"
+      "number": "19",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 29, 2003",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "962090",
-      "marketValue": "€1.80m",
-      "name": "Artem Smolyakov",
+      "dateOfBirth": "May 16, 1995",
+      "height": "1,75m",
+      "id": "222565",
+      "marketValue": "€2.50m",
+      "name": "Mark Delgado",
       "nationality": [
-        "Ukraine"
+        "United States",
+        "Mexico"
       ],
-      "number": "29",
-      "position": "Left-Back"
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Nov 11, 1994",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "236045",
+      "marketValue": "€8.00m",
+      "name": "Denis Bouanga",
+      "nationality": [
+        "Gabon",
+        "France"
+      ],
+      "number": "99",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2027",
@@ -183,33 +104,18 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 7, 2003",
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 12, 1992",
       "foot": "right",
-      "height": "1,79m",
-      "id": "978037",
-      "marketValue": "€3.50m",
-      "name": "Igor Jesus",
+      "height": "1,86m",
+      "id": "271072",
+      "marketValue": "€800k",
+      "name": "Aaron Long",
       "nationality": [
-        "Brazil"
+        "United States"
       ],
-      "number": "6",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 21, 1996",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "512913",
-      "marketValue": "€7.00m",
-      "name": "Stephen Eustaquio",
-      "nationality": [
-        "Canada",
-        "Portugal"
-      ],
-      "number": "46",
-      "position": "Central Midfield"
+      "number": "33",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2028",
@@ -228,16 +134,101 @@
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 16, 1995",
-      "height": "1,75m",
-      "id": "222565",
-      "marketValue": "€2.50m",
-      "name": "Mark Delgado",
+      "dateOfBirth": "Mar 25, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "446093",
+      "marketValue": "€3.00m",
+      "name": "Ryan Porteous",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 2, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "459466",
+      "marketValue": "€1.80m",
+      "name": "Eddie Segura",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 14, 1997",
+      "height": "1,84m",
+      "id": "460529",
+      "marketValue": "€1.00m",
+      "name": "Jeremy Ebobisse",
       "nationality": [
         "United States",
-        "Mexico"
+        "Cameroon"
       ],
-      "number": "8",
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 9, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "487505",
+      "marketValue": "€200k",
+      "name": "Thomas Hasal",
+      "nationality": [
+        "Canada",
+        "Czech Republic"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 23, 1997",
+      "height": "1,93m",
+      "id": "501877",
+      "marketValue": "€1.50m",
+      "name": "Nkosi Tafari",
+      "nationality": [
+        "United States",
+        "Ethiopia"
+      ],
+      "number": "91",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 13, 2002",
+      "height": "1,78m",
+      "id": "504152",
+      "marketValue": "€50k",
+      "name": "Kenny Nielsen",
+      "nationality": [
+        "United States"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 21, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "512913",
+      "marketValue": "€7.00m",
+      "name": "Stephen Eustaquio",
+      "nationality": [
+        "Canada",
+        "Portugal"
+      ],
+      "number": "46",
       "position": "Central Midfield"
     },
     {
@@ -255,19 +246,18 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Oct 8, 2008",
-      "foot": "right",
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 26, 1999",
+      "foot": "left",
       "height": "1,81m",
-      "id": "1046464",
-      "marketValue": "€75k",
-      "name": "Jude Terry",
+      "id": "637632",
+      "marketValue": "€3.00m",
+      "name": "Jacob Shaffelburg",
       "nationality": [
-        "United States",
-        "Italy"
+        "Canada"
       ],
-      "number": "22",
-      "position": "Central Midfield"
+      "number": "18",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2028",
@@ -285,6 +275,20 @@
       "position": "Left Midfield"
     },
     {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 4, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "814476",
+      "marketValue": "€100k",
+      "name": "Lorenzo Dellavalle",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Jun 30, 2029",
       "dateOfBirth": "Sep 29, 2004",
       "foot": "right",
@@ -300,77 +304,32 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 25, 2006",
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 29, 2003",
       "foot": "left",
-      "height": "1,78m",
-      "id": "1085546",
-      "marketValue": "€50k",
-      "name": "Matt Evans",
+      "height": "1,80m",
+      "id": "962090",
+      "marketValue": "€1.80m",
+      "name": "Artem Smolyakov",
       "nationality": [
-        "Guatemala",
-        "United States"
+        "Ukraine"
       ],
-      "number": "70",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jul 8, 1992",
-      "foot": "both",
-      "height": "1,84m",
-      "id": "91845",
-      "marketValue": "€17.00m",
-      "name": "Heung-min Son",
-      "nationality": [
-        "Korea, South"
-      ],
-      "number": "7",
-      "position": "Left Winger"
+      "number": "29",
+      "position": "Left-Back"
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "Nov 11, 1994",
+      "dateOfBirth": "Mar 7, 2003",
       "foot": "right",
-      "height": "1,80m",
-      "id": "236045",
-      "marketValue": "€8.00m",
-      "name": "Denis Bouanga",
+      "height": "1,79m",
+      "id": "978037",
+      "marketValue": "€3.50m",
+      "name": "Igor Jesus",
       "nationality": [
-        "Gabon",
-        "France"
+        "Brazil"
       ],
-      "number": "99",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Nov 26, 1999",
-      "foot": "left",
-      "height": "1,81m",
-      "id": "637632",
-      "marketValue": "€3.00m",
-      "name": "Jacob Shaffelburg",
-      "nationality": [
-        "Canada"
-      ],
-      "number": "18",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Dec 30, 1994",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "203330",
-      "marketValue": "€500k",
-      "name": "Tyler Boyd",
-      "nationality": [
-        "United States",
-        "New Zealand"
-      ],
-      "number": "19",
-      "position": "Left Winger"
+      "number": "6",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2027",
@@ -384,21 +343,6 @@
         "Venezuela"
       ],
       "number": "30",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 17, 2006",
-      "foot": "left",
-      "height": "1,82m",
-      "id": "1010640",
-      "marketValue": "€100k",
-      "name": "Adrian Wibowo",
-      "nationality": [
-        "Indonesia",
-        "United States"
-      ],
-      "number": "77",
       "position": "Right Winger"
     },
     {
@@ -418,17 +362,73 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Feb 14, 1997",
-      "height": "1,84m",
-      "id": "460529",
-      "marketValue": "€1.00m",
-      "name": "Jeremy Ebobisse",
+      "dateOfBirth": "Jul 5, 2004",
+      "height": "1,88m",
+      "id": "999364",
+      "marketValue": "€50k",
+      "name": "Cabral Carter",
+      "nationality": [
+        "United States"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 30, 2006",
+      "foot": "right",
+      "id": "1008508",
+      "name": "Christian Díaz",
+      "nationality": [
+        "United States"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 17, 2006",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1010640",
+      "marketValue": "€100k",
+      "name": "Adrian Wibowo",
+      "nationality": [
+        "Indonesia",
+        "United States"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 8, 2008",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1046464",
+      "marketValue": "€75k",
+      "name": "Jude Terry",
       "nationality": [
         "United States",
-        "Cameroon"
+        "Italy"
       ],
-      "number": "17",
-      "position": "Centre-Forward"
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 25, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1085546",
+      "marketValue": "€50k",
+      "name": "Matt Evans",
+      "nationality": [
+        "Guatemala",
+        "United States"
+      ],
+      "number": "70",
+      "position": "Attacking Midfield"
     }
   ],
   "stadiumName": "BMO Stadium",

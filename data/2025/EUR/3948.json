@@ -4,47 +4,46 @@
   "country": "BE",
   "players": [
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 23, 2000",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 3, 1990",
       "foot": "right",
-      "height": "2,06m",
-      "id": "463527",
-      "marketValue": "€7.00m",
-      "name": "Kjell Scherpen",
-      "nationality": [
-        "Netherlands"
-      ],
-      "number": "37",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jan 10, 2003",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "565429",
-      "marketValue": "€300k",
-      "name": "Vic Chambaere",
+      "height": "1,74m",
+      "id": "72736",
+      "marketValue": "€150k",
+      "name": "Guillaume François",
       "nationality": [
         "Belgium"
       ],
-      "number": "1",
-      "position": "Goalkeeper"
+      "number": "19",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jan 24, 2007",
+      "dateOfBirth": "Mar 23, 1994",
       "foot": "left",
-      "height": "1,95m",
-      "id": "1193791",
-      "marketValue": "€100k",
-      "name": "Giorgi Kavlashvili",
+      "height": "1,78m",
+      "id": "157396",
+      "marketValue": "€2.20m",
+      "name": "Rob Schoofs",
       "nationality": [
-        "Georgia",
         "Belgium"
       ],
-      "number": "18",
-      "position": "Goalkeeper"
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 7, 1991",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "244221",
+      "marketValue": "€2.00m",
+      "name": "Christian Burgess",
+      "nationality": [
+        "England"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2026",
@@ -77,17 +76,17 @@
     },
     {
       "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jul 9, 2003",
+      "dateOfBirth": "Jun 10, 2001",
       "foot": "left",
-      "height": "1,91m",
-      "id": "660746",
-      "marketValue": "€5.00m",
-      "name": "Fedde Leysen",
+      "height": "1,82m",
+      "id": "449444",
+      "marketValue": "€6.00m",
+      "name": "Raul Florucz",
       "nationality": [
-        "Belgium"
+        "Austria"
       ],
-      "number": "48",
-      "position": "Centre-Back"
+      "number": "30",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2027",
@@ -104,46 +103,33 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Oct 7, 1991",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 23, 2000",
       "foot": "right",
-      "height": "1,96m",
-      "id": "244221",
-      "marketValue": "€2.00m",
-      "name": "Christian Burgess",
+      "height": "2,06m",
+      "id": "463527",
+      "marketValue": "€7.00m",
+      "name": "Kjell Scherpen",
       "nationality": [
-        "England"
+        "Netherlands"
       ],
-      "number": "16",
-      "position": "Centre-Back"
+      "number": "37",
+      "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Mar 20, 2005",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 20, 2002",
       "foot": "right",
-      "height": "1,95m",
-      "id": "1250976",
-      "marketValue": "€1.50m",
-      "name": "Mamadou Thierno Barry",
+      "height": "1,67m",
+      "id": "486039",
+      "marketValue": "€5.00m",
+      "name": "Anouar Ait El Hadj",
       "nationality": [
-        "Senegal"
+        "Belgium",
+        "Morocco"
       ],
-      "number": "3",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Jan 7, 2005",
-      "foot": "right",
-      "height": "1,96m",
-      "id": "1256870",
-      "marketValue": "€600k",
-      "name": "Massiré Sylla",
-      "nationality": [
-        "Senegal"
-      ],
-      "number": "29",
-      "position": "Centre-Back"
+      "number": "10",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Jun 30, 2029",
@@ -160,18 +146,32 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 3, 1990",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 2001",
       "foot": "right",
-      "height": "1,74m",
-      "id": "72736",
-      "marketValue": "€150k",
-      "name": "Guillaume François",
+      "height": "1,68m",
+      "id": "509463",
+      "marketValue": "€7.50m",
+      "name": "Ousseynou Niang",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "22",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 10, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "565429",
+      "marketValue": "€300k",
+      "name": "Vic Chambaere",
       "nationality": [
         "Belgium"
       ],
-      "number": "19",
-      "position": "Right-Back"
+      "number": "1",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2029",
@@ -202,6 +202,49 @@
       "position": "Central Midfield"
     },
     {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 27, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "659317",
+      "marketValue": "€1.00m",
+      "name": "Marc Giger",
+      "nationality": [
+        "Switzerland",
+        "Cameroon"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 9, 2003",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "660746",
+      "marketValue": "€5.00m",
+      "name": "Fedde Leysen",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "48",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 4, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "684159",
+      "marketValue": "€5.00m",
+      "name": "Kevin Rodríguez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
       "contract": "Jun 30, 2030",
       "dateOfBirth": "Nov 21, 2002",
       "foot": "right",
@@ -214,20 +257,6 @@
         "Kosovo"
       ],
       "number": "23",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 23, 1994",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "157396",
-      "marketValue": "€2.20m",
-      "name": "Rob Schoofs",
-      "nationality": [
-        "Belgium"
-      ],
-      "number": "17",
       "position": "Central Midfield"
     },
     {
@@ -246,61 +275,19 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 3, 2004",
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 24, 2003",
       "foot": "right",
-      "height": "1,83m",
-      "id": "945021",
-      "marketValue": "€12.00m",
-      "name": "Anan Khalaili",
+      "height": "1,90m",
+      "id": "810285",
+      "marketValue": "€100k",
+      "name": "Mateo Biondic",
       "nationality": [
-        "Israel"
+        "Germany",
+        "Croatia"
       ],
-      "number": "25",
-      "position": "Right Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Oct 12, 2001",
-      "foot": "right",
-      "height": "1,68m",
-      "id": "509463",
-      "marketValue": "€7.50m",
-      "name": "Ousseynou Niang",
-      "nationality": [
-        "Senegal"
-      ],
-      "number": "22",
-      "position": "Left Midfield"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 20, 2002",
-      "foot": "right",
-      "height": "1,67m",
-      "id": "486039",
-      "marketValue": "€5.00m",
-      "name": "Anouar Ait El Hadj",
-      "nationality": [
-        "Belgium",
-        "Morocco"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jun 11, 2003",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "949337",
-      "marketValue": "€200k",
-      "name": "Guilherme Smith",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "11",
-      "position": "Left Winger"
+      "number": "9",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2029",
@@ -318,32 +305,32 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Jun 10, 2001",
-      "foot": "left",
-      "height": "1,82m",
-      "id": "449444",
-      "marketValue": "€6.00m",
-      "name": "Raul Florucz",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 3, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "945021",
+      "marketValue": "€12.00m",
+      "name": "Anan Khalaili",
       "nationality": [
-        "Austria"
+        "Israel"
       ],
-      "number": "30",
-      "position": "Centre-Forward"
+      "number": "25",
+      "position": "Right Midfield"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 4, 2000",
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 11, 2003",
       "foot": "right",
-      "height": "1,90m",
-      "id": "684159",
-      "marketValue": "€5.00m",
-      "name": "Kevin Rodríguez",
+      "height": "1,84m",
+      "id": "949337",
+      "marketValue": "€200k",
+      "name": "Guilherme Smith",
       "nationality": [
-        "Ecuador"
+        "Brazil"
       ],
-      "number": "13",
-      "position": "Centre-Forward"
+      "number": "11",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2028",
@@ -360,34 +347,47 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Mar 27, 2004",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "659317",
-      "marketValue": "€1.00m",
-      "name": "Marc Giger",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 24, 2007",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "1193791",
+      "marketValue": "€100k",
+      "name": "Giorgi Kavlashvili",
       "nationality": [
-        "Switzerland",
-        "Cameroon"
+        "Georgia",
+        "Belgium"
       ],
-      "number": "20",
-      "position": "Centre-Forward"
+      "number": "18",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 20, 2005",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "1250976",
+      "marketValue": "€1.50m",
+      "name": "Mamadou Thierno Barry",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2030",
-      "dateOfBirth": "Jul 24, 2003",
+      "dateOfBirth": "Jan 7, 2005",
       "foot": "right",
-      "height": "1,90m",
-      "id": "810285",
-      "marketValue": "€100k",
-      "name": "Mateo Biondic",
+      "height": "1,96m",
+      "id": "1256870",
+      "marketValue": "€600k",
+      "name": "Massiré Sylla",
       "nationality": [
-        "Germany",
-        "Croatia"
+        "Senegal"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "29",
+      "position": "Centre-Back"
     }
   ],
   "stadiumName": "Stade Joseph Mariën",

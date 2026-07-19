@@ -4,33 +4,33 @@
   "country": "AR",
   "players": [
     {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "May 20, 1997",
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 28, 1991",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "60410",
+      "marketValue": "€1.20m",
+      "name": "Marcos Acuña",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jun 27, 1991",
       "foot": "right",
-      "height": "1,84m",
-      "id": "626917",
-      "marketValue": "€2.20m",
-      "name": "Ezequiel Centurión",
+      "height": "1,87m",
+      "id": "113133",
+      "marketValue": "€1.00m",
+      "name": "Germán Pezzella",
       "nationality": [
         "Argentina",
         "Italy"
       ],
-      "number": "33",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Oct 4, 2004",
-      "foot": "left",
-      "height": "1,90m",
-      "id": "1138089",
-      "marketValue": "€1.50m",
-      "name": "Santiago Beltrán",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "41",
-      "position": "Goalkeeper"
+      "number": "20",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2026",
@@ -47,61 +47,18 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Nov 1, 2003",
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 18, 1993",
       "foot": "left",
-      "height": "1,85m",
-      "id": "1261395",
-      "marketValue": "€7.00m",
-      "name": "Lautaro Rivero",
+      "height": "1,68m",
+      "id": "122582",
+      "marketValue": "€2.00m",
+      "name": "Juan Fernando Quintero",
       "nationality": [
-        "Argentina"
+        "Colombia"
       ],
-      "number": "13",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 10, 1996",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "373373",
-      "marketValue": "€4.50m",
-      "name": "Lucas Martínez Quarta",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "28",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "May 18, 2000",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "830842",
-      "marketValue": "€3.50m",
-      "name": "Juan Carlos Portillo",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "5",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Nov 11, 2006",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "1000684",
-      "marketValue": "€2.50m",
-      "name": "Tobías Ramírez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "2",
-      "position": "Centre-Back"
+      "number": "10",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Dec 31, 2027",
@@ -120,60 +77,61 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jun 27, 1991",
+      "dateOfBirth": "Apr 28, 1996",
       "foot": "right",
-      "height": "1,87m",
-      "id": "113133",
+      "height": "1,67m",
+      "id": "275381",
+      "marketValue": "€2.50m",
+      "name": "Fabricio Bustos",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "16",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 15, 1992",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "282476",
       "marketValue": "€1.00m",
-      "name": "Germán Pezzella",
+      "name": "Maximiliano Meza",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "8",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 9, 1996",
+      "foot": "both",
+      "height": "1,79m",
+      "id": "294853",
+      "marketValue": "€4.50m",
+      "name": "Sebastián Driussi",
       "nationality": [
         "Argentina",
         "Italy"
       ],
-      "number": "20",
-      "position": "Centre-Back"
+      "number": "9",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jan 1, 2006",
+      "dateOfBirth": "May 10, 1996",
       "foot": "right",
-      "height": "1,85m",
-      "id": "1005802",
-      "name": "Ulises Giménez",
+      "height": "1,83m",
+      "id": "373373",
+      "marketValue": "€4.50m",
+      "name": "Lucas Martínez Quarta",
       "nationality": [
-        "Argentina"
-      ],
-      "number": "36",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Nov 9, 1997",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "439072",
-      "marketValue": "€4.00m",
-      "name": "Matías Viña",
-      "nationality": [
-        "Uruguay",
+        "Argentina",
         "Italy"
       ],
-      "number": "18",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Oct 28, 1991",
-      "foot": "left",
-      "height": "1,72m",
-      "id": "60410",
-      "marketValue": "€1.20m",
-      "name": "Marcos Acuña",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "21",
-      "position": "Left-Back"
+      "number": "28",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2028",
@@ -191,201 +149,19 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Apr 28, 1996",
-      "foot": "right",
-      "height": "1,67m",
-      "id": "275381",
-      "marketValue": "€2.50m",
-      "name": "Fabricio Bustos",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "16",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 13, 1999",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "642758",
-      "marketValue": "€8.00m",
-      "name": "Aníbal Moreno",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "6",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Sep 29, 2000",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "857948",
-      "marketValue": "€6.50m",
-      "name": "Kevin Castaño",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "22",
-      "position": "Defensive Midfield"
-    },
-    {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 26, 2000",
-      "foot": "right",
+      "dateOfBirth": "Nov 9, 1997",
+      "foot": "left",
       "height": "1,80m",
-      "id": "491701",
-      "marketValue": "€4.50m",
-      "name": "Fausto Vera",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "15",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 23, 2004",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "1290521",
-      "marketValue": "€650k",
-      "name": "Elián Giménez",
-      "nationality": [
-        "Argentina"
-      ],
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jun 18, 1999",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "567249",
+      "id": "439072",
       "marketValue": "€4.00m",
-      "name": "Giuliano Galoppo",
+      "name": "Matías Viña",
       "nationality": [
-        "Argentina",
+        "Uruguay",
         "Italy"
       ],
-      "number": "34",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "May 4, 2007",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "1052439",
-      "marketValue": "€9.00m",
-      "name": "Kendry Páez",
-      "nationality": [
-        "Ecuador"
-      ],
-      "number": "19",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Apr 11, 2000",
-      "foot": "right",
-      "height": "1,72m",
-      "id": "893850",
-      "marketValue": "€3.00m",
-      "name": "Tomás Galván",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "26",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Sep 4, 2005",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "1289929",
-      "marketValue": "€2.50m",
-      "name": "Santiago Lencina",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "39",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jan 18, 1993",
-      "foot": "left",
-      "height": "1,68m",
-      "id": "122582",
-      "marketValue": "€2.00m",
-      "name": "Juan Fernando Quintero",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 14, 2008",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "1231221",
-      "marketValue": "€300k",
-      "name": "Juan Cruz Meza",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "47",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jul 14, 2006",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "1291054",
-      "marketValue": "€300k",
-      "name": "Leonel Jaime",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "30",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jan 1, 2007",
-      "foot": "left",
-      "height": "1,74m",
-      "id": "1074969",
-      "marketValue": "€3.50m",
-      "name": "Ian Subiabre",
-      "nationality": [
-        "Argentina",
-        "Chile"
-      ],
-      "number": "38",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Dec 15, 1992",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "282476",
-      "marketValue": "€1.00m",
-      "name": "Maximiliano Meza",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "8",
-      "position": "Right Winger"
+      "number": "18",
+      "position": "Left-Back"
     },
     {
       "contract": "Dec 31, 2029",
@@ -400,6 +176,20 @@
       ],
       "number": "7",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 26, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "491701",
+      "marketValue": "€4.50m",
+      "name": "Fausto Vera",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "15",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2027",
@@ -418,18 +208,103 @@
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "Feb 9, 1996",
-      "foot": "both",
+      "dateOfBirth": "Jun 18, 1999",
+      "foot": "right",
       "height": "1,79m",
-      "id": "294853",
-      "marketValue": "€4.50m",
-      "name": "Sebastián Driussi",
+      "id": "567249",
+      "marketValue": "€4.00m",
+      "name": "Giuliano Galoppo",
       "nationality": [
         "Argentina",
         "Italy"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "34",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 20, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "626917",
+      "marketValue": "€2.20m",
+      "name": "Ezequiel Centurión",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 13, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "642758",
+      "marketValue": "€8.00m",
+      "name": "Aníbal Moreno",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 18, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "830842",
+      "marketValue": "€3.50m",
+      "name": "Juan Carlos Portillo",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 29, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "857948",
+      "marketValue": "€6.50m",
+      "name": "Kevin Castaño",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 11, 2000",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "893850",
+      "marketValue": "€3.00m",
+      "name": "Tomás Galván",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "26",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Nov 11, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1000684",
+      "marketValue": "€2.50m",
+      "name": "Tobías Ramírez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2027",
@@ -444,6 +319,131 @@
       ],
       "number": "32",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 1, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1005802",
+      "name": "Ulises Giménez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "36",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 4, 2007",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1052439",
+      "marketValue": "€9.00m",
+      "name": "Kendry Páez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 1, 2007",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "1074969",
+      "marketValue": "€3.50m",
+      "name": "Ian Subiabre",
+      "nationality": [
+        "Argentina",
+        "Chile"
+      ],
+      "number": "38",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 4, 2004",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "1138089",
+      "marketValue": "€1.50m",
+      "name": "Santiago Beltrán",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 14, 2008",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1231221",
+      "marketValue": "€300k",
+      "name": "Juan Cruz Meza",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "47",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Nov 1, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1261395",
+      "marketValue": "€7.00m",
+      "name": "Lautaro Rivero",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 4, 2005",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "1289929",
+      "marketValue": "€2.50m",
+      "name": "Santiago Lencina",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "39",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 23, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1290521",
+      "marketValue": "€650k",
+      "name": "Elián Giménez",
+      "nationality": [
+        "Argentina"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 14, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "1291054",
+      "marketValue": "€300k",
+      "name": "Leonel Jaime",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "30",
+      "position": "Left Winger"
     },
     {
       "contract": "Dec 31, 2028",

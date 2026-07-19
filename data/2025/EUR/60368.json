@@ -4,77 +4,17 @@
   "players": [
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 24, 1999",
+      "dateOfBirth": "Oct 4, 1990",
       "foot": "right",
-      "height": "1,92m",
-      "id": "541420",
-      "marketValue": "€1.00m",
-      "name": "Timothy Fayulu",
+      "height": "1,80m",
+      "id": "116565",
+      "marketValue": "€200k",
+      "name": "Hovhannes Hambardzumyan",
       "nationality": [
-        "DR Congo",
-        "Switzerland"
+        "Armenia"
       ],
-      "number": "16",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Apr 21, 2004",
-      "foot": "right",
-      "height": "1,91m",
-      "id": "816474",
-      "marketValue": "€150k",
-      "name": "Aleksey Ploshchadnyi",
-      "nationality": [
-        "Russia"
-      ],
-      "number": "92",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 10, 2026",
-      "dateOfBirth": "May 30, 2004",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "997489",
-      "marketValue": "€125k",
-      "name": "Arthur Coneglian",
-      "nationality": [
-        "Armenia",
-        "Brazil"
-      ],
-      "number": "29",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Aug 27, 2004",
-      "foot": "right",
-      "height": "1,89m",
-      "id": "817388",
-      "marketValue": "€500k",
-      "name": "Sergey Muradyan",
-      "nationality": [
-        "Armenia",
-        "Russia"
-      ],
-      "number": "3",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "May 30, 2000",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "585950",
-      "marketValue": "€500k",
-      "name": "Nathanaël Saintini",
-      "nationality": [
-        "Guadeloupe",
-        "France"
-      ],
-      "number": "39",
-      "position": "Centre-Back"
+      "number": "19",
+      "position": "Right-Back"
     },
     {
       "contract": "-",
@@ -105,34 +45,19 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "-",
-      "dateOfBirth": "Mar 23, 1997",
-      "foot": "left",
-      "height": "1,83m",
-      "id": "344540",
-      "marketValue": "€350k",
-      "name": "David Sualehe",
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 26, 1996",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "261963",
+      "marketValue": "€800k",
+      "name": "Marin Jakolis",
       "nationality": [
-        "Portugal",
-        "Mozambique"
+        "Croatia",
+        "Australia"
       ],
-      "number": "33",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Apr 14, 2002",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "496871",
-      "marketValue": "€300k",
-      "name": "Rob Nizet",
-      "nationality": [
-        "Belgium",
-        "Senegal"
-      ],
-      "number": "4",
-      "position": "Left-Back"
+      "number": "47",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2028",
@@ -149,48 +74,6 @@
       "position": "Right-Back"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Oct 4, 1990",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "116565",
-      "marketValue": "€200k",
-      "name": "Hovhannes Hambardzumyan",
-      "nationality": [
-        "Armenia"
-      ],
-      "number": "19",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jun 1, 1998",
-      "height": "1,75m",
-      "id": "775886",
-      "marketValue": "€1.00m",
-      "name": "Takuto Oshima",
-      "nationality": [
-        "Japan"
-      ],
-      "number": "14",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Nov 8, 1996",
-      "foot": "left",
-      "height": "1,80m",
-      "id": "641152",
-      "marketValue": "€800k",
-      "name": "Gustavo Sangaré",
-      "nationality": [
-        "Burkina Faso",
-        "France"
-      ],
-      "number": "17",
-      "position": "Defensive Midfield"
-    },
-    {
       "contract": "-",
       "dateOfBirth": "Aug 26, 1997",
       "foot": "right",
@@ -203,19 +86,6 @@
         "Spain"
       ],
       "number": "88",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "-",
-      "dateOfBirth": "Jan 10, 2000",
-      "height": "1,78m",
-      "id": "471095",
-      "marketValue": "€125k",
-      "name": "Aram Khamoyan",
-      "nationality": [
-        "Armenia"
-      ],
-      "number": "23",
       "position": "Defensive Midfield"
     },
     {
@@ -262,62 +132,19 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 9, 2002",
-      "foot": "both",
-      "height": "1,80m",
-      "id": "773795",
-      "marketValue": "€350k",
-      "name": "Gor Manvelyan",
-      "nationality": [
-        "Armenia",
-        "France"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 26, 1996",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "261963",
-      "marketValue": "€800k",
-      "name": "Marin Jakolis",
-      "nationality": [
-        "Croatia",
-        "Australia"
-      ],
-      "number": "47",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 11, 2004",
-      "foot": "right",
-      "height": "1,79m",
-      "id": "719163",
-      "marketValue": "€175k",
-      "name": "Misak Hakobyan",
-      "nationality": [
-        "Armenia"
-      ],
-      "number": "22",
-      "position": "Left Winger"
-    },
-    {
       "contract": "-",
-      "dateOfBirth": "Jul 7, 2006",
-      "foot": "right",
-      "id": "994280",
-      "marketValue": "€125k",
-      "name": "Bilal Fofana",
+      "dateOfBirth": "Mar 23, 1997",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "344540",
+      "marketValue": "€350k",
+      "name": "David Sualehe",
       "nationality": [
-        "France",
-        "Cote d'Ivoire"
+        "Portugal",
+        "Mozambique"
       ],
-      "number": "71",
-      "position": "Left Winger"
+      "number": "33",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -334,32 +161,18 @@
       "position": "Right Winger"
     },
     {
-      "contract": "-",
-      "dateOfBirth": "Jul 17, 1999",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "461705",
-      "marketValue": "€200k",
-      "name": "Artem Avanesyan",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 30, 1996",
+      "foot": "both",
+      "height": "1,76m",
+      "id": "369706",
+      "marketValue": "€400k",
+      "name": "Matheus Aiás",
       "nationality": [
-        "Armenia",
-        "Russia"
+        "Brazil"
       ],
-      "number": "18",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "-",
-      "dateOfBirth": "Jun 15, 2007",
-      "foot": "right",
-      "id": "1130532",
-      "marketValue": "€175k",
-      "name": "Zaven Khudaverdyan",
-      "nationality": [
-        "Armenia"
-      ],
-      "number": "24",
-      "position": "Second Striker"
+      "number": "9",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Jun 30, 2028",
@@ -390,18 +203,205 @@
       "position": "Centre-Forward"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 30, 1996",
-      "foot": "both",
-      "height": "1,76m",
-      "id": "369706",
-      "marketValue": "€400k",
-      "name": "Matheus Aiás",
+      "contract": "-",
+      "dateOfBirth": "Jul 17, 1999",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "461705",
+      "marketValue": "€200k",
+      "name": "Artem Avanesyan",
       "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "18",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 10, 2000",
+      "height": "1,78m",
+      "id": "471095",
+      "marketValue": "€125k",
+      "name": "Aram Khamoyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 14, 2002",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "496871",
+      "marketValue": "€300k",
+      "name": "Rob Nizet",
+      "nationality": [
+        "Belgium",
+        "Senegal"
+      ],
+      "number": "4",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 24, 1999",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "541420",
+      "marketValue": "€1.00m",
+      "name": "Timothy Fayulu",
+      "nationality": [
+        "DR Congo",
+        "Switzerland"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 30, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "585950",
+      "marketValue": "€500k",
+      "name": "Nathanaël Saintini",
+      "nationality": [
+        "Guadeloupe",
+        "France"
+      ],
+      "number": "39",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 8, 1996",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "641152",
+      "marketValue": "€800k",
+      "name": "Gustavo Sangaré",
+      "nationality": [
+        "Burkina Faso",
+        "France"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 11, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "719163",
+      "marketValue": "€175k",
+      "name": "Misak Hakobyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 9, 2002",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "773795",
+      "marketValue": "€350k",
+      "name": "Gor Manvelyan",
+      "nationality": [
+        "Armenia",
+        "France"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 1998",
+      "height": "1,75m",
+      "id": "775886",
+      "marketValue": "€1.00m",
+      "name": "Takuto Oshima",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 21, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "816474",
+      "marketValue": "€150k",
+      "name": "Aleksey Ploshchadnyi",
+      "nationality": [
+        "Russia"
+      ],
+      "number": "92",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 27, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "817388",
+      "marketValue": "€500k",
+      "name": "Sergey Muradyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 7, 2006",
+      "foot": "right",
+      "id": "994280",
+      "marketValue": "€125k",
+      "name": "Bilal Fofana",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "71",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 10, 2026",
+      "dateOfBirth": "May 30, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "997489",
+      "marketValue": "€125k",
+      "name": "Arthur Coneglian",
+      "nationality": [
+        "Armenia",
         "Brazil"
       ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 15, 2007",
+      "foot": "right",
+      "id": "1130532",
+      "marketValue": "€175k",
+      "name": "Zaven Khudaverdyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "24",
+      "position": "Second Striker"
     }
   ],
   "stadiumName": "Abovyan City Stadium",

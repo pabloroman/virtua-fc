@@ -18,6 +18,21 @@
     },
     {
       "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 10, 1991",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "86792",
+      "marketValue": "€1.80m",
+      "name": "Xherdan Shaqiri",
+      "nationality": [
+        "Switzerland",
+        "Kosovo"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
       "dateOfBirth": "Feb 14, 1994",
       "foot": "right",
       "height": "1,88m",
@@ -32,18 +47,33 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "May 12, 2005",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 26, 1997",
       "foot": "right",
-      "height": "1,87m",
-      "id": "688605",
-      "marketValue": "€100k",
-      "name": "Tim Pfeiffer",
+      "height": "1,81m",
+      "id": "195906",
+      "marketValue": "€1.00m",
+      "name": "Albian Ajeti",
       "nationality": [
-        "Germany"
+        "Switzerland",
+        "Albania"
       ],
-      "number": "47",
-      "position": "Goalkeeper"
+      "number": "23",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 5, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "290032",
+      "marketValue": "€400k",
+      "name": "Kevin Rüegg",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "27",
+      "position": "Right-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -58,76 +88,6 @@
       ],
       "number": "24",
       "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 25, 2003",
-      "foot": "left",
-      "height": "1,93m",
-      "id": "705016",
-      "marketValue": "€2.50m",
-      "name": "Finn van Breemen",
-      "nationality": [
-        "Netherlands"
-      ],
-      "number": "25",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "May 11, 2001",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "507488",
-      "marketValue": "€2.00m",
-      "name": "Nicolas Vouilloz",
-      "nationality": [
-        "Switzerland"
-      ],
-      "number": "3",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jul 15, 2007",
-      "foot": "left",
-      "height": "1,88m",
-      "id": "1015823",
-      "marketValue": "€500k",
-      "name": "Marvin Akahomen",
-      "nationality": [
-        "Switzerland"
-      ],
-      "number": "43",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 10, 1998",
-      "foot": "left",
-      "height": "1,82m",
-      "id": "359409",
-      "marketValue": "€3.00m",
-      "name": "Dominik Schmid",
-      "nationality": [
-        "Switzerland"
-      ],
-      "number": "31",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Apr 29, 2003",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "620312",
-      "marketValue": "€400k",
-      "name": "Moussa Cissé",
-      "nationality": [
-        "France"
-      ],
-      "number": "29",
-      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -145,46 +105,45 @@
     },
     {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Aug 5, 1998",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "290032",
-      "marketValue": "€400k",
-      "name": "Kevin Rüegg",
+      "dateOfBirth": "Mar 10, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "359409",
+      "marketValue": "€3.00m",
+      "name": "Dominik Schmid",
       "nationality": [
         "Switzerland"
       ],
-      "number": "27",
-      "position": "Right-Back"
+      "number": "31",
+      "position": "Left-Back"
     },
     {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Mar 7, 2007",
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 23, 2000",
       "foot": "right",
-      "height": "1,87m",
-      "id": "952776",
+      "height": "1,90m",
+      "id": "406973",
+      "marketValue": "€1.50m",
+      "name": "Moritz Broschinski",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "507488",
       "marketValue": "€2.00m",
-      "name": "Andrej Bacanin",
+      "name": "Nicolas Vouilloz",
       "nationality": [
-        "Serbia"
+        "Switzerland"
       ],
-      "number": "14",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Apr 23, 2003",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "859396",
-      "marketValue": "€6.00m",
-      "name": "Metinho",
-      "nationality": [
-        "DR Congo",
-        "Brazil"
-      ],
-      "number": "5",
-      "position": "Central Midfield"
+      "number": "3",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2026",
@@ -199,6 +158,20 @@
       ],
       "number": "8",
       "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 29, 2003",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "620312",
+      "marketValue": "€400k",
+      "name": "Moussa Cissé",
+      "nationality": [
+        "France"
+      ],
+      "number": "29",
+      "position": "Left-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -231,18 +204,31 @@
     },
     {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Oct 10, 1991",
-      "foot": "left",
-      "height": "1,69m",
-      "id": "86792",
-      "marketValue": "€1.80m",
-      "name": "Xherdan Shaqiri",
+      "dateOfBirth": "May 12, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "688605",
+      "marketValue": "€100k",
+      "name": "Tim Pfeiffer",
       "nationality": [
-        "Switzerland",
-        "Kosovo"
+        "Germany"
       ],
-      "number": "10",
-      "position": "Attacking Midfield"
+      "number": "47",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 25, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "705016",
+      "marketValue": "€2.50m",
+      "name": "Finn van Breemen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2027",
@@ -259,6 +245,20 @@
       "position": "Attacking Midfield"
     },
     {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 5, 2006",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "819215",
+      "marketValue": "€7.50m",
+      "name": "Julien Duranville",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
       "contract": "Jun 30, 2028",
       "dateOfBirth": "Nov 30, 2002",
       "foot": "right",
@@ -273,18 +273,19 @@
       "position": "Left Winger"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "May 5, 2006",
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 23, 2003",
       "foot": "right",
-      "height": "1,73m",
-      "id": "819215",
-      "marketValue": "€7.50m",
-      "name": "Julien Duranville",
+      "height": "1,78m",
+      "id": "859396",
+      "marketValue": "€6.00m",
+      "name": "Metinho",
       "nationality": [
-        "Belgium"
+        "DR Congo",
+        "Brazil"
       ],
-      "number": "18",
-      "position": "Left Winger"
+      "number": "5",
+      "position": "Central Midfield"
     },
     {
       "contract": "Jun 30, 2029",
@@ -302,6 +303,48 @@
       "position": "Left Winger"
     },
     {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "945345",
+      "marketValue": "€2.00m",
+      "name": "Marin Soticek",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 7, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "952776",
+      "marketValue": "€2.00m",
+      "name": "Andrej Bacanin",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 15, 2007",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "1015823",
+      "marketValue": "€500k",
+      "name": "Marvin Akahomen",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "Jun 30, 2026",
       "dateOfBirth": "Oct 24, 2005",
       "foot": "left",
@@ -317,46 +360,16 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 18, 2004",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "945345",
-      "marketValue": "€2.00m",
-      "name": "Marin Soticek",
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 31, 2008",
+      "height": "1,80m",
+      "id": "1138255",
+      "marketValue": "€150k",
+      "name": "Giacomo Koloto",
       "nationality": [
-        "Croatia"
+        "Switzerland"
       ],
-      "number": "19",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Sep 23, 2000",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "406973",
-      "marketValue": "€1.50m",
-      "name": "Moritz Broschinski",
-      "nationality": [
-        "Germany"
-      ],
-      "number": "17",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Feb 26, 1997",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "195906",
-      "marketValue": "€1.00m",
-      "name": "Albian Ajeti",
-      "nationality": [
-        "Switzerland",
-        "Albania"
-      ],
-      "number": "23",
+      "number": "37",
       "position": "Centre-Forward"
     },
     {
@@ -371,19 +384,6 @@
         "Brazil"
       ],
       "number": "46",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2030",
-      "dateOfBirth": "Jan 31, 2008",
-      "height": "1,80m",
-      "id": "1138255",
-      "marketValue": "€150k",
-      "name": "Giacomo Koloto",
-      "nationality": [
-        "Switzerland"
-      ],
-      "number": "37",
       "position": "Centre-Forward"
     }
   ],

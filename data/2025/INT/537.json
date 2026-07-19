@@ -4,20 +4,6 @@
   "country": "BR",
   "players": [
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 3, 2001",
-      "foot": "right",
-      "height": "1,94m",
-      "id": "742034",
-      "marketValue": "€3.00m",
-      "name": "Léo Linck",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "24",
-      "position": "Goalkeeper"
-    },
-    {
       "contract": "Jun 30, 2027",
       "dateOfBirth": "Jul 19, 1989",
       "foot": "right",
@@ -33,76 +19,47 @@
       "position": "Goalkeeper"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jul 28, 1997",
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 8, 1991",
       "foot": "right",
-      "height": "1,90m",
-      "id": "520093",
-      "marketValue": "€400k",
-      "name": "Raul",
+      "height": "1,75m",
+      "id": "126422",
+      "marketValue": "€1.20m",
+      "name": "Allan",
       "nationality": [
-        "Brazil"
+        "Brazil",
+        "Portugal"
       ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 9, 2006",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "1074501",
-      "marketValue": "€350k",
-      "name": "Cristhian Loor",
-      "nationality": [
-        "Ecuador"
-      ],
-      "number": "40",
-      "position": "Goalkeeper"
+      "number": "25",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 16, 1995",
+      "dateOfBirth": "Feb 19, 1989",
       "foot": "left",
-      "height": "1,93m",
-      "id": "379752",
-      "marketValue": "€5.00m",
-      "name": "Alexander Barboza",
-      "nationality": [
-        "Argentina",
-        "Uruguay"
-      ],
-      "number": "20",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Nov 19, 1998",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "466336",
-      "marketValue": "€4.50m",
-      "name": "Nahuel Ferraresi",
-      "nationality": [
-        "Venezuela",
-        "Italy"
-      ],
-      "number": "5",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Sep 18, 1995",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "523363",
-      "marketValue": "€1.80m",
-      "name": "Kaio",
+      "height": "1,78m",
+      "id": "137745",
+      "marketValue": "€250k",
+      "name": "Marçal",
       "nationality": [
         "Brazil"
       ],
-      "number": "31",
-      "position": "Centre-Back"
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 18, 1989",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "169052",
+      "marketValue": "€300k",
+      "name": "Edenilson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "88",
+      "position": "Central Midfield"
     },
     {
       "contract": "Dec 31, 2026",
@@ -119,31 +76,19 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Mar 23, 2030",
-      "dateOfBirth": "Jul 12, 2005",
-      "foot": "left",
-      "height": "1,92m",
-      "id": "1092623",
-      "marketValue": "€300k",
-      "name": "Anthony",
-      "nationality": [
-        "Brazil"
-      ],
-      "position": "Centre-Back"
-    },
-    {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jul 22, 2004",
+      "dateOfBirth": "Aug 13, 1994",
       "foot": "right",
-      "height": "1,93m",
-      "id": "980854",
-      "marketValue": "€300k",
-      "name": "Ythallo",
+      "height": "1,88m",
+      "id": "227081",
+      "marketValue": "€2.00m",
+      "name": "Joaquín Correa",
       "nationality": [
-        "Brazil"
+        "Argentina",
+        "Italy"
       ],
-      "number": "3",
-      "position": "Centre-Back"
+      "number": "30",
+      "position": "Second Striker"
     },
     {
       "contract": "Dec 31, 2026",
@@ -162,157 +107,32 @@
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Feb 19, 1989",
+      "dateOfBirth": "Mar 16, 1995",
       "foot": "left",
-      "height": "1,78m",
-      "id": "137745",
-      "marketValue": "€250k",
-      "name": "Marçal",
+      "height": "1,93m",
+      "id": "379752",
+      "marketValue": "€5.00m",
+      "name": "Alexander Barboza",
       "nationality": [
-        "Brazil"
-      ],
-      "number": "21",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Feb 20, 2006",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "1112486",
-      "marketValue": "€150k",
-      "name": "Jhoan Hernández",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "67",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 9, 2002",
-      "foot": "left",
-      "height": "1,82m",
-      "id": "789856",
-      "name": "Caio Roque",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "27",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jul 23, 1999",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "468249",
-      "marketValue": "€8.00m",
-      "name": "Vitinho",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "2",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "May 24, 2003",
-      "foot": "right",
-      "height": "1,83m",
-      "id": "856047",
-      "marketValue": "€2.00m",
-      "name": "Mateo Ponte",
-      "nationality": [
+        "Argentina",
         "Uruguay"
       ],
-      "number": "4",
-      "position": "Right-Back"
+      "number": "20",
+      "position": "Centre-Back"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Mar 12, 2000",
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 25, 1998",
       "foot": "right",
-      "height": "1,88m",
-      "id": "811219",
-      "marketValue": "€3.00m",
-      "name": "Newton",
+      "height": "1,86m",
+      "id": "390638",
+      "marketValue": "€8.00m",
+      "name": "Arthur Cabral",
       "nationality": [
         "Brazil"
       ],
-      "number": "28",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Jan 8, 1991",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "126422",
-      "marketValue": "€1.20m",
-      "name": "Allan",
-      "nationality": [
-        "Brazil",
-        "Portugal"
-      ],
-      "number": "25",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "May 10, 2007",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "1279908",
-      "marketValue": "€1.00m",
-      "name": "Wallace Davi",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "55",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Apr 29, 2001",
-      "foot": "left",
-      "height": "1,77m",
-      "id": "808509",
-      "marketValue": "€24.00m",
-      "name": "Danilo",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "8",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jun 1, 2002",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "661133",
-      "marketValue": "€9.00m",
-      "name": "Cristian Medina",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "6",
-      "position": "Central Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Dec 18, 1989",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "169052",
-      "marketValue": "€300k",
-      "name": "Edenilson",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "88",
-      "position": "Central Midfield"
+      "number": "19",
+      "position": "Centre-Forward"
     },
     {
       "contract": "Dec 31, 2028",
@@ -329,33 +149,104 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 11, 2006",
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 19, 1998",
       "foot": "right",
-      "height": "1,80m",
-      "id": "1087334",
-      "marketValue": "€2.00m",
-      "name": "Jordan Barrera",
+      "height": "1,90m",
+      "id": "466336",
+      "marketValue": "€4.50m",
+      "name": "Nahuel Ferraresi",
       "nationality": [
-        "Colombia"
+        "Venezuela",
+        "Italy"
       ],
-      "number": "14",
-      "position": "Attacking Midfield"
+      "number": "5",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 17, 2007",
+      "dateOfBirth": "Jul 23, 1999",
       "foot": "right",
-      "height": "1,70m",
-      "id": "1228194",
-      "marketValue": "€10.00m",
-      "name": "Álvaro Montoro",
+      "height": "1,74m",
+      "id": "468249",
+      "marketValue": "€8.00m",
+      "name": "Vitinho",
       "nationality": [
-        "Argentina",
-        "Italy"
+        "Brazil"
       ],
-      "number": "10",
-      "position": "Left Winger"
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 28, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "520093",
+      "marketValue": "€400k",
+      "name": "Raul",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "523363",
+      "marketValue": "€1.80m",
+      "name": "Kaio",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "31",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 18, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "538810",
+      "marketValue": "€2.50m",
+      "name": "Chris Ramos",
+      "nationality": [
+        "Spain",
+        "United States"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 11, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "592347",
+      "marketValue": "€3.00m",
+      "name": "Júnior Santos",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 1, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "661133",
+      "marketValue": "€9.00m",
+      "name": "Cristian Medina",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
     },
     {
       "contract": "Dec 31, 2028",
@@ -372,32 +263,73 @@
       "position": "Left Winger"
     },
     {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Feb 16, 2005",
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 3, 2001",
       "foot": "right",
-      "height": "1,76m",
-      "id": "1083600",
-      "marketValue": "€4.00m",
-      "name": "Nathan Fernandes",
+      "height": "1,94m",
+      "id": "742034",
+      "marketValue": "€3.00m",
+      "name": "Léo Linck",
       "nationality": [
         "Brazil"
       ],
-      "number": "16",
-      "position": "Right Winger"
+      "number": "24",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Dec 31, 2026",
-      "dateOfBirth": "Oct 11, 1994",
-      "foot": "right",
-      "height": "1,88m",
-      "id": "592347",
-      "marketValue": "€3.00m",
-      "name": "Júnior Santos",
+      "dateOfBirth": "Jan 9, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "789856",
+      "name": "Caio Roque",
       "nationality": [
         "Brazil"
       ],
-      "number": "17",
-      "position": "Right Winger"
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 29, 2001",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "808509",
+      "marketValue": "€24.00m",
+      "name": "Danilo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 12, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "811219",
+      "marketValue": "€3.00m",
+      "name": "Newton",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "28",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 24, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "856047",
+      "marketValue": "€2.00m",
+      "name": "Mateo Ponte",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "4",
+      "position": "Right-Back"
     },
     {
       "contract": "Dec 31, 2029",
@@ -416,47 +348,115 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Aug 13, 1994",
+      "dateOfBirth": "Jul 22, 2004",
       "foot": "right",
-      "height": "1,88m",
-      "id": "227081",
+      "height": "1,93m",
+      "id": "980854",
+      "marketValue": "€300k",
+      "name": "Ythallo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 9, 2006",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1074501",
+      "marketValue": "€350k",
+      "name": "Cristhian Loor",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "40",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 16, 2005",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1083600",
+      "marketValue": "€4.00m",
+      "name": "Nathan Fernandes",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "16",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 11, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1087334",
       "marketValue": "€2.00m",
-      "name": "Joaquín Correa",
+      "name": "Jordan Barrera",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 23, 2030",
+      "dateOfBirth": "Jul 12, 2005",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "1092623",
+      "marketValue": "€300k",
+      "name": "Anthony",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 20, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1112486",
+      "marketValue": "€150k",
+      "name": "Jhoan Hernández",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "67",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 17, 2007",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1228194",
+      "marketValue": "€10.00m",
+      "name": "Álvaro Montoro",
       "nationality": [
         "Argentina",
         "Italy"
       ],
-      "number": "30",
-      "position": "Second Striker"
+      "number": "10",
+      "position": "Left Winger"
     },
     {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Apr 25, 1998",
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 10, 2007",
       "foot": "right",
-      "height": "1,86m",
-      "id": "390638",
-      "marketValue": "€8.00m",
-      "name": "Arthur Cabral",
+      "height": "1,85m",
+      "id": "1279908",
+      "marketValue": "€1.00m",
+      "name": "Wallace Davi",
       "nationality": [
         "Brazil"
       ],
-      "number": "19",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jan 18, 1997",
-      "foot": "right",
-      "height": "1,90m",
-      "id": "538810",
-      "marketValue": "€2.50m",
-      "name": "Chris Ramos",
-      "nationality": [
-        "Spain",
-        "United States"
-      ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "55",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Dec 31, 2029",

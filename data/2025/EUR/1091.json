@@ -3,90 +3,6 @@
   "name": "PAOK Thessaloniki",
   "players": [
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Apr 14, 1992",
-      "foot": "right",
-      "height": "1,96m",
-      "id": "260053",
-      "marketValue": "€800k",
-      "name": "Jiri Pavlenka",
-      "nationality": [
-        "Czech Republic"
-      ],
-      "number": "1",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Jul 21, 1999",
-      "foot": "both",
-      "height": "1,91m",
-      "id": "390539",
-      "marketValue": "€600k",
-      "name": "Antonis Tsiftsis",
-      "nationality": [
-        "Greece"
-      ],
-      "number": "99",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Mar 22, 2004",
-      "foot": "right",
-      "height": "1,92m",
-      "id": "733581",
-      "marketValue": "€250k",
-      "name": "Dimitrios Monastirlis",
-      "nationality": [
-        "Greece"
-      ],
-      "number": "41",
-      "position": "Goalkeeper"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 18, 2000",
-      "foot": "left",
-      "height": "1,88m",
-      "id": "464528",
-      "marketValue": "€3.00m",
-      "name": "Giannis Michailidis",
-      "nationality": [
-        "Greece"
-      ],
-      "number": "5",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Sep 14, 1998",
-      "foot": "right",
-      "height": "1,86m",
-      "id": "330208",
-      "marketValue": "€2.50m",
-      "name": "Alessandro Vogliacco",
-      "nationality": [
-        "Italy"
-      ],
-      "number": "4",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jun 11, 1994",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "181118",
-      "marketValue": "€2.00m",
-      "name": "Tomasz Kedziora",
-      "nationality": [
-        "Poland"
-      ],
-      "number": "16",
-      "position": "Centre-Back"
-    },
-    {
       "contract": "Jun 30, 2026",
       "dateOfBirth": "Jul 5, 1989",
       "foot": "right",
@@ -101,88 +17,32 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "May 29, 2007",
-      "height": "1,89m",
-      "id": "1076199",
-      "marketValue": "€200k",
-      "name": "Dimitrios Bataoulas",
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 13, 1988",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "76028",
+      "marketValue": "€275k",
+      "name": "Taison",
       "nationality": [
-        "Greece"
+        "Brazil"
       ],
-      "number": "97",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Nov 5, 1997",
-      "foot": "left",
-      "height": "1,71m",
-      "id": "362562",
-      "marketValue": "€5.00m",
-      "name": "Greg Taylor",
-      "nationality": [
-        "Scotland"
-      ],
-      "number": "32",
-      "position": "Left-Back"
+      "number": "11",
+      "position": "Left Winger"
     },
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jul 2, 1994",
-      "foot": "left",
-      "height": "1,79m",
-      "id": "224884",
-      "marketValue": "€2.00m",
-      "name": "Abdul Rahman Baba",
-      "nationality": [
-        "Ghana"
-      ],
-      "number": "21",
-      "position": "Left-Back"
-    },
-    {
-      "contract": "Jun 30, 2028",
-      "dateOfBirth": "Mar 15, 1997",
+      "dateOfBirth": "Nov 5, 1992",
       "foot": "right",
-      "height": "1,76m",
-      "id": "258883",
-      "marketValue": "€2.50m",
-      "name": "Jonjoe Kenny",
+      "height": "1,84m",
+      "id": "137206",
+      "marketValue": "€1.50m",
+      "name": "Magomed Ozdoev",
       "nationality": [
-        "England",
-        "Ireland"
+        "Russia"
       ],
-      "number": "3",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2029",
-      "dateOfBirth": "Dec 10, 1997",
-      "foot": "right",
-      "height": "1,81m",
-      "id": "356044",
-      "marketValue": "€2.20m",
-      "name": "Jorge Sánchez",
-      "nationality": [
-        "Mexico"
-      ],
-      "number": "35",
-      "position": "Right-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Apr 30, 1997",
-      "foot": "right",
-      "height": "1,74m",
-      "id": "350364",
-      "marketValue": "€1.00m",
-      "name": "Joan Sastre",
-      "nationality": [
-        "Spain"
-      ],
-      "number": "23",
-      "position": "Right-Back"
+      "number": "27",
+      "position": "Defensive Midfield"
     },
     {
       "contract": "Jun 30, 2026",
@@ -201,17 +61,242 @@
     },
     {
       "contract": "Jun 30, 2026",
-      "dateOfBirth": "Nov 5, 1992",
+      "dateOfBirth": "Jun 11, 1994",
       "foot": "right",
       "height": "1,84m",
-      "id": "137206",
-      "marketValue": "€1.50m",
-      "name": "Magomed Ozdoev",
+      "id": "181118",
+      "marketValue": "€2.00m",
+      "name": "Tomasz Kedziora",
       "nationality": [
-        "Russia"
+        "Poland"
       ],
-      "number": "27",
-      "position": "Defensive Midfield"
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 12, 1993",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "205760",
+      "marketValue": "€800k",
+      "name": "Alexander Jeremejeff",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 11, 1996",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "206843",
+      "marketValue": "€8.00m",
+      "name": "Andrija Zivkovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 26, 1993",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "212832",
+      "marketValue": "€1.50m",
+      "name": "Dimitrios Pelkas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 11, 1996",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "221540",
+      "marketValue": "€6.00m",
+      "name": "Kiril Despodov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 2, 1994",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "224884",
+      "marketValue": "€2.00m",
+      "name": "Abdul Rahman Baba",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 9, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "234850",
+      "marketValue": "€7.00m",
+      "name": "Georgios Giakoumakis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 15, 1997",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "258883",
+      "marketValue": "€2.50m",
+      "name": "Jonjoe Kenny",
+      "nationality": [
+        "England",
+        "Ireland"
+      ],
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 14, 1992",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "260053",
+      "marketValue": "€800k",
+      "name": "Jiri Pavlenka",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 14, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "330208",
+      "marketValue": "€2.50m",
+      "name": "Alessandro Vogliacco",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 30, 1997",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "350364",
+      "marketValue": "€1.00m",
+      "name": "Joan Sastre",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 10, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "356044",
+      "marketValue": "€2.20m",
+      "name": "Jorge Sánchez",
+      "nationality": [
+        "Mexico"
+      ],
+      "number": "35",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 5, 1997",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "362562",
+      "marketValue": "€5.00m",
+      "name": "Greg Taylor",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 26, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "387105",
+      "marketValue": "€3.50m",
+      "name": "Luka Ivanušec",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 21, 1999",
+      "foot": "both",
+      "height": "1,91m",
+      "id": "390539",
+      "marketValue": "€600k",
+      "name": "Antonis Tsiftsis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 18, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "464528",
+      "marketValue": "€3.00m",
+      "name": "Giannis Michailidis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 28, 1997",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "481173",
+      "marketValue": "€7.00m",
+      "name": "Mady Camara",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "2",
+      "position": "Central Midfield"
     },
     {
       "contract": "Jun 30, 2027",
@@ -244,16 +329,16 @@
     },
     {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Feb 28, 1997",
+      "dateOfBirth": "Jun 21, 2002",
       "foot": "right",
-      "height": "1,82m",
-      "id": "481173",
-      "marketValue": "€7.00m",
-      "name": "Mady Camara",
+      "height": "1,75m",
+      "id": "591797",
+      "marketValue": "€350k",
+      "name": "Dimitrios Tsopouroglou",
       "nationality": [
-        "Guinea"
+        "Greece"
       ],
-      "number": "2",
+      "number": "33",
       "position": "Central Midfield"
     },
     {
@@ -271,20 +356,6 @@
       "position": "Central Midfield"
     },
     {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jun 21, 2002",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "591797",
-      "marketValue": "€350k",
-      "name": "Dimitrios Tsopouroglou",
-      "nationality": [
-        "Greece"
-      ],
-      "number": "33",
-      "position": "Central Midfield"
-    },
-    {
       "contract": "Jun 30, 2029",
       "dateOfBirth": "Mar 5, 2003",
       "foot": "both",
@@ -299,87 +370,18 @@
       "position": "Attacking Midfield"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Nov 26, 1998",
-      "foot": "right",
-      "height": "1,75m",
-      "id": "387105",
-      "marketValue": "€3.50m",
-      "name": "Luka Ivanušec",
-      "nationality": [
-        "Croatia"
-      ],
-      "number": "18",
-      "position": "Attacking Midfield"
-    },
-    {
       "contract": "Jun 30, 2027",
-      "dateOfBirth": "Oct 26, 1993",
+      "dateOfBirth": "Mar 22, 2004",
       "foot": "right",
-      "height": "1,75m",
-      "id": "212832",
-      "marketValue": "€1.50m",
-      "name": "Dimitrios Pelkas",
+      "height": "1,92m",
+      "id": "733581",
+      "marketValue": "€250k",
+      "name": "Dimitrios Monastirlis",
       "nationality": [
         "Greece"
       ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Jan 13, 1988",
-      "foot": "right",
-      "height": "1,72m",
-      "id": "76028",
-      "marketValue": "€275k",
-      "name": "Taison",
-      "nationality": [
-        "Brazil"
-      ],
-      "number": "11",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "May 27, 2008",
-      "height": "1,76m",
-      "id": "1143479",
-      "marketValue": "€200k",
-      "name": "Dimitrios Berdos",
-      "nationality": [
-        "Greece"
-      ],
-      "number": "39",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Jul 11, 1996",
-      "foot": "left",
-      "height": "1,69m",
-      "id": "206843",
-      "marketValue": "€8.00m",
-      "name": "Andrija Zivkovic",
-      "nationality": [
-        "Serbia"
-      ],
-      "number": "14",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Nov 11, 1996",
-      "foot": "right",
-      "height": "1,80m",
-      "id": "221540",
-      "marketValue": "€6.00m",
-      "name": "Kiril Despodov",
-      "nationality": [
-        "Bulgaria"
-      ],
-      "number": "77",
-      "position": "Right Winger"
+      "number": "41",
+      "position": "Goalkeeper"
     },
     {
       "contract": "Jun 30, 2028",
@@ -396,32 +398,17 @@
       "position": "Right Winger"
     },
     {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Dec 9, 1994",
-      "foot": "right",
-      "height": "1,85m",
-      "id": "234850",
-      "marketValue": "€7.00m",
-      "name": "Georgios Giakoumakis",
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 29, 2007",
+      "height": "1,89m",
+      "id": "1076199",
+      "marketValue": "€200k",
+      "name": "Dimitrios Bataoulas",
       "nationality": [
         "Greece"
       ],
-      "number": "7",
-      "position": "Centre-Forward"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Oct 12, 1993",
-      "foot": "right",
-      "height": "1,92m",
-      "id": "205760",
-      "marketValue": "€800k",
-      "name": "Alexander Jeremejeff",
-      "nationality": [
-        "Sweden"
-      ],
-      "number": "19",
-      "position": "Centre-Forward"
+      "number": "97",
+      "position": "Centre-Back"
     },
     {
       "contract": "Jun 30, 2028",
@@ -436,6 +423,19 @@
       ],
       "number": "56",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 27, 2008",
+      "height": "1,76m",
+      "id": "1143479",
+      "marketValue": "€200k",
+      "name": "Dimitrios Berdos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "39",
+      "position": "Left Winger"
     }
   ],
   "stadiumName": "Toumba Stadium",

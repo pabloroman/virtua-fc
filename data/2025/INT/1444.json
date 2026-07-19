@@ -4,6 +4,79 @@
   "country": "AR",
   "players": [
     {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 20, 1990",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "93176",
+      "marketValue": "€225k",
+      "name": "Marcos Rojo",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 2, 1993",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "115507",
+      "marketValue": "€600k",
+      "name": "Bruno Zuculini",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "36",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 26, 1992",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "269793",
+      "marketValue": "€650k",
+      "name": "Agustín García Basso",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 30, 1998",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "401571",
+      "marketValue": "€2.50m",
+      "name": "Tomás Conechny",
+      "nationality": [
+        "Argentina",
+        "Poland"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 9, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "413658",
+      "marketValue": "€2.80m",
+      "name": "Duván Vergara",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
       "contract": "Dec 31, 2027",
       "dateOfBirth": "Apr 9, 1997",
       "foot": "right",
@@ -17,6 +90,34 @@
       ],
       "number": "25",
       "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 22, 1997",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "471639",
+      "marketValue": "€4.00m",
+      "name": "Gabriel Rojas",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 10, 1998",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "480774",
+      "marketValue": "€3.50m",
+      "name": "Matías Zaracho",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Dec 31, 2026",
@@ -34,31 +135,47 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "Apr 6, 2004",
+      "dateOfBirth": "May 3, 1999",
       "foot": "right",
-      "height": "1,87m",
-      "id": "997500",
-      "name": "Francisco Gómez",
+      "height": "1,82m",
+      "id": "576026",
+      "marketValue": "€8.00m",
+      "name": "Santiago Sosa",
+      "nationality": [
+        "Argentina",
+        "Croatia"
+      ],
+      "number": "13",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 7, 1992",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "598769",
+      "marketValue": "€3.20m",
+      "name": "Adrián Martínez",
       "nationality": [
         "Argentina"
       ],
-      "number": "1",
-      "position": "Goalkeeper"
+      "number": "9",
+      "position": "Centre-Forward"
     },
     {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jan 30, 2002",
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 9, 2001",
       "foot": "right",
-      "height": "1,86m",
-      "id": "839029",
-      "marketValue": "€6.00m",
-      "name": "Marco Di Césare",
+      "height": "1,76m",
+      "id": "632797",
+      "marketValue": "€5.00m",
+      "name": "Matko Miljevic",
       "nationality": [
-        "Argentina",
-        "Italy"
+        "United States",
+        "Argentina"
       ],
-      "number": "3",
-      "position": "Centre-Back"
+      "number": "10",
+      "position": "Attacking Midfield"
     },
     {
       "contract": "Dec 31, 2027",
@@ -89,63 +206,6 @@
       "position": "Centre-Back"
     },
     {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 26, 1992",
-      "foot": "left",
-      "height": "1,78m",
-      "id": "269793",
-      "marketValue": "€650k",
-      "name": "Agustín García Basso",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "2",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Jun 30, 2026",
-      "dateOfBirth": "Mar 20, 1990",
-      "foot": "left",
-      "height": "1,86m",
-      "id": "93176",
-      "marketValue": "€225k",
-      "name": "Marcos Rojo",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "6",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Apr 1, 2007",
-      "foot": "left",
-      "height": "1,87m",
-      "id": "1119049",
-      "marketValue": "€50k",
-      "name": "Gonzalo Escudero",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "43",
-      "position": "Centre-Back"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jun 22, 1997",
-      "foot": "left",
-      "height": "1,73m",
-      "id": "471639",
-      "marketValue": "€4.00m",
-      "name": "Gabriel Rojas",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "27",
-      "position": "Left-Back"
-    },
-    {
       "contract": "Dec 31, 2027",
       "dateOfBirth": "Jan 5, 2000",
       "foot": "right",
@@ -158,6 +218,36 @@
       ],
       "number": "15",
       "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 5, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "787618",
+      "marketValue": "€8.50m",
+      "name": "Valentín Carboni",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "21",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 30, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "839029",
+      "marketValue": "€6.00m",
+      "name": "Marco Di Césare",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
     },
     {
       "contract": "Dec 31, 2026",
@@ -190,119 +280,17 @@
     },
     {
       "contract": "Dec 31, 2027",
-      "dateOfBirth": "May 3, 1999",
+      "dateOfBirth": "Jan 19, 1998",
       "foot": "right",
-      "height": "1,82m",
-      "id": "576026",
-      "marketValue": "€8.00m",
-      "name": "Santiago Sosa",
-      "nationality": [
-        "Argentina",
-        "Croatia"
-      ],
-      "number": "13",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Jan 28, 2005",
-      "foot": "right",
-      "height": "1,84m",
-      "id": "1240382",
-      "marketValue": "€600k",
-      "name": "Alan Forneris",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "8",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "-",
-      "dateOfBirth": "Apr 2, 1993",
-      "foot": "right",
-      "height": "1,82m",
-      "id": "115507",
-      "marketValue": "€600k",
-      "name": "Bruno Zuculini",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "36",
-      "position": "Defensive Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Feb 22, 2002",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "881014",
-      "marketValue": "€1.20m",
-      "name": "Ignacio Rodríguez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "19",
-      "position": "Left Midfield"
-    },
-    {
-      "contract": "Dec 31, 2026",
-      "dateOfBirth": "Mar 5, 2005",
-      "foot": "left",
-      "height": "1,85m",
-      "id": "787618",
-      "marketValue": "€8.50m",
-      "name": "Valentín Carboni",
-      "nationality": [
-        "Argentina",
-        "Italy"
-      ],
-      "number": "21",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "May 9, 2001",
-      "foot": "right",
-      "height": "1,76m",
-      "id": "632797",
-      "marketValue": "€5.00m",
-      "name": "Matko Miljevic",
-      "nationality": [
-        "United States",
-        "Argentina"
-      ],
-      "number": "10",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jul 9, 2003",
-      "foot": "right",
-      "height": "1,73m",
-      "id": "1015246",
-      "marketValue": "€4.50m",
-      "name": "Baltasar Rodríguez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "20",
-      "position": "Attacking Midfield"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Mar 10, 1998",
-      "foot": "right",
-      "height": "1,71m",
-      "id": "480774",
+      "height": "1,78m",
+      "id": "866059",
       "marketValue": "€3.50m",
-      "name": "Matías Zaracho",
+      "name": "Santiago Solari",
       "nationality": [
         "Argentina"
       ],
-      "number": "11",
-      "position": "Attacking Midfield"
+      "number": "28",
+      "position": "Right Winger"
     },
     {
       "contract": "Dec 31, 2029",
@@ -320,60 +308,17 @@
     },
     {
       "contract": "Dec 31, 2028",
-      "dateOfBirth": "Sep 9, 1996",
-      "foot": "right",
-      "height": "1,77m",
-      "id": "413658",
-      "marketValue": "€2.80m",
-      "name": "Duván Vergara",
-      "nationality": [
-        "Colombia"
-      ],
-      "number": "7",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2029",
-      "dateOfBirth": "Mar 30, 1998",
+      "dateOfBirth": "Feb 22, 2002",
       "foot": "left",
       "height": "1,76m",
-      "id": "401571",
-      "marketValue": "€2.50m",
-      "name": "Tomás Conechny",
-      "nationality": [
-        "Argentina",
-        "Poland"
-      ],
-      "number": "17",
-      "position": "Left Winger"
-    },
-    {
-      "contract": "Dec 31, 2027",
-      "dateOfBirth": "Jan 19, 1998",
-      "foot": "right",
-      "height": "1,78m",
-      "id": "866059",
-      "marketValue": "€3.50m",
-      "name": "Santiago Solari",
+      "id": "881014",
+      "marketValue": "€1.20m",
+      "name": "Ignacio Rodríguez",
       "nationality": [
         "Argentina"
       ],
-      "number": "28",
-      "position": "Right Winger"
-    },
-    {
-      "contract": "Dec 31, 2028",
-      "dateOfBirth": "Jul 7, 1992",
-      "foot": "left",
-      "height": "1,76m",
-      "id": "598769",
-      "marketValue": "€3.20m",
-      "name": "Adrián Martínez",
-      "nationality": [
-        "Argentina"
-      ],
-      "number": "9",
-      "position": "Centre-Forward"
+      "number": "19",
+      "position": "Left Midfield"
     },
     {
       "contract": "Dec 31, 2026",
@@ -390,6 +335,19 @@
       "position": "Centre-Forward"
     },
     {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 6, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "997500",
+      "name": "Francisco Gómez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
       "contract": "Dec 31, 2029",
       "dateOfBirth": "Mar 2, 2001",
       "foot": "right",
@@ -404,6 +362,34 @@
       "position": "Centre-Forward"
     },
     {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 9, 2003",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "1015246",
+      "marketValue": "€4.50m",
+      "name": "Baltasar Rodríguez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 1, 2007",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "1119049",
+      "marketValue": "€50k",
+      "name": "Gonzalo Escudero",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
       "contract": "-",
       "dateOfBirth": "Apr 27, 2006",
       "foot": "right",
@@ -416,6 +402,20 @@
       ],
       "number": "58",
       "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 28, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1240382",
+      "marketValue": "€600k",
+      "name": "Alan Forneris",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
     }
   ],
   "stadiumName": "Presidente Perón",

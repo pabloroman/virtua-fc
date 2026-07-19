@@ -1,22 +1,23 @@
 {
-    "id": "ESPSUP",
-    "name": "Supercopa de España",
-    "clubs": [
-        {
-            "id": "418",
-            "name": "Real Madrid"
-        },
-        {
-            "id": "131",
-            "name": "FC Barcelona"
-        },
-        {
-            "id": "13",
-            "name": "Atlético de Madrid"
-        },
-        {
-            "id": "621",
-            "name": "Athletic Club"
-        }
-    ]
+  "id": "ESPSUP",
+  "name": "Supercopa de España",
+  "seasonID": "2025",
+  "clubs": [
+    {
+      "id": "13",
+      "name": "Atlético de Madrid"
+    },
+    {
+      "id": "131",
+      "name": "FC Barcelona"
+    },
+    {
+      "id": "418",
+      "name": "Real Madrid"
+    },
+    {
+      "id": "621",
+      "name": "Athletic Club"
+    }
+  ]
 }
