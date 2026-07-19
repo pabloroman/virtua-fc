@@ -1,0 +1,50 @@
+key_transfermarkt,key_sofascore,name
+# Manual Transfermarkt-id -> Sofascore-id overrides for season 2025.
+# This file is TRACKED in git and is NOT touched by the people.csv provider import,
+# so mappings here survive every re-import. Values here WIN over people.csv.
+# The `name` column is for humans only; app:build-sofascore-id-map ignores it.
+# Fill key_sofascore (numeric Sofascore player id) then run:
+#   php artisan app:build-sofascore-id-map
+# Rows with a blank key_sofascore are skipped (no-op) until you fill them.
+# --- ESP1 players present in people.csv but with a blank key_sofascore ---
+411295,831005,"Raphinha"
+289255,866810,"Andoni Gorosabel"
+176553,149734,"Aymeric Laporte"
+255508,783374,"Iñaki Williams"
+1038512,1399702,"Asier Osambela"
+1065442,1495856,"Iñigo Arguibide"
+552425,976141,"Jon Moncayola"
+248738,294377,"Sergio Herrera"
+935232,1639543,"Aitor Mañas"
+431190,873717,"Carlos Protesoni"
+1124136,1513222,"Ángel Pérez"
+1064506,1518971,"Adam Boayar"
+549027,1100646,"Martim Neto"
+203043,141832,"Pedro Bigas"
+361254,825754,"Rafa Mir"
+196948,186795,"Andreas Christensen"
+938144,1402907,"Diego Kochen"
+341263,,"Adrián Dela"
+1063340,1649919,"Kareem Tunde"
+617059,2660173,"Pablo Campos"
+1232057,1869106,"Paco Cortés"
+112515,69408,"Marcos Alonso"
+243879,758664,"Charles Pickel"
+625651,1064009,"Urko González de Zárate"
+628487,1082734,"Ángel Fortuño"
+177452,146852,"Abdón Prats"
+947431,1513896,"David López"
+455181,900003,"Jorge de Frutos"
+1384911,2198232,"Samu Becerra"
+505674,910024,"Sergio Camello"
+961087,1893910,"Pablo García"
+1375227,2237795,"Thiago Pitarch"
+337284,,"Ovie Ejaria"
+1081496,1587199,"Pablo Agudín"
+929899,,"Rahim Alhassane"
+1064105,2509247,"Miguel Ángel Sierra"
+1032280,,"Oso"
+268642,345195,"Renzo Saravia"
+246968,,"Ayoze Pérez"
+1331450,1966890,"Hugo López"
+484988,911853,"Logan Costa"

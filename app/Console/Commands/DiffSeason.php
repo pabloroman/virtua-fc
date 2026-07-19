@@ -39,8 +39,14 @@ class DiffSeason extends Command
             return self::FAILURE;
         }
         if (!is_dir(base_path("data/{$from}"))) {
-            $this->error("Comparison folder not found: data/{$from}");
-            return self::FAILURE;
+            // No prior season to compare against (e.g. a PR that edits the
+            // earliest season folder). There's nothing to diff, so emit a benign
+            // note and succeed rather than failing the season-data CI job.
+            $this->line($format === 'md'
+                ? "**Season data {$season}** — no comparison baseline (`data/{$from}` not found)."
+                : "No comparison baseline: data/{$from} not found; nothing to diff.");
+
+            return self::SUCCESS;
         }
 
         $sections = [];
