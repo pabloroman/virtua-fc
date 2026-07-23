@@ -7,7 +7,11 @@ use Tests\TestCase;
 
 class NormalizeSeasonCommandTest extends TestCase
 {
-    private string $season = '2099';
+    // Throwaway year, kept disjoint from the other console-command tests that
+    // write to the shared base_path('data') tree (Scaffold 2098/2099, Diff
+    // 2094/2095, Validate 2096): under `test --parallel` they run in separate
+    // processes but share the same data/ folder, so overlapping years race.
+    private string $season = '2097';
 
     protected function tearDown(): void
     {
