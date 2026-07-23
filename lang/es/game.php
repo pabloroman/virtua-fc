@@ -412,8 +412,6 @@ return [
     'start_game' => 'Iniciar Partida',
     'start_tournament' => 'Iniciar Torneo',
 
-    'tournament_history' => 'Historial de Torneos',
-
     // Game modes
     'mode_all' => 'Todos',
     'mode_career' => 'Club Manager',

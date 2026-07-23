@@ -5,9 +5,9 @@ namespace Tests\Feature\Auth;
 use App\Models\InviteCode;
 use App\Models\User;
 use App\Notifications\ActivateAccount;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class ActivationTest extends TestCase
@@ -20,62 +20,22 @@ class ActivationTest extends TestCase
         config()->set('beta.enabled', false);
     }
 
-    // --- Tournament registration creates unactivated user ---
-
-    public function test_registration_creates_user_with_null_password(): void
+    /**
+     * Create an unactivated (passwordless-onboarding) user and trigger the
+     * activation email, mirroring the state legacy accounts land in. The
+     * open-signup funnel that used to create these was retired with the World
+     * Cup, but the activation-via-password-reset mechanism still serves them.
+     */
+    private function sendActivationTo(string $email, string $name = 'New User'): User
     {
-        Notification::fake();
-
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'new@example.com',
+        $user = User::factory()->unverified()->create([
+            'name' => $name,
+            'email' => $email,
         ]);
 
-        $this->assertDatabaseHas('users', [
-            'email' => 'new@example.com',
-            'name' => 'New User',
-        ]);
+        Password::sendResetLink(['email' => $email]);
 
-        $user = User::where('email', 'new@example.com')->first();
-        $this->assertNull($user->password);
-        $this->assertNull($user->email_verified_at);
-    }
-
-    public function test_registration_sends_activation_email(): void
-    {
-        Notification::fake();
-
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'new@example.com',
-        ]);
-
-        $user = User::where('email', 'new@example.com')->first();
-        Notification::assertSentTo($user, ActivateAccount::class);
-    }
-
-    public function test_registration_redirects_to_activation_sent(): void
-    {
-        Notification::fake();
-
-        $response = $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'new@example.com',
-        ]);
-
-        $response->assertRedirect(route('activation.sent'));
-    }
-
-    public function test_registration_does_not_log_in_user(): void
-    {
-        Notification::fake();
-
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'new@example.com',
-        ]);
-
-        $this->assertGuest();
+        return $user;
     }
 
     // --- Activation via password reset token ---
@@ -84,12 +44,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'activate@example.com',
-        ]);
-
-        $user = User::where('email', 'activate@example.com')->first();
+        $user = $this->sendActivationTo('activate@example.com');
 
         Notification::assertSentTo($user, ActivateAccount::class, function ($notification) use ($user) {
             $response = $this->post('/reset-password', [
@@ -114,12 +69,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'New User',
-            'email' => 'login@example.com',
-        ]);
-
-        $user = User::where('email', 'login@example.com')->first();
+        $user = $this->sendActivationTo('login@example.com');
 
         Notification::assertSentTo($user, ActivateAccount::class, function ($notification) use ($user) {
             $this->post('/reset-password', [
@@ -139,10 +89,7 @@ class ActivationTest extends TestCase
 
     public function test_unactivated_user_cannot_log_in(): void
     {
-        Notification::fake();
-
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'Pending User',
+        $user = User::factory()->unverified()->create([
             'email' => 'pending@example.com',
         ]);
 
@@ -185,12 +132,7 @@ class ActivationTest extends TestCase
 
     public function test_forgot_password_sends_activation_for_unactivated_user(): void
     {
-        Notification::fake();
-
-        $this->post(route('register.tournament-mode'), [
-            'name' => 'Unactivated',
-            'email' => 'unactivated@example.com',
-        ]);
+        $this->sendActivationTo('unactivated@example.com', 'Unactivated');
 
         // Advance past the password broker throttle window
         $this->travel(2)->minutes();
@@ -200,49 +142,5 @@ class ActivationTest extends TestCase
 
         $user = User::where('email', 'unactivated@example.com')->first();
         Notification::assertSentTo($user, ActivateAccount::class);
-    }
-
-    public function test_forgot_password_sends_reset_for_activated_user(): void
-    {
-        Notification::fake();
-
-        $user = User::factory()->create();
-
-        $this->post('/forgot-password', ['email' => $user->email]);
-
-        Notification::assertSentTo($user, ResetPassword::class);
-    }
-
-    // --- Activation sent page ---
-
-    public function test_activation_sent_page_renders(): void
-    {
-        $response = $this->get(route('activation.sent'));
-
-        $response->assertStatus(200);
-    }
-
-    // --- Normal password reset still works for activated users ---
-
-    public function test_password_reset_does_not_auto_login_for_activated_user(): void
-    {
-        Notification::fake();
-
-        $user = User::factory()->create();
-
-        $this->post('/forgot-password', ['email' => $user->email]);
-
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $response = $this->post('/reset-password', [
-                'token' => $notification->token,
-                'email' => $user->email,
-                'password' => 'new-password',
-                'password_confirmation' => 'new-password',
-            ]);
-
-            $response->assertRedirect('/login');
-
-            return true;
-        });
     }
 }

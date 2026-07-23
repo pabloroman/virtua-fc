@@ -59,7 +59,9 @@ final class SelectTeam
         // Load World Cup teams for tournament mode
         $wcTeams = collect();
         $wcFeaturedTeams = collect();
-        $hasTournamentMode = $request->user()->canPlayTournamentMode() && Competition::where('id', 'WC2026')->exists();
+        $hasTournamentMode = config('game.tournament_mode_enabled')
+            && $request->user()->canPlayTournamentMode()
+            && Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
             $locale = app()->getLocale();

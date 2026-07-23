@@ -412,8 +412,6 @@ return [
     'start_game' => 'Start Game',
     'start_tournament' => 'Start Tournament',
 
-    'tournament_history' => 'Tournament History',
-
     // Game modes
     'mode_all' => 'All',
     'mode_career' => 'Club Manager',

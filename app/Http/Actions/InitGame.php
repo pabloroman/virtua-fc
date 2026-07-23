@@ -38,7 +38,8 @@ class InitGame
             return back()->withErrors(['game_mode' => __('messages.career_mode_requires_invite')]);
         }
 
-        if ($gameMode === Game::MODE_TOURNAMENT && ! $request->user()->canPlayTournamentMode()) {
+        if ($gameMode === Game::MODE_TOURNAMENT
+            && (! config('game.tournament_mode_enabled') || ! $request->user()->canPlayTournamentMode())) {
             return back()->withErrors(['game_mode' => __('messages.tournament_mode_requires_access')]);
         }
 
