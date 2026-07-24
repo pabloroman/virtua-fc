@@ -19,10 +19,6 @@ Route::middleware('guest')->group(function () {
         ->middleware(['beta.invite'])
         ->name('register.career-mode');
 
-    Route::post('register/tournament', [RegisteredUserController::class, 'storeTournamentModeRegistration'])
-        ->middleware(['throttle:3,1'])
-        ->name('register.tournament-mode');
-
     Route::get('activation/sent', fn () => view('auth.activation-sent'))
         ->name('activation.sent');
 

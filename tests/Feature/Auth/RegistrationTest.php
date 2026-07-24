@@ -3,8 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\InviteCode;
-use App\Models\User;
-use App\Models\WaitlistEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -13,34 +11,15 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    // --- Open registration ---
+    // --- Registration is invite-only ---
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_without_invite_redirects_to_login(): void
     {
         config()->set('beta.enabled', false);
 
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
-    }
-
-    public function test_new_users_can_register(): void
-    {
-        Notification::fake();
-        config()->set('beta.enabled', false);
-
-        $response = $this->post(route('register.tournament-mode'), [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
-            'has_career_access' => false,
-            'has_tournament_access' => true,
-        ]);
+        $response->assertRedirect(route('login'));
     }
 
     // --- Beta registration (BETA_MODE=true) ---
@@ -235,26 +214,7 @@ class RegistrationTest extends TestCase
         ]);
     }
 
-    // --- Career access via invite code (open registration) ---
-
-    public function test_registration_without_invite_does_not_grant_career_access(): void
-    {
-        Notification::fake();
-        config()->set('beta.enabled', false);
-
-        $response = $this->post(route('register.tournament-mode'), [
-            'name' => 'No Invite',
-            'email' => 'noinvite@example.com',
-        ]);
-
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
-            'email' => 'noinvite@example.com',
-            'has_career_access' => false,
-            'has_tournament_access' => true,
-        ]);
-    }
+    // --- Career access via invite code ---
 
     public function test_registration_with_valid_invite_grants_tournament_access(): void
     {

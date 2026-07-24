@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -22,7 +21,7 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
         $invite = InviteCode::findByCode($request->query('invite'));
 
@@ -34,9 +33,12 @@ class RegisteredUserController extends Controller
                 'name' => $name ?? null,
                 'email' => $invite->email ?? null,
             ]);
-        } else {
-            return view('auth.register-tournament-mode');
         }
+
+        // Registration is invite-only. The World Cup open-signup funnel that
+        // previously served the no-invite path has been retired.
+        return redirect()->route('login')
+            ->with('status', __('beta.registration_closed'));
     }
 
     /**
@@ -83,35 +85,5 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
-    }
-
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function storeTournamentModeRegistration(Request $request): RedirectResponse
-    {
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
-        ];
-
-        $request->validate($rules);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'has_career_access' => false,
-            'has_tournament_access' => true,
-        ]);
-
-        event(new Registered($user));
-
-        app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
-
-        Password::sendResetLink(['email' => $user->email]);
-
-        return redirect()->route('activation.sent');
     }
 }
