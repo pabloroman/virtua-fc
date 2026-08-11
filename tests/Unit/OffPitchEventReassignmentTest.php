@@ -125,6 +125,69 @@ class OffPitchEventReassignmentTest extends TestCase
         }
     }
 
+    public function test_a_player_never_receives_two_yellows_without_being_sent_off(): void
+    {
+        // Crank yellows and injuries to maximise the chance of the reassignment
+        // pass landing a "redirected" yellow on a teammate who was already
+        // booked earlier in the match. Without the second-yellow check inside
+        // reassignEventsFromUnavailablePlayers, this would produce two yellow
+        // events on the same player with no accompanying red.
+        config([
+            'match_simulation.injury_chance' => 100,
+            'match_simulation.yellow_cards_per_team' => 6,
+        ]);
+
+        $game = Game::factory()->create(['current_date' => '2025-10-01']);
+        $homeTeam = Team::factory()->create();
+        $awayTeam = Team::factory()->create();
+
+        $homePlayers = $this->createLineup($game, $homeTeam, 11, 75);
+        $awayPlayers = $this->createLineup($game, $awayTeam, 11, 75);
+        $homeBench = $this->createBenchPlayers($game, $homeTeam, 7, 72);
+        $awayBench = $this->createBenchPlayers($game, $awayTeam, 7, 72);
+
+        for ($i = 0; $i < 30; $i++) {
+            $output = $this->simulator->simulate(
+                $homeTeam, $awayTeam,
+                $homePlayers, $awayPlayers,
+                Formation::F_4_4_2, Formation::F_4_4_2,
+                Mentality::BALANCED, Mentality::BALANCED,
+                $game,
+                homeBenchPlayers: $homeBench,
+                awayBenchPlayers: $awayBench,
+            );
+
+            $yellowsByPlayer = [];
+            $redsByPlayer = [];
+            foreach ($output->result->events as $event) {
+                if ($event->type === 'yellow_card') {
+                    $yellowsByPlayer[$event->gamePlayerId] = ($yellowsByPlayer[$event->gamePlayerId] ?? 0) + 1;
+                } elseif ($event->type === 'red_card') {
+                    $redsByPlayer[$event->gamePlayerId] = true;
+                }
+            }
+
+            foreach ($yellowsByPlayer as $playerId => $count) {
+                $this->assertLessThanOrEqual(
+                    1,
+                    $count,
+                    "Player $playerId received $count yellow cards in a single match without being expelled (iteration $i). A second yellow must convert into a red_card with second_yellow=true.",
+                );
+
+                if ($count >= 2) {
+                    // Belt-and-braces: even if the count assertion above were to
+                    // be relaxed in the future, two yellows must still be
+                    // accompanied by a red card for the same player.
+                    $this->assertArrayHasKey(
+                        $playerId,
+                        $redsByPlayer,
+                        "Player $playerId has $count yellow cards but no red_card event (iteration $i).",
+                    );
+                }
+            }
+        }
+    }
+
     /**
      * Assert that no gameplay event occurs after the player was subbed off.
      *
