@@ -10,7 +10,7 @@ class ToggleTournamentAccess
     public function __invoke(Request $request, string $userId)
     {
         $user = User::findOrFail($userId);
-        $user->update(['has_tournament_access' => ! $user->has_tournament_access]);
+        $user->forceFill(['has_tournament_access' => ! $user->has_tournament_access])->save();
 
         return back();
     }

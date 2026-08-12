@@ -12,9 +12,12 @@ class HandlePaymentWebhook
 {
     public function __invoke(Request $request, BetaInviteService $inviteService): JsonResponse
     {
+        $secret = (string) config('beta.webhook_secret');
         $verificationToken = $request->input('verification_token');
 
-        if ($verificationToken !== config('beta.webhook_secret')) {
+        // Fail closed when the secret is unconfigured: a plain `!==` would let
+        // a request that simply omits the token through (null !== null).
+        if ($secret === '' || ! is_string($verificationToken) || ! hash_equals($secret, $verificationToken)) {
             return response()->json(['error' => 'Invalid verification token'], 403);
         }
 

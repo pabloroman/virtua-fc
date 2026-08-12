@@ -59,15 +59,17 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
+     * Privilege flags (`is_admin`, `has_career_access`, `has_tournament_access`,
+     * `can_edit_database`) are deliberately absent: they are granted with
+     * forceFill() at their handful of write sites, so no request payload can
+     * ever reach them through fill()/update().
+     *
      * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'has_career_access',
-        'has_tournament_access',
-        'can_edit_database',
         'feedback_requested_at',
         'locale',
         'username',
