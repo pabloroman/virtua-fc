@@ -74,7 +74,7 @@ class ShowPreMatchData
         $hasIssues = $issueMessage !== null;
 
         // Skip the modal if lineup is valid (11 players, no issues)
-        if (!$hasIssues && count($lineup ?? []) === 11) {
+        if (!$hasIssues && count($lineup) === 11) {
             return response()->json(['lineupReady' => true]);
         }
 

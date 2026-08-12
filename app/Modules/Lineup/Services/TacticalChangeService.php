@@ -170,6 +170,7 @@ class TacticalChangeService
 
         // Single re-simulation with all changes applied
         if ($isExtraTime) {
+            // No bench collections: extra time has no AI auto-substitutions.
             $result = $this->resimulationService->resimulateExtraTime(
                 $match,
                 $game,
@@ -177,8 +178,6 @@ class TacticalChangeService
                 $homePlayers,
                 $awayPlayers,
                 $allSubs,
-                $homeBench,
-                $awayBench,
                 isHalfTime: $isHalfTime,
             );
         } else {

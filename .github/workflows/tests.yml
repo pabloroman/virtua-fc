@@ -64,6 +64,19 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      # Larastan boots the Laravel app to resolve container bindings, so it needs
+      # drivers that work without Redis (.env.example points cache/session/queue
+      # at Redis, and no Redis service or phpredis extension exists in CI).
+      # APP_ENV=testing also keeps Telescope from registering.
+      - name: Run static analysis
+        run: ./vendor/bin/phpstan analyse --no-progress
+        env:
+          APP_ENV: testing
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          TELESCOPE_ENABLED: false
+
       - name: Run PHP tests
         run: php artisan test --parallel --processes=4
         env:

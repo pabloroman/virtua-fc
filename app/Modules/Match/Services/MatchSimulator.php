@@ -1123,7 +1123,7 @@ class MatchSimulator
 
         $reassignableTypes = ['goal', 'assist', 'yellow_card', 'red_card', 'own_goal', 'penalty_missed'];
 
-        return $events->map(function (MatchEventData $event) use ($subRemovedAt, $redRemovedAt, $removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $awayTeamId, $reassignableTypes) {
+        return $events->map(function (MatchEventData $event) use ($subRemovedAt, $redRemovedAt, $removedAt, $enteredAt, $homePlayers, $awayPlayers, $homeTeamId, $reassignableTypes) {
             if (! in_array($event->type, $reassignableTypes)) {
                 return $event;
             }
@@ -3145,7 +3145,7 @@ class MatchSimulator
 
         // Astronomically rare safety net: hard cap hit while still tied. Coin-flip
         // the last kick in the most recent round so we never return a tied result.
-        if ($scores['home'] === $scores['away'] && ! empty($kicks)) {
+        if ($scores['home'] === $scores['away']) {
             $winnerSide = random_int(0, 1) === 0 ? 'home' : 'away';
             $loserSide = $winnerSide === 'home' ? 'away' : 'home';
 

@@ -57,7 +57,7 @@ class SquadService
 
         $requireEnrollment = $game->requiresSquadEnrollment();
 
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $matchDate, $competitionId, $requireEnrollment, &$youngCount, &$primeCount, &$veteranCount) {
+        $allPlayers->each(function (GamePlayer $player) use ($game, $matchDate, $competitionId, $requireEnrollment, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
             $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
             $reason = $player->getUnavailabilityReason($matchDate, $competitionId);
