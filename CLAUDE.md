@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-VirtuaFC is a football manager simulation game built with Laravel 12. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey and European competitions (Champions League, Europa League, Conference League).
+VirtuaFC is a football manager simulation game built with Laravel 13. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey and European competitions (Champions League, Europa League, Conference League).
 
 The frontend uses Blade templates with Tailwind CSS and Alpine.js. The app defaults to Spanish (`APP_LOCALE=es`).
 
-**Stack versions:** PHP 8.5, Laravel 12, PHPUnit 11. Tailwind CSS 4.x (via `@tailwindcss/vite`), Alpine.js 3.x, Vite 7.x, Vitest 4.x. No ESLint/Prettier — only `.editorconfig` (4-space indent, LF, UTF-8) and Laravel Pint for PHP.
+**Stack versions:** PHP 8.5, Laravel 13, PHPUnit 12. Tailwind CSS 4.x (via `@tailwindcss/vite`), Alpine.js 3.x, Vite 7.x, Vitest 4.x. No ESLint/Prettier — only `.editorconfig` (4-space indent, LF, UTF-8) and Laravel Pint for PHP.
 
 ## Development Commands
 
@@ -15,15 +15,15 @@ composer dev                                    # Run all services (server, queu
 php artisan test                                # Run tests
 php artisan test --filter=TestClassName          # Run a single test
 php artisan app:seed-reference-data             # Seed reference data (--fresh to reset)
-php artisan app:simulate-match                  # Simulate a match (debugging)
-php artisan app:simulate-season                 # Simulate a full season
+php artisan match:simulate                      # Simulate a match (debugging)
+php artisan game:simulate {gameId} {matchday}   # Simulate one matchday of a game
 php artisan config:clear                        # Clear config cache after changes
 ./vendor/bin/phpstan analyse                    # Larastan static analysis (level 1)
 ```
 
-The queue worker must be running for background jobs. `composer dev` handles this via `php artisan queue:listen --tries=1`.
+The queue worker must be running for background jobs. `composer dev` handles this via `php artisan queue:listen --tries=1 --queue=gameplay,setup,mail,cleanup`. The explicit queue list matters — a bare `queue:listen` drains only the default queue and game jobs will appear to hang.
 
-**Do not run tests or static analysis automatically after making changes.** Both run in CI after pushing to a branch. Only run them locally when explicitly asked.
+**Do not run tests or static analysis automatically after making changes.** `.github/workflows/tests.yml` runs the JS tests, `php artisan test --parallel` and `./vendor/bin/phpstan analyse` after pushing to a branch. Only run them locally when explicitly asked.
 
 **Game-state debugging commands** (full list in `app/Console/Commands/`):
 
@@ -31,12 +31,12 @@ The queue worker must be running for background jobs. `composer dev` handles thi
 php artisan app:diagnose-stuck-game {game}      # Investigate a stalled game
 php artisan app:cleanup-games                   # Remove orphaned/abandoned games
 php artisan app:refresh-player-templates        # Reseed player biography source
-php artisan app:unstick-season-transition       # Unblock a stuck season transition
+php artisan app:unstick-season-transition {gameId} [--dry-run]   # Unblock a stuck season transition
 ```
 
 ## Testing
 
-- **PHPUnit 11** (no Pest). Tests live in `tests/Unit/` and `tests/Feature/`.
+- **PHPUnit 12** (no Pest). Tests live in `tests/Unit/` and `tests/Feature/`.
 - The base `tests/TestCase.php` sets `protected $connectionsToTransact = ['pgsql']` and calls `$this->withoutVite()` in `setUp()`.
 - **Factories use fluent helpers** — prefer them over manual wiring. Examples: `Game::factory()->forTeam($team)->create()`, `GamePlayer::factory()->forTeam($team)->create()`, `Game::factory()->inCompetition($id)->create()`.
 - Parallel runs via `paratest` are available (`php artisan test --parallel`) but not the default.
@@ -67,10 +67,10 @@ Domain logic is organized into modules under `app/Modules/`, each with services,
 | **Player** | Player lifecycle | `PlayerDevelopmentService`, `PlayerConditionService`, `PlayerValuationService`, `InjuryService`, `PlayerRetirementService` | `player-development.md`, `player-abilities.md`, `player-potential.md`, `injury-system.md` |
 | **Squad** | Squad composition | `PlayerGeneratorService`, `EligibilityService` | `squad-page-redesign.md` |
 | **ReserveTeam** | Reserve / B-team and U23 cascades | `ReserveTeamService` | — |
-| **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` | `transfer-market.md`, `market-value-dynamics.md` |
+| **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` | `transfer-market.md`, `market-value-dynamics.md`, `release-clauses.md` |
 | **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService` | — |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` | `club-economy-system.md` |
-| **Stadium** | Capacity, attendance & upgrades | `StadiumCapacityResolver`, `StadiumUpgradeService`, `MatchAttendanceService`, `FanLoyaltyService`, `SeasonTicketPricingService`, `DemandCurveService` | `stadium-and-facilities.md` |
+| **Stadium** | Capacity, attendance, upgrades & naming rights | `GameStadiumResolver`, `StadiumUpgradeService`, `MatchAttendanceService`, `FanLoyaltyService`, `SeasonTicketPricingService`, `DemandCurveService`, `NamingRightsService` | `stadium-and-facilities.md` |
 | **Reputation** | Club & competition reputation | `ReputationSummaryService` | `reputation-system.md` |
 | **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService` | `season-lifecycle.md` |
 | **Manager** | Profile, trophies & leaderboard | `ManagerProfileService`, `LeaderboardService` | — |
@@ -109,6 +109,8 @@ New processors can be added without modifying existing code.
 ### Financial Model
 
 Uses projection-based budgeting (not running balance): `GameFinances` (projections), `GameInvestment` (allocation), `FinancialTransaction` (reconciliation). Revenue rates are defined per competition config, not on `ClubProfile`. Commercial revenue grows via position-based multipliers in `config/finances.php`.
+
+Economic config is split across three files: `config/finances.php` (budgets, wages, commercial growth), `config/stadium.php` (capacity, attendance, ticketing, upgrades) and `config/commercial.php` (naming rights and sponsorship). Stadium and sponsorship knobs used to live in `finances.php` — don't add them back there.
 
 ## Critical Constraints
 
