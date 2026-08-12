@@ -439,7 +439,7 @@ class MatchResimulationService
         ?Collection $awayBenchPlayers = null,
         bool $isHalfTime = false,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers, $isHalfTime) {
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $isHalfTime) {
             $competitionId = $match->competition_id;
             $stoppage = StoppageDurations::fromMatch($match);
 

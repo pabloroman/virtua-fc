@@ -367,6 +367,10 @@ class CupDrawService
      */
     private function getTeamTierMap(string $gameId, Collection $teamIds): array
     {
+        // The collection-level pluck is deliberate: a builder-level pluck() would
+        // replace the aggregate select below, dropping MIN(competitions.tier) and
+        // breaking the GROUP BY.
+        // @phpstan-ignore larastan.noUnnecessaryCollectionCall
         return DB::table('competition_entries')
             ->join('competitions', 'competition_entries.competition_id', '=', 'competitions.id')
             ->where('competition_entries.game_id', $gameId)

@@ -109,9 +109,7 @@ class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
         $game->update(['season' => $data->newSeason]);
 
         // Phase 2: Set up new season
-        if (!isset($refreshedForSetup)) {
-            $game->refresh()->setRelations([]);
-        }
+        $game->refresh()->setRelations([]);
         $setupPipeline->run($game, $data, $closingProcessorCount, $lastStep);
 
         // Archive transition log for debugging (exclude bulky/irrelevant keys)

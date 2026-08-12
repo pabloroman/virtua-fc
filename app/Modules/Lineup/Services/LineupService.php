@@ -822,13 +822,14 @@ class LineupService
             $match->{$prefix . '_pressing'} = $playerPressing;
             $match->{$prefix . '_defensive_line'} = $playerDefLine;
         } else {
-            // AI team: set formation, reputation-driven mentality, and AI instructions
-            $aiFormation = $aiFormation ?? $this->aiTactics->selectAIFormation($availablePlayers, $game->id, $teamId);
+            // AI team: set formation, reputation-driven mentality, and AI instructions.
+            // $aiFormation and $aiSelectedXI were both computed in the matching
+            // AI branch above, so they are always set on this path.
             $isHome = $prefix === 'home' && ! $match->isNeutralVenue();
             $opponentTeamId = $prefix === 'home' ? $match->away_team_id : $match->home_team_id;
 
             // Reuse already-selected lineup for team average (avoids redundant selectBestXI)
-            $teamAvg = $this->aiTactics->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));
+            $teamAvg = $this->aiTactics->calculateTeamAverage($aiSelectedXI);
 
             $opponentPlayers = $allPlayersGrouped?->get($opponentTeamId, collect()) ?? collect();
             $opponentAvg = $opponentPlayers->isNotEmpty()
