@@ -5,8 +5,10 @@ services:
       POSTGRES_DB: virtua_fc
       POSTGRES_USER: virtua_fc
       POSTGRES_PASSWORD: password
+    # Loopback-only: reachable from the host (psql, TablePlus) but not from
+    # the network the machine happens to be on.
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,8 +20,9 @@ services:
 
   redis:
     image: redis:7-alpine
+    # Loopback-only — this Redis has no auth configured.
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redisdata:/data
     healthcheck:

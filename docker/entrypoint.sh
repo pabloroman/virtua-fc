@@ -13,8 +13,8 @@ until php -r "try { \$r = new Redis(); \$r->connect(getenv('REDIS_HOST') ?: '127
 done
 echo "Redis is ready."
 
-# In development, install dependencies (vendor is an anonymous volume)
-if [ "$APP_ENV" != "production" ] && [ -f composer.json ] && command -v composer >/dev/null 2>&1; then
+# vendor/ is an anonymous volume, so it starts empty on a fresh container.
+if [ -f composer.json ] && command -v composer >/dev/null 2>&1; then
     if [ ! -f vendor/autoload.php ] || [ composer.lock -nt vendor/autoload.php ]; then
         echo "Installing Composer dependencies..."
         composer install --no-interaction
@@ -32,24 +32,16 @@ if [ ! -f .env ]; then
     fi
 fi
 
-# Run migrations only on the designated container (typically `app`).
-# Multi-service prod deploys (app + horizon + scheduler share this image) must
-# avoid concurrent migrate runs racing each other — set RUN_MIGRATIONS=true on
-# exactly one service. Defaults to true so single-container and dev setups
-# continue to work without changes.
+# Run migrations only on the designated container. `app` and `horizon` share
+# this image and start together, so exactly one of them may migrate — otherwise
+# the two `migrate --force` runs race each other. Defaults to true so the `app`
+# service needs no extra config; docker-compose.dev.yml sets it to false on
+# `horizon`.
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     echo "Running migrations..."
     php artisan migrate --force
 else
     echo "Skipping migrations (RUN_MIGRATIONS != true)."
-fi
-
-# Cache configuration in production
-if [ "$APP_ENV" = "production" ]; then
-    echo "Caching configuration..."
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
 fi
 
 echo "Starting application..."
