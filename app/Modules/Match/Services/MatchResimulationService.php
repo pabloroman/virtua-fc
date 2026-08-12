@@ -427,6 +427,11 @@ class MatchResimulationService
     /**
      * Re-simulate extra time from a given minute (after an ET substitution or tactical change).
      * Same structure as doResimulate() but targets ET scores and uses simulateExtraTime().
+     *
+     * Takes no bench collections: the user's own ET substitutions arrive via
+     * $allSubstitutions, and simulateExtraTime() has no bench/auto-sub support,
+     * so the AI makes no substitutions during extra time. Adding bench params
+     * here does nothing until the simulator itself grows ET auto-subs.
      */
     public function resimulateExtraTime(
         GameMatch $match,
@@ -435,8 +440,6 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
-        ?Collection $homeBenchPlayers = null,
-        ?Collection $awayBenchPlayers = null,
         bool $isHalfTime = false,
     ): ResimulationResult {
         return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $isHalfTime) {
