@@ -1,7 +1,8 @@
+# Docker is a local development convenience only — production runs on
+# Laravel Forge (not containerized).
 DC_DEV = docker compose -f docker-compose.yml -f docker-compose.dev.yml
-DC_PROD = docker compose -f docker-compose.yml -f docker-compose.prod.yml
 
-.PHONY: dev dev-build dev-down prod prod-build prod-down logs setup artisan composer npm key
+.PHONY: dev dev-build dev-down logs setup artisan composer npm key
 
 # Development
 dev:
@@ -12,16 +13,6 @@ dev-build:
 
 dev-down:
 	$(DC_DEV) down
-
-# Production
-prod:
-	$(DC_PROD) up -d
-
-prod-build:
-	$(DC_PROD) up -d --build
-
-prod-down:
-	$(DC_PROD) down
 
 # Wrappers — pass any arguments after the target
 # Usage: make artisan cmd="migrate:fresh --seed"

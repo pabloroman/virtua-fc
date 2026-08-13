@@ -50,6 +50,9 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      # `app` owns migrations — both services share the entrypoint and would
+      # otherwise race two `migrate --force` runs on every `make dev`.
+      RUN_MIGRATIONS: "false"
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: virtua_fc

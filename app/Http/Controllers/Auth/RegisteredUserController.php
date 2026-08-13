@@ -69,13 +69,15 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'has_career_access' => $invite->grants_career,
-            'has_tournament_access' => $invite->grants_tournament,
         ]);
 
         $invite->consume();
+
+        // Access flags are not mass assignable — see User::$fillable.
         $user->forceFill([
             'email_verified_at' => now(),
+            'has_career_access' => $invite->grants_career,
+            'has_tournament_access' => $invite->grants_tournament,
         ])->save();
 
         event(new Registered($user));
