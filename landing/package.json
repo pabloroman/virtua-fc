@@ -2,7 +2,7 @@
     "name": "virtua-fc-landing",
     "private": true,
     "scripts": {
-        "dev": "npx wrangler pages dev public --d1 DB=virtua-fc-waitlist",
+        "dev": "npx wrangler pages dev public",
         "deploy": "npx wrangler pages deploy public"
     },
     "devDependencies": {
