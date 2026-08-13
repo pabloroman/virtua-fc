@@ -30,6 +30,18 @@ frankenphp-worker.php
 .DS_Store
 /videos
 
+# Regenerated on demand with `php artisan ide-helper:models`; goes stale fast and
+# nothing (phpstan included) reads it, so it is not worth tracking.
+/_ide_helper_models.php
+
+# Local scratch databases (DuckDB analysis dumps and the like) — hundreds of MB
+# and unrelated to the app's PostgreSQL schema.
+*.duckdb
+
+# Published Telescope assets. Telescope is a require-dev, local-only tool;
+# `php artisan telescope:publish` regenerates these.
+/public/vendor/telescope
+
 # Raw Transfermarkt→external-id crosswalk source (large). The slim, committed
 # data/{season}/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
 data/*/raw/*
