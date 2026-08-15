@@ -38,7 +38,4 @@ return [
     // Bonus points for lower-tier teams competing in top-division leagues.
     // Applied at game initialization for Modest/Local teams in tier 1.
     'division_bonus' => 25,
-
-    // Maximum number of tiers a team can drop below its seeded base.
-    'max_tier_drop_below_base' => 2,
 ];

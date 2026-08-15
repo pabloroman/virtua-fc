@@ -194,11 +194,8 @@ return [
     'sort_age' => 'Edad',
     'sort_ability' => 'Habilidad',
     'sort_price' => 'Precio',
-    'shortlist_empty' => 'Añade jugadores a tu lista de seguimiento desde los informes de ojeadores.',
     'add_to_shortlist' => 'Seguir',
     'remove_from_shortlist' => 'Dejar de seguir',
-    'shortlisted' => 'Seguido',
-    'shortlist_players_count' => ':count jugador(es)',
 
     // Scouting hub board (shortlist + operations strip)
     'ops_title' => 'Red de ojeadores',

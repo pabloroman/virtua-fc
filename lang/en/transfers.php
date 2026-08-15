@@ -188,12 +188,14 @@ return [
     'delete_search' => 'Delete',
     'delete_search_confirm' => 'Delete this search? Players on your shortlist will not be lost.',
 
-    // Shortlist sorting
+    // Shortlist
     'sort_by' => 'Sort',
     'sort_name' => 'Name',
     'sort_age' => 'Age',
     'sort_ability' => 'Ability',
     'sort_price' => 'Price',
+    'add_to_shortlist' => 'Shortlist',
+    'remove_from_shortlist' => 'Remove from shortlist',
 
     // Scouting hub board (shortlist + operations strip)
     'shortlist' => 'Shortlist',

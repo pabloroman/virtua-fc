@@ -1,13 +1,16 @@
 # Virtua FC — Landing Page
 
-Lead generation landing page for Virtua FC, hosted on Cloudflare Pages with D1 for form submissions.
+Lead generation landing page for Virtua FC, hosted on Cloudflare Pages.
+
+The waitlist form posts to the main Laravel app (`POST https://play.virtuafc.com/api/waitlist`,
+handled by `App\Http\Actions\JoinWaitlist`), so entries land in the app's own `waitlist` table
+and show up under **Admin → Waitlist**. There is no separate datastore here — the page is pure
+static hosting.
 
 ## Stack
 
 - **Static HTML + Tailwind CSS** (via CDN)
 - **Cloudflare Pages** for hosting
-- **Cloudflare Pages Functions** (Workers) for form API
-- **Cloudflare D1** (SQLite) for storing waitlist submissions
 
 ## Setup
 
@@ -23,29 +26,16 @@ cd landing
 npm install
 ```
 
-### 2. Create the D1 database
-
-```bash
-npx wrangler d1 create virtua-fc-waitlist
-```
-
-Copy the `database_id` from the output and paste it into `wrangler.toml`.
-
-### 3. Initialize the database schema
-
-```bash
-npx wrangler d1 execute virtua-fc-waitlist --remote --file=schema.sql
-```
-
-### 4. Local development
+### 2. Local development
 
 ```bash
 npm run dev
 ```
 
-This starts a local dev server with a local D1 database at `http://localhost:8788`.
+Serves `public/` at `http://localhost:8788`. Note that the form still posts to the production
+API, so submissions from a local run create real waitlist entries.
 
-### 5. Deploy
+### 3. Deploy
 
 ```bash
 npm run deploy
@@ -57,30 +47,16 @@ Or connect the repo to Cloudflare Pages via the dashboard:
 2. Connect your GitHub repo
 3. Set build output directory to `landing/public`
 4. Set root directory to `landing`
-5. Add the D1 binding: **Settings > Functions > D1 database bindings** — variable name `DB`, select `virtua-fc-waitlist`
-
-## Exporting waitlist data
-
-```bash
-npx wrangler d1 execute virtua-fc-waitlist --remote --command "SELECT * FROM waitlist"
-```
-
-Or export as JSON:
-
-```bash
-npx wrangler d1 execute virtua-fc-waitlist --remote --command "SELECT * FROM waitlist" --json
-```
 
 ## Project structure
 
 ```
 landing/
 ├── public/
-│   └── index.html          # Landing page
-├── functions/
-│   └── api/
-│       └── submit.js       # Form submission handler (Cloudflare Worker)
-├── schema.sql              # D1 database schema
+│   ├── index.html          # Landing page (Spanish)
+│   ├── index-en.html       # Landing page (English)
+│   ├── img/
+│   └── screenshots/
 ├── wrangler.toml           # Cloudflare configuration
 ├── package.json
 └── README.md
