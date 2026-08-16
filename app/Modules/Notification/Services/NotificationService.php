@@ -2,6 +2,7 @@
 
 namespace App\Modules\Notification\Services;
 
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
@@ -683,16 +684,17 @@ class NotificationService
     // ==========================================
 
     /**
-     * Create a notification for a new academy prospect.
+     * Create a notification for a single new academy prospect arriving
+     * year-round (one notification per arrival).
      */
-    public function notifyAcademyBatch(Game $game, int $count): GameNotification
+    public function notifyAcademyProspect(Game $game, AcademyPlayer|GamePlayer $prospect): GameNotification
     {
         return $this->create(
             game: $game,
-            type: GameNotification::TYPE_ACADEMY_BATCH,
-            title: __('notifications.academy_batch_title'),
-            message: __('notifications.academy_batch_message', ['count' => $count]),
-            priority: GameNotification::PRIORITY_MILESTONE,
+            type: GameNotification::TYPE_ACADEMY_PROSPECT,
+            title: __('notifications.academy_prospect_title'),
+            message: __('notifications.academy_prospect_message', ['player' => $prospect->name ?? '']),
+            priority: GameNotification::PRIORITY_INFO,
         );
     }
 

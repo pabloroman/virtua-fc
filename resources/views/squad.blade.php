@@ -59,6 +59,8 @@
                 @endif
             </div>
 
+            <x-investment-notice :game="$game" area="medical" :tier="$medicalTier" class="mt-4" />
+
             {{-- ===== Filters Bar ===== --}}
             <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
                 {{-- Position filter pills --}}
