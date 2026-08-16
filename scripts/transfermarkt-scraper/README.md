@@ -97,6 +97,16 @@ open and active; **Stop** pauses cleanly between leagues. Cups, continental
 participant lists, and EUR/INT pools are pushed individually with the per-page
 button (their pages aren't part of the batch driver).
 
+**Expect it to take 15–25 minutes** (8 leagues × ~20 clubs, deliberately paced) and
+to drive your active tab the whole way. **Keep the popup open** to watch progress —
+the status poller lives in the popup, so closing it leaves you blind (the driver
+keeps running, and reopening the popup re-attaches to the live progress). A league
+that fails is skipped and named in the final summary rather than sinking the run.
+
+> **After pulling changes to this folder, reload the extension** at
+> `chrome://extensions` (↻ on the card). Chrome does not hot-reload the service
+> worker, and a stale one silently ignores the season-refresh message.
+
 Output is written in the repo's canonical form (2-space, sorted clubs/players,
 `seasonID` injected), identical to `php artisan app:normalize-season`, so CI has
 nothing to reformat.
