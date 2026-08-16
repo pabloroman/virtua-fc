@@ -323,7 +323,14 @@ function startBatchPolling() {
   if (batchPollingInterval) clearInterval(batchPollingInterval);
 
   batchPollingInterval = setInterval(async () => {
-    const progress = await chrome.runtime.sendMessage({ action: 'getProgress' });
+    // A rejected tick (service worker asleep) must not become an unhandled
+    // rejection — that silently stops the status from ever updating again.
+    let progress;
+    try {
+      progress = await chrome.runtime.sendMessage({ action: 'getProgress' });
+    } catch {
+      return;
+    }
     if (!progress || progress.pageType !== 'batch-positions') return;
 
     setBatchStatus(progress.status, progress.message);
@@ -430,16 +437,24 @@ batchStartBtn.addEventListener('click', async () => {
   batchDownloadBtn.disabled = true;
   setBatchStatus('working', 'Starting...');
 
-  await chrome.runtime.sendMessage({ action: 'clearProgress' });
+  try {
+    await chrome.runtime.sendMessage({ action: 'clearProgress' });
 
-  const response = await chrome.runtime.sendMessage({
-    action: 'startBatchPositions',
-    tabId: tab.id,
-    playerIds: batchPlayerIds
-  });
+    const response = await chrome.runtime.sendMessage({
+      action: 'startBatchPositions',
+      tabId: tab.id,
+      playerIds: batchPlayerIds
+    });
 
-  if (response?.started) {
+    if (!response?.started) {
+      throw new Error('Background worker did not respond — reload the extension at chrome://extensions.');
+    }
     startBatchPolling();
+  } catch (err) {
+    setBatchStatus('error', err.message);
+    batchStartBtn.disabled = false;
+    batchStopBtn.disabled = true;
+    batchDownloadBtn.disabled = batchResult === null;
   }
 });
 
@@ -625,7 +640,14 @@ function startRefreshPolling() {
   if (refreshPollingInterval) clearInterval(refreshPollingInterval);
 
   refreshPollingInterval = setInterval(async () => {
-    const progress = await chrome.runtime.sendMessage({ action: 'getProgress' });
+    // A rejected tick (service worker asleep) must not become an unhandled
+    // rejection — that silently stops the status from ever updating again.
+    let progress;
+    try {
+      progress = await chrome.runtime.sendMessage({ action: 'getProgress' });
+    } catch {
+      return;
+    }
     if (!progress || progress.pageType !== 'season-refresh') return;
 
     setRefreshStatus(progress.status, progress.message);
@@ -636,8 +658,10 @@ function startRefreshPolling() {
       refreshStartBtn.disabled = false;
       refreshStopBtn.disabled = true;
       if (progress.result && progress.result.prUrl) {
+        const skipped = progress.result.failed || [];
         refreshResult.style.display = 'block';
-        refreshResult.innerHTML = `Pushed ${progress.result.files} leagues — <a href="${progress.result.prUrl}" target="_blank">open PR ↗</a>`;
+        refreshResult.innerHTML = `Pushed ${progress.result.files} leagues — <a href="${progress.result.prUrl}" target="_blank">open PR ↗</a>`
+          + (skipped.length ? `<br>Skipped: ${skipped.join(', ')}` : '');
       }
       chrome.runtime.sendMessage({ action: 'clearProgress' });
     }
@@ -693,10 +717,20 @@ refreshStartBtn.addEventListener('click', async () => {
   refreshStopBtn.disabled = false;
   setRefreshStatus('working', 'Starting…');
 
-  await chrome.runtime.sendMessage({ action: 'clearProgress' });
-  const response = await chrome.runtime.sendMessage({ action: 'startSeasonRefresh', tabId: tab.id });
-  if (response && response.started) {
+  // A silent handshake failure used to leave the panel stuck on "Starting…"
+  // forever: the service worker rejects (or resolves undefined when it is
+  // running a stale build without this action) and nothing reset the buttons.
+  try {
+    await chrome.runtime.sendMessage({ action: 'clearProgress' });
+    const response = await chrome.runtime.sendMessage({ action: 'startSeasonRefresh', tabId: tab.id });
+    if (!response || !response.started) {
+      throw new Error('Background worker did not respond — reload the extension at chrome://extensions.');
+    }
     startRefreshPolling();
+  } catch (err) {
+    setRefreshStatus('error', err.message);
+    refreshStartBtn.disabled = false;
+    refreshStopBtn.disabled = true;
   }
 });
 

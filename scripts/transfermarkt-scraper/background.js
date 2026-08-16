@@ -461,6 +461,7 @@ async function startSeasonRefresh(tabId) {
 
   const leagues = SeasonConfig.COMPETITIONS.filter(c => c.batch);
   const files = [];
+  const failed = [];
 
   for (let i = 0; i < leagues.length; i++) {
     if (refreshAborted) {
@@ -471,26 +472,54 @@ async function startSeasonRefresh(tabId) {
     const comp = leagues[i];
     await updateProgress({ status: 'working', message: `${comp.code}…`, current: i, total: leagues.length, pageType: 'season-refresh' });
 
-    const stadiumsUrl = `https://www.transfermarkt.com/-/stadien/wettbewerb/${comp.tmId}/saison_id/${season}`;
-    const result = await scrapeLeagueSquads(tabId, stadiumsUrl, (ci, ct, cn) => {
-      updateProgress({ status: 'working', message: `${comp.code} — ${cn} (${ci}/${ct})`, current: i, total: leagues.length, pageType: 'season-refresh' });
-    });
+    // Contain per-league failures the same way scrapeLeagueSquads tolerates a
+    // single failed club: one unreachable league must not throw away the
+    // squads already scraped in this run (tens of minutes of work).
+    try {
+      const stadiumsUrl = `https://www.transfermarkt.com/-/stadien/wettbewerb/${comp.tmId}/saison_id/${season}`;
+      const result = await scrapeLeagueSquads(tabId, stadiumsUrl, (ci, ct, cn) => {
+        updateProgress({ status: 'working', message: `${comp.code} — ${cn} (${ci}/${ct})`, current: i, total: leagues.length, pageType: 'season-refresh' });
+      });
 
-    const file = SeasonConfig.repoFileForResult(result, 'competition-stadiums', { season });
-    if (file) files.push(file);
+      const file = SeasonConfig.repoFileForResult(result, 'competition-stadiums', { season });
+      if (file) {
+        files.push(file);
+      } else {
+        failed.push(comp.code);
+        console.error(`[TM Scraper] ${comp.code}: scrape did not map to a repo file (id "${result.id}")`);
+      }
+    } catch (err) {
+      // Stop pressed mid-league: scrapeLeagueSquads aborts between clubs, so
+      // settle on 'paused' here rather than letting it escape the loop and
+      // leave the popup polling a stale 'working' forever.
+      if (err.message === 'aborted') {
+        await updateProgress({ status: 'paused', message: `Paused — ${i}/${leagues.length} leagues`, current: i, total: leagues.length, pageType: 'season-refresh' });
+        return;
+      }
+      failed.push(comp.code);
+      console.error(`[TM Scraper] ${comp.code} failed:`, err);
+    }
+  }
+
+  if (files.length === 0) {
+    throw new Error(`Every league failed (${failed.join(', ')}) — nothing to push.`);
   }
 
   await updateProgress({ status: 'working', message: `Pushing ${files.length} files to GitHub…`, current: leagues.length, total: leagues.length, pageType: 'season-refresh' });
 
   const prUrl = await pushFilesToGitHub(files, season);
 
+  const summary = failed.length
+    ? `Done — ${files.length} leagues pushed, ${failed.length} failed (${failed.join(', ')})`
+    : `Done — ${files.length} leagues pushed`;
+
   await updateProgress({
     status: 'ready',
-    message: `Done — ${files.length} leagues pushed`,
+    message: summary,
     current: leagues.length,
     total: leagues.length,
     pageType: 'season-refresh',
-    result: { prUrl, files: files.length },
+    result: { prUrl, files: files.length, failed },
   });
 }
 
