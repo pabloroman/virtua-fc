@@ -2,10 +2,13 @@
 
 namespace App\Modules\Season\Jobs;
 
+use App\Modules\Competition\Services\StandingsCalculator;
+use App\Modules\Competition\Services\SwissDrawService;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\FormationBiasResolver;
 use App\Modules\Lineup\Services\FormationRecommender;
 use App\Modules\Notification\Services\NotificationService;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
@@ -29,11 +32,12 @@ class SetupTournamentGame implements ShouldQueue
 
     public int $tries = 1;
 
-    private const COMPETITION_ID = 'WC2026';
+    private const SEASON = '2025';
 
     public function __construct(
         public string $gameId,
         public string $teamId,
+        public string $competitionId = 'WC2026',
     ) {
         $this->onQueue('setup');
     }
@@ -47,33 +51,43 @@ class SetupTournamentGame implements ShouldQueue
         NotificationService $notificationService,
         FormationRecommender $formationRecommender,
         FormationBiasResolver $formationBiasResolver,
+        SwissDrawService $swissDrawService,
+        StandingsCalculator $standingsCalculator,
     ): void {
         $game = Game::find($this->gameId);
         if (!$game || $game->isSetupComplete()) {
             return;
         }
 
-        // Load groups.json for fixture data and group assignments (cached for 1 hour)
-        $groupsData = Cache::remember('wc2026_groups', 3600, function () {
+        $competition = Competition::find($this->competitionId);
+        $isSwiss = $competition?->handler_type === 'swiss_format';
+
+        // Group-stage World Cup reads its bracket/dates from groups.json; the
+        // Swiss variant draws its league phase at runtime, so it's skipped.
+        $groupsData = $isSwiss ? null : Cache::remember('wc2026_groups', 3600, function () {
             $groupsPath = base_path('data/2025/WC2026/groups.json');
             return json_decode(file_get_contents($groupsPath), true);
         });
 
-        // Build FIFA code → Team UUID map from the database (cached for 1 hour)
-        $nationalTeams = Cache::remember('wc2026_national_teams', 3600, function () {
+        // Build FIFA code → Team UUID map from the database (cached for 1 hour).
+        // Both tournament formats field the same 48 national teams.
+        $nationalTeams = Cache::remember('wc_national_teams', 3600, function () {
             return Team::worldCupEligible()->get(['id', 'fifa_code']);
         });
         $teamKeyMap = $nationalTeams->pluck('id', 'fifa_code')->toArray();
 
-        DB::transaction(function () use ($game, $groupsData, $teamKeyMap, $nationalTeams, $notificationService, $formationRecommender, $formationBiasResolver) {
-            // Step 1: Create competition entries for all WC teams
+        DB::transaction(function () use ($game, $competition, $isSwiss, $groupsData, $teamKeyMap, $nationalTeams, $notificationService, $formationRecommender, $formationBiasResolver, $swissDrawService, $standingsCalculator) {
+            // Step 1: Create competition entries for all participating national teams
             $this->createCompetitionEntries();
 
-            // Step 2: Create fixtures from groups.json
-            $this->createFixtures($groupsData, $teamKeyMap);
-
-            // Step 3: Create standings with group labels
-            $this->createGroupStandings($groupsData, $teamKeyMap);
+            // Step 2 & 3: Fixtures + standings — group stage or Swiss league phase
+            if ($isSwiss) {
+                $this->createSwissFixtures($teamKeyMap, $swissDrawService);
+                $this->createSwissStandings($teamKeyMap, $standingsCalculator);
+            } else {
+                $this->createFixtures($groupsData, $teamKeyMap);
+                $this->createGroupStandings($groupsData, $teamKeyMap);
+            }
 
             // Step 4: Create game players from pre-computed templates
             $this->createGamePlayersFromTemplates();
@@ -87,7 +101,7 @@ class SetupTournamentGame implements ShouldQueue
 
             // Send welcome notification
             $teamName = $nationalTeams->firstWhere('id', $this->teamId)?->getRawOriginal('name') ?? '';
-            $notificationService->notifyTournamentWelcome($game, self::COMPETITION_ID, $teamName);
+            $notificationService->notifyTournamentWelcome($game, $this->competitionId, $teamName);
 
             // Mark setup as complete
             Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
@@ -104,13 +118,13 @@ class SetupTournamentGame implements ShouldQueue
             return;
         }
 
-        $teamIds = CompetitionTeam::where('competition_id', self::COMPETITION_ID)
-            ->where('season', '2025')
+        $teamIds = CompetitionTeam::where('competition_id', $this->competitionId)
+            ->where('season', self::SEASON)
             ->pluck('team_id');
 
         $rows = $teamIds->map(fn ($teamId) => [
             'game_id' => $this->gameId,
-            'competition_id' => self::COMPETITION_ID,
+            'competition_id' => $this->competitionId,
             'team_id' => $teamId,
             'entry_round' => 1,
         ])->toArray();
@@ -118,6 +132,105 @@ class SetupTournamentGame implements ShouldQueue
         foreach (array_chunk($rows, 500) as $chunk) {
             CompetitionEntry::insert($chunk);
         }
+    }
+
+    /**
+     * Draw the Swiss league phase (48 teams, 4 pots of 12, 8 matchdays) via the
+     * shared SwissDrawService and persist the fixtures. The teams.json seed file
+     * carries each nation's pot and confederation (used as the draw's "country"
+     * so same-confederation matchups are avoided where feasible); schedule.json
+     * carries the matchday dates.
+     */
+    private function createSwissFixtures(array $teamKeyMap, SwissDrawService $swissDrawService): void
+    {
+        if (GameMatch::where('game_id', $this->gameId)->exists()) {
+            return;
+        }
+
+        $drawTeams = [];
+        foreach ($this->loadSwissTeams() as $entry) {
+            $teamId = $teamKeyMap[$entry['id']] ?? null;
+            if (!$teamId) {
+                continue;
+            }
+            $drawTeams[] = [
+                'id' => $teamId,
+                'pot' => (int) $entry['pot'],
+                'country' => $entry['country'],
+            ];
+        }
+
+        $matchdayDates = [];
+        foreach ($this->loadSwissSchedule()['league'] ?? [] as $matchday) {
+            $matchdayDates[(int) $matchday['round']] = $matchday['date'];
+        }
+
+        $fixtures = $swissDrawService->generateFixtures($drawTeams, $matchdayDates);
+
+        $matchRows = [];
+        foreach ($fixtures as $fixture) {
+            $matchRows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $this->gameId,
+                'competition_id' => $this->competitionId,
+                'round_number' => $fixture['matchday'],
+                'round_name' => __('game.league_phase') . ' - ' . __('game.matchday') . ' ' . $fixture['matchday'],
+                'home_team_id' => $fixture['homeTeamId'],
+                'away_team_id' => $fixture['awayTeamId'],
+                'scheduled_date' => $fixture['date'],
+                'played' => false,
+            ];
+        }
+
+        foreach (array_chunk($matchRows, 500) as $chunk) {
+            GameMatch::insert($chunk);
+        }
+    }
+
+    /**
+     * Seed a flat 48-row standings table (no group labels) ordered by seeding
+     * pot, so the Swiss standings page renders sensibly before any match is
+     * played. Positions are recomputed from results as matchdays are simulated.
+     */
+    private function createSwissStandings(array $teamKeyMap, StandingsCalculator $standingsCalculator): void
+    {
+        if (GameStanding::where('game_id', $this->gameId)->exists()) {
+            return;
+        }
+
+        $teamIds = [];
+        foreach ($this->loadSwissTeams() as $entry) {
+            $teamId = $teamKeyMap[$entry['id']] ?? null;
+            if ($teamId) {
+                $teamIds[] = $teamId;
+            }
+        }
+
+        $standingsCalculator->initializeStandings($this->gameId, $this->competitionId, $teamIds);
+    }
+
+    /**
+     * @return array<int, array{id: string, pot: int, country: string}>
+     */
+    private function loadSwissTeams(): array
+    {
+        $data = Cache::remember("swiss_tournament_teams:{$this->competitionId}", 3600, function () {
+            $path = base_path('data/' . self::SEASON . "/{$this->competitionId}/teams.json");
+            return json_decode(file_get_contents($path), true);
+        });
+
+        return $data['clubs'] ?? [];
+    }
+
+    /**
+     * @return array{league?: array<int, array{round: int, date: string}>}
+     */
+    private function loadSwissSchedule(): array
+    {
+        return Cache::remember("swiss_tournament_schedule:{$this->competitionId}", 3600, function () {
+            $path = base_path('data/' . self::SEASON . "/{$this->competitionId}/schedule.json");
+            return json_decode(file_get_contents($path), true);
+        });
     }
 
     private function createFixtures(array $groupsData, array $teamKeyMap): void
@@ -140,7 +253,7 @@ class SetupTournamentGame implements ShouldQueue
                 $matchRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $this->gameId,
-                    'competition_id' => self::COMPETITION_ID,
+                    'competition_id' => $this->competitionId,
                     'round_number' => $match['round'],
                     'round_name' => __('game.group_stage') . ' - ' . __('game.matchday') . ' ' . $match['round'],
                     'home_team_id' => $homeTeamId,
@@ -173,7 +286,7 @@ class SetupTournamentGame implements ShouldQueue
 
                 $rows[] = [
                     'game_id' => $this->gameId,
-                    'competition_id' => self::COMPETITION_ID,
+                    'competition_id' => $this->competitionId,
                     'group_label' => $groupLabel,
                     'team_id' => $teamId,
                     'position' => $position,

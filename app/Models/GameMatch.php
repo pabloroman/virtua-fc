@@ -239,7 +239,9 @@ class GameMatch extends Model
 
     public function isNeutralVenue(): bool
     {
-        return $this->competition_id === 'WC2026'
+        // National-team tournaments (World Cup and its Swiss-format variant) are
+        // played entirely at neutral venues — no nation has a home ground in-game.
+        return in_array($this->competition_id, ['WC2026', 'WCSWISS'], true)
             || $this->neutral_venue_name !== null;
     }
 

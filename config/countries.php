@@ -501,4 +501,35 @@ return [
         'continental_slots' => [],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | World Cup — Swiss Format (Tournament Mode)
+    |--------------------------------------------------------------------------
+    |
+    | An imaginative variant that runs the same 48 national teams through a
+    | Champions-League-style Swiss league phase (top 24 advance) instead of a
+    | group stage. Reuses the national teams/players seeded for WC2026; the
+    | WCSWISS competition + its Swiss draw/schedule are seeded separately by
+    | app:seed-world-cup-swiss-data.
+    |
+    */
+
+    'WS' => [
+        'name' => 'Mundial (Formato Suizo)',
+        'tournament' => true,
+
+        'tiers' => [
+            1 => [
+                'competition' => 'WCSWISS',
+                'teams' => 48,
+                'handler' => 'swiss_format',
+                'config_class' => \App\Modules\Competition\Configs\WorldCupSwissConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+        'continental_slots' => [],
+    ],
+
 ];
