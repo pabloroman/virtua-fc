@@ -199,9 +199,13 @@ return [
         'squad_floor_expiring' => 0.60,   // rises to 0.75 at full leverage
 
         // Buy side: multiplies what an AI club offers for one of the user's
-        // players, reached at zero leverage and interpolated up to 1.0. An AI
-        // club that can wait out a contract bids accordingly, and won't be forced
-        // up to full market value in counter-negotiation either.
+        // players, and the ceiling it can be pushed to in counter-negotiation.
+        // Applies in the FINAL YEAR only — full price before that. Unlike the
+        // seller's floor this is a blunt multiplier on every fee, so grading it
+        // across the whole years_curve would knock a quarter off deals two full
+        // seasons early, which is not how a buyer behaves: it cannot wait out a
+        // two-year contract without losing a season of the player. See
+        // DispositionService::expiringBidFactor.
         'ai_bid_factor_expiring' => 0.65,
     ],
 

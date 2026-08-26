@@ -55,8 +55,8 @@ class CounterOfferDesireTest extends TestCase
      * age modifier) on a long contract.
      *
      * The contract is pinned rather than left to the factory default because AI
-     * buy-side pricing now decays with contract leverage: at full leverage the
-     * contract factor is exactly 1.0, so these cases isolate the DESIRE curve.
+     * buy-side pricing discounts a final-year contract; a long deal keeps the
+     * factor at exactly 1.0, so these cases isolate the DESIRE curve.
      * (The factory's default is relative to wall-clock `now()`, not the game's
      * current_date, so leaving it would make the multipliers drift year to year.)
      * Expiring-contract pricing is covered by ExpiringContractDiscountTest.

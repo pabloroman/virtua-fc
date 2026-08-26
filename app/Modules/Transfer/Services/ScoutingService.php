@@ -688,15 +688,12 @@ class ScoutingService
         $premium += $this->squadNeedService->jitter($offer->id, self::COUNTER_PREMIUM_JITTER);
         $premium = max(self::COUNTER_PREMIUM_FLOOR - self::COUNTER_PREMIUM_JITTER, $premium);
 
-        // A buyer that can simply wait out a short contract doesn't pay a premium
-        // for it, and isn't forced up to full market value either. Only the
+        // A buyer facing a contract in its final year doesn't pay a premium for it,
+        // and isn't forced up to full market value either — it can wait. Only the
         // contract term applies here (no keenness): the buyer is an AI club with
         // no Game row of its own, so there is no reputation step to measure the
         // player's appetite for THIS move against.
-        $contractFactor = $this->dispositionService->contractPriceFactor(
-            $this->dispositionService->contractLeverage($player, $game->current_date),
-            (float) config('finances.contract_leverage.ai_bid_factor_expiring', 0.65),
-        );
+        $contractFactor = $this->dispositionService->expiringBidFactor($player, $game->current_date);
         $marketReference = (int) ($marketValue * $contractFactor);
 
         $desiredWillingness = (int) ($marketValue * $premium * $contractFactor);

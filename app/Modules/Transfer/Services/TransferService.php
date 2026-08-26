@@ -981,15 +981,12 @@ class TransferService
             $ageModifier = max(0.5, 1.0 - ($yearsOverMidPrime * self::AGE_DECLINE_PENALTY_PER_YEAR));
         }
 
-        // Contract leverage: a club that can wait out a short contract opens
-        // lower, because the alternative to paying up is signing the player free
-        // (or near it) once the deal runs down. Mirrors the seller-side decay in
-        // ScoutingService::calculateAskingPrice so both directions of the market
-        // move on the same curve.
-        $contractFactor = $this->dispositionService->contractPriceFactor(
-            $this->dispositionService->contractLeverage($player, $player->game->current_date),
-            (float) config('finances.contract_leverage.ai_bid_factor_expiring', 0.65),
-        );
+        // Final-year contract: a club opens lower, because the alternative to
+        // paying up is signing the player free (or near it) once the deal runs
+        // down. Only the final year moves the price — see
+        // DispositionService::expiringBidFactor for why this is not the leverage
+        // curve the seller's floor uses.
+        $contractFactor = $this->dispositionService->expiringBidFactor($player, $player->game->current_date);
 
         $finalPrice = (int) ($baseValue * $multiplier * $ageModifier * $contractFactor);
 

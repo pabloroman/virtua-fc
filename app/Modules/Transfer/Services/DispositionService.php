@@ -496,6 +496,34 @@ class DispositionService
     }
 
     /**
+     * Buy-side discount on what an AI club will pay for a player (0.0-1.0).
+     *
+     * Deliberately NOT the leverage curve. Leverage scales an importance
+     * PREMIUM, where its 0.30 band for a one-to-two-year contract just means
+     * "no premium left"; used as a price multiplier the same 0.30 would knock a
+     * quarter off the fee two full seasons early, which is not how a buyer
+     * behaves — it cannot wait out a two-year deal without losing a season of
+     * the player. So the buy-side discount is concentrated where the leverage
+     * genuinely collapses: the final year, when waiting really is an
+     * alternative to paying.
+     *
+     * The seller's floor decays gradually by contrast, because it is a floor —
+     * the computed asking price usually sits above it, so a gradual decay only
+     * changes the outcome where the club was being made to hold out for a
+     * premium it can no longer justify.
+     */
+    public function expiringBidFactor(GamePlayer $player, Carbon $currentDate): float
+    {
+        $expiringFactor = (float) config('finances.contract_leverage.ai_bid_factor_expiring', 0.65);
+
+        if (! $player->contract_until) {
+            return $expiringFactor;
+        }
+
+        return $currentDate->diffInYears($player->contract_until) >= 1.0 ? 1.0 : $expiringFactor;
+    }
+
+    /**
      * Map leverage onto a price multiplier, interpolating linearly between the
      * zero-leverage floor and the full-leverage floor.
      *
