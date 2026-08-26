@@ -164,7 +164,7 @@ class NegotiateTransfer
         }
 
         // New negotiation — show asking price
-        $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date);
+        $askingPrice = $this->scoutingService->calculateAskingPrice($player, $game->current_date, null, $game);
         $askingPrice = $this->clampAskingToClause($askingPrice, $game, $player);
         $disposition = $this->transferService->calculateClubDisposition($player, $this->scoutingService);
         $mood = $this->transferService->getClubMoodIndicator($disposition);

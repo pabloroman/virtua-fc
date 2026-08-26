@@ -160,6 +160,55 @@ return [
         'ai_trigger_min_desire' => 0.55,
     ],
 
+    // Contract leverage. A selling club can only hold out for a premium while it
+    // has the leverage to refuse bids; as a contract runs down that leverage
+    // decays, and a player who has made clear he wants to move burns what is
+    // left of it. Drives BOTH directions of the market so they stay symmetric:
+    // the asking price an AI club quotes the user (ScoutingService), and the
+    // price an AI club will pay for the user's own players (TransferService).
+    // Multipliers are bare floats (multiples of market value), NOT cents.
+    'contract_leverage' => [
+        // Leverage (0..1) by whole years remaining on the contract. Keys are the
+        // INCLUSIVE lower bound in years, matched high-to-low; anything below the
+        // smallest key is an expiring contract and gets 0.0 (no leverage at all —
+        // a buyer can simply wait and sign him free next window).
+        'years_curve' => [
+            4 => 1.0,
+            3 => 0.85,
+            2 => 0.65,
+            1 => 0.30,
+        ],
+
+        // A player keen to leave costs his club its remaining leverage. Keyed by
+        // the willingness LABEL from DispositionService::playerTransferWillingness
+        // — the same label shown to the user in the dossier, so the price the club
+        // quotes and the mood it displays can never disagree. Multiplies the
+        // years-based leverage above; 1.0 = no erosion.
+        'keenness_factor' => [
+            'very_interested' => 0.40,
+            'open' => 0.70,
+            'default' => 1.00,
+        ],
+
+        // Price floors as a multiple of market value, reached at ZERO leverage
+        // (expiring contract, player pushing to leave) and interpolated linearly
+        // back up to the full-leverage floor. The key-player floor stops a club's
+        // best player being given away, but it now decays instead of pinning him
+        // at market value regardless of contract situation.
+        'key_floor_expiring' => 0.65,     // rises to 1.00 at full leverage
+        'squad_floor_expiring' => 0.60,   // rises to 0.75 at full leverage
+
+        // Buy side: multiplies what an AI club offers for one of the user's
+        // players, and the ceiling it can be pushed to in counter-negotiation.
+        // Applies in the FINAL YEAR only — full price before that. Unlike the
+        // seller's floor this is a blunt multiplier on every fee, so grading it
+        // across the whole years_curve would knock a quarter off deals two full
+        // seasons early, which is not how a buyer behaves: it cannot wait out a
+        // two-year contract without losing a season of the player. See
+        // DispositionService::expiringBidFactor.
+        'ai_bid_factor_expiring' => 0.65,
+    ],
+
     // Homegrown loyalty. Players developed by the club's own pipeline — youth
     // academy or filial/reserve promotion (GamePlayer::isHomegrown()) — are more
     // willing to STAY: less greedy at renewal, more flexible at the table, and

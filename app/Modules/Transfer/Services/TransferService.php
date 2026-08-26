@@ -981,7 +981,14 @@ class TransferService
             $ageModifier = max(0.5, 1.0 - ($yearsOverMidPrime * self::AGE_DECLINE_PENALTY_PER_YEAR));
         }
 
-        $finalPrice = (int) ($baseValue * $multiplier * $ageModifier);
+        // Final-year contract: a club opens lower, because the alternative to
+        // paying up is signing the player free (or near it) once the deal runs
+        // down. Only the final year moves the price — see
+        // DispositionService::expiringBidFactor for why this is not the leverage
+        // curve the seller's floor uses.
+        $contractFactor = $this->dispositionService->expiringBidFactor($player, $player->game->current_date);
+
+        $finalPrice = (int) ($baseValue * $multiplier * $ageModifier * $contractFactor);
 
         return Money::roundPrice($finalPrice);
     }

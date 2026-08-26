@@ -355,7 +355,7 @@ class ScoutingService
     ): array {
         $overallAbility = (float) $candidate->overall_score;
         $importance = $this->calculatePlayerImportance($candidate, $teammates);
-        $askingPrice = $this->calculateAskingPrice($candidate, $game->current_date);
+        $askingPrice = $this->calculateAskingPrice($candidate, $game->current_date, $teammates, $game);
         $willingness = $this->dispositionService->playerTransferWillingness($candidate, $game, $importance)['score'];
 
         // If we have no one at this position, any candidate fills the gap.
@@ -440,7 +440,7 @@ class ScoutingService
     /**
      * Calculate the AI's asking price for a player.
      */
-    public function calculateAskingPrice(GamePlayer $player, Carbon $currentDate, ?Collection $teammates = null): int
+    public function calculateAskingPrice(GamePlayer $player, Carbon $currentDate, ?Collection $teammates = null, ?Game $buyingClubGame = null): int
     {
         $base = $player->market_value_cents;
         $importance = $this->calculatePlayerImportance($player, $teammates);
@@ -448,8 +448,13 @@ class ScoutingService
         // Contract leverage: a club can only charge an importance premium if
         // it has leverage to refuse bids. As the contract runs down that
         // leverage decays — an expiring star is worth about what a buyer
-        // would pay for any player they can pick up free next window.
-        $leverage = $this->getContractLeverage($player, $currentDate);
+        // would pay for any player they can pick up free next window. A player
+        // openly pushing for the move burns what leverage is left, so the two
+        // multiply: the deepest discounts need BOTH a short contract and a
+        // willing player. $importance is passed through to save the teammates
+        // query the willingness lookup would otherwise repeat.
+        $leverage = $this->dispositionService->contractLeverage($player, $currentDate)
+            * $this->dispositionService->keennessFactor($player, $buyingClubGame, $importance);
         $effectiveImportance = $importance * $leverage;
 
         // Importance multiplier: 0.8x for worst (or no leverage), 1.0x for
@@ -464,13 +469,26 @@ class ScoutingService
 
         $totalMultiplier = $importanceMultiplier * $contractModifier * $ageModifier;
 
-        // Important players are never sold below market value — the club's
-        // reluctance (see DispositionService::clubSellDisposition) is driven
-        // by raw importance, so the asking price floor must be too. Contract
-        // leverage decay still reduces the premium above market value via
-        // $importanceMultiplier, but shouldn't drag a key player's price
-        // below 1.0x. Non-key players can be discounted down to 0.75x.
-        $floor = $importance >= 0.5 ? 1.0 : 0.75;
+        // Price floor, so a club is never made to give a player away. The floor
+        // is driven by raw importance (matching the reluctance in
+        // DispositionService::clubSellDisposition) but DECAYS with leverage: at
+        // full leverage it holds a key player at market value and a squad player
+        // at 0.75x, exactly as before; at zero leverage — final year of the
+        // contract, player agitating to go — it slides down to the configured
+        // expiring floors. Without that decay the clamp discarded the whole
+        // contract discount for precisely the players it matters most for: the
+        // better the player, the more certainly he was pinned back at 1.0x.
+        $floor = $importance >= 0.5
+            ? $this->dispositionService->contractPriceFactor(
+                $leverage,
+                (float) config('finances.contract_leverage.key_floor_expiring', 0.65),
+                1.0,
+            )
+            : $this->dispositionService->contractPriceFactor(
+                $leverage,
+                (float) config('finances.contract_leverage.squad_floor_expiring', 0.60),
+                0.75,
+            );
         $totalMultiplier = min(max($totalMultiplier, $floor), 1.5);
 
         $askingPrice = $base * $totalMultiplier;
@@ -487,38 +505,6 @@ class ScoutingService
     public function calculatePlayerImportance(GamePlayer $player, ?Collection $teammates = null): float
     {
         return $this->dispositionService->playerImportance($player, $teammates);
-    }
-
-    /**
-     * Get the contract leverage factor (0.0 to 1.0).
-     *
-     * A club can only charge an importance premium if it has leverage to
-     * refuse bids. As the contract runs down that leverage decays — at the
-     * expiring end there is no premium because the buyer can simply wait and
-     * sign free.
-     */
-    private function getContractLeverage(GamePlayer $player, Carbon $currentDate): float
-    {
-        if (! $player->contract_until) {
-            return 0.0;
-        }
-
-        $yearsLeft = $currentDate->diffInYears($player->contract_until);
-
-        if ($yearsLeft >= 4) {
-            return 1.0;
-        }
-        if ($yearsLeft >= 3) {
-            return 0.85;
-        }
-        if ($yearsLeft >= 2) {
-            return 0.65;
-        }
-        if ($yearsLeft >= 1) {
-            return 0.30;
-        }
-
-        return 0.0; // Expiring
     }
 
     /**
@@ -578,7 +564,7 @@ class ScoutingService
     public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null, ?int $previousCounter = null): array
     {
         $currentDate = $game?->current_date ?? $player->game->current_date;
-        $askingPrice = $this->calculateAskingPrice($player, $currentDate);
+        $askingPrice = $this->calculateAskingPrice($player, $currentDate, null, $game);
 
         // Use the previous counter as ceiling so the club never raises their demand
         $ceiling = ($previousCounter !== null && $previousCounter < $askingPrice)
@@ -702,7 +688,15 @@ class ScoutingService
         $premium += $this->squadNeedService->jitter($offer->id, self::COUNTER_PREMIUM_JITTER);
         $premium = max(self::COUNTER_PREMIUM_FLOOR - self::COUNTER_PREMIUM_JITTER, $premium);
 
-        $desiredWillingness = (int) ($marketValue * $premium);
+        // A buyer facing a contract in its final year doesn't pay a premium for it,
+        // and isn't forced up to full market value either — it can wait. Only the
+        // contract term applies here (no keenness): the buyer is an AI club with
+        // no Game row of its own, so there is no reputation step to measure the
+        // player's appetite for THIS move against.
+        $contractFactor = $this->dispositionService->expiringBidFactor($player, $game->current_date);
+        $marketReference = (int) ($marketValue * $contractFactor);
+
+        $desiredWillingness = (int) ($marketValue * $premium * $contractFactor);
 
         // A club that already tabled a bid has revealed it can afford that bid, so
         // the affordability ceiling must never cut willingness below a bid the club
@@ -713,11 +707,13 @@ class ScoutingService
 
         // Always floor willingness at the club's own anchor — never withdraw rather
         // than negotiate modestly up from a bid already on the table. Reach up to
-        // market value only when the squad-value ceiling can actually afford it, so a
-        // genuinely cash-poor club still settles below market.
+        // the contract-adjusted market reference only when the squad-value ceiling
+        // can actually afford it, so a genuinely cash-poor club still settles below
+        // it. The anchor floor is applied unconditionally and last, so the guarantee
+        // that a club never walks away from its own bid survives the decay.
         $maxWillingness = max($maxWillingness, $offer->transfer_fee);
-        if ($affordabilityCeiling >= $marketValue) {
-            $maxWillingness = max($maxWillingness, $marketValue);
+        if ($affordabilityCeiling >= $marketReference) {
+            $maxWillingness = max($maxWillingness, $marketReference);
         }
 
         if ($userAskingPrice <= (int) ($maxWillingness * self::COUNTER_ACCEPT_RATIO)) {
@@ -856,7 +852,7 @@ class ScoutingService
         $isOnLoan = !$isFreeAgent && Loan::where('game_player_id', $player->id)
             ->where('status', Loan::STATUS_ACTIVE)
             ->exists();
-        $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player, $game->current_date);
+        $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player, $game->current_date, null, $game);
         $transferDemand = $this->contractService->calculateWageDemand($player, NegotiationScenario::TRANSFER, $game->team);
         $wageDemand = $transferDemand['wage'];
         $importance = $isFreeAgent ? 0.0 : $this->calculatePlayerImportance($player);

@@ -11,6 +11,7 @@ use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class DispositionService
@@ -425,6 +426,115 @@ class DispositionService
         $penaltyPerTier = $isRenewal ? self::AMBITION_PENALTY_PER_TIER_GAP : 0.15;
 
         return -$tierGap * $penaltyPerTier;
+    }
+
+    // =========================================
+    // CONTRACT LEVERAGE
+    // =========================================
+
+    /**
+     * How much leverage a club still has to refuse bids for a player (0.0-1.0).
+     *
+     * A club can only hold out for a premium while it has the leverage to say
+     * no. As the contract runs down that leverage decays — at the expiring end
+     * there is none left, because a buyer can simply wait and sign the player
+     * free next window.
+     *
+     * Shared by both sides of the market so they stay symmetric: the asking
+     * price an AI club quotes the user, and the price an AI club will pay for
+     * one of the user's own players.
+     */
+    public function contractLeverage(GamePlayer $player, Carbon $currentDate): float
+    {
+        if (! $player->contract_until) {
+            return 0.0;
+        }
+
+        $yearsLeft = $currentDate->diffInYears($player->contract_until);
+
+        // Keys are inclusive lower bounds in years; match high-to-low so the
+        // longest band a contract qualifies for wins.
+        $curve = config('finances.contract_leverage.years_curve', []);
+        krsort($curve);
+
+        foreach ($curve as $minYears => $leverage) {
+            if ($yearsLeft >= $minYears) {
+                return (float) $leverage;
+            }
+        }
+
+        return 0.0; // Expiring
+    }
+
+    /**
+     * How much of its remaining leverage a club keeps once the player's own
+     * appetite for the move is accounted for (0.0-1.0, multiplies leverage).
+     *
+     * A player who has made clear he wants to go burns his club's negotiating
+     * position: the buyer knows the dressing room is already lost. Keyed on the
+     * willingness LABEL rather than a parallel scale of its own, so the price a
+     * club quotes can never disagree with the mood the dossier displays.
+     *
+     * Returns the neutral default when there is no buying club in context —
+     * keenness is relative to who is asking.
+     *
+     * @param float|null $importance Pre-computed importance, to save the
+     *                               teammates query in list loops.
+     */
+    public function keennessFactor(GamePlayer $player, ?Game $buyingClubGame, ?float $importance = null): float
+    {
+        $factors = config('finances.contract_leverage.keenness_factor', []);
+        $default = (float) ($factors['default'] ?? 1.0);
+
+        if (! $buyingClubGame?->team || ! $player->team_id) {
+            return $default;
+        }
+
+        $label = $this->playerTransferWillingness($player, $buyingClubGame, $importance)['label'];
+
+        return (float) ($factors[$label] ?? $default);
+    }
+
+    /**
+     * Buy-side discount on what an AI club will pay for a player (0.0-1.0).
+     *
+     * Deliberately NOT the leverage curve. Leverage scales an importance
+     * PREMIUM, where its 0.30 band for a one-to-two-year contract just means
+     * "no premium left"; used as a price multiplier the same 0.30 would knock a
+     * quarter off the fee two full seasons early, which is not how a buyer
+     * behaves — it cannot wait out a two-year deal without losing a season of
+     * the player. So the buy-side discount is concentrated where the leverage
+     * genuinely collapses: the final year, when waiting really is an
+     * alternative to paying.
+     *
+     * The seller's floor decays gradually by contrast, because it is a floor —
+     * the computed asking price usually sits above it, so a gradual decay only
+     * changes the outcome where the club was being made to hold out for a
+     * premium it can no longer justify.
+     */
+    public function expiringBidFactor(GamePlayer $player, Carbon $currentDate): float
+    {
+        $expiringFactor = (float) config('finances.contract_leverage.ai_bid_factor_expiring', 0.65);
+
+        if (! $player->contract_until) {
+            return $expiringFactor;
+        }
+
+        return $currentDate->diffInYears($player->contract_until) >= 1.0 ? 1.0 : $expiringFactor;
+    }
+
+    /**
+     * Map leverage onto a price multiplier, interpolating linearly between the
+     * zero-leverage floor and the full-leverage floor.
+     *
+     * Used for both the seller's asking-price floor and the buyer's bid
+     * discount, so a contract running down moves both sides by the same curve.
+     */
+    public function contractPriceFactor(float $leverage, float $expiringFloor, float $fullLeverageFloor = 1.0): float
+    {
+        $leverage = max(0.0, min(1.0, $leverage));
+
+        return $expiringFloor + $leverage * ($fullLeverageFloor - $expiringFloor);
     }
 
     // =========================================
