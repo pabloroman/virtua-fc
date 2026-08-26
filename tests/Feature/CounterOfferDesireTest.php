@@ -50,7 +50,17 @@ class CounterOfferDesireTest extends TestCase
         ]);
     }
 
-    /** The user's player up for sale — a €10M central midfielder, age 27 (neutral age modifier). */
+    /**
+     * The user's player up for sale — a €10M central midfielder, age 27 (neutral
+     * age modifier) on a long contract.
+     *
+     * The contract is pinned rather than left to the factory default because AI
+     * buy-side pricing now decays with contract leverage: at full leverage the
+     * contract factor is exactly 1.0, so these cases isolate the DESIRE curve.
+     * (The factory's default is relative to wall-clock `now()`, not the game's
+     * current_date, so leaving it would make the multipliers drift year to year.)
+     * Expiring-contract pricing is covered by ExpiringContractDiscountTest.
+     */
     private function target(int $overall, int $marketValueCents = 10_000_000_00): GamePlayer
     {
         return GamePlayer::factory()->create([
@@ -60,6 +70,7 @@ class CounterOfferDesireTest extends TestCase
             'overall_score' => $overall,
             'date_of_birth' => '1998-01-01',
             'market_value_cents' => $marketValueCents,
+            'contract_until' => '2030-06-30',
         ]);
     }
 

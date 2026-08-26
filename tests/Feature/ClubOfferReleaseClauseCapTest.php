@@ -20,8 +20,10 @@ use Tests\TestCase;
  * untouched when the feature is off.
  *
  * Determinism: calculateOfferPrice multiplies market value by 0.77..1.13 (floor−jitter
- * to ceil+jitter) and an age modifier that bottoms out at 0.5, so the uncapped price is
- * always ≥ MV × 0.385. With MV €30M and a €5M clause, the cap therefore always binds.
+ * to ceil+jitter), an age modifier that bottoms out at 0.5, and a contract-leverage
+ * factor that bottoms out at ai_bid_factor_expiring (0.65), so the uncapped price is
+ * always ≥ MV × 0.25. With MV €30M that is €7.5M, still clear of the €5M clause, so the
+ * cap always binds regardless of the fixture's contract length.
  */
 class ClubOfferReleaseClauseCapTest extends TestCase
 {

@@ -19,7 +19,17 @@ Scouting tier (from budget allocation) determines geographic scope, search speed
 
 ## Buying
 
-When bidding on a player, the selling club calculates an **asking price** based on market value, the player's importance to their team, contract length, and age. Bids are evaluated relative to the asking price — key players require higher bids. Responses are: accept, counter-offer (midpoint of bid and asking price), or reject. See `ScoutingService::evaluateBid()`.
+When bidding on a player, the selling club calculates an **asking price** based on market value, the player's importance to their team, contract length, age, and how keen the player is on the move. Bids are evaluated relative to the asking price — key players require higher bids. Responses are: accept, counter-offer (midpoint of bid and asking price), or reject. See `ScoutingService::evaluateBid()`.
+
+### Contract leverage
+
+A club can only hold out for a premium while it has the **leverage** to refuse bids, and that leverage decays as a contract runs down — at the expiring end a buyer can simply wait and sign the player free. A player who is keen on the move (the willingness label already shown in his dossier) burns what leverage is left, so the deepest discounts need both a short contract and a willing player.
+
+Leverage does two things to the asking price: it scales back the importance premium, and it lowers the **price floor** that stops a club giving a player away. That floor decays rather than sitting flat — otherwise it clamped every key player at market value regardless of contract situation, discarding the discount for exactly the players it matters most for. At full leverage a key player still floors at market value and a squad player at 0.75×; at zero leverage they slide to the configured expiring floors.
+
+The same curve drives the **buy side**, so both directions of the market move together: an AI club opens lower for one of the user's expiring players and won't be pushed up to full market value for him in counter-negotiation. (The buy side uses contract length only — an AI club has no `Game` of its own, so there is no reputation step to measure the player's appetite for that specific move against.)
+
+Tuning lives in `config/finances.php` under `contract_leverage`. Shared helpers are on `DispositionService` (`contractLeverage`, `keennessFactor`, `contractPriceFactor`).
 
 Transfers complete immediately if the window is open, otherwise they're marked "agreed" and complete at the next window (summer or winter).
 
