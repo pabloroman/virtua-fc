@@ -1,0 +1,19 @@
+{
+    "league": [
+        { "round": 1, "date": "2026-06-11" },
+        { "round": 2, "date": "2026-06-14" },
+        { "round": 3, "date": "2026-06-17" },
+        { "round": 4, "date": "2026-06-20" },
+        { "round": 5, "date": "2026-06-23" },
+        { "round": 6, "date": "2026-06-26" },
+        { "round": 7, "date": "2026-06-29" },
+        { "round": 8, "date": "2026-07-02" }
+    ],
+    "knockout": [
+        { "round": 1, "name": "cup.knockout_playoff_round", "date": "2026-07-06" },
+        { "round": 2, "name": "cup.round_of_16", "date": "2026-07-10" },
+        { "round": 3, "name": "cup.quarter_finals", "date": "2026-07-14" },
+        { "round": 4, "name": "cup.semi_finals", "date": "2026-07-18" },
+        { "round": 5, "name": "cup.final", "date": "2026-07-22" }
+    ]
+}

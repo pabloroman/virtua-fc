@@ -11,7 +11,12 @@ use Ramsey\Uuid\Uuid;
 
 class TournamentCreationService
 {
-    public function create(string $userId, string $teamId): Game
+    private const SEASON = '2025';
+
+    /** Fallback start date used when a tournament ships no league schedule (WC2026 groups). */
+    private const DEFAULT_START_DATE = '2026-06-11';
+
+    public function create(string $userId, string $teamId, string $competitionId = 'WC2026'): Game
     {
         $gameId = Uuid::uuid4()->toString();
 
@@ -23,9 +28,9 @@ class TournamentCreationService
             'game_mode' => Game::MODE_TOURNAMENT,
             'country' => $team->fifa_code ?? 'XXX',
             'team_id' => $teamId,
-            'competition_id' => 'WC2026',
-            'season' => '2025',
-            'current_date' => '2026-06-11',
+            'competition_id' => $competitionId,
+            'season' => self::SEASON,
+            'current_date' => $this->resolveStartDate($competitionId),
             'needs_welcome' => true,
             'needs_new_season_setup' => true,
             'setup_completed_at' => null,
@@ -37,8 +42,30 @@ class TournamentCreationService
         SetupTournamentGame::dispatch(
             gameId: $gameId,
             teamId: $teamId,
+            competitionId: $competitionId,
         );
 
         return $game;
+    }
+
+    /**
+     * The Swiss-format tournament opens on its first league matchday (read from
+     * schedule.json); the group-stage World Cup ships no league block, so it
+     * falls back to the fixed group-stage kickoff date.
+     */
+    private function resolveStartDate(string $competitionId): string
+    {
+        $path = base_path('data/' . self::SEASON . "/{$competitionId}/schedule.json");
+
+        if (is_file($path)) {
+            $schedule = json_decode(file_get_contents($path), true);
+            $firstLeagueDate = $schedule['league'][0]['date'] ?? null;
+
+            if ($firstLeagueDate) {
+                return $firstLeagueDate;
+            }
+        }
+
+        return self::DEFAULT_START_DATE;
     }
 }

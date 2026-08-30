@@ -52,6 +52,11 @@ class SeedWorldCupData extends Command
         $this->generateBracketJson();
         $this->displaySummary($teamMapping, $templateCount);
 
+        // Seed the Swiss-format variant over the same national teams so both
+        // tournament formats are always available together. Idempotent, so it's
+        // safe on re-runs and with --fresh.
+        $this->call('app:seed-world-cup-swiss-data');
+
         return CommandAlias::SUCCESS;
     }
 
