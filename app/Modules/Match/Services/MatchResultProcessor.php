@@ -44,9 +44,13 @@ class MatchResultProcessor
         $game = $gameOrId instanceof Game ? $gameOrId : Game::findOrFail($gameOrId);
         $gameId = $game->id;
 
-        // 1. Update game state — only advance current_date forward.
-        // Background batch processing must not regress the date that was
-        // already set by the player's batch.
+        // 1. Pin current_date to this batch's date, but never regress it.
+        // Unlike Game::advanceDateToNextMatch(), this deliberately does NOT jump
+        // past still-unplayed matches — it keeps the calendar on the matchday
+        // being processed. The forward-looking jump to the next unplayed match
+        // (and the GameDateAdvanced event) is reserved for match finalization,
+        // so background batch processing can't silently advance past — and steal
+        // the GameDateAdvanced event from — the user's live match.
         $newDate = Carbon::parse($currentDate);
         if (! $game->current_date || $newDate->gte($game->current_date)) {
             Game::where('id', $gameId)->update(['current_date' => $newDate->toDateString()]);

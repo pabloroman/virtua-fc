@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
+use App\Modules\Match\Events\GameDateAdvanced;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
 use App\Models\Competition;
@@ -14,6 +15,7 @@ use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class AdvanceMatchdayTest extends TestCase
@@ -363,6 +365,67 @@ class AdvanceMatchdayTest extends TestCase
             'home_team_id' => $team3->id,
             'played' => true,
         ]);
+    }
+
+    public function test_finalization_dispatches_game_date_advanced_after_inline_sibling_simulation(): void
+    {
+        // Regression: batch processing must PIN current_date to the matchday being
+        // played, never forward-jump to the next unplayed match. If processAll used
+        // the forward-looking Game::advanceDateToNextMatch(), simulating the live
+        // matchday would push current_date all the way to the next matchday before
+        // the user even finalizes — and finalize() would then find nothing left to
+        // advance and silently skip the GameDateAdvanced event that drives transfer
+        // windows, squad registration and recovered-player checks.
+        //
+        // Scenario: matchday 1 has the user's match (08-16) + an AI sibling (08-17),
+        // both simulated inline; matchday 2 (08-23) is the next upcoming user match.
+        // current_date must stay on matchday 1 until the user finalizes, and only
+        // then advance to matchday 2 and fire the event.
+        $this->createMatchdayWithAiSibling();
+
+        GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->leagueCompetition->id,
+            'round_number' => 2,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-23'),
+        ]);
+
+        // Fake only GameDateAdvanced so all other finalization side effects run normally.
+        Event::fake([GameDateAdvanced::class]);
+
+        $orchestrator = app(MatchdayOrchestrator::class);
+        $result = $orchestrator->advance($this->game);
+        $this->assertEquals('live_match', $result->type);
+
+        // After the live matchday is simulated inline, current_date must NOT have
+        // jumped to the next matchday, and no event has fired yet.
+        Event::assertNotDispatched(GameDateAdvanced::class);
+        $this->assertTrue(
+            $this->game->fresh()->current_date->lt(Carbon::parse('2024-08-23')),
+            'current_date must stay on the live matchday until the user finalizes',
+        );
+
+        // User finalizes their matchday-1 match.
+        $this->game->refresh();
+        $finalizationService = app(MatchFinalizationService::class);
+        $finalizationService->dispatchPostFinalizeEffects(
+            $finalizationService->finalize(
+                GameMatch::find($this->game->pending_finalization_match_id),
+                $this->game,
+            )
+        );
+
+        // The event must fire, advancing to matchday 2 (08-23).
+        Event::assertDispatched(GameDateAdvanced::class, function (GameDateAdvanced $event) {
+            return $event->game->id === $this->game->id
+                && $event->newDate->toDateString() === '2024-08-23'
+                && $event->previousDate->lt($event->newDate);
+        });
+
+        // And current_date should land on the upcoming matchday.
+        $this->assertEquals('2024-08-23', $this->game->fresh()->current_date->toDateString());
     }
 
     public function test_returns_season_complete_when_no_matches(): void
