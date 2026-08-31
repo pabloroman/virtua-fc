@@ -164,9 +164,14 @@ class ValidateSeasonCommandTest extends TestCase
         $clubs[0] = ['id' => '999999', 'name' => 'Ghost FC', 'country' => 'NL', 'pot' => 1];
         $this->writeContinental($clubs);
 
+        // One assertion only: PendingCommand registers a separate mock
+        // expectation per expected substring, and a single written line is
+        // routed to just the first one that matches — so two
+        // expectsOutputToContain calls can never both match the same line.
+        // "Ghost FC (999999)" is the unseedable-participant error's own
+        // "{name} ({id})" format and appears in no other message.
         $this->artisan('app:validate-season', ['season' => $this->season])
             ->expectsOutputToContain('Ghost FC (999999)')
-            ->expectsOutputToContain('have no squad data')
             ->assertFailed();
     }
 
