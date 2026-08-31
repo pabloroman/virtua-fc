@@ -41,6 +41,23 @@
       return data;
     }
 
+    /**
+     * Read and JSON-parse a file from `branch`, or null when it does not exist
+     * there. Throws on any other failure so a caller can refuse to push rather
+     * than silently overwriting data it failed to read.
+     */
+    async getFileJson(branch, path) {
+      const file = await this.request(
+        'GET',
+        `/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(branch)}`,
+      );
+      if (file.notFound || !file.content) return null;
+
+      // The contents API returns base64 with embedded newlines.
+      const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
     async getRefSha(branch) {
       // Branch names (e.g. "season-data/2026") contain a slash that is part of
       // the ref path — it must not be percent-encoded.

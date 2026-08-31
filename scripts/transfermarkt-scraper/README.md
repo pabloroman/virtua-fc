@@ -88,6 +88,18 @@ After scraping a supported page, click **Push to GitHub**:
 The first push creates the `season-data/{season}` branch and opens a PR; later
 pushes update the same PR. The popup links straight to it.
 
+Continental participant lists (UCL/UEL/UECL/UEFASUP) keep their `pot` values
+across a re-scrape: the extension reads the file already on the season branch
+and carries each club's pot forward by transfermarkt id. Pots are not on any
+Transfermarkt page — they are entered by hand — so a push that cannot read the
+existing file aborts rather than overwriting them. A newly drawn club arrives
+without a pot, which `app:validate-season` reports.
+
+Club squad pages also record the club's country (the flag beside its league in
+the page header, so Monaco reads as France — the federation UEFA protects on).
+Unknown labels are left out rather than guessed; add them to `COUNTRY_CODES` in
+`season-config.js`.
+
 ### Refresh every league at once
 
 **SEASON REFRESH → Refresh all leagues** drives every league in `season-config.js`

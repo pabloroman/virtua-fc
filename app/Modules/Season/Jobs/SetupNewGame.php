@@ -4,6 +4,7 @@ namespace App\Modules\Season\Jobs;
 
 use App\Events\SeasonStarted;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Competition\Services\SwissDrawService;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\FormationBiasResolver;
 use App\Modules\Lineup\Services\FormationRecommender;
@@ -262,12 +263,18 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
     private function loadTeamLookup(): Collection
     {
         return Team::whereNotNull('transfermarkt_id')
-            ->get(['id', 'transfermarkt_id'])
+            ->get(['id', 'transfermarkt_id', 'country'])
             ->keyBy('transfermarkt_id');
     }
 
     /**
      * Build Swiss pot data from JSON for all Swiss competitions (initial season only).
+     *
+     * Only publishes a competition whose participant list carries a complete,
+     * well-formed set of seeding pots. Real pots are optional data the scraper
+     * does not produce; omitting a competition here makes
+     * SeasonInitializationService fall back to assigning pots by squad market
+     * value — the same path every season after the first already uses.
      *
      * @return array<string, array<array{id: string, pot: int, country: string}>>
      */
@@ -290,6 +297,8 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             $clubs = $teamsData['clubs'] ?? [];
 
             $drawTeams = [];
+            $everyClubHasAPot = true;
+
             foreach ($clubs as $club) {
                 $transfermarktId = $club['id'] ?? null;
                 if (!$transfermarktId) {
@@ -301,19 +310,52 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
                     continue;
                 }
 
+                if (!isset($club['pot'])) {
+                    $everyClubHasAPot = false;
+                }
+
                 $drawTeams[] = [
                     'id' => $team->id,
-                    'pot' => $club['pot'] ?? 4,
-                    'country' => $club['country'] ?? 'XX',
+                    'pot' => (int) ($club['pot'] ?? 0),
+                    // The seeded team row is the better country source: pool
+                    // files feed it directly, so it stays right even when a
+                    // re-scraped participant list drops the key.
+                    'country' => $club['country'] ?? $team->country ?? 'XX',
                 ];
             }
 
-            if (!empty($drawTeams)) {
+            if ($everyClubHasAPot && $this->potsAreWellFormed($drawTeams)) {
                 $potData[$competitionId] = $drawTeams;
             }
         }
 
         return $potData;
+    }
+
+    /**
+     * Whether a draw set carries the exact pot shape SwissDrawService requires:
+     * every pot from 1..POTS holding exactly TEAMS_PER_POT clubs. Anything else
+     * — a participant list scraped without pots, a partial hand-edit, or a club
+     * dropped for want of squad data — would make the draw throw, so we discard
+     * it and let the market-value fallback take over.
+     *
+     * @param  array<array{id: string, pot: int, country: string}>  $drawTeams
+     */
+    private function potsAreWellFormed(array $drawTeams): bool
+    {
+        if (count($drawTeams) !== SwissDrawService::LEAGUE_PHASE_TEAMS) {
+            return false;
+        }
+
+        $sizes = array_count_values(array_column($drawTeams, 'pot'));
+
+        foreach (range(1, SwissDrawService::POTS) as $pot) {
+            if (($sizes[$pot] ?? 0) !== SwissDrawService::TEAMS_PER_POT) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

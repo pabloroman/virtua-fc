@@ -852,6 +852,20 @@ class ClubProfilesSeeder extends Seeder
         'Inter Miami CF' => 1,
     ];
 
+    /**
+     * Club names that have curated editorial data (reputation, fan loyalty,
+     * preferred formation, tactical aggression). Lookups are by exact name, so
+     * a club absent from here silently falls back to a local-reputation profile
+     * — wrong for, say, a first-time Champions League qualifier. Exposed so
+     * app:validate-season can flag the gap when a season's data is refreshed.
+     *
+     * @return array<int, string>
+     */
+    public static function profiledClubNames(): array
+    {
+        return array_keys(self::CLUB_DATA);
+    }
+
     public function run(): void
     {
         $allTeams = Team::all();

@@ -391,6 +391,33 @@ async function getSettings() {
  * Commit a set of {path, content} files to the season-data branch as one commit
  * and ensure a PR is open. Returns the PR url.
  */
+/**
+ * Read the clubs already stored for a continental competition on the season
+ * branch, so their hand-entered pots survive a re-scrape. Returns null when the
+ * competition isn't continental or nothing is stored yet.
+ *
+ * Any other read failure propagates: pushing without the merge would silently
+ * wipe every pot in the file, which is worse than a failed push.
+ */
+async function previousContinentalClubs(result, pageType, season) {
+  if (pageType !== 'cup-teams') return null;
+
+  const comp = SeasonConfig.findByTmId(result.id);
+  if (!comp || comp.kind !== 'continental') return null;
+
+  const { token, repo, base } = await getSettings();
+  if (!token) throw new Error('No GitHub token set — open Settings.');
+
+  const gh = new GitHubClient(token, repo);
+  const branch = SeasonConfig.branchFor(season);
+  const path = `data/${season}/${comp.code}/teams.json`;
+
+  // The season branch doesn't exist before the first push; fall back to base.
+  const existing = (await gh.getFileJson(branch, path)) || (await gh.getFileJson(base, path));
+
+  return existing && Array.isArray(existing.clubs) ? existing.clubs : null;
+}
+
 async function pushFilesToGitHub(files, season) {
   const { token, repo, base } = await getSettings();
   if (!token) throw new Error('No GitHub token set — open Settings.');
@@ -697,9 +724,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const { season } = await getSettings();
         if (!season) throw new Error('Set a target season in Settings first.');
 
+        const previousClubs = await previousContinentalClubs(message.result, message.pageType, season);
+
         const file = SeasonConfig.repoFileForResult(message.result, message.pageType, {
           season,
           pool: message.pool,
+          previousClubs,
         });
         if (!file) {
           throw new Error('This page is not a known competition — cannot map it to a repo file.');

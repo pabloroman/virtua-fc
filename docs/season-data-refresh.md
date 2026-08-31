@@ -66,7 +66,7 @@ add/remove line, not a reshuffled roster.
 |---------|--------------|
 | `app:scaffold-season {season}` | Create folders, bootstrap schedules from last season. |
 | `app:normalize-season {season} [--check]` | Force `seasonID`, sort clubs/players, canonical 2-space formatting. `--check` verifies without writing (the CI gate). Idempotent. |
-| `app:validate-season {season}` | Read-only completeness/correctness gate (non-zero exit on any problem). |
+| `app:validate-season {season}` | Read-only completeness/correctness gate (non-zero exit on any problem). Database-free, so CI can run it without Postgres. |
 | `app:diff-season {season} [--from=] [--format=md]` | Report signings, departures, and club movements vs a previous season. |
 | `app:seed-reference-data [--fresh] [--country=]` | Seed competitions, teams, fixtures, templates from `data/{season}/`. |
 
@@ -92,7 +92,12 @@ add/remove line, not a reshuffled roster.
      (ESP1, ESP2, ESP3A, ESP3B, ENG1, DEU1, FRA1, ITA1) — clubs + squads,
      reflecting real promotion/relegation. **Set `"seasonID": "2026"`.**
    - `data/2026/{CUP}/teams.json` participant lists (ESPCUP, ESPSUP).
-   - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists.
+   - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists. These are
+     independent of the transfer window — the draws are known before it shuts —
+     so they can go in first. Their squads cannot: every participant outside the
+     eight scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025).
+     Add `pot` by hand for a true-to-life first-season draw; a re-scrape now
+     preserves it.
    - `data/2026/EUR/{id}.json` and `data/2026/INT/{id}.json` pool teams.
    - Append any new players to `data/players/player_positions_ES.json`
      (secondary positions; keyed by player id, not season-scoped).
@@ -100,8 +105,9 @@ add/remove line, not a reshuffled roster.
    `ESP3PO` (Primera RFEF playoff) is intentionally schedule-only — no
    `teams.json`; its bracket is generated per-game.
 
-4. **Normalize** (forces every `seasonID` to `2026` and sorts clubs/players so
-   re-scrapes diff cleanly — so you can skip the manual `seasonID` edits above):
+4. **Normalize** (forces every `seasonID` to `2026`, sorts clubs/players so
+   re-scrapes diff cleanly, and backfills each club's `country` — so you can skip
+   the manual `seasonID` edits above):
 
    ```bash
    php artisan app:normalize-season 2026
@@ -119,6 +125,20 @@ add/remove line, not a reshuffled roster.
    Checks every competition has the expected data, `seasonID` matches,
    transfermarkt ids resolve, and each round-robin league's schedule has exactly
    `2 × (teams − 1)` rounds (the invariant the fixture generator enforces).
+
+   European competitions get extra rules, because their participant lists only
+   *link* clubs seeded elsewhere:
+
+   - every participant needs a literal `id` and squad data somewhere in the
+     season folder — a league `teams.json` or an `EUR`/`INT` pool file. Without
+     it the seeder drops the club and the competition ends up with no fixtures
+     at all, silently;
+   - UCL/UEL/UECL need exactly 36 clubs (UEFASUP, a two-club knockout, is
+     exempt);
+   - seeding pots are optional, but all-or-nothing: give every club a `pot`
+     forming four pots of nine, or none at all. A partial set usually means a
+     re-scrape overwrote hand-entered pots. With no pots the draw seeds itself
+     by squad market value, exactly as it does from the second season onward.
 
 6. **Seed a fresh database** (wipes prior reference data and games, then seeds
    2026 and auto-generates player templates for season 2026):

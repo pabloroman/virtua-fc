@@ -117,6 +117,14 @@ class SeasonInitializationService
             return;
         }
 
+        // CountryConfig::swissFormatCompetitionIds() folds in every continental
+        // competition, so UEFASUP — a two-club knockout — reaches this method
+        // whenever the user manages one of its two participants. It has no
+        // league phase to draw; its tie is created by conductCupDraws().
+        if ($competition->handler_type !== 'swiss_format') {
+            return;
+        }
+
         // Build draw teams — from explicit data or auto-assign pots by market value
         if ($teamsWithPots !== null) {
             $drawTeams = $teamsWithPots;
@@ -124,8 +132,14 @@ class SeasonInitializationService
             $drawTeams = $this->buildDrawTeamsFromGameState($gameId, $competitionId);
         }
 
-        if (count($drawTeams) < 36) {
-            Log::info("[SeasonInit] {$competitionId}: only " . count($drawTeams) . ' draw teams (need 36), skipping');
+        // Deliberately a skip rather than a throw: GameSetupStatus re-dispatches
+        // SetupNewGame while setup is incomplete, so throwing here would spin.
+        // Logged at error level because the result — a European competition with
+        // entries but no fixtures — is invisible in-game and always a data fault.
+        if (count($drawTeams) < SwissDrawService::LEAGUE_PHASE_TEAMS) {
+            Log::error("[SeasonInit] {$competitionId}: only " . count($drawTeams)
+                . ' of ' . SwissDrawService::LEAGUE_PHASE_TEAMS
+                . ' draw teams, skipping — the competition will have no fixtures');
 
             return;
         }
