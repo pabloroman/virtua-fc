@@ -6,11 +6,17 @@
 // {
 //   "transfermarktId": "131",
 //   "name": "FC Barcelona",
+//   "countryName": "Spain",
 //   "image": "https://tmssl.akamaized.net/images/wappen/big/131.png",
 //   "stadiumName": "Estadi Olímpic Lluís Companys",
 //   "stadiumSeats": "55926",
 //   "players": [ { "id": "74857", "name": "Marc-André ter Stegen", ... }, ... ]
 // }
+//
+// `countryName` is the raw Transfermarkt country label; season-config.js turns
+// it into the repo's two-letter `country` code at serialization time. The
+// mapping lives there because this file runs in the page context, where the
+// SeasonConfig module is not injected.
 
 (function () {
   const url = window.location.href;
@@ -35,6 +41,7 @@
   const clubInfo = {
     transfermarktId: clubId,
     name: null,
+    countryName: null,
     image: `https://tmssl.akamaized.net/images/wappen/big/${clubId}.png`,
     stadiumName: null,
     stadiumSeats: null
@@ -54,6 +61,17 @@
     if (profileHeader) {
       clubInfo.name = cleanText(profileHeader.alt);
     }
+  }
+
+  // Country - the flag beside the club's league in the header. This is the
+  // federation the club plays under (Monaco -> France), which is exactly what
+  // UEFA country protection keys on. Scoped to .data-header__club-info because
+  // player nationality flags in the squad table reuse the flaggenrahmen class.
+  // The flag is lazy-loaded (src is a base64 placeholder, the real URL sits in
+  // data-src), so the title/alt attribute is the only reliable source.
+  const clubFlag = document.querySelector('.data-header__club-info img.flaggenrahmen');
+  if (clubFlag) {
+    clubInfo.countryName = cleanText(clubFlag.getAttribute('title') || clubFlag.getAttribute('alt')) || null;
   }
 
   // Stadium info - from the data-header info box

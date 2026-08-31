@@ -123,6 +123,30 @@ class SeasonData
     }
 
     /**
+     * Map every continental competition that owns a season folder to its handler
+     * (e.g. `UCL => swiss_format`, `UEFASUP => knockout_cup`).
+     *
+     * Read straight from config so it works without a database — unlike
+     * CountryConfig::swissFormatCompetitionIds(), which queries `competitions`
+     * and is therefore unusable from the data-folder commands (CI runs them
+     * against an unmigrated database).
+     *
+     * @return array<string, string>
+     */
+    public static function continentalHandlers(CountryConfig $countryConfig): array
+    {
+        $handlers = [];
+
+        foreach ($countryConfig->playableCountryCodes() as $country) {
+            foreach ($countryConfig->support($country)['continental'] ?? [] as $code => $config) {
+                $handlers[$code] ??= (string) ($config['handler'] ?? '');
+            }
+        }
+
+        return $handlers;
+    }
+
+    /**
      * Read a competition's clubs as a normalized list, regardless of whether it
      * is stored as a single `teams.json` (league/cup/continental) or a folder of
      * per-team `{id}.json` files (EUR/INT pools). Returns null when the data is

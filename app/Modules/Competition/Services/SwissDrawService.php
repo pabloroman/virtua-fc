@@ -24,7 +24,12 @@ use Illuminate\Support\Facades\Log;
  */
 class SwissDrawService
 {
-    private const TEAMS_PER_POT = 9;
+    public const POTS = 4;
+    public const TEAMS_PER_POT = 9;
+
+    /** Total clubs in a Swiss league phase — the draw needs every pot filled. */
+    public const LEAGUE_PHASE_TEAMS = self::POTS * self::TEAMS_PER_POT;
+
     private const MATCHES_PER_TEAM = 8;
     private const MATCHDAYS = 8;
 
@@ -45,7 +50,7 @@ class SwissDrawService
             $pots[$team['pot']][] = $team;
         }
 
-        foreach ([1, 2, 3, 4] as $pot) {
+        foreach (range(1, self::POTS) as $pot) {
             if (!isset($pots[$pot]) || count($pots[$pot]) !== self::TEAMS_PER_POT) {
                 throw new \InvalidArgumentException(
                     "Pot {$pot} must have exactly " . self::TEAMS_PER_POT . " teams, got " . count($pots[$pot] ?? [])
@@ -253,7 +258,7 @@ class SwissDrawService
         shuffle($shuffled);
 
         foreach ($shuffled as $team) {
-            foreach ([1, 2, 3, 4] as $pot) {
+            foreach (range(1, self::POTS) as $pot) {
                 $remaining = self::MATCHES_PER_TEAM - count($opponents[$team['id']]);
                 if ($remaining <= 0) {
                     break;

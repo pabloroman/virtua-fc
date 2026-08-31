@@ -40,6 +40,50 @@
   // {id}.json files rather than a league teams.json.
   const POOLS = ['EUR', 'INT'];
 
+  // Transfermarkt country label -> the code the repo stores in `country`.
+  // ISO 3166-1 alpha-2 throughout, except that the home nations are tracked
+  // separately the way UEFA does: England is 'EN' (not 'GB') and Scotland is
+  // 'GB-SCT'. Covers the UEFA membership plus the non-European countries that
+  // show up in the INT pool. An unknown label yields no code at all — see
+  // countryCodeFor.
+  const COUNTRY_CODES = {
+    // UEFA
+    'Albania': 'AL', 'Andorra': 'AD', 'Armenia': 'AM', 'Austria': 'AT', 'Azerbaijan': 'AZ',
+    'Belarus': 'BY', 'Belgium': 'BE', 'Bosnia-Herzegovina': 'BA', 'Bulgaria': 'BG',
+    'Croatia': 'HR', 'Cyprus': 'CY', 'Czech Republic': 'CZ', 'Czechia': 'CZ',
+    'Denmark': 'DK', 'England': 'EN', 'Estonia': 'EE', 'Faroe Islands': 'FO',
+    'Finland': 'FI', 'France': 'FR', 'Georgia': 'GE', 'Germany': 'DE', 'Gibraltar': 'GI',
+    'Greece': 'GR', 'Hungary': 'HU', 'Iceland': 'IS', 'Ireland': 'IE', 'Israel': 'IL',
+    'Italy': 'IT', 'Kazakhstan': 'KZ', 'Kosovo': 'XK', 'Latvia': 'LV', 'Liechtenstein': 'LI',
+    'Lithuania': 'LT', 'Luxembourg': 'LU', 'Malta': 'MT', 'Moldova': 'MD', 'Monaco': 'MC',
+    'Montenegro': 'ME', 'Netherlands': 'NL', 'North Macedonia': 'MK', 'Northern Ireland': 'GB-NIR',
+    'Norway': 'NO', 'Poland': 'PL', 'Portugal': 'PT', 'Romania': 'RO', 'Russia': 'RU',
+    'San Marino': 'SM', 'Scotland': 'GB-SCT', 'Serbia': 'RS', 'Slovakia': 'SK',
+    'Slovenia': 'SI', 'Spain': 'ES', 'Sweden': 'SE', 'Switzerland': 'CH',
+    'Turkey': 'TR', 'Türkiye': 'TR', 'Ukraine': 'UA', 'Wales': 'GB-WLS',
+    // Non-European clubs reachable through the INT pool
+    'Algeria': 'DZ', 'Argentina': 'AR', 'Australia': 'AU', 'Brazil': 'BR', 'Canada': 'CA',
+    'Chile': 'CL', 'China': 'CN', 'Colombia': 'CO', 'Ecuador': 'EC', 'Egypt': 'EG',
+    'Japan': 'JP', 'Korea, South': 'KR', 'South Korea': 'KR', 'Mexico': 'MX',
+    'Morocco': 'MA', 'Paraguay': 'PY', 'Peru': 'PE', 'Qatar': 'QA', 'Saudi Arabia': 'SA',
+    'South Africa': 'ZA', 'Tunisia': 'TN', 'United Arab Emirates': 'AE',
+    'United States': 'US', 'Uruguay': 'UY', 'Venezuela': 'VE',
+  };
+
+  // Resolve a Transfermarkt country label to a repo code, or undefined when the
+  // label is unknown. Deliberately no fallback: writing a guessed code would
+  // seed a wrong country silently, whereas omitting it lets
+  // `php artisan app:normalize-season` backfill from the continental list and
+  // `app:validate-season` flag whatever is left.
+  function countryCodeFor(name) {
+    if (!name) return undefined;
+    const code = COUNTRY_CODES[String(name).trim()];
+    if (!code) {
+      console.warn(`[season-config] No country code for "${name}" — add it to COUNTRY_CODES.`);
+    }
+    return code;
+  }
+
   function findByTmId(tmId) {
     if (!tmId) return null;
     const upper = String(tmId).toUpperCase();
@@ -76,10 +120,29 @@
   }
 
   // Build a canonical teams.json string for a league/cup/continental result.
-  function toTeamsJson(result, comp, season) {
+  //
+  // `previousClubs` (the clubs array already on the branch) carries UEFA seeding
+  // pots forward. The scraper cannot read pots off Transfermarkt — they are
+  // entered by hand — so without this a re-scrape would destroy them with no way
+  // to reconstruct them. Clubs that dropped out lose their pot with them, and a
+  // newly drawn club arrives without one; `app:validate-season` then reports the
+  // file as partially potted, which is the right signal after a draw changes.
+  function toTeamsJson(result, comp, season, previousClubs) {
+    const pots = new Map();
+    if (comp.kind === 'continental' && Array.isArray(previousClubs)) {
+      for (const club of previousClubs) {
+        if (club && club.pot !== undefined) pots.set(resolveClubId(club), club.pot);
+      }
+    }
+
     const clubs = (result.clubs || [])
       .map(sortClubPlayers)
+      .map(club => {
+        const pot = pots.get(resolveClubId(club));
+        return pot === undefined || club.pot !== undefined ? club : { ...club, pot };
+      })
       .sort(byId(resolveClubId));
+
     return encode({
       id: result.id || comp.tmId,
       name: comp.name,
@@ -89,8 +152,22 @@
   }
 
   // Build a canonical pool {id}.json string for a single-club squad result.
+  //
+  // Translates the scraper's raw `countryName` into the repo's `country` code
+  // and drops the raw label. `country` lands right after `name`, matching the
+  // curated pool files, so re-scrapes don't churn key order.
   function toPoolJson(result) {
-    return encode(sortClubPlayers({ ...result }));
+    const { countryName, ...club } = result;
+    const country = club.country || countryCodeFor(countryName);
+    const ordered = {};
+
+    for (const [key, value] of Object.entries(club)) {
+      ordered[key] = value;
+      if (key === 'name' && country) ordered.country = country;
+    }
+    if (country && !ordered.country) ordered.country = country;
+
+    return encode(sortClubPlayers(ordered));
   }
 
   // Map a finished scrape result to the repo file it belongs in, or null when
@@ -98,7 +175,9 @@
   //
   //   { path: 'data/2026/ESP1/teams.json', content: '...' }
   //
-  // `opts.season` (required) and, for single-club pushes, `opts.pool` (EUR/INT).
+  // `opts.season` (required); for single-club pushes `opts.pool` (EUR/INT); for
+  // continental lists `opts.previousClubs` (the clubs already on the branch,
+  // whose pots are carried forward).
   function repoFileForResult(result, pageType, opts) {
     const season = String(opts.season);
 
@@ -107,7 +186,7 @@
       if (!comp) return null;
       return {
         path: `data/${season}/${comp.code}/teams.json`,
-        content: toTeamsJson(result, comp, season),
+        content: toTeamsJson(result, comp, season, opts.previousClubs),
       };
     }
 
@@ -128,7 +207,9 @@
     REPO,
     BASE_BRANCH,
     COMPETITIONS,
+    COUNTRY_CODES,
     POOLS,
+    countryCodeFor,
     findByTmId,
     toTeamsJson,
     toPoolJson,

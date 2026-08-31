@@ -30,6 +30,16 @@ class SeedReferenceData extends Command
     /** Base season being seeded (e.g. '2026'); governs the data/{season}/ folder. */
     private string $season;
 
+    /**
+     * Continental participants that could not be linked to a team row. Seeding
+     * continues so the operator gets a complete picture, but the command exits
+     * non-zero: a European competition short of a full league phase is silently
+     * skipped at game setup and would otherwise ship broken.
+     *
+     * @var string[]
+     */
+    private array $unlinkedContinentalClubs = [];
+
     public function handle(): int
     {
         $this->season = config('season.current');
@@ -97,6 +107,18 @@ class SeedReferenceData extends Command
         }
 
         $this->displaySummary();
+
+        if (!empty($this->unlinkedContinentalClubs)) {
+            $this->newLine();
+            $this->error('Continental participants with no squad data (they were dropped from their competition):');
+            foreach ($this->unlinkedContinentalClubs as $club) {
+                $this->line("  ✗ {$club}");
+            }
+            $this->line("Add a data/{$this->season}/EUR/{id}.json for each, then re-seed. "
+                . 'php artisan app:validate-season catches this before it reaches the database.');
+
+            return CommandAlias::FAILURE;
+        }
 
         return CommandAlias::SUCCESS;
     }
@@ -578,6 +600,7 @@ class SeedReferenceData extends Command
 
             if (!$teamId) {
                 $this->warn("  Team not found for transfermarkt_id {$transfermarktId}: {$club['name']}");
+                $this->unlinkedContinentalClubs[] = "{$competitionId}: {$club['name']} ({$transfermarktId})";
                 continue;
             }
 

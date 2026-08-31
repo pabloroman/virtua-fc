@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Competition\Services\SwissDrawService;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
@@ -483,7 +484,8 @@ class UefaQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Fill remaining slots to reach 36 teams in the user's swiss_format competition.
+     * Fill remaining slots to reach a full league phase in the user's
+     * swiss_format competition.
      *
      * Only the competition the user's team participates in needs a full draw.
      * Other swiss_format competitions are never initialized (no fixtures, no standings),
@@ -519,9 +521,10 @@ class UefaQualificationProcessor implements SeasonProcessor
             ->toArray();
 
         $currentCount = count($usedTeamIds);
-        $needed = 36 - $currentCount;
+        $needed = SwissDrawService::LEAGUE_PHASE_TEAMS - $currentCount;
 
-        Log::info("[UEFA] {$userCompetitionId}: {$currentCount}/36 teams, need {$needed} fillers");
+        Log::info("[UEFA] {$userCompetitionId}: {$currentCount}/"
+            . SwissDrawService::LEAGUE_PHASE_TEAMS . " teams, need {$needed} fillers");
 
         if ($needed <= 0) {
             return;
