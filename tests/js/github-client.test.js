@@ -121,7 +121,7 @@ describe('verify', () => {
  * lands mid-push.
  */
 const gitDataServer = ({ failPatchTimes = 0, patchError = null } = {}) => {
-    const state = { head: 'head1', blobs: 0, trees: [], commits: [] };
+    const state = { head: 'head1', trees: [], commits: [] };
     let remainingFailures = failPatchTimes;
     let movedHeads = 0;
 
@@ -135,10 +135,6 @@ const gitDataServer = ({ failPatchTimes = 0, patchError = null } = {}) => {
         }
         if (method === 'GET' && path.startsWith('/git/commits/')) {
             return response(200, { tree: { sha: `tree-of-${path.split('/').pop()}` } });
-        }
-        if (method === 'POST' && path === '/git/blobs') {
-            state.blobs += 1;
-            return response(201, { sha: `blob${state.blobs}` });
         }
         if (method === 'POST' && path === '/git/trees') {
             state.trees.push(body);
@@ -181,12 +177,41 @@ describe('commitFiles — a branch head that moves mid-push', () => {
         expect(state.trees[1].base_tree).toBe('tree-of-head2');
     });
 
-    it('uploads each blob once across retries', async () => {
-        const state = gitDataServer({ failPatchTimes: 2 });
+    it('carries file contents inline in the tree, in one request per attempt', async () => {
+        // One write request per file put a ~70-file European pool push against
+        // GitHub's secondary rate limit; the trees API writes the blobs itself.
+        const state = gitDataServer();
+        const files = [
+            { path: 'data/2026/EUR/11.json', content: '{"a":1}' },
+            { path: 'data/2026/EUR/418.json', content: '{"b":2}' },
+        ];
 
-        await client().commitFiles('season-data/2026', 'main', FILES, 'msg');
+        await client().commitFiles('season-data/2026', 'main', files, 'msg');
 
-        expect(state.blobs).toBe(1);
+        expect(state.trees).toHaveLength(1);
+        expect(state.trees[0].tree).toEqual([
+            { path: 'data/2026/EUR/11.json', mode: '100644', type: 'blob', content: '{"a":1}' },
+            { path: 'data/2026/EUR/418.json', mode: '100644', type: 'blob', content: '{"b":2}' },
+        ]);
+        // Four requests regardless of file count: read ref, read commit, tree, commit, ref update.
+        expect(globalThis.fetch.mock.calls.filter(([url]) => url.includes('/git/blobs'))).toHaveLength(0);
+    });
+
+    it('reports each phase so a long push is visible and the worker stays awake', async () => {
+        gitDataServer({ failPatchTimes: 1 });
+        const phases = [];
+
+        await client().commitFiles('season-data/2026', 'main', FILES, 'msg', p => phases.push(p));
+
+        expect(phases).toEqual([
+            'Uploading 1 file…',
+            'Creating the commit…',
+            'Updating the branch…',
+            'Branch moved — rebuilding (attempt 2)…',
+            'Uploading 1 file…',
+            'Creating the commit…',
+            'Updating the branch…',
+        ]);
     });
 
     it('gives up after three collisions with a message naming the branch', async () => {

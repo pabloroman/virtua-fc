@@ -108,6 +108,12 @@ curl -sS -D- -o /dev/null \
 `200` is fine (the `github-authentication-token-expiration` header gives the
 expiry), `401` is a bad token, `404` is a token without access to this repo.
 
+A push that sits on one line for minutes is not necessarily stuck: the popup now
+names each phase (uploading, creating the commit, updating the branch, opening
+the PR). If it does stall, open the service worker console
+(`chrome://extensions` → the extension's **service worker** link) — the driver
+logs there, and MV3 tears the worker down if the popup is closed while it runs.
+
 `422: Update is not a fast forward` means the branch head moved while the push
 was uploading — normally CI's `Canonicalize season {year} squad data` commit
 from your *previous* push landing a few seconds later. The push now rebuilds its
