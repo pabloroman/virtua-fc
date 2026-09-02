@@ -1,0 +1,171 @@
+{
+  "id": "EL",
+  "name": "UEFA Europa League",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "5",
+      "name": "AC Milan"
+    },
+    {
+      "id": "13",
+      "name": "Atlético de Madrid"
+    },
+    {
+      "id": "15",
+      "name": "Leverkusen"
+    },
+    {
+      "id": "58",
+      "name": "RSC Anderlecht"
+    },
+    {
+      "id": "114",
+      "name": "Besiktas"
+    },
+    {
+      "id": "122",
+      "name": "Sturm Graz"
+    },
+    {
+      "id": "148",
+      "name": "Tottenham Hotspur"
+    },
+    {
+      "id": "156",
+      "name": "Levski Sofia"
+    },
+    {
+      "id": "197",
+      "name": "Sparta Prague"
+    },
+    {
+      "id": "238",
+      "name": "Lech Poznan"
+    },
+    {
+      "id": "244",
+      "name": "Marseille"
+    },
+    {
+      "id": "273",
+      "name": "Stade Rennais"
+    },
+    {
+      "id": "279",
+      "name": "Ferencváros"
+    },
+    {
+      "id": "289",
+      "name": "Sunderland"
+    },
+    {
+      "id": "294",
+      "name": "Benfica"
+    },
+    {
+      "id": "353",
+      "name": "Lillestrøm SK"
+    },
+    {
+      "id": "368",
+      "name": "Sevilla FC"
+    },
+    {
+      "id": "371",
+      "name": "Celtic"
+    },
+    {
+      "id": "405",
+      "name": "Aston Villa"
+    },
+    {
+      "id": "409",
+      "name": "Salzburg"
+    },
+    {
+      "id": "419",
+      "name": "Dinamo Zagreb"
+    },
+    {
+      "id": "467",
+      "name": "NEC Nijmegen"
+    },
+    {
+      "id": "506",
+      "name": "Juventus"
+    },
+    {
+      "id": "533",
+      "name": "Hoffenheim"
+    },
+    {
+      "id": "631",
+      "name": "Chelsea FC"
+    },
+    {
+      "id": "653",
+      "name": "OFI Crete"
+    },
+    {
+      "id": "681",
+      "name": "Real Sociedad"
+    },
+    {
+      "id": "683",
+      "name": "Olympiacos"
+    },
+    {
+      "id": "710",
+      "name": "NK Celje"
+    },
+    {
+      "id": "829",
+      "name": "Omonia Nicosia"
+    },
+    {
+      "id": "873",
+      "name": "Crystal Palace"
+    },
+    {
+      "id": "940",
+      "name": "Celta de Vigo"
+    },
+    {
+      "id": "941",
+      "name": "Viktoria Plzeň"
+    },
+    {
+      "id": "989",
+      "name": "Bournemouth"
+    },
+    {
+      "id": "1041",
+      "name": "Lyon"
+    },
+    {
+      "id": "1090",
+      "name": "AZ Alkmaar"
+    },
+    {
+      "id": "2300",
+      "name": "Jagiellonia"
+    },
+    {
+      "id": "2432",
+      "name": "Torreense"
+    },
+    {
+      "id": "2976",
+      "name": "H. Beer Sheva"
+    },
+    {
+      "id": "3948",
+      "name": "Union SG"
+    },
+    {
+      "id": "53453",
+      "name": "Ararat-Armenia"
+    }
+  ]
+}
