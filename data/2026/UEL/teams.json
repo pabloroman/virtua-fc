@@ -5,15 +5,18 @@
   "clubs": [
     {
       "id": "5",
-      "name": "AC Milan"
+      "name": "AC Milan",
+      "country": "IT"
     },
     {
       "id": "13",
-      "name": "Atlético de Madrid"
+      "name": "Atlético de Madrid",
+      "country": "ES"
     },
     {
       "id": "15",
-      "name": "Leverkusen"
+      "name": "Leverkusen",
+      "country": "DE"
     },
     {
       "id": "58",
@@ -29,7 +32,8 @@
     },
     {
       "id": "148",
-      "name": "Tottenham Hotspur"
+      "name": "Tottenham Hotspur",
+      "country": "EN"
     },
     {
       "id": "156",
@@ -45,11 +49,13 @@
     },
     {
       "id": "244",
-      "name": "Marseille"
+      "name": "Marseille",
+      "country": "FR"
     },
     {
       "id": "273",
-      "name": "Stade Rennais"
+      "name": "Stade Rennais",
+      "country": "FR"
     },
     {
       "id": "279",
@@ -57,7 +63,8 @@
     },
     {
       "id": "289",
-      "name": "Sunderland"
+      "name": "Sunderland",
+      "country": "EN"
     },
     {
       "id": "294",
@@ -69,7 +76,8 @@
     },
     {
       "id": "368",
-      "name": "Sevilla FC"
+      "name": "Sevilla FC",
+      "country": "ES"
     },
     {
       "id": "371",
@@ -77,7 +85,8 @@
     },
     {
       "id": "405",
-      "name": "Aston Villa"
+      "name": "Aston Villa",
+      "country": "EN"
     },
     {
       "id": "409",
@@ -93,15 +102,18 @@
     },
     {
       "id": "506",
-      "name": "Juventus"
+      "name": "Juventus",
+      "country": "IT"
     },
     {
       "id": "533",
-      "name": "Hoffenheim"
+      "name": "Hoffenheim",
+      "country": "DE"
     },
     {
       "id": "631",
-      "name": "Chelsea FC"
+      "name": "Chelsea FC",
+      "country": "EN"
     },
     {
       "id": "653",
@@ -109,7 +121,8 @@
     },
     {
       "id": "681",
-      "name": "Real Sociedad"
+      "name": "Real Sociedad",
+      "country": "ES"
     },
     {
       "id": "683",
@@ -125,11 +138,13 @@
     },
     {
       "id": "873",
-      "name": "Crystal Palace"
+      "name": "Crystal Palace",
+      "country": "EN"
     },
     {
       "id": "940",
-      "name": "Celta de Vigo"
+      "name": "Celta de Vigo",
+      "country": "ES"
     },
     {
       "id": "941",
@@ -137,11 +152,13 @@
     },
     {
       "id": "989",
-      "name": "Bournemouth"
+      "name": "Bournemouth",
+      "country": "EN"
     },
     {
       "id": "1041",
-      "name": "Lyon"
+      "name": "Lyon",
+      "country": "FR"
     },
     {
       "id": "1090",
