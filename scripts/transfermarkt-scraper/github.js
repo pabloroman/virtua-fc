@@ -159,19 +159,20 @@
      *
      * @param {Array<{path: string, content: string}>} files
      */
-    async commitFiles(branch, base, files, message) {
+    async commitFiles(branch, base, files, message, onPhase = () => {}) {
       await this.ensureBranch(branch, base);
 
-      // Blobs are content-addressed and belong to no tree, so they are uploaded
-      // once and reused if the commit has to be rebuilt.
-      const tree = [];
-      for (const file of files) {
-        const blob = await this.request('POST', '/git/blobs', {
-          content: file.content,
-          encoding: 'utf-8',
-        });
-        tree.push({ path: file.path, mode: '100644', type: 'blob', sha: blob.sha });
-      }
+      // File contents go inline in the tree and GitHub writes the blobs itself,
+      // so a push costs four requests whatever its size. Creating a blob per
+      // file first cost one write request each: fine for the eight league files,
+      // but a European pool refresh pushes ~70 and that ran for minutes against
+      // GitHub's secondary rate limit on content-creating requests.
+      const tree = files.map(file => ({
+        path: file.path,
+        mode: '100644',
+        type: 'blob',
+        content: file.content,
+      }));
 
       // The branch head can move while we are uploading: CI commits the
       // normalized form of the previous push back to this same branch
@@ -184,11 +185,13 @@
         const headSha = await this.getRefSha(branch);
         const headCommit = await this.request('GET', `/git/commits/${headSha}`);
 
+        onPhase(`Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`);
         const newTree = await this.request('POST', '/git/trees', {
           base_tree: headCommit.tree.sha,
           tree,
         });
 
+        onPhase('Creating the commit…');
         const commit = await this.request('POST', '/git/commits', {
           message,
           tree: newTree.sha,
@@ -196,6 +199,7 @@
         });
 
         try {
+          onPhase('Updating the branch…');
           await this.request('PATCH', `/git/refs/heads/${branch}`, {
             sha: commit.sha,
           });
@@ -208,6 +212,7 @@
                 'committing to it continuously. Let the branch settle and push again.',
             );
           }
+          onPhase(`Branch moved — rebuilding (attempt ${attempt + 1})…`);
         }
       }
     }

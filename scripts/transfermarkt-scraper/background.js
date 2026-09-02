@@ -446,7 +446,7 @@ async function previousContinentalClubs(result, pageType, season) {
   return existing && Array.isArray(existing.clubs) ? existing.clubs : null;
 }
 
-async function pushFilesToGitHub(files, season) {
+async function pushFilesToGitHub(files, season, onPhase = () => {}) {
   const { token, repo, base } = await getSettings();
   if (!token) throw new Error('No GitHub token set — open Settings.');
   if (files.length === 0) throw new Error('Nothing to push.');
@@ -455,8 +455,9 @@ async function pushFilesToGitHub(files, season) {
   const branch = SeasonConfig.branchFor(season);
   const message = `Season ${season} data refresh (${files.length} file${files.length === 1 ? '' : 's'})`;
 
-  await gh.commitFiles(branch, base, files, message);
+  await gh.commitFiles(branch, base, files, message, onPhase);
 
+  onPhase('Opening the pull request…');
   return gh.ensurePullRequest(
     branch,
     base,
@@ -627,9 +628,11 @@ async function startEuropeanPoolRefresh(tabId) {
     throw new Error(`Every club failed (${failed.length}) — nothing to push.`);
   }
 
-  await updateProgress({ status: 'working', message: `Pushing ${files.length} pool files to GitHub…`, current: targets.length, total: targets.length, pageType: 'euro-refresh' });
-
-  const prUrl = await pushFilesToGitHub(files, season);
+  // Each phase is also a chrome.storage write, which resets the service
+  // worker's idle timer — a long silent stretch is when MV3 tears it down, and
+  // a torn-down push looks exactly like a hang from the popup.
+  const prUrl = await pushFilesToGitHub(files, season, phase =>
+    updateProgress({ status: 'working', message: phase, current: targets.length, total: targets.length, pageType: 'euro-refresh' }));
 
   const summary = failed.length
     ? `Done — ${files.length} clubs pushed, ${failed.length} failed`
@@ -708,9 +711,8 @@ async function startSeasonRefresh(tabId) {
     throw new Error(`Every league failed (${failed.join(', ')}) — nothing to push.`);
   }
 
-  await updateProgress({ status: 'working', message: `Pushing ${files.length} files to GitHub…`, current: leagues.length, total: leagues.length, pageType: 'season-refresh' });
-
-  const prUrl = await pushFilesToGitHub(files, season);
+  const prUrl = await pushFilesToGitHub(files, season, phase =>
+    updateProgress({ status: 'working', message: phase, current: leagues.length, total: leagues.length, pageType: 'season-refresh' }));
 
   const summary = failed.length
     ? `Done — ${files.length} leagues pushed, ${failed.length} failed (${failed.join(', ')})`
