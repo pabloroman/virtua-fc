@@ -388,6 +388,26 @@ async function getSettings() {
 }
 
 /**
+ * Pre-flight the GitHub credentials. `overrides` lets the popup test the values
+ * currently typed into Settings before they are saved; anything it omits falls
+ * back to what is stored.
+ *
+ * Called before a season refresh starts so an expired token costs a couple of
+ * seconds instead of failing on the push at the end of a full scrape.
+ */
+async function verifyGitHub(overrides = {}) {
+  const saved = await getSettings();
+  const token = (overrides.token || saved.token || '').trim();
+  const repo = (overrides.repo || saved.repo || '').trim();
+  const base = (overrides.base || saved.base || SeasonConfig.BASE_BRANCH).trim();
+
+  if (!token) throw new Error('No GitHub token set — open Settings.');
+  if (!repo.includes('/')) throw new Error(`Repo must be "owner/name" — got "${repo}".`);
+
+  return new GitHubClient(token, repo).verify(base);
+}
+
+/**
  * Commit a set of {path, content} files to the season-data branch as one commit
  * and ensure a PR is open. Returns the PR url.
  */
@@ -485,6 +505,12 @@ async function startSeasonRefresh(tabId) {
   const { token, season } = await getSettings();
   if (!token) throw new Error('No GitHub token set — open Settings.');
   if (!season) throw new Error('Set a target season in Settings first.');
+
+  // Fail on bad credentials now rather than on the push, which only happens
+  // after every league has been scraped — tens of minutes of work thrown away
+  // by a token that expired in the meantime.
+  await updateProgress({ status: 'working', message: 'Checking GitHub credentials…', current: 0, total: 0, pageType: 'season-refresh' });
+  await verifyGitHub();
 
   const leagues = SeasonConfig.COMPETITIONS.filter(c => c.batch);
   const files = [];
@@ -741,6 +767,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ ok: false, error: err.message });
       }
     })();
+    return true;
+  }
+
+  if (message.action === 'testGitHub') {
+    verifyGitHub(message.settings || {})
+      .then(info => sendResponse({ ok: true, ...info }))
+      .catch(err => sendResponse({ ok: false, error: err.message }));
     return true;
   }
 

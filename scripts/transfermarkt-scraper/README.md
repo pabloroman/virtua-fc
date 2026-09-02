@@ -74,6 +74,39 @@ pull request. CI then normalizes, validates, and posts a transfer diff (see
    - **PAT** — the token from step 1 (stored in `chrome.storage.local`, never committed),
    - **Target season** — e.g. `2026` (drives the `data/2026/` paths and the `season-data/2026` branch),
    - **owner/repo** and **base branch** default to `pabloroman/virtua-fc` and `main`.
+3. Click **Test GitHub connection**. It checks the values in the fields (not the
+   saved ones, so a freshly pasted token can be verified first) against the same
+   three things a push needs: the token itself, access to the repo, and a
+   Contents read of the base branch. On success it reports the repo and the
+   token's expiry date; write access is reported but cannot be proven without
+   writing.
+
+A season refresh runs the same check before it scrapes anything, so bad
+credentials cost a couple of seconds instead of a full scrape.
+
+### When a push fails on credentials
+
+`401: Bad credentials` means the token itself was rejected — GitHub never got
+as far as looking at the repo. Fine-grained PATs expire (30 days by default),
+and GitHub revokes any token it finds committed somewhere, so a token that
+worked last season is the usual cause. Generate a new one and save it.
+
+`No access to owner/repo` means the token is valid but this repository is not in
+its list — a fine-grained PAT reports a repo it cannot see as a 404, so it looks
+like a missing repo rather than a missing grant. Check the token's *Repository
+access* and that it has **Contents** and **Pull requests**.
+
+From a terminal the same check is:
+
+```bash
+curl -sS -D- -o /dev/null \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/pabloroman/virtua-fc
+```
+
+`200` is fine (the `github-authentication-token-expiration` header gives the
+expiry), `401` is a bad token, `404` is a token without access to this repo.
 
 ### Push a single page
 

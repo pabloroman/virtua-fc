@@ -529,7 +529,9 @@ const ghSeasonEl = document.getElementById('ghSeason');
 const ghRepoEl = document.getElementById('ghRepo');
 const ghBaseEl = document.getElementById('ghBaseBranch');
 const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const testSettingsBtn = document.getElementById('testSettingsBtn');
 const settingsStatus = document.getElementById('settingsStatus');
+const testResult = document.getElementById('testResult');
 
 async function loadSettings() {
   const s = await chrome.storage.local.get(['ghToken', 'ghSeason', 'ghRepo', 'ghBaseBranch']);
@@ -553,6 +555,49 @@ saveSettingsBtn.addEventListener('click', async () => {
   });
   settingsStatus.textContent = 'Saved ✓';
   setTimeout(() => { settingsStatus.textContent = ''; }, 2000);
+});
+
+function setTestResult(color, html) {
+  testResult.style.display = 'block';
+  testResult.style.color = color;
+  testResult.innerHTML = html;
+}
+
+// Checks the values currently in the fields rather than the saved ones, so a
+// freshly pasted token can be verified before it replaces a working one.
+testSettingsBtn.addEventListener('click', async () => {
+  testSettingsBtn.disabled = true;
+  setTestResult('#718096', 'Checking…');
+
+  try {
+    const resp = await chrome.runtime.sendMessage({
+      action: 'testGitHub',
+      settings: {
+        token: ghTokenEl.value.trim(),
+        repo: ghRepoEl.value.trim(),
+        base: ghBaseEl.value.trim(),
+      },
+    });
+
+    if (!resp) {
+      throw new Error('Background worker did not respond — reload the extension at chrome://extensions.');
+    }
+    if (!resp.ok) {
+      setTestResult('#fc8181', resp.error);
+      return;
+    }
+
+    const expiry = resp.expiresAt ? ` · token expires ${resp.expiresAt}` : '';
+    const warning = resp.canWrite
+      ? ''
+      : '<br><span style="color:#f6ad55">Read-only access reported — the push will fail. '
+        + 'Grant Contents and Pull requests: Read and write.</span>';
+    setTestResult('#68d391', `Connected to <strong>${resp.repo}</strong>${expiry}${warning}`);
+  } catch (err) {
+    setTestResult('#fc8181', err.message);
+  } finally {
+    testSettingsBtn.disabled = false;
+  }
 });
 
 loadSettings();
