@@ -95,9 +95,11 @@ add/remove line, not a reshuffled roster.
    - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists. These are
      independent of the transfer window — the draws are known before it shuts —
      so they can go in first. Their squads cannot: every participant outside the
-     eight scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025).
-     Add `pot` by hand for a true-to-life first-season draw; a re-scrape now
-     preserves it.
+     eight scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025) —
+     **Season Refresh → Refresh European pool** derives that list from the
+     participant lists and league squads already on the branch and scrapes them
+     in one batch, so run it after both are pushed. Add `pot` by hand for a
+     true-to-life first-season draw; a re-scrape now preserves it.
    - `data/2026/EUR/{id}.json` and `data/2026/INT/{id}.json` pool teams.
    - Append any new players to `data/players/player_positions_ES.json`
      (secondary positions; keyed by player id, not season-scoped).

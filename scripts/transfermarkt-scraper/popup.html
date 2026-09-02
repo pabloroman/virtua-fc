@@ -240,7 +240,9 @@
         <input id="ghRepo" class="tf-input" type="text" placeholder="owner/repo">
         <input id="ghBaseBranch" class="tf-input" type="text" placeholder="Base branch (main)">
         <button class="btn btn-secondary" id="saveSettingsBtn">Save settings</button>
+        <button class="btn btn-secondary" id="testSettingsBtn">Test GitHub connection</button>
         <span id="settingsStatus" style="font-size: 11px; color: #718096;"></span>
+        <div id="testResult" style="display:none; font-size: 11px; line-height: 1.5;"></div>
       </div>
     </details>
 
@@ -287,7 +289,9 @@
     <div class="section-title">SEASON REFRESH</div>
     <p style="font-size: 11px; color: #718096; margin-bottom: 10px; line-height: 1.5;">
       Scrapes every league for the target season and pushes them to the
-      <code>season-data</code> branch in one commit + PR.
+      <code>season-data</code> branch in one commit + PR. <strong>European pool</strong>
+      then scrapes every UCL/UEL/UECL/UEFASUP participant that no league covers,
+      into <code>EUR/</code> — run it after the leagues and the participant lists.
     </p>
 
     <div class="status-bar">
@@ -301,6 +305,7 @@
 
     <div class="btn-row" style="margin-top: 10px">
       <button class="btn btn-primary" id="refreshStartBtn">Refresh all leagues</button>
+      <button class="btn btn-secondary" id="euroStartBtn">Refresh European pool</button>
       <button class="btn btn-warning" id="refreshStopBtn" disabled>Stop</button>
     </div>
     <div id="refreshResult" class="info" style="display:none"></div>

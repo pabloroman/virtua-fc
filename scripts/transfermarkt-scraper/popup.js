@@ -529,7 +529,9 @@ const ghSeasonEl = document.getElementById('ghSeason');
 const ghRepoEl = document.getElementById('ghRepo');
 const ghBaseEl = document.getElementById('ghBaseBranch');
 const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const testSettingsBtn = document.getElementById('testSettingsBtn');
 const settingsStatus = document.getElementById('settingsStatus');
+const testResult = document.getElementById('testResult');
 
 async function loadSettings() {
   const s = await chrome.storage.local.get(['ghToken', 'ghSeason', 'ghRepo', 'ghBaseBranch']);
@@ -553,6 +555,49 @@ saveSettingsBtn.addEventListener('click', async () => {
   });
   settingsStatus.textContent = 'Saved ✓';
   setTimeout(() => { settingsStatus.textContent = ''; }, 2000);
+});
+
+function setTestResult(color, html) {
+  testResult.style.display = 'block';
+  testResult.style.color = color;
+  testResult.innerHTML = html;
+}
+
+// Checks the values currently in the fields rather than the saved ones, so a
+// freshly pasted token can be verified before it replaces a working one.
+testSettingsBtn.addEventListener('click', async () => {
+  testSettingsBtn.disabled = true;
+  setTestResult('#718096', 'Checking…');
+
+  try {
+    const resp = await chrome.runtime.sendMessage({
+      action: 'testGitHub',
+      settings: {
+        token: ghTokenEl.value.trim(),
+        repo: ghRepoEl.value.trim(),
+        base: ghBaseEl.value.trim(),
+      },
+    });
+
+    if (!resp) {
+      throw new Error('Background worker did not respond — reload the extension at chrome://extensions.');
+    }
+    if (!resp.ok) {
+      setTestResult('#fc8181', resp.error);
+      return;
+    }
+
+    const expiry = resp.expiresAt ? ` · token expires ${resp.expiresAt}` : '';
+    const warning = resp.canWrite
+      ? ''
+      : '<br><span style="color:#f6ad55">Read-only access reported — the push will fail. '
+        + 'Grant Contents and Pull requests: Read and write.</span>';
+    setTestResult('#68d391', `Connected to <strong>${resp.repo}</strong>${expiry}${warning}`);
+  } catch (err) {
+    setTestResult('#fc8181', err.message);
+  } finally {
+    testSettingsBtn.disabled = false;
+  }
 });
 
 loadSettings();
@@ -612,6 +657,7 @@ pushBtn.addEventListener('click', async () => {
 // =========================================================================
 
 const refreshStartBtn = document.getElementById('refreshStartBtn');
+const euroStartBtn = document.getElementById('euroStartBtn');
 const refreshStopBtn = document.getElementById('refreshStopBtn');
 const refreshStatusDot = document.getElementById('refreshStatusDot');
 const refreshStatusText = document.getElementById('refreshStatusText');
@@ -622,17 +668,28 @@ const refreshResult = document.getElementById('refreshResult');
 
 let refreshPollingInterval = null;
 
+// Both drivers report through the same panel; only one can run at a time.
+const REFRESH_UNITS = { 'season-refresh': 'leagues', 'euro-refresh': 'clubs' };
+
+const isRefreshProgress = progress => !!progress && progress.pageType in REFRESH_UNITS;
+
 function setRefreshStatus(state, message) {
   refreshStatusDot.className = 'status-dot ' + state;
   refreshStatusText.textContent = message;
 }
 
-function setRefreshProgress(current, total) {
+function setRefreshRunning(running) {
+  refreshStartBtn.disabled = running;
+  euroStartBtn.disabled = running;
+  refreshStopBtn.disabled = !running;
+}
+
+function setRefreshProgress(current, total, unit) {
   if (total === 0) return;
   const pct = ((current / total) * 100).toFixed(0);
   refreshProgressBar.style.display = 'block';
   refreshProgressFill.style.width = pct + '%';
-  refreshCountBadge.textContent = `${current}/${total} leagues`;
+  refreshCountBadge.textContent = `${current}/${total} ${unit}`;
   refreshCountBadge.style.display = 'inline-block';
 }
 
@@ -648,28 +705,29 @@ function startRefreshPolling() {
     } catch {
       return;
     }
-    if (!progress || progress.pageType !== 'season-refresh') return;
+    if (!isRefreshProgress(progress)) return;
 
+    const unit = REFRESH_UNITS[progress.pageType];
     setRefreshStatus(progress.status, progress.message);
-    if (progress.total > 0) setRefreshProgress(progress.current, progress.total);
+    if (progress.total > 0) setRefreshProgress(progress.current, progress.total, unit);
 
     if (progress.status === 'ready') {
       stopRefreshPolling();
-      refreshStartBtn.disabled = false;
-      refreshStopBtn.disabled = true;
+      setRefreshRunning(false);
       if (progress.result && progress.result.prUrl) {
         const skipped = progress.result.failed || [];
+        const missing = progress.result.missingLists || [];
         refreshResult.style.display = 'block';
-        refreshResult.innerHTML = `Pushed ${progress.result.files} leagues — <a href="${progress.result.prUrl}" target="_blank">open PR ↗</a>`
-          + (skipped.length ? `<br>Skipped: ${skipped.join(', ')}` : '');
+        refreshResult.innerHTML = `Pushed ${progress.result.files} ${unit} — <a href="${progress.result.prUrl}" target="_blank">open PR ↗</a>`
+          + (skipped.length ? `<br>Skipped: ${skipped.join(', ')}` : '')
+          + (missing.length ? `<br>No participant list yet for: ${missing.join(', ')}` : '');
       }
       chrome.runtime.sendMessage({ action: 'clearProgress' });
     }
 
     if (progress.status === 'paused' || progress.status === 'error') {
       stopRefreshPolling();
-      refreshStartBtn.disabled = false;
-      refreshStopBtn.disabled = true;
+      setRefreshRunning(false);
     }
   }, 500);
 }
@@ -683,18 +741,18 @@ function stopRefreshPolling() {
 
 async function checkRefreshProgress() {
   const progress = await chrome.runtime.sendMessage({ action: 'getProgress' });
-  if (progress && progress.pageType === 'season-refresh' && progress.status === 'working') {
+  if (isRefreshProgress(progress) && progress.status === 'working') {
     setRefreshStatus('working', progress.message);
-    if (progress.total > 0) setRefreshProgress(progress.current, progress.total);
-    refreshStartBtn.disabled = true;
-    refreshStopBtn.disabled = false;
+    if (progress.total > 0) setRefreshProgress(progress.current, progress.total, REFRESH_UNITS[progress.pageType]);
+    setRefreshRunning(true);
     startRefreshPolling();
   }
 }
 
 checkRefreshProgress();
 
-refreshStartBtn.addEventListener('click', async () => {
+// Both drivers need saved settings and an active Transfermarkt tab to navigate.
+async function startRefreshDriver(action) {
   const { ghToken, ghSeason } = await chrome.storage.local.get(['ghToken', 'ghSeason']);
   if (!ghToken || !ghSeason) {
     setRefreshStatus('error', 'Set GitHub token + season in Settings first');
@@ -713,8 +771,7 @@ refreshStartBtn.addEventListener('click', async () => {
   }
 
   refreshResult.style.display = 'none';
-  refreshStartBtn.disabled = true;
-  refreshStopBtn.disabled = false;
+  setRefreshRunning(true);
   setRefreshStatus('working', 'Starting…');
 
   // A silent handshake failure used to leave the panel stuck on "Starting…"
@@ -722,17 +779,19 @@ refreshStartBtn.addEventListener('click', async () => {
   // running a stale build without this action) and nothing reset the buttons.
   try {
     await chrome.runtime.sendMessage({ action: 'clearProgress' });
-    const response = await chrome.runtime.sendMessage({ action: 'startSeasonRefresh', tabId: tab.id });
+    const response = await chrome.runtime.sendMessage({ action, tabId: tab.id });
     if (!response || !response.started) {
       throw new Error('Background worker did not respond — reload the extension at chrome://extensions.');
     }
     startRefreshPolling();
   } catch (err) {
     setRefreshStatus('error', err.message);
-    refreshStartBtn.disabled = false;
-    refreshStopBtn.disabled = true;
+    setRefreshRunning(false);
   }
-});
+}
+
+refreshStartBtn.addEventListener('click', () => startRefreshDriver('startSeasonRefresh'));
+euroStartBtn.addEventListener('click', () => startRefreshDriver('startEuroRefresh'));
 
 refreshStopBtn.addEventListener('click', async () => {
   refreshStopBtn.disabled = true;

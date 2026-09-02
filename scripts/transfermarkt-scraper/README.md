@@ -74,6 +74,45 @@ pull request. CI then normalizes, validates, and posts a transfer diff (see
    - **PAT** — the token from step 1 (stored in `chrome.storage.local`, never committed),
    - **Target season** — e.g. `2026` (drives the `data/2026/` paths and the `season-data/2026` branch),
    - **owner/repo** and **base branch** default to `pabloroman/virtua-fc` and `main`.
+3. Click **Test GitHub connection**. It checks the values in the fields (not the
+   saved ones, so a freshly pasted token can be verified first) against the same
+   three things a push needs: the token itself, access to the repo, and a
+   Contents read of the base branch. On success it reports the repo and the
+   token's expiry date; write access is reported but cannot be proven without
+   writing.
+
+A season refresh runs the same check before it scrapes anything, so bad
+credentials cost a couple of seconds instead of a full scrape.
+
+### When a push fails on credentials
+
+`401: Bad credentials` means the token itself was rejected — GitHub never got
+as far as looking at the repo. Fine-grained PATs expire (30 days by default),
+and GitHub revokes any token it finds committed somewhere, so a token that
+worked last season is the usual cause. Generate a new one and save it.
+
+`No access to owner/repo` means the token is valid but this repository is not in
+its list — a fine-grained PAT reports a repo it cannot see as a 404, so it looks
+like a missing repo rather than a missing grant. Check the token's *Repository
+access* and that it has **Contents** and **Pull requests**.
+
+From a terminal the same check is:
+
+```bash
+curl -sS -D- -o /dev/null \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/pabloroman/virtua-fc
+```
+
+`200` is fine (the `github-authentication-token-expiration` header gives the
+expiry), `401` is a bad token, `404` is a token without access to this repo.
+
+`422: Update is not a fast forward` means the branch head moved while the push
+was uploading — normally CI's `Canonicalize season {year} squad data` commit
+from your *previous* push landing a few seconds later. The push now rebuilds its
+commit on the new head and retries (up to three times), so this should no longer
+surface; if it does, something is committing to the branch continuously.
 
 ### Push a single page
 
@@ -105,9 +144,33 @@ Unknown labels are left out rather than guessed; add them to `COUNTRY_CODES` in
 **SEASON REFRESH → Refresh all leagues** drives every league in `season-config.js`
 (`batch: true`) for the target season — scraping each club's squad at a human
 pace — then pushes them all in **one commit + PR**. Leave a Transfermarkt tab
-open and active; **Stop** pauses cleanly between leagues. Cups, continental
-participant lists, and EUR/INT pools are pushed individually with the per-page
-button (their pages aren't part of the batch driver).
+open and active; **Stop** pauses cleanly between leagues. Cups and continental
+participant lists are pushed individually with the per-page button (their pages
+aren't part of the batch driver).
+
+### Refresh the European pool
+
+A continental participant from outside the eight scraped leagues has no squad
+until it gets a `data/{season}/EUR/{id}.json` file of its own — 70 of 2025's 108
+slots. **SEASON REFRESH → Refresh European pool** does that batch:
+
+1. reads the UCL/UEL/UECL/UEFASUP participant lists and the league `teams.json`
+   files already on the season branch,
+2. takes every participant no league covers (deduplicated — the Super Cup's two
+   clubs are also in the UCL/UEL lists),
+3. scrapes each one's squad page and pushes them all in **one commit + PR**.
+
+Run it **after** both the leagues and the participant lists are on the branch:
+the club list is derived from what is there. If a league's squads are missing it
+refuses rather than treating all ~108 participants as pool clubs; if a
+participant list is missing it works with the ones that exist and names the rest
+in the result.
+
+Every target is re-scraped, including clubs that already have a pool file — a
+pool file is last season's squad until this season overwrites it. As with the
+league driver, one unreachable club is skipped and named in the summary rather
+than sinking the run, and **Stop** pauses between clubs (nothing is pushed on a
+pause). Clubs that need the `INT` pool are still pushed one page at a time.
 
 **Expect it to take 15–25 minutes** (8 leagues × ~20 clubs, deliberately paced) and
 to drive your active tab the whole way. **Keep the popup open** to watch progress —
