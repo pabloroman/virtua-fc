@@ -33,6 +33,10 @@ const ESPCUP = { code: 'ESPCUP', tmId: 'CDR', name: 'Copa del Rey', kind: 'cup' 
 
 const parse = json => JSON.parse(json);
 
+// A well-formed Swiss league phase: 36 clubs, Arsenal (11) among them.
+const leaguePhase = (size = 36) =>
+    Array.from({ length: size }, (_, i) => ({ id: String(i + 11), name: `Club ${i + 11}` }));
+
 describe('toTeamsJson — pot preservation on continental re-scrapes', () => {
     const scraped = { id: 'CL', clubs: [{ id: '11', name: 'Arsenal' }, { id: '418', name: 'Real Madrid' }] };
     const previous = [{ id: '11', name: 'Arsenal', pot: 2 }, { id: '418', name: 'Real Madrid', pot: 1 }];
@@ -148,13 +152,13 @@ describe('toPoolJson', () => {
 describe('repoFileForResult', () => {
     it('routes a continental scrape to its teams.json and forwards stored pots', () => {
         const file = SeasonConfig.repoFileForResult(
-            { id: 'CL', clubs: [{ id: '11', name: 'Arsenal' }] },
+            { id: 'CL', clubs: leaguePhase() },
             'cup-teams',
             { season: '2026', previousClubs: [{ id: '11', pot: 2 }] },
         );
 
         expect(file.path).toBe('data/2026/UCL/teams.json');
-        expect(parse(file.content).clubs[0].pot).toBe(2);
+        expect(parse(file.content).clubs.find(c => c.id === '11').pot).toBe(2);
     });
 
     it('routes a single club squad into the chosen pool', () => {
@@ -240,5 +244,41 @@ describe('poolTargets — clubs that still need an EUR pool file', () => {
         const targets = SeasonConfig.poolTargets([ucl([{ name: 'Mystery FC' }])], []);
 
         expect(targets).toEqual([]);
+    });
+});
+
+describe('assertClubCount — structural guard on participant lists', () => {
+    // The 2026 refresh pushed 37/41/41 clubs for UCL/UEL/UECL (qualifying rounds
+    // harvested off the fixture page) and 7 for the two-club Super Cup (sidebar
+    // links). Only the first three were caught, and only later, by CI.
+    it('accepts a Swiss league phase of exactly 36', () => {
+        const file = SeasonConfig.repoFileForResult(
+            { id: 'CL', clubs: leaguePhase() }, 'cup-teams', { season: '2026' },
+        );
+
+        expect(file.path).toBe('data/2026/UCL/teams.json');
+    });
+
+    it('refuses the push when a Swiss league phase is the wrong size', () => {
+        expect(() => SeasonConfig.repoFileForResult(
+            { id: 'CL', clubs: leaguePhase(37) }, 'cup-teams', { season: '2026' },
+        )).toThrow(/UCL needs exactly 36 clubs, this page gave 37/);
+    });
+
+    it('holds the Super Cup to its two finalists', () => {
+        expect(() => SeasonConfig.repoFileForResult(
+            { id: 'USC', clubs: leaguePhase(7) }, 'cup-teams', { season: '2026' },
+        )).toThrow(/UEFASUP needs exactly 2 clubs, this page gave 7/);
+
+        expect(SeasonConfig.repoFileForResult(
+            { id: 'USC', clubs: leaguePhase(2) }, 'cup-teams', { season: '2026' },
+        ).path).toBe('data/2026/UEFASUP/teams.json');
+    });
+
+    it('leaves competitions with a season-varying entry list alone', () => {
+        // The Copa del Rey fielded 116 clubs in 2025; there is no right number.
+        expect(SeasonConfig.repoFileForResult(
+            { id: 'CDR', clubs: leaguePhase(116) }, 'cup-teams', { season: '2026' },
+        ).path).toBe('data/2026/ESPCUP/teams.json');
     });
 });

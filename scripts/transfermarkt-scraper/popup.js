@@ -28,8 +28,9 @@ function detectPageType(url) {
   if (/\/stadien\/wettbewerb\/[A-Z0-9]+/i.test(url)) {
     return 'competition-stadiums';
   }
-  // Cup fixtures page (pokalwettbewerb)
-  if (/\/gesamtspielplan\/pokalwettbewerb\/[A-Z0-9]+/i.test(url)) {
+  // Participant list for a cup / continental competition: the league-phase
+  // table for the Swiss competitions, the full fixture list for knockouts.
+  if (/\/(gesamtspielplan|tabelle)\/pokalwettbewerb\/[A-Z0-9]+/i.test(url)) {
     return 'cup-teams';
   }
   // League fixtures page (wettbewerb)
@@ -209,7 +210,7 @@ scrapeBtn.addEventListener('click', async () => {
     }
 
     if (pageType === 'competition') {
-      throw new Error('Please navigate to stadiums (/stadien/) or fixtures (/gesamtspielplan/) page.');
+      throw new Error('Please navigate to a stadiums (/stadien/), fixtures (/gesamtspielplan/) or league-phase table (/tabelle/) page.');
     }
 
     // Handle redirect from spielplan to kader page

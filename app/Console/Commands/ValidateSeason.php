@@ -27,6 +27,8 @@ use Illuminate\Console\Command;
  * SeedReferenceData, and SeasonInitializationService then finds an incomplete
  * league phase and skips it — leaving a competition with no fixtures at all and
  * nothing user-visible to explain why. Catching that here is the whole point.
+ * Their shape is checked too: a Swiss league phase is exactly 36 clubs and no
+ * club appears in two of them, a continental knockout is exactly two.
  *
  * Exits non-zero if any error is found so it can gate a release pipeline.
  */
@@ -42,6 +44,16 @@ class ValidateSeason extends Command
 
     /** @var string[] */
     private array $warnings = [];
+
+    /**
+     * Transfermarkt id -> the Swiss competition that already claimed it. A club
+     * plays in exactly one of UCL/UEL/UECL, so a second claim is a data error.
+     * The Super Cup is deliberately absent: its two finalists legitimately also
+     * play in that season's Champions or Europa League.
+     *
+     * @var array<string, string>
+     */
+    private array $swissEntrants = [];
 
     /**
      * Every transfermarkt id in this season folder that can supply a squad —
@@ -155,13 +167,57 @@ class ValidateSeason extends Command
             $this->warnings[] = "{$code}: no schedule.json (knockout/round dates) found.";
         }
 
+        $errorsBefore = count($this->errors);
+
         $this->validateParticipantsAreSeedable($code, $season, $clubs);
 
         if ($handler === 'swiss_format') {
             $this->validateSwissShape($code, $clubs);
+            $this->validateNoRepeatEntrants($code, $clubs);
         }
 
-        $this->line("  {$code}: " . count($clubs) . " clubs ✓");
+        // A continental knockout is the one-off Super Cup: prior UCL winner v
+        // prior UEL winner, a single tie. On the initial season those two rows
+        // *are* the finalists (UefaSuperCupQualificationProcessor leaves seed
+        // data alone), so any other count produces a draw that cannot be made.
+        if ($handler === 'knockout_cup') {
+            $total = count($clubs);
+            if ($total !== 2) {
+                $this->errors[] = "{$code}: a continental knockout is a single two-club tie, got {$total} clubs.";
+            }
+        }
+
+        if (count($this->errors) === $errorsBefore) {
+            $this->line("  {$code}: " . count($clubs) . " clubs ✓");
+        }
+    }
+
+    /**
+     * A club plays in exactly one of the Swiss competitions. Two claims mean the
+     * participant lists were read off a page that spans more than one — a
+     * fixture list including qualifying rounds puts a club knocked out of the
+     * Champions League into both it and the Europa League.
+     *
+     * @param  array<int, array<string, mixed>>  $clubs
+     */
+    private function validateNoRepeatEntrants(string $code, array $clubs): void
+    {
+        foreach ($clubs as $club) {
+            if (empty($club['id'])) {
+                continue;   // already reported by validateParticipantsAreSeedable
+            }
+
+            $id = (string) $club['id'];
+            $name = $club['name'] ?? '(unnamed)';
+
+            if (isset($this->swissEntrants[$id])) {
+                $this->errors[] = "{$code}: '{$name}' ({$id}) is also a {$this->swissEntrants[$id]} "
+                    . 'entrant — a club plays in one European competition per season.';
+                continue;
+            }
+
+            $this->swissEntrants[$id] = $code;
+        }
     }
 
     /**

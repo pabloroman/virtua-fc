@@ -19,6 +19,13 @@
   // `batch: true` means "Refresh all leagues" drives it automatically (only the
   // fully-understood stadiums-scrape leagues); cups/continental are pushed
   // one-page-at-a-time via the per-page "Push to GitHub" button.
+  //
+  // `expectedClubs` is set only where the engine has a *structural* requirement
+  // — a Swiss league phase is four pots of nine, the Super Cup is one tie, the
+  // Supercopa is a final four — and it is enforced on push (see assertClubCount).
+  // Competitions whose entry list genuinely varies by season (the Copa del Rey
+  // fielded 116 clubs in 2025) carry no count; the leagues are checked against
+  // their schedule by `php artisan app:validate-season` instead.
   const COMPETITIONS = [
     { code: 'ESP1',    tmId: 'ES1',     name: 'LaLiga',                          kind: 'league',      batch: true },
     { code: 'ESP2',    tmId: 'ES2',     name: 'LaLiga2',                         kind: 'league',      batch: true },
@@ -29,11 +36,11 @@
     { code: 'FRA1',    tmId: 'FR1',     name: 'Ligue 1',                         kind: 'league',      batch: true },
     { code: 'ITA1',    tmId: 'IT1',     name: 'Serie A',                         kind: 'league',      batch: true },
     { code: 'ESPCUP',  tmId: 'CDR',     name: 'Copa del Rey',                    kind: 'cup',         batch: false },
-    { code: 'ESPSUP',  tmId: 'SUC',     name: 'Supercopa de España',            kind: 'cup',         batch: false },
-    { code: 'UCL',     tmId: 'CL',      name: 'UEFA Champions League',           kind: 'continental', batch: false },
-    { code: 'UEL',     tmId: 'EL',      name: 'UEFA Europa League',              kind: 'continental', batch: false },
-    { code: 'UECL',    tmId: 'UCOL',    name: 'UEFA Europa Conference League',   kind: 'continental', batch: false },
-    { code: 'UEFASUP', tmId: 'USC',     name: 'UEFA Super Cup',                  kind: 'continental', batch: false },
+    { code: 'ESPSUP',  tmId: 'SUC',     name: 'Supercopa de España',            kind: 'cup',         batch: false, expectedClubs: 4 },
+    { code: 'UCL',     tmId: 'CL',      name: 'UEFA Champions League',           kind: 'continental', batch: false, expectedClubs: 36 },
+    { code: 'UEL',     tmId: 'EL',      name: 'UEFA Europa League',              kind: 'continental', batch: false, expectedClubs: 36 },
+    { code: 'UECL',    tmId: 'UCOL',    name: 'UEFA Europa Conference League',   kind: 'continental', batch: false, expectedClubs: 36 },
+    { code: 'UEFASUP', tmId: 'USC',     name: 'UEFA Super Cup',                  kind: 'continental', batch: false, expectedClubs: 2 },
   ];
 
   // Pool folders for single-club (squad page) pushes — these store per-team
@@ -117,6 +124,26 @@
   // normalize step is a no-op on what we push.
   function encode(obj) {
     return JSON.stringify(obj, null, 2) + '\n';
+  }
+
+  // Refuse to write a participant list whose size cannot be right.
+  //
+  // The scraper reads a page, and a page can change shape or spill clubs that
+  // are not participants: the 2026 refresh pushed 37/41/41 clubs for
+  // UCL/UEL/UECL (qualifying rounds harvested off the fixture page) and 7 for
+  // the two-club Super Cup (sidebar links). Both sailed into a PR and one of
+  // them passed `app:validate-season` outright. Failing the push is far cheaper
+  // than discovering it in CI — or not discovering it.
+  function assertClubCount(clubs, comp) {
+    if (comp.expectedClubs === undefined) return;
+
+    const actual = Array.isArray(clubs) ? clubs.length : 0;
+    if (actual !== comp.expectedClubs) {
+      throw new Error(
+        `${comp.code} needs exactly ${comp.expectedClubs} clubs, this page gave ${actual}. ` +
+        'Nothing was pushed — check you are on the right page for this competition.'
+      );
+    }
   }
 
   // Build a canonical teams.json string for a league/cup/continental result.
@@ -213,7 +240,9 @@
   }
 
   // Map a finished scrape result to the repo file it belongs in, or null when
-  // the competition is not in the registry.
+  // the competition is not in the registry. Throws when the participant count
+  // is structurally impossible for the competition (see assertClubCount) —
+  // background.js's pushScrape handler surfaces the message in the popup.
   //
   //   { path: 'data/2026/ESP1/teams.json', content: '...' }
   //
@@ -226,6 +255,7 @@
     if (pageType === 'competition-stadiums' || pageType === 'cup-teams') {
       const comp = findByTmId(result.id);
       if (!comp) return null;
+      assertClubCount(result.clubs, comp);
       return {
         path: `data/${season}/${comp.code}/teams.json`,
         content: toTeamsJson(result, comp, season, opts.previousClubs),
@@ -255,6 +285,7 @@
     findByTmId,
     resolveClubId,
     poolTargets,
+    assertClubCount,
     toTeamsJson,
     toPoolJson,
     repoFileForResult,
