@@ -1,0 +1,542 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/141.png",
+  "name": "Galatasaray",
+  "country": "TR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 24, 1990",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "53622",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "İlkay Gündoğan",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 25, 1991",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "114422",
+      "injured": true,
+      "marketValue": "€200k",
+      "name": "Günay Güvenç",
+      "nationality": [
+        "Türkiye",
+        "Germany"
+      ],
+      "number": "19",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 10, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "119031",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Kaan Ayhan",
+      "nationality": [
+        "Türkiye",
+        "Germany"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 1, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "170934",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Mario Lemina",
+      "nationality": [
+        "Gabon",
+        "France"
+      ],
+      "number": "99",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 11, 1996",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "192565",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Leroy Sané",
+      "nationality": [
+        "Germany",
+        "France"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 7, 1994",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "199316",
+      "injured": false,
+      "marketValue": "€6.50m",
+      "name": "Abdülkerim Bardakcı",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "42",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 5, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "292199",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Uğurcan Çakır",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 11, 1996",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "318077",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Lucas Torreira",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "34",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 22, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "332798",
+      "injured": false,
+      "marketValue": "€14.00m",
+      "name": "Roland Sallai",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "7",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 12, 1996",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "341429",
+      "injured": false,
+      "marketValue": "€16.00m",
+      "name": "Davinson Sánchez",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 10, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "357164",
+      "injured": false,
+      "marketValue": "€50.00m",
+      "name": "Rafael Leão",
+      "nationality": [
+        "Portugal",
+        "Angola"
+      ],
+      "number": "27",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 17, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "375137",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Ismail Jakobs",
+      "nationality": [
+        "Senegal",
+        "Germany"
+      ],
+      "number": "4",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 7, 2000",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "396908",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Yunus Akgün",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 29, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "401923",
+      "injured": false,
+      "marketValue": "€75.00m",
+      "name": "Victor Osimhen",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "45",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 14, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "422951",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Victor Nelsson",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 23, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "541537",
+      "injured": false,
+      "marketValue": "€30.00m",
+      "name": "Barış Alper Yılmaz",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "53",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 26, 1999",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "553469",
+      "injured": false,
+      "marketValue": "€27.00m",
+      "name": "Gabriel Sara",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 2, 2004",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "605110",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Eyüp Aydın",
+      "nationality": [
+        "Türkiye",
+        "Germany"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 7, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "616894",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Eren Elmalı",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 25, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "648779",
+      "injured": false,
+      "marketValue": "€23.00m",
+      "name": "Wilfried Singo",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "90",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 20, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "695475",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Siraçhan Nas",
+      "nationality": [
+        "Türkiye"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 16, 2003",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "697149",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Kazımcan Karataş",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "88",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 26, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "711999",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1132",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1132.png",
+          "name": "Burnley FC"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€22.00m",
+      "name": "Lesley Ugochukwu",
+      "nationality": [
+        "France",
+        "Nigeria"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 9, 2005",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "720286",
+      "injured": false,
+      "marketValue": "€28.00m",
+      "name": "Aleksey Batrakov",
+      "nationality": [
+        "Russia"
+      ],
+      "number": "83",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 16, 2004",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "727077",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Jankat Yılmaz",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 16, 2005",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "787912",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "23826",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/23826.png",
+          "name": "RB Leipzig"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€18.00m",
+      "name": "El Chadaille Bitshiabu",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 18, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1048118",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Arda Ünyay",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "91",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 2, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1063292",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Deniz Gül",
+      "nationality": [
+        "Türkiye",
+        "Sweden"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 7, 2008",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1070983",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Armando Güner",
+      "nationality": [
+        "Argentina",
+        "Germany"
+      ],
+      "number": "29",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 20, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1076981",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Berat Luş",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "73",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 8, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1105505",
+      "injured": false,
+      "name": "Enes Emre Büyük",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "70",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 13, 2008",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1178926",
+      "injured": false,
+      "name": "Arda Yılmaz",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "60",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 3, 2009",
+      "id": "1223334",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Ada Yüzgeç",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "62",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 27, 2007",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1396595",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Renato Nhaga",
+      "nationality": [
+        "Guinea-Bissau"
+      ],
+      "number": "74",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Ali Sami Yen Spor Kompleksi RAMS Park",
+  "stadiumSeats": "53978",
+  "transfermarktId": "141"
+}

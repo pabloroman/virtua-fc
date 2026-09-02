@@ -1,0 +1,428 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2719.png",
+  "name": "Mjällby AIF",
+  "country": "SE",
+  "players": [
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 25, 1990",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "95377",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Tom Pettersson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 25, 1992",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "184745",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Alexander Lundin",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Oct 29, 1994",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "223896",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Jesper Gustavsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 13, 1999",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "328003",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Robin Wallinder",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 4, 1999",
+      "height": "1,84m",
+      "id": "416104",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Axel Norén",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Sep 8, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "469852",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "238",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/238.png",
+          "name": "Lech Poznan"
+        },
+        "until": "Nov 30, 2026"
+      },
+      "marketValue": "€400k",
+      "name": "Ian Hoffmann",
+      "nationality": [
+        "United States",
+        "Germany"
+      ],
+      "number": "26",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 5, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "501131",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "429",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/429.png",
+          "name": "Apollon Limassol"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€1.20m",
+      "name": "Ali Youssef",
+      "nationality": [
+        "Tunisia",
+        "Sweden"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Mar 22, 1995",
+      "height": "1,81m",
+      "id": "501555",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Viktor Gustafson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "7",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 14, 1998",
+      "height": "1,89m",
+      "id": "501568",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Villiam Granath",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "14",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Apr 26, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "554726",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Jacob Bergström",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 23, 2002",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "579761",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Tony Miettinen",
+      "nationality": [
+        "Finland",
+        "Kenya"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 1, 2004",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "660979",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Jeppe Kjær",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Dec 7, 2003",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "668709",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Martin Agnarsson",
+      "nationality": [
+        "Faroe Islands"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Apr 17, 2004",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "668731",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Áki Samuelsen",
+      "nationality": [
+        "Faroe Islands"
+      ],
+      "number": "23",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Dec 25, 2002",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "675285",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Ludvig Svanberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 22, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "687622",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Elliot Stroud",
+      "nationality": [
+        "Sweden",
+        "England"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 27, 2002",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "701224",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Abdullah Iqbal",
+      "nationality": [
+        "Pakistan",
+        "Denmark"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jan 20, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "752778",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Mads Enggård",
+      "nationality": [
+        "Denmark"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Oct 25, 2004",
+      "foot": "right",
+      "id": "807309",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Max Nielsen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "25",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 22, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1010277",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Bork Bang-Kittilsen",
+      "nationality": [
+        "Norway"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 2, 2005",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "1030933",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Ludvig Tidstrand",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 8, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1068963",
+      "injured": false,
+      "name": "Teo Helge",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2031",
+      "dateOfBirth": "Oct 15, 2006",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "1140556",
+      "injured": false,
+      "name": "Villum Dalsgaard",
+      "nationality": [
+        "Denmark"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 29, 2004",
+      "height": "1,79m",
+      "id": "1229808",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Abdoulie Manneh",
+      "nationality": [
+        "The Gambia"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 14, 2007",
+      "id": "1303480",
+      "injured": false,
+      "name": "Isak Andersen",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Midfielder"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 23, 2008",
+      "id": "1342148",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Romeo Arrhenius Leandersson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "39",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 30, 2026",
+      "dateOfBirth": "Sep 17, 2007",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1400913",
+      "injured": false,
+      "name": "Olle Lindberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 21, 2009",
+      "id": "1579035",
+      "injured": false,
+      "name": "Melker Ahlstrand",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Goalkeeper"
+    }
+  ],
+  "stadiumName": "Strandvallen",
+  "stadiumSeats": "6000",
+  "transfermarktId": "2719"
+}

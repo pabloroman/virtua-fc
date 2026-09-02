@@ -1,0 +1,505 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2790.png",
+  "name": "FC Lugano",
+  "country": "CH",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 3, 1991",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "117432",
+      "injured": true,
+      "marketValue": "€500k",
+      "name": "Kevin Behrens",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 12, 1992",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "129604",
+      "injured": true,
+      "marketValue": "€400k",
+      "name": "Ezgjan Alioski",
+      "nationality": [
+        "North Macedonia",
+        "Switzerland"
+      ],
+      "number": "7",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 28, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "192637",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Anto Grgic",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 3, 1991",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "194638",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Renato Steffen",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 26, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "195906",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "26",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/26.png",
+          "name": "FC Basel 1893"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€700k",
+      "name": "Albian Ajeti",
+      "nationality": [
+        "Switzerland",
+        "Albania"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 30, 1994",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "203124",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "David von Ballmoos",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 1999",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "338635",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Hannes Delcroix",
+      "nationality": [
+        "Haiti",
+        "Belgium"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 31, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "345780",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Lukas Mai",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 25, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "461461",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Uran Bislimi",
+      "nationality": [
+        "Switzerland",
+        "Kosovo"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 10, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "482573",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Antonios Papadopoulos",
+      "nationality": [
+        "Germany",
+        "Greece"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 1, 2002",
+      "height": "1,90m",
+      "id": "499317",
+      "injured": false,
+      "marketValue": "€325k",
+      "name": "Felix Gebhardt",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "28",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 11, 2003",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "582353",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Mattia Zanotti",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "46",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 29, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "608212",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Daniel Dos Santos",
+      "nationality": [
+        "Switzerland",
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 4, 2002",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "620834",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Joel Bichsel",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 15, 2002",
+      "height": "1,94m",
+      "id": "625768",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Damian Kelvin",
+      "nationality": [
+        "Switzerland",
+        "Nigeria"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 22, 1999",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "645764",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Ahmed Kendouci",
+      "nationality": [
+        "Algeria"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "655629",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Fotios Pseftis",
+      "nationality": [
+        "Greece"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 22, 2003",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "679413",
+      "injured": true,
+      "loan": {
+        "from": {
+          "id": "95331",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/95331.png",
+          "name": "Chicago Fire FC II"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€400k",
+      "name": "Claudio Cassano",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "801754",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Yanis Cimignani",
+      "nationality": [
+        "France",
+        "Burkina Faso"
+      ],
+      "number": "21",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 12, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "895728",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Diego Mina",
+      "nationality": [
+        "Switzerland",
+        "Brazil"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 11, 2004",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "927734",
+      "injured": true,
+      "marketValue": "€4.00m",
+      "name": "Martim Marques",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "26",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 10, 2006",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "932164",
+      "injured": false,
+      "name": "Jason Parente",
+      "nationality": [
+        "Switzerland",
+        "Italy"
+      ],
+      "number": "31",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 12, 2003",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "977089",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Beckham Castro",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 7, 2007",
+      "height": "1,70m",
+      "id": "1015770",
+      "injured": false,
+      "name": "Christian Raffa",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "33",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 13, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1015809",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Gjan Ajdin",
+      "nationality": [
+        "Sweden",
+        "Switzerland"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Aug 7, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1106187",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Bekhruz Karimov",
+      "nationality": [
+        "Uzbekistan"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 19, 2007",
+      "height": "1,78m",
+      "id": "1164444",
+      "injured": false,
+      "name": "Nicolò Puddu",
+      "nationality": [
+        "Switzerland",
+        "Italy"
+      ],
+      "number": "32",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 29, 2005",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "1221548",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Carbone",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Nov 30, 2007",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1223490",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Dereck Moncada",
+      "nationality": [
+        "Honduras"
+      ],
+      "number": "30",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 31, 2006",
+      "height": "1,87m",
+      "id": "1236047",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Elias Pihlström",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 11, 2009",
+      "height": "1,81m",
+      "id": "1378087",
+      "injured": false,
+      "name": "Bryan Zurmühle",
+      "nationality": [
+        "Switzerland",
+        "Spain"
+      ],
+      "number": "36",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 2010",
+      "height": "1,81m",
+      "id": "1407702",
+      "injured": false,
+      "name": "Ian Tiraboschi",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "37",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "AIL Arena",
+  "stadiumSeats": "8793",
+  "transfermarktId": "2790"
+}

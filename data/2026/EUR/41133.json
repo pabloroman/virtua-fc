@@ -1,0 +1,467 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/41133.png",
+  "name": "Iberia 1999 Tbilisi",
+  "country": "GE",
+  "players": [
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 31, 1990",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "55977",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Giorgi Makaridze",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 4, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "234341",
+      "injured": false,
+      "marketValue": "€275k",
+      "name": "Bakar Kardava",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 26, 1997",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "319447",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Giorgi Kobuladze",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "40",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 3, 1997",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "351072",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Vahid Selimovic",
+      "nationality": [
+        "Luxembourg",
+        "Serbia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 3, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "364295",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Ibrahim Alhassan",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 27, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "412615",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "26459",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/26459.png",
+          "name": "NK Veres Rivne"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€400k",
+      "name": "Giorgi Kutsia",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 28, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "502665",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Jemali-Giorgi Jinjolava",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 8, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "539985",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Tornike Megrelishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 3, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "566671",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Lado Chikhradze",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 19, 1999",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "682856",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Zviad Natchkebia",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 5, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "819419",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Armel Zohouri",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 24, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "819493",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Eldar Kuliyev",
+      "nationality": [
+        "Ukraine",
+        "Azerbaijan"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 11, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "888024",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Revaz Kurtanidze",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 7, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "916242",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Nika Sikharulashvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "19",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 11, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "926174",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Givi Khachidze",
+      "nationality": [
+        "Georgia"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 13, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "945467",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Amiran Dzagania",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 25, 2001",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "982540",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1244",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1244.png",
+          "name": "CD Leganés"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€400k",
+      "name": "Sebastián Figueredo",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 9, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1077440",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Aleksandre Amisulashvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 3, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1093929",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Lucas Café",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 19, 2003",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1160078",
+      "injured": true,
+      "loan": {
+        "from": {
+          "id": "49702",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/49702.png",
+          "name": "FC Nizhniy Novgorod"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€100k",
+      "name": "Vakho Bedoshvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "24",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 21, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1193798",
+      "injured": false,
+      "name": "Davit Gogilashvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 20, 2005",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1219485",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "63993",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/63993.png",
+          "name": "Sabah FK"
+        }
+      },
+      "marketValue": "€50k",
+      "name": "Andrey",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 8, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1240709",
+      "injured": false,
+      "marketValue": "€275k",
+      "name": "Nikoloz Dadiani",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 30, 2009",
+      "foot": "both",
+      "height": "1,70m",
+      "id": "1329836",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "28971",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/28971.png",
+          "name": "FC Kolkheti-1913 Poti"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€150k",
+      "name": "Andria Bartishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 8, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1335779",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "82677",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/82677.png",
+          "name": "FK Sabah 2"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "name": "Stephen Ende",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 17, 2006",
+      "foot": "left",
+      "id": "1383692",
+      "injured": false,
+      "name": "Giorgi Chanturia",
+      "nationality": [
+        "Georgia"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 27, 2007",
+      "foot": "right",
+      "id": "1392025",
+      "injured": false,
+      "name": "Nikoloz Bochorishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 31, 2009",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1401121",
+      "injured": false,
+      "name": "Saba Avdoevi",
+      "nationality": [
+        "Georgia"
+      ],
+      "position": "Defensive Midfield"
+    }
+  ],
+  "stadiumName": "Mikheil Meskhi",
+  "stadiumSeats": "24680",
+  "transfermarktId": "41133"
+}

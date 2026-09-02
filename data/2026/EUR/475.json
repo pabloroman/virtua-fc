@@ -1,0 +1,393 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/475.png",
+  "name": "Sint-Truidense VV",
+  "country": "BE",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 13, 1994",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "207623",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Visar Musliu",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 11, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "235247",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Wolke Janssens",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 15, 1991",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "307870",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Shogo Taniguchi",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 26, 1998",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "418661",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Abdoulaye Sissako",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 4, 1997",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "452296",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Joedrick Pupe",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 23, 2001",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "501737",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Leo Kokubo",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 11, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "538970",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Ryan Merlen",
+      "nationality": [
+        "France"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 29, 2002",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "566011",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Ryotaro Araki",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "71",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "570572",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Taiga Hata",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 29, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "606967",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Arbnor Muja",
+      "nationality": [
+        "Albania",
+        "Kosovo"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 4, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "671108",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "148",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/148.png",
+          "name": "Tottenham Hotspur"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€5.00m",
+      "name": "Kota Takai",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 31, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "710969",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Samed Bazdar",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 26, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "727528",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Robert-Jan Vanwesemael",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "60",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 1, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "751989",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Alouis Diriken",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "33",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 4, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "852953",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Ilias Sebaoui",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 10, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "915026",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Nelson Ishiwatari",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 10, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "937107",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Matt Lendfers",
+      "nationality": [
+        "Belgium",
+        "Netherlands"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 24, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "981197",
+      "injured": true,
+      "marketValue": "€250k",
+      "name": "Frédéric Soèllé Soèllé",
+      "nationality": [
+        "Belgium",
+        "Cameroon"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 5, 2001",
+      "height": "1,76m",
+      "id": "1124661",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Kaito Matsuzawa",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "38",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 15, 2003",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1137664",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Oumar Diouf",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 6, 2007",
+      "height": "1,71m",
+      "id": "1153358",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Shion Shinkawa",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 2, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1159156",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Ahmad Abu Rasen",
+      "nationality": [
+        "Saudi Arabia"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 9, 2007",
+      "foot": "left",
+      "id": "1182625",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Illyès Benachour",
+      "nationality": [
+        "Morocco",
+        "France"
+      ],
+      "number": "31",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 3, 2007",
+      "foot": "right",
+      "id": "1309326",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Jay-David Mbalanda",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "32",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 18, 2007",
+      "foot": "left",
+      "id": "1453001",
+      "injured": false,
+      "name": "Rune Verheyden",
+      "nationality": [
+        "Belgium"
+      ],
+      "position": "Left-Back"
+    }
+  ],
+  "stadiumName": "Daio Wasabi Stayen Stadium",
+  "stadiumSeats": "11337",
+  "transfermarktId": "475"
+}

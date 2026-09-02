@@ -1,0 +1,475 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/683.png",
+  "name": "Olympiacos Piraeus",
+  "country": "GR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 6, 1992",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "85941",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Stefan Ortega",
+      "nationality": [
+        "Germany",
+        "Spain"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 8, 1990",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "113707",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Rémy Cabella",
+      "nationality": [
+        "France",
+        "Italy"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 15, 1992",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "148252",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Remo Freuler",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 16, 1992",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "157539",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Konstantinos Fortounis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "7",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 24, 1990",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "178425",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Dani García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 29, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "185966",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Rodinei",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 27, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "221958",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Roman Yaremchuk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 12, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "242661",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Manolis Saliakas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "257448",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Gelson Martins",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 9, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "324351",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Panagiotis Retsos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 19, 1995",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "334557",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Chiquinho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 29, 1997",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "386726",
+      "injured": true,
+      "marketValue": "€3.50m",
+      "name": "Yusuf Yazıcı",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "97",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 12, 1999",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "461701",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Nair Tiknizyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "71",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 20, 2002",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "487834",
+      "injured": false,
+      "marketValue": "€11.00m",
+      "name": "Lorenzo Pirola",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 19, 1999",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "498237",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "David Carmo",
+      "nationality": [
+        "Angola",
+        "Portugal"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 10, 2000",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "502017",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Balsa Popovic",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 25, 1993",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "521127",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Ayoub El Kaabi",
+      "nationality": [
+        "Morocco"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 16, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "583404",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Marcus Pedersen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 30, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "616296",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Dimitrios Stournaras",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "91",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 1, 1999",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "663244",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Jota Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 3, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "701325",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Bruno Onyemaechi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "70",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 11, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "733579",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Clayton",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 22, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "742803",
+      "injured": false,
+      "marketValue": "€14.00m",
+      "name": "Santiago Hezze",
+      "nationality": [
+        "Argentina",
+        "Poland"
+      ],
+      "number": "32",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Apr 20, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "837619",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Armando González",
+      "nationality": [
+        "Mexico"
+      ],
+      "number": "34",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 7, 2005",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "895326",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Joel Roca",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "73",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 23, 2003",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "936981",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Gustavo Puerta",
+      "nationality": [
+        "Colombia"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 20, 2003",
+      "foot": "both",
+      "height": "1,91m",
+      "id": "958649",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Zinedin Smajlović",
+      "nationality": [
+        "Sweden",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 11, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "982575",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "703",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/703.png",
+          "name": "Nottingham Forest"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€25.00m",
+      "name": "Gustavo Sá",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 24, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1010577",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Lorenzo Scipioni",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 4, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1060252",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Theofanis Bakoulas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    }
+  ],
+  "stadiumName": "Stadio Georgios Karaiskakis",
+  "stadiumSeats": "33345",
+  "transfermarktId": "683"
+}

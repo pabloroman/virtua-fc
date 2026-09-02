@@ -1,0 +1,484 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/383.png",
+  "name": "PSV Eindhoven",
+  "country": "NL",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 2, 1989",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "42460",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Ivan Perisic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "5",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 1, 1992",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "161011",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Filip Kostic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 10, 1993",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "167329",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Alassane Pléa",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "215094",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Nick Olij",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 6, 1999",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "323910",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Mauro Júnior",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 5, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "339337",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Armando Obispo",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 12, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "347900",
+      "injured": true,
+      "marketValue": "€20.00m",
+      "name": "Jerdy Schouten",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 3, 2000",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "361104",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Sergiño Dest",
+      "nationality": [
+        "United States",
+        "Netherlands"
+      ],
+      "number": "8",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 22, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "372267",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Guus Til",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 26, 1998",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "397486",
+      "injured": true,
+      "marketValue": "€15.00m",
+      "name": "Dennis Man",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "420210",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "23826",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/23826.png",
+          "name": "RB Leipzig"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€20.00m",
+      "name": "Lutsharel Geertruida",
+      "nationality": [
+        "Netherlands",
+        "Curacao"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "548348",
+      "injured": true,
+      "marketValue": "€7.00m",
+      "name": "Kiliann Sildillia",
+      "nationality": [
+        "France",
+        "Guadeloupe"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "550829",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Matej Kovar",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "32",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Mar 9, 2000",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "578804",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Sven Mijnans",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "21",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 31, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "586429",
+      "injured": false,
+      "marketValue": "€14.00m",
+      "name": "Ryan Flamingo",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 9, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "627207",
+      "injured": false,
+      "marketValue": "€30.00m",
+      "name": "Ricardo Pepi",
+      "nationality": [
+        "United States",
+        "Mexico"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 23, 2005",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "720805",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Tijn Smolenaars",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 3, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "735701",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Ruben van Bommel",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Oct 2, 2004",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "747016",
+      "injured": true,
+      "marketValue": "€8.00m",
+      "name": "Sami Ouaissa",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 22, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "800976",
+      "injured": false,
+      "marketValue": "€2.80m",
+      "name": "Adamo Nagalo",
+      "nationality": [
+        "Burkina Faso",
+        "Cote d'Ivoire"
+      ],
+      "number": "39",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 6, 2005",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "813437",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Isaac Babadi",
+      "nationality": [
+        "Netherlands",
+        "Sierra Leone"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 12, 2005",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "895334",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Yarek Gasiorowski",
+      "nationality": [
+        "Spain",
+        "Poland"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 23, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "900909",
+      "injured": false,
+      "marketValue": "€22.00m",
+      "name": "Paul Wanner",
+      "nationality": [
+        "Austria",
+        "Germany"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 10, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "925862",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Esmir Bajraktarevic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "United States"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Sep 25, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "957544",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Kodai Sano",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "24",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 11, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "987376",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Joël van den Berg",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 18, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1064184",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Ayoni Santos",
+      "nationality": [
+        "Cape Verde",
+        "Netherlands"
+      ],
+      "number": "35",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 9, 2008",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1095107",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Noah Fernandez",
+      "nationality": [
+        "Belgium",
+        "Jamaica"
+      ],
+      "number": "31",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 26, 2008",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1135623",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Fabian Merién",
+      "nationality": [
+        "Netherlands",
+        "Curacao"
+      ],
+      "number": "38",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 17, 2008",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1146474",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Amir Bouhamdi",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    }
+  ],
+  "stadiumName": "Philips Stadion",
+  "stadiumSeats": "35000",
+  "transfermarktId": "383"
+}

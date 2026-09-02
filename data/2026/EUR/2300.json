@@ -1,0 +1,539 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2300.png",
+  "name": "Jagiellonia Bialystok",
+  "country": "PL",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 26, 1990",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "176423",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Jesús Imaz",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 14, 1991",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "280939",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Taras Romanczuk",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 22, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "289167",
+      "injured": true,
+      "marketValue": "€400k",
+      "name": "Kamil Jóźwiak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "72",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 24, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "341277",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Sergio Lozano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 6, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "405313",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Hampus Finndell",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "405386",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Yuki Kobayashi",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 2, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "426213",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Rodrigo Conceição",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 21, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "452218",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "279",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/279.png",
+          "name": "Ferencvárosi TC"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€2.00m",
+      "name": "Aleksandar Cirkovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 26, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "469688",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Dusan Stojinovic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 10, 2001",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "469690",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Nik Prelec",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 9, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "500246",
+      "injured": false,
+      "name": "Szymon Pankiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "62",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 14, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "542762",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Anders Klynge",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "19",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 2, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "554393",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Apostolos Konstantopoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 14, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "575717",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Guilherme Montóia",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 5, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "607435",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Norbert Wojtuszek",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "15",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 29, 2002",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "658730",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Kajetan Szmyt",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 19, 2002",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "667903",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Youssuf Sylla",
+      "nationality": [
+        "Belgium",
+        "Guinea"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 29, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "690273",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Bernardo Vital",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 31, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "705826",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Cezary Polak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 26, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "747953",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Dimitris Rallis",
+      "nationality": [
+        "Greece",
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 9, 2004",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "805834",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Sławomir Abramowicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 31, 2005",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "895298",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Dawid Drachal",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 26, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1046873",
+      "injured": false,
+      "name": "Bartłomiej Krasiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "61",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 24, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1057820",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "826",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/826.png",
+          "name": "RC Lens"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€4.00m",
+      "name": "Jeremy Agbonifo",
+      "nationality": [
+        "Sweden",
+        "Nigeria"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 27, 2006",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1066230",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Eryk Kozłowski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "85",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 5, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1071651",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "206",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/206.png",
+          "name": "Bröndby IF"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€2.20m",
+      "name": "Ousmane Sow",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "30",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 14, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1105398",
+      "injured": false,
+      "name": "Maksim Kononov",
+      "nationality": [
+        "Belarus",
+        "Poland"
+      ],
+      "number": "65",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 1, 2007",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "1118876",
+      "injured": false,
+      "name": "Maciej Kuczyński",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "90",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 27, 2007",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1161772",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Michał Perchel",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 9, 2008",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1205033",
+      "injured": false,
+      "name": "Adrian Damasiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "66",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 21, 2008",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1212054",
+      "injured": false,
+      "name": "Jakub Rabiczko",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "67",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 11, 2007",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1260542",
+      "injured": false,
+      "name": "Paweł Pakieła",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "59",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 20, 2007",
+      "id": "1296862",
+      "injured": false,
+      "name": "Olaf Pankiewicz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "63",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 3, 2009",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1325371",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Zachary Zalewski",
+      "nationality": [
+        "Poland",
+        "Canada"
+      ],
+      "number": "80",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Chorten Arena",
+  "stadiumSeats": "22372",
+  "transfermarktId": "2300"
+}

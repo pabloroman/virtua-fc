@@ -1,0 +1,489 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/467.png",
+  "name": "NEC Nijmegen",
+  "country": "NL",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 20, 1988",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "36139",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Dusan Tadic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 4, 1988",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "76326",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Tjaronn Chery",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 8, 1990",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "82410",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Bryan Linssen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 4, 1990",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "104597",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Bram Nuytinck",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 10, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "251309",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Dennis Geiger",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 23, 1993",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "272930",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Jamiro Monteiro",
+      "nationality": [
+        "Cape Verde",
+        "Netherlands"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 24, 1997",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "283223",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Emre Mor",
+      "nationality": [
+        "Türkiye",
+        "Denmark"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 27, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "315283",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Kaj Sierhuis",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 10, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "340460",
+      "injured": true,
+      "marketValue": "€2.00m",
+      "name": "Philippe Sandler",
+      "nationality": [
+        "Netherlands",
+        "United States"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 26, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "418543",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Perr Schuurs",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 23, 1998",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "455127",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Willum Thór Willumsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 7, 2002",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "488063",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Nikolas Polster",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 25, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "526566",
+      "injured": true,
+      "marketValue": "€4.00m",
+      "name": "Darko Nejasmic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "631049",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Gonzalo Crettaz",
+      "nationality": [
+        "Spain",
+        "Argentina"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 16, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "662131",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Ahmetcan Kaplan",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 22, 2004",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "670116",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Isak Hansen-Aarøen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 25, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "670715",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "10331",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/10331.png",
+          "name": "FC Porto B"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€2.00m",
+      "name": "Gabriel Brás",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "73",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 16, 2003",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "708989",
+      "injured": true,
+      "marketValue": "€1.50m",
+      "name": "Deveron Fonville",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 4, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "715836",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Tobias Storm",
+      "nationality": [
+        "Denmark",
+        "Japan"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 23, 2007",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "763948",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Dele Thomas",
+      "nationality": [
+        "Netherlands",
+        "Nigeria"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 23, 2005",
+      "height": "1,80m",
+      "id": "775984",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Merijn van de Wiel",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "37",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 21, 2005",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "827260",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Adam Tahaui",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 6, 2006",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "884820",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "16",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/16.png",
+          "name": "Borussia Dortmund"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€3.00m",
+      "name": "Almugera Kabar",
+      "nationality": [
+        "Germany",
+        "Libya"
+      ],
+      "number": "66",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 22, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "926389",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Noé Lebreton",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 4, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "930985",
+      "injured": false,
+      "name": "Kevin Kers",
+      "nationality": [
+        "Netherlands",
+        "Cote d'Ivoire"
+      ],
+      "number": "34",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 26, 2006",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "953858",
+      "injured": false,
+      "name": "Freek Entius",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "36",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 16, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "953893",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "409",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/409.png",
+          "name": "Red Bull Salzburg"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€3.00m",
+      "name": "Clement Bischoff",
+      "nationality": [
+        "Denmark",
+        "Kenya"
+      ],
+      "number": "99",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 15, 2007",
+      "height": "1,92m",
+      "id": "986873",
+      "injured": false,
+      "name": "Joep Geneste",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "38",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 12, 2006",
+      "height": "1,80m",
+      "id": "1052803",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Sam de Laat",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 24, 2007",
+      "id": "1235502",
+      "injured": true,
+      "name": "Yassin Moslih",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "42",
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Goffertstadion",
+  "stadiumSeats": "12650",
+  "transfermarktId": "467"
+}

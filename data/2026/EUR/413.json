@@ -1,0 +1,383 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/413.png",
+  "name": "LASK",
+  "country": "AT",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 7, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "118397",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Alessandro Schöpf",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 22, 1996",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "186365",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Sascha Horvath",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 19, 1997",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "243237",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Tobias Schützenauer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 29, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "272159",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Florian Flecker",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "29",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 14, 1999",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "353634",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "2441",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/2441.png",
+          "name": "AEK Athens"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€3.00m",
+      "name": "Robert Ljubicic",
+      "nationality": [
+        "Croatia",
+        "Austria"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 7, 1997",
+      "foot": "right",
+      "height": "2,00m",
+      "id": "369567",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Sasa Kalajdzic",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 16, 1998",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "403808",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Andrés Andrade",
+      "nationality": [
+        "Panama"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 7, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "467236",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Kasper Jørgensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 28, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "476915",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Melayro Bogarde",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 2002",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "504147",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "George Bello",
+      "nationality": [
+        "United States",
+        "Nigeria"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 7, 2002",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "527589",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Christoph Lang",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 30, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "629011",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Lukas Jungwirth",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 31, 2001",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "640432",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Xavier Mbuyamba",
+      "nationality": [
+        "Netherlands",
+        "DR Congo"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Sep 30, 1998",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "643088",
+      "injured": true,
+      "marketValue": "€3.00m",
+      "name": "Samuel Adeniran",
+      "nationality": [
+        "United States",
+        "Nigeria"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 5, 2003",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "652047",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Krystof Danek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 10, 2002",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "863919",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Yvan Dibango",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "25",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 13, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "925418",
+      "injured": true,
+      "marketValue": "€1.50m",
+      "name": "Ramiz Harakaté",
+      "nationality": [
+        "France"
+      ],
+      "number": "22",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 4, 2003",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "943160",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Art Smakaj",
+      "nationality": [
+        "Kosovo",
+        "Croatia"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 5, 2002",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1003622",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Moses Usor",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "8",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 6, 2002",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "1005651",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "João Tornich",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 24, 2007",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1007215",
+      "injured": false,
+      "name": "Fabian Schillinger",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 6, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "1085296",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Miguel Freckleton",
+      "nationality": [
+        "England",
+        "Jamaica"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 25, 2008",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1308519",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Manoël Verhaeghe",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 26, 2005",
+      "id": "1364188",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Cheikne Kébé",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "52",
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Raiffeisen Arena",
+  "stadiumSeats": "19080",
+  "transfermarktId": "413"
+}

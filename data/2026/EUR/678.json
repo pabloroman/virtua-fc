@@ -1,0 +1,398 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/678.png",
+  "name": "Aarhus GF",
+  "country": "DK",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 31, 1985",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "22860",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Jesper Hansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 10, 1993",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "148355",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Jens Jønsson",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 15, 1993",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "253210",
+      "injured": true,
+      "marketValue": "€200k",
+      "name": "Nicolai Poulsen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 22, 1993",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "289683",
+      "injured": true,
+      "marketValue": "€150k",
+      "name": "Frederik Tingager",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 13, 1998",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "294534",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Janni Serra",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 22, 1996",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "341466",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Tobias Mölgaard",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 30, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "400797",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Callum McCowatt",
+      "nationality": [
+        "New Zealand"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 1, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "403673",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Mikael Anderson",
+      "nationality": [
+        "Iceland",
+        "Denmark"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 22, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "405375",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Colin Rösler",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 10, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "413268",
+      "injured": true,
+      "marketValue": "€850k",
+      "name": "Kevin Yakob",
+      "nationality": [
+        "Iraq",
+        "Sweden"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 25, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "418567",
+      "injured": false,
+      "marketValue": "€2.20m",
+      "name": "Markus Solbakken",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Oct 2, 1998",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "445616",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Gift Links",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "11",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 21, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "496341",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Mads Hedenstad",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 19, 2002",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "528451",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Tobias Bech",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "31",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 8, 2000",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "542654",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Sebastian Jørgensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "8",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 10, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "542697",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Rasmus Carstensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "29",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 7, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "581106",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Kristian Arnstad",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 15, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "651735",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Magnus Knudsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "4",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 27, 2001",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "675278",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Eric Kahl",
+      "nationality": [
+        "Sweden",
+        "Thailand"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "819798",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Jacob Andersen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "26",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 25, 2006",
+      "height": "1,78m",
+      "id": "1004062",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Frederik Emmery",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "39",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 10, 2006",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1020226",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Luka Callø",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 8, 2006",
+      "id": "1059479",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Stefen Tchamche",
+      "nationality": [
+        "Denmark",
+        "Cameroon"
+      ],
+      "number": "27",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 27, 2008",
+      "foot": "right",
+      "id": "1072738",
+      "injured": true,
+      "marketValue": "€150k",
+      "name": "Tómas Kristjánsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 16, 2007",
+      "id": "1209442",
+      "injured": true,
+      "marketValue": "€25k",
+      "name": "Oskar Haugstrup",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 2, 2008",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1390988",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "James Bogere",
+      "nationality": [
+        "Uganda"
+      ],
+      "number": "28",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Ceres Park Vejlby",
+  "stadiumSeats": "12000",
+  "transfermarktId": "678"
+}

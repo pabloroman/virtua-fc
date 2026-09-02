@@ -1,0 +1,465 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1075.png",
+  "name": "SC Braga",
+  "country": "PT",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 8, 1986",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "29364",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "João Moutinho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 15, 1994",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "261927",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Ricardo Horta",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 3, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "284883",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Fran Navarro",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 11, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "286908",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Tiago Sá",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 7, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "391004",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Jonas Wind",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 10, 1999",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "413118",
+      "injured": true,
+      "marketValue": "€6.00m",
+      "name": "Sikou Niakaté",
+      "nationality": [
+        "Mali",
+        "France"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Mar 31, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "478317",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Diogo Travassos",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 10, 2000",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "485395",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Gustaf Lagerbielke",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 1, 2000",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "495601",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Víctor Gómez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 27, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "553062",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Vítor Carvalho",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 31, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "562058",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Sergio Barcia",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 26, 2003",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "580193",
+      "injured": true,
+      "marketValue": "€9.00m",
+      "name": "Bright Arrey-Mbi",
+      "nationality": [
+        "Germany",
+        "England"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Apr 5, 2002",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "582987",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Adrian Bajrami",
+      "nationality": [
+        "Switzerland",
+        "Albania"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 25, 2000",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "589013",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Bartlomiej Wdowik",
+      "nationality": [
+        "Poland"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 19, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "625206",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Adrian Barisic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Mar 22, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "627224",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Gabriel Silva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 25, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "631404",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Gorby",
+      "nationality": [
+        "France",
+        "Haiti"
+      ],
+      "number": "29",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 3, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "678479",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Denis Huseinbasic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Germany"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 26, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "707572",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Pau Víctor",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 23, 2002",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "719646",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Bernardo",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Aug 17, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "875337",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Demir Ege Tıknaz",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "34",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 22, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "906948",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Gabri Martínez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "77",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 9, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "929868",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "João Carvalho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "78",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Oct 30, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "938156",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Tommy Marqués",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 31, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "943795",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Jovan Milosevic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 24, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "984540",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Diego Rodrigues",
+      "nationality": [
+        "Portugal",
+        "Belgium"
+      ],
+      "number": "50",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 7, 2004",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1045972",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Mario Dorgeles",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "20",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 9, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1061378",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Jonatás Noro",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "53",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 24, 2008",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1075884",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "João Aragão",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "72",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 16, 2006",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "1333915",
+      "injured": false,
+      "name": "Luisinho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "90",
+      "position": "Attacking Midfield"
+    }
+  ],
+  "stadiumName": "Estádio Municipal de Braga",
+  "stadiumSeats": "30286",
+  "transfermarktId": "1075"
+}

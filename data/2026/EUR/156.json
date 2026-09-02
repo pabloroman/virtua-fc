@@ -1,0 +1,429 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/156.png",
+  "name": "Levski Sofia",
+  "country": "BG",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 29, 1992",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "140109",
+      "injured": true,
+      "marketValue": "€300k",
+      "name": "Radoslav Kirilov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "99",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 13, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "222813",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Marko Grujić",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 5, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "283342",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Martin Lukov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "78",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 27, 1997",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "351800",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Kristian Dimitrov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "50",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 30, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "423443",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Álex Centelles",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 5, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "463667",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Christian Makoun",
+      "nationality": [
+        "Venezuela",
+        "Belgium"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 6, 1998",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "504298",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Mazire Soula",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 28, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "521370",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Gasper Trdin",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 2, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "531461",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Armstrong Oko-Flex",
+      "nationality": [
+        "Ireland",
+        "England"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 11, 1999",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "539465",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Nikola Serafimov",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "31",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 11, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "588072",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Aldair",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "21",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 22, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "593432",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Mehdi Moubarik",
+      "nationality": [
+        "Morocco"
+      ],
+      "number": "19",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 9, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "628038",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Svetoslav Vutsov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "92",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 6, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "646256",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Reinaldo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 1, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "695121",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Hevertton",
+      "nationality": [
+        "Portugal",
+        "Brazil"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 3, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "697803",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Everton Bala",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 24, 1998",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "832051",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Mustapha Sangaré",
+      "nationality": [
+        "Mali",
+        "France"
+      ],
+      "number": "12",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 1, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "836547",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Serginho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 17, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "859713",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Asen Mitkov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 23, 2002",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "863191",
+      "injured": true,
+      "marketValue": "€2.00m",
+      "name": "Akram Bouras",
+      "nationality": [
+        "Algeria"
+      ],
+      "number": "47",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 2006",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "955606",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "4172",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/4172.png",
+          "name": "Pisa Sporting Club"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€175k",
+      "name": "Adrian Raychev",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 21, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "968290",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Juan Perea",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 15, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "969154",
+      "injured": true,
+      "marketValue": "€1.20m",
+      "name": "Oliver Kamdem",
+      "nationality": [
+        "Cameroon",
+        "France"
+      ],
+      "number": "71",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 26, 2000",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "979385",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Maicon",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 24, 2008",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1144096",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Ognyan Vladimirov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 2007",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1231105",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Steven Stoyanchov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "28",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 22, 2004",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "1298195",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "David Kusso",
+      "nationality": [
+        "Angola"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Georgi Asparuhov",
+  "stadiumSeats": "17688",
+  "transfermarktId": "156"
+}

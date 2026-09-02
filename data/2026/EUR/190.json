@@ -1,0 +1,403 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/190.png",
+  "name": "FC Copenhagen",
+  "country": "DK",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 3, 1991",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "91849",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Thomas Delaney",
+      "nationality": [
+        "Denmark",
+        "United States"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 4, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "186644",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Mohamed Elyounoussi",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 16, 1993",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "203412",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Andreas Cornelius",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 18, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "205657",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Rúnar Alex Rúnarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 5, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "260846",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Asger Sørensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 17, 1994",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "282250",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Birger Meling",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 31, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "322293",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Felix Beijmo",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 19, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "337333",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Alex Král",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "33",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 14, 1998",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "422950",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Mads Emil Madsen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 20, 1999",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "432175",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Marcos López",
+      "nationality": [
+        "Peru"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 19, 2001",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "448705",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "16",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/16.png",
+          "name": "Borussia Dortmund"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€7.00m",
+      "name": "Diant Ramaj",
+      "nationality": [
+        "Germany",
+        "Kosovo"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 25, 1999",
+      "foot": "both",
+      "height": "1,74m",
+      "id": "489929",
+      "injured": true,
+      "marketValue": "€4.00m",
+      "name": "Magnus Mattsson",
+      "nationality": [
+        "Denmark",
+        "Sweden"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 18, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "668529",
+      "injured": true,
+      "marketValue": "€6.00m",
+      "name": "Rodrigo Huescas",
+      "nationality": [
+        "Mexico"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 7, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "742095",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Gabriel Pereira",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 20, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "805054",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "William Clem",
+      "nationality": [
+        "Denmark",
+        "Norway"
+      ],
+      "number": "36",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 12, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "848856",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Junnosuke Suzuki",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 11, 2003",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "983330",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Thapelo Maseko",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "12",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 25, 2007",
+      "id": "1042870",
+      "injured": false,
+      "name": "Tobias Breum-Harild",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 30, 2008",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1072751",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Viktor Dadason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 13, 2005",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "1084714",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Robert",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 30, 2005",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1123192",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Ákos Markgráf",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 16, 2007",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1123210",
+      "injured": true,
+      "marketValue": "€700k",
+      "name": "Hunor Németh",
+      "nationality": [
+        "Hungary",
+        "Denmark"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 19, 2006",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1162160",
+      "injured": true,
+      "loan": {
+        "from": {
+          "id": "610",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/610.png",
+          "name": "Ajax Amsterdam"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€8.00m",
+      "name": "Maher Carrizo",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 6, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1314350",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Kenay Myrie",
+      "nationality": [
+        "Costa Rica"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 25, 2007",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1489163",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Geovanni Vianney Ndjee",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "44",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Parken - connected by 3",
+  "stadiumSeats": "38065",
+  "transfermarktId": "190"
+}
