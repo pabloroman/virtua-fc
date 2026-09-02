@@ -1,0 +1,35 @@
+{
+  "id": "USC",
+  "name": "UEFA Super Cup",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "5",
+      "name": "AC Milan"
+    },
+    {
+      "id": "13",
+      "name": "Atlético de Madrid"
+    },
+    {
+      "id": "31",
+      "name": "Liverpool FC"
+    },
+    {
+      "id": "131",
+      "name": "FC Barcelona"
+    },
+    {
+      "id": "405",
+      "name": "Aston Villa"
+    },
+    {
+      "id": "418",
+      "name": "Real Madrid"
+    },
+    {
+      "id": "583",
+      "name": "PSG"
+    }
+  ]
+}
