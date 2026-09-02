@@ -108,6 +108,12 @@ curl -sS -D- -o /dev/null \
 `200` is fine (the `github-authentication-token-expiration` header gives the
 expiry), `401` is a bad token, `404` is a token without access to this repo.
 
+`422: Update is not a fast forward` means the branch head moved while the push
+was uploading — normally CI's `Canonicalize season {year} squad data` commit
+from your *previous* push landing a few seconds later. The push now rebuilds its
+commit on the new head and retries (up to three times), so this should no longer
+surface; if it does, something is committing to the branch continuously.
+
 ### Push a single page
 
 After scraping a supported page, click **Push to GitHub**:

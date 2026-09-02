@@ -112,3 +112,94 @@ describe('verify', () => {
         await expect(client().verify('main')).resolves.toMatchObject({ canWrite: true, expiresAt: null });
     });
 });
+
+/**
+ * A stand-in for the Git Data endpoints `commitFiles` drives, so the retry can
+ * be tested as a sequence rather than as a fixed list of canned responses.
+ * `failPatchTimes` makes the ref update fail as a non-fast-forward that many
+ * times, moving the head each time — what CI's normalize commit does when it
+ * lands mid-push.
+ */
+const gitDataServer = ({ failPatchTimes = 0, patchError = null } = {}) => {
+    const state = { head: 'head1', blobs: 0, trees: [], commits: [] };
+    let remainingFailures = failPatchTimes;
+    let movedHeads = 0;
+
+    globalThis.fetch = vi.fn(async (url, init = {}) => {
+        const method = init.method || 'GET';
+        const path = url.replace('https://api.github.com/repos/pabloroman/virtua-fc', '');
+        const body = init.body ? JSON.parse(init.body) : null;
+
+        if (method === 'GET' && path.startsWith('/git/ref/heads/')) {
+            return response(200, { object: { sha: state.head } });
+        }
+        if (method === 'GET' && path.startsWith('/git/commits/')) {
+            return response(200, { tree: { sha: `tree-of-${path.split('/').pop()}` } });
+        }
+        if (method === 'POST' && path === '/git/blobs') {
+            state.blobs += 1;
+            return response(201, { sha: `blob${state.blobs}` });
+        }
+        if (method === 'POST' && path === '/git/trees') {
+            state.trees.push(body);
+            return response(201, { sha: `tree${state.trees.length}` });
+        }
+        if (method === 'POST' && path === '/git/commits') {
+            state.commits.push(body);
+            return response(201, { sha: `commit${state.commits.length}` });
+        }
+        if (method === 'PATCH' && path.startsWith('/git/refs/heads/')) {
+            if (patchError) return response(patchError, { message: 'nope' });
+            if (remainingFailures > 0) {
+                remainingFailures -= 1;
+                movedHeads += 1;
+                state.head = `head${movedHeads + 1}`;
+                return response(422, { message: 'Update is not a fast forward' });
+            }
+            state.head = body.sha;
+            return response(200, { object: { sha: body.sha } });
+        }
+        throw new Error(`unexpected ${method} ${path}`);
+    });
+
+    return state;
+};
+
+const FILES = [{ path: 'data/2026/UCL/teams.json', content: '{}' }];
+
+describe('commitFiles — a branch head that moves mid-push', () => {
+    it('rebuilds the commit on the new head and pushes it', async () => {
+        const state = gitDataServer({ failPatchTimes: 1 });
+
+        await expect(client().commitFiles('season-data/2026', 'main', FILES, 'msg')).resolves.toBe('commit2');
+
+        // The second attempt parents off the head CI moved to, and takes its
+        // base tree from there — so CI's commit survives instead of being
+        // reverted by the retry.
+        expect(state.commits[0].parents).toEqual(['head1']);
+        expect(state.commits[1].parents).toEqual(['head2']);
+        expect(state.trees[1].base_tree).toBe('tree-of-head2');
+    });
+
+    it('uploads each blob once across retries', async () => {
+        const state = gitDataServer({ failPatchTimes: 2 });
+
+        await client().commitFiles('season-data/2026', 'main', FILES, 'msg');
+
+        expect(state.blobs).toBe(1);
+    });
+
+    it('gives up after three collisions with a message naming the branch', async () => {
+        gitDataServer({ failPatchTimes: 3 });
+
+        await expect(client().commitFiles('season-data/2026', 'main', FILES, 'msg'))
+            .rejects.toThrow(/"season-data\/2026" moved under the push 3 times in a row/);
+    });
+
+    it('does not retry a failure that is not a fast-forward conflict', async () => {
+        const state = gitDataServer({ patchError: 403 });
+
+        await expect(client().commitFiles('season-data/2026', 'main', FILES, 'msg')).rejects.toThrow(/403/);
+        expect(state.commits).toHaveLength(1);
+    });
+});

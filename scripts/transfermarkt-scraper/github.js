@@ -7,6 +7,17 @@
 (function (global) {
   const API = 'https://api.github.com';
 
+  // How many times to rebuild a commit onto a moved branch head before giving
+  // up. Three covers CI landing its normalize commit mid-push; more than that
+  // means something is pushing continuously and retrying will not help.
+  const COMMIT_ATTEMPTS = 3;
+
+  // GitHub rejects a ref update whose commit is not a descendant of the current
+  // head with a 422 rather than a conflict status.
+  function isNotFastForward(err) {
+    return err.status === 422 && /fast forward/i.test(err.message);
+  }
+
   class GitHubClient {
     /**
      * @param {string} token  Fine-grained PAT scoped to the repo, with
@@ -36,7 +47,9 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         const detail = data && data.message ? data.message : res.statusText;
-        throw new Error(`GitHub ${method} ${path} → ${res.status}: ${detail}`);
+        const err = new Error(`GitHub ${method} ${path} → ${res.status}: ${detail}`);
+        err.status = res.status;
+        throw err;
       }
       return data;
     }
@@ -147,10 +160,10 @@
      * @param {Array<{path: string, content: string}>} files
      */
     async commitFiles(branch, base, files, message) {
-      const headSha = await this.ensureBranch(branch, base);
-      const headCommit = await this.request('GET', `/git/commits/${headSha}`);
-      const baseTree = headCommit.tree.sha;
+      await this.ensureBranch(branch, base);
 
+      // Blobs are content-addressed and belong to no tree, so they are uploaded
+      // once and reused if the commit has to be rebuilt.
       const tree = [];
       for (const file of files) {
         const blob = await this.request('POST', '/git/blobs', {
@@ -160,22 +173,43 @@
         tree.push({ path: file.path, mode: '100644', type: 'blob', sha: blob.sha });
       }
 
-      const newTree = await this.request('POST', '/git/trees', {
-        base_tree: baseTree,
-        tree,
-      });
+      // The branch head can move while we are uploading: CI commits the
+      // normalized form of the previous push back to this same branch
+      // (.github/workflows/season-data.yml), which lands seconds after a push
+      // and makes the ref update a non-fast-forward. Rebuild the commit on the
+      // new head and try again — every file here is written whole, so rebasing
+      // onto a newer tree cannot conflict; the other files come from
+      // `base_tree`, and CI simply re-normalizes what we overwrite.
+      for (let attempt = 1; ; attempt++) {
+        const headSha = await this.getRefSha(branch);
+        const headCommit = await this.request('GET', `/git/commits/${headSha}`);
 
-      const commit = await this.request('POST', '/git/commits', {
-        message,
-        tree: newTree.sha,
-        parents: [headSha],
-      });
+        const newTree = await this.request('POST', '/git/trees', {
+          base_tree: headCommit.tree.sha,
+          tree,
+        });
 
-      await this.request('PATCH', `/git/refs/heads/${branch}`, {
-        sha: commit.sha,
-      });
+        const commit = await this.request('POST', '/git/commits', {
+          message,
+          tree: newTree.sha,
+          parents: [headSha],
+        });
 
-      return commit.sha;
+        try {
+          await this.request('PATCH', `/git/refs/heads/${branch}`, {
+            sha: commit.sha,
+          });
+          return commit.sha;
+        } catch (err) {
+          if (!isNotFastForward(err)) throw err;
+          if (attempt >= COMMIT_ATTEMPTS) {
+            throw new Error(
+              `"${branch}" moved under the push ${COMMIT_ATTEMPTS} times in a row — something is ` +
+                'committing to it continuously. Let the branch settle and push again.',
+            );
+          }
+        }
+      }
     }
 
     /**
