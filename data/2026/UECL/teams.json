@@ -1,0 +1,171 @@
+{
+  "id": "UCOL",
+  "name": "UEFA Europa Conference League",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "12",
+      "name": "AS Roma"
+    },
+    {
+      "id": "43",
+      "name": "Heart of Midl."
+    },
+    {
+      "id": "60",
+      "name": "Freiburg"
+    },
+    {
+      "id": "157",
+      "name": "KAA Gent"
+    },
+    {
+      "id": "159",
+      "name": "Red Star"
+    },
+    {
+      "id": "162",
+      "name": "Monaco"
+    },
+    {
+      "id": "190",
+      "name": "Copenhagen"
+    },
+    {
+      "id": "208",
+      "name": "CSKA Sofia"
+    },
+    {
+      "id": "265",
+      "name": "Panathinaikos"
+    },
+    {
+      "id": "317",
+      "name": "FC Twente"
+    },
+    {
+      "id": "379",
+      "name": "West Ham United"
+    },
+    {
+      "id": "447",
+      "name": "Hajduk Split"
+    },
+    {
+      "id": "449",
+      "name": "Trabzonspor"
+    },
+    {
+      "id": "475",
+      "name": "Sint-Truiden"
+    },
+    {
+      "id": "610",
+      "name": "Ajax"
+    },
+    {
+      "id": "631",
+      "name": "Chelsea FC"
+    },
+    {
+      "id": "678",
+      "name": "Aarhus GF"
+    },
+    {
+      "id": "683",
+      "name": "Olympiacos Piraeus"
+    },
+    {
+      "id": "800",
+      "name": "Atalanta"
+    },
+    {
+      "id": "865",
+      "name": "Midtjylland"
+    },
+    {
+      "id": "873",
+      "name": "Crystal Palace"
+    },
+    {
+      "id": "938",
+      "name": "FC Thun"
+    },
+    {
+      "id": "1075",
+      "name": "Braga"
+    },
+    {
+      "id": "1100",
+      "name": "SK Brann"
+    },
+    {
+      "id": "1237",
+      "name": "Brighton"
+    },
+    {
+      "id": "1322",
+      "name": "Jablonec"
+    },
+    {
+      "id": "2719",
+      "name": "Mjällby AIF"
+    },
+    {
+      "id": "2778",
+      "name": "Nordsjaelland"
+    },
+    {
+      "id": "2790",
+      "name": "FC Lugano"
+    },
+    {
+      "id": "3709",
+      "name": "Getafe"
+    },
+    {
+      "id": "3900",
+      "name": "B. Banja Luka"
+    },
+    {
+      "id": "6251",
+      "name": "KuPS"
+    },
+    {
+      "id": "10482",
+      "name": "Kairat Almaty"
+    },
+    {
+      "id": "27114",
+      "name": "KF Egnatia"
+    },
+    {
+      "id": "38204",
+      "name": "Lincoln FC"
+    },
+    {
+      "id": "40090",
+      "name": "Kauno Zalgiris"
+    },
+    {
+      "id": "40812",
+      "name": "Univ. Craiova"
+    },
+    {
+      "id": "41133",
+      "name": "Iberia 1999"
+    },
+    {
+      "id": "41916",
+      "name": "Inter Escaldes"
+    },
+    {
+      "id": "45457",
+      "name": "Pafos"
+    },
+    {
+      "id": "48325",
+      "name": "Riga"
+    }
+  ]
+}
