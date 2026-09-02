@@ -170,6 +170,48 @@
     return encode(sortClubPlayers(ordered));
   }
 
+  // The continental participants that need their own EUR pool file: the ones no
+  // league teams.json in the same season folder already supplies a squad for.
+  //
+  // Mirrors `app:validate-season`'s seedable-participant rule — a participant is
+  // seedable when some league or pool file in the season folder carries its
+  // squad — with one deliberate difference: EUR/INT files already on the branch
+  // do not count as covered. A pool file is last season's squad until this
+  // season re-scrapes it, so a refresh rebuilds all of them.
+  //
+  // Deduplicated by club id: the UEFA Super Cup's two participants also appear
+  // in the UCL and UEL lists.
+  //
+  // @param {Array<{code: string, clubs: Array}>} continentalLists
+  // @param {Array<{clubs: Array}>} leagueLists
+  // @returns {Array<{id: string, name: string, competitions: string[]}>} by id
+  function poolTargets(continentalLists, leagueLists) {
+    const covered = new Set();
+    for (const league of leagueLists) {
+      for (const club of league.clubs || []) {
+        const id = resolveClubId(club);
+        if (id) covered.add(id);
+      }
+    }
+
+    const targets = new Map();
+    for (const list of continentalLists) {
+      for (const club of list.clubs || []) {
+        const id = resolveClubId(club);
+        if (!id || covered.has(id)) continue;
+
+        const seen = targets.get(id);
+        if (seen) {
+          if (!seen.competitions.includes(list.code)) seen.competitions.push(list.code);
+          continue;
+        }
+        targets.set(id, { id, name: club.name || id, competitions: [list.code] });
+      }
+    }
+
+    return [...targets.values()].sort(byId(target => target.id));
+  }
+
   // Map a finished scrape result to the repo file it belongs in, or null when
   // the competition is not in the registry.
   //
@@ -211,6 +253,8 @@
     POOLS,
     countryCodeFor,
     findByTmId,
+    resolveClubId,
+    poolTargets,
     toTeamsJson,
     toPoolJson,
     repoFileForResult,

@@ -56,22 +56,30 @@ async function navigateAndWait(tabId, url) {
 }
 
 /**
- * Scrape players from the current page
+ * Scrape a club's full record (name, country, stadium, squad) from its kader
+ * page. A league scrape keeps only the players; a pool file needs all of it.
  */
-async function scrapePlayersFromTab(tabId) {
-  console.log('[TM Scraper] Scraping players from tab:', tabId);
+async function scrapeClubFromTab(tabId) {
   try {
     const results = await chrome.scripting.executeScript({
       target: { tabId },
       files: ['content-club.js']
     });
-    const players = results?.[0]?.result?.players || [];
-    console.log('[TM Scraper] Found', players.length, 'players');
-    return players;
+    return results?.[0]?.result || null;
   } catch (err) {
-    console.error('[TM Scraper] Error scraping players:', err);
-    return [];
+    console.error('[TM Scraper] Error scraping club:', err);
+    return null;
   }
+}
+
+/**
+ * Scrape players from the current page
+ */
+async function scrapePlayersFromTab(tabId) {
+  console.log('[TM Scraper] Scraping players from tab:', tabId);
+  const players = (await scrapeClubFromTab(tabId))?.players || [];
+  console.log('[TM Scraper] Found', players.length, 'players');
+  return players;
 }
 
 /**
@@ -496,6 +504,148 @@ async function scrapeLeagueSquads(tabId, stadiumsUrl, onClub) {
 }
 
 /**
+ * Work out which clubs still need a `data/{season}/EUR/{id}.json` squad file,
+ * from what is already on the season branch: the continental participant lists
+ * minus every club a batch league's teams.json already covers.
+ *
+ * Refuses to run when a league's squads are missing. Without them no
+ * participant looks covered and the run would scrape all ~108 clubs, writing
+ * pool files for clubs that belong to a league.
+ */
+async function europeanPoolTargets(season) {
+  const { token, repo, base } = await getSettings();
+  const gh = new GitHubClient(token, repo);
+  const branch = SeasonConfig.branchFor(season);
+
+  // The season branch is where scraped data lands; base only matters before the
+  // first push of a given file.
+  const readList = async code => {
+    const path = `data/${season}/${code}/teams.json`;
+    const file = (await gh.getFileJson(branch, path)) || (await gh.getFileJson(base, path));
+    return file && Array.isArray(file.clubs) ? { code, clubs: file.clubs } : null;
+  };
+
+  const leagues = [];
+  const missingLeagues = [];
+  for (const comp of SeasonConfig.COMPETITIONS.filter(c => c.batch)) {
+    const list = await readList(comp.code);
+    if (list) leagues.push(list);
+    else missingLeagues.push(comp.code);
+  }
+  if (missingLeagues.length > 0) {
+    throw new Error(
+      `No squads on ${branch} for ${missingLeagues.join(', ')} — run "Refresh all leagues" first, ` +
+        'or every participant would be scraped as a pool club.',
+    );
+  }
+
+  const continental = [];
+  const missingLists = [];
+  for (const comp of SeasonConfig.COMPETITIONS.filter(c => c.kind === 'continental')) {
+    const list = await readList(comp.code);
+    if (list) continental.push(list);
+    else missingLists.push(comp.code);
+  }
+  if (continental.length === 0) {
+    throw new Error(
+      `No continental participant lists on ${branch} — scrape and push the UCL/UEL/UECL/UEFASUP ` +
+        'fixtures pages first.',
+    );
+  }
+
+  return { targets: SeasonConfig.poolTargets(continental, leagues), missingLists };
+}
+
+/**
+ * Scrape a squad for every continental participant that needs a pool file and
+ * push them to the season-data branch in one commit + PR.
+ */
+async function startEuropeanPoolRefresh(tabId) {
+  refreshAborted = false;
+
+  const { token, season } = await getSettings();
+  if (!token) throw new Error('No GitHub token set — open Settings.');
+  if (!season) throw new Error('Set a target season in Settings first.');
+
+  await updateProgress({ status: 'working', message: 'Checking GitHub credentials…', current: 0, total: 0, pageType: 'euro-refresh' });
+  await verifyGitHub();
+
+  await updateProgress({ status: 'working', message: 'Reading participant lists…', current: 0, total: 0, pageType: 'euro-refresh' });
+  const { targets, missingLists } = await europeanPoolTargets(season);
+
+  if (targets.length === 0) {
+    await updateProgress({
+      status: 'ready',
+      message: 'Nothing to do — every participant already has a squad',
+      current: 0,
+      total: 0,
+      pageType: 'euro-refresh',
+      result: { files: 0, failed: [], missingLists },
+    });
+    return;
+  }
+
+  const files = [];
+  const failed = [];
+
+  for (let i = 0; i < targets.length; i++) {
+    if (refreshAborted) {
+      await updateProgress({ status: 'paused', message: `Paused — ${i}/${targets.length} clubs (nothing pushed)`, current: i, total: targets.length, pageType: 'euro-refresh' });
+      return;
+    }
+
+    const club = targets[i];
+    await updateProgress({
+      status: 'working',
+      message: `${club.name} (${club.competitions.join(', ')})`,
+      current: i + 1,
+      total: targets.length,
+      pageType: 'euro-refresh',
+    });
+
+    // One unreachable club must not discard the squads already scraped in this
+    // run, exactly as a failed league does not in startSeasonRefresh.
+    try {
+      await navigateAndWait(tabId, buildKaderUrl(club.id, season));
+      const result = await scrapeClubFromTab(tabId);
+      if (!result || (result.players || []).length === 0) {
+        throw new Error('no players found on the squad page');
+      }
+
+      const file = SeasonConfig.repoFileForResult(result, 'club', { season, pool: 'EUR' });
+      if (!file) throw new Error('scrape did not map to a repo file');
+      files.push(file);
+    } catch (err) {
+      failed.push(`${club.name} (${club.id})`);
+      console.error(`[TM Scraper] ${club.name} (${club.id}) failed:`, err);
+    }
+
+    if (i < targets.length - 1) await sleep(800);
+  }
+
+  if (files.length === 0) {
+    throw new Error(`Every club failed (${failed.length}) — nothing to push.`);
+  }
+
+  await updateProgress({ status: 'working', message: `Pushing ${files.length} pool files to GitHub…`, current: targets.length, total: targets.length, pageType: 'euro-refresh' });
+
+  const prUrl = await pushFilesToGitHub(files, season);
+
+  const summary = failed.length
+    ? `Done — ${files.length} clubs pushed, ${failed.length} failed`
+    : `Done — ${files.length} clubs pushed`;
+
+  await updateProgress({
+    status: 'ready',
+    message: summary,
+    current: targets.length,
+    total: targets.length,
+    pageType: 'euro-refresh',
+    result: { prUrl, files: files.length, failed, missingLists },
+  });
+}
+
+/**
  * Drive every batch-enabled league for the target season, scrape its full
  * squad, and push them all to the season-data branch in one commit + PR.
  */
@@ -783,6 +933,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (err.message === 'aborted') return;
         console.error('[TM Scraper] Season refresh failed:', err);
         updateProgress({ status: 'error', message: err.message, pageType: 'season-refresh' });
+      });
+    sendResponse({ started: true });
+    return true;
+  }
+
+  if (message.action === 'startEuroRefresh') {
+    startEuropeanPoolRefresh(message.tabId)
+      .catch(err => {
+        if (err.message === 'aborted') return;
+        console.error('[TM Scraper] European pool refresh failed:', err);
+        updateProgress({ status: 'error', message: err.message, pageType: 'euro-refresh' });
       });
     sendResponse({ started: true });
     return true;

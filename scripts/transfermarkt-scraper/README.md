@@ -144,9 +144,33 @@ Unknown labels are left out rather than guessed; add them to `COUNTRY_CODES` in
 **SEASON REFRESH → Refresh all leagues** drives every league in `season-config.js`
 (`batch: true`) for the target season — scraping each club's squad at a human
 pace — then pushes them all in **one commit + PR**. Leave a Transfermarkt tab
-open and active; **Stop** pauses cleanly between leagues. Cups, continental
-participant lists, and EUR/INT pools are pushed individually with the per-page
-button (their pages aren't part of the batch driver).
+open and active; **Stop** pauses cleanly between leagues. Cups and continental
+participant lists are pushed individually with the per-page button (their pages
+aren't part of the batch driver).
+
+### Refresh the European pool
+
+A continental participant from outside the eight scraped leagues has no squad
+until it gets a `data/{season}/EUR/{id}.json` file of its own — 70 of 2025's 108
+slots. **SEASON REFRESH → Refresh European pool** does that batch:
+
+1. reads the UCL/UEL/UECL/UEFASUP participant lists and the league `teams.json`
+   files already on the season branch,
+2. takes every participant no league covers (deduplicated — the Super Cup's two
+   clubs are also in the UCL/UEL lists),
+3. scrapes each one's squad page and pushes them all in **one commit + PR**.
+
+Run it **after** both the leagues and the participant lists are on the branch:
+the club list is derived from what is there. If a league's squads are missing it
+refuses rather than treating all ~108 participants as pool clubs; if a
+participant list is missing it works with the ones that exist and names the rest
+in the result.
+
+Every target is re-scraped, including clubs that already have a pool file — a
+pool file is last season's squad until this season overwrites it. As with the
+league driver, one unreachable club is skipped and named in the summary rather
+than sinking the run, and **Stop** pauses between clubs (nothing is pushed on a
+pause). Clubs that need the `INT` pool are still pushed one page at a time.
 
 **Expect it to take 15–25 minutes** (8 leagues × ~20 clubs, deliberately paced) and
 to drive your active tab the whole way. **Keep the popup open** to watch progress —

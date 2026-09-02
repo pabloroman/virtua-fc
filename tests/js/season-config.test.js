@@ -168,3 +168,77 @@ describe('repoFileForResult', () => {
         expect(parse(file.content).country).toBe('NL');
     });
 });
+
+/**
+ * poolTargets decides which continental participants get scraped into EUR/.
+ *
+ * Both directions cost real work if wrong: a club wrongly included is a
+ * redundant pool file (and a needless page load in a run that already takes
+ * minutes), while a club wrongly excluded has no squad at all — the seeder drops
+ * it, SeasonInitializationService then skips the whole league phase, and the
+ * competition ends up with no fixtures and nothing said about it in-game.
+ */
+describe('poolTargets — clubs that still need an EUR pool file', () => {
+    const league = clubs => ({ code: 'ESP1', clubs });
+    const ucl = clubs => ({ code: 'UCL', clubs });
+
+    it('keeps participants no league covers', () => {
+        const targets = SeasonConfig.poolTargets(
+            [ucl([{ id: '418', name: 'Real Madrid' }, { id: '10482', name: 'Kairat Almaty' }])],
+            [league([{ transfermarktId: '418', name: 'Real Madrid' }])],
+        );
+
+        expect(targets).toEqual([{ id: '10482', name: 'Kairat Almaty', competitions: ['UCL'] }]);
+    });
+
+    it('matches league clubs on transfermarktId, which is the key league files use', () => {
+        // Continental lists carry `id`; league teams.json carries
+        // `transfermarktId`. Comparing the raw keys would cover nothing.
+        const targets = SeasonConfig.poolTargets(
+            [ucl([{ id: '11', name: 'Arsenal' }])],
+            [league([{ transfermarktId: '11', name: 'Arsenal' }])],
+        );
+
+        expect(targets).toEqual([]);
+    });
+
+    it('falls back to the crest url for a club with no id fields', () => {
+        const targets = SeasonConfig.poolTargets(
+            [ucl([{ id: '11', name: 'Arsenal' }])],
+            [league([{ name: 'Arsenal', image: 'https://tmssl.akamaized.net/images/wappen/big/11.png' }])],
+        );
+
+        expect(targets).toEqual([]);
+    });
+
+    it('lists a club once, naming every competition it plays in', () => {
+        // The Super Cup's two participants are also in the UCL and UEL lists;
+        // scraping the same squad twice would push two identical files.
+        const targets = SeasonConfig.poolTargets(
+            [
+                ucl([{ id: '10482', name: 'Kairat Almaty' }]),
+                { code: 'UEFASUP', clubs: [{ id: '10482', name: 'Kairat Almaty' }] },
+            ],
+            [],
+        );
+
+        expect(targets).toEqual([
+            { id: '10482', name: 'Kairat Almaty', competitions: ['UCL', 'UEFASUP'] },
+        ]);
+    });
+
+    it('orders by club id so a re-run walks the same sequence', () => {
+        const targets = SeasonConfig.poolTargets(
+            [ucl([{ id: '10482', name: 'Kairat' }, { id: '294', name: 'Slavia' }, { id: '1090', name: 'Pafos' }])],
+            [],
+        );
+
+        expect(targets.map(t => t.id)).toEqual(['294', '1090', '10482']);
+    });
+
+    it('skips entries with no resolvable id rather than scraping a bad url', () => {
+        const targets = SeasonConfig.poolTargets([ucl([{ name: 'Mystery FC' }])], []);
+
+        expect(targets).toEqual([]);
+    });
+});
