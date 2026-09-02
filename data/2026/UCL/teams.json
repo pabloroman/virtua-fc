@@ -5,31 +5,38 @@
   "clubs": [
     {
       "id": "5",
-      "name": "AC Milan"
+      "name": "AC Milan",
+      "country": "IT"
     },
     {
       "id": "11",
-      "name": "Arsenal"
+      "name": "Arsenal",
+      "country": "EN"
     },
     {
       "id": "12",
-      "name": "Roma"
+      "name": "Roma",
+      "country": "IT"
     },
     {
       "id": "13",
-      "name": "Atlético"
+      "name": "Atlético",
+      "country": "ES"
     },
     {
       "id": "16",
-      "name": "Dortmund"
+      "name": "Dortmund",
+      "country": "DE"
     },
     {
       "id": "27",
-      "name": "Bayern Munich"
+      "name": "Bayern Munich",
+      "country": "DE"
     },
     {
       "id": "31",
-      "name": "Liverpool"
+      "name": "Liverpool",
+      "country": "EN"
     },
     {
       "id": "36",
@@ -37,7 +44,8 @@
     },
     {
       "id": "46",
-      "name": "Inter"
+      "name": "Inter",
+      "country": "IT"
     },
     {
       "id": "62",
@@ -45,11 +53,13 @@
     },
     {
       "id": "79",
-      "name": "Stuttgart"
+      "name": "Stuttgart",
+      "country": "DE"
     },
     {
       "id": "131",
-      "name": "Barcelona"
+      "name": "Barcelona",
+      "country": "ES"
     },
     {
       "id": "141",
@@ -57,7 +67,8 @@
     },
     {
       "id": "150",
-      "name": "Real Betis"
+      "name": "Real Betis",
+      "country": "ES"
     },
     {
       "id": "234",
@@ -69,7 +80,8 @@
     },
     {
       "id": "281",
-      "name": "Man City"
+      "name": "Man City",
+      "country": "EN"
     },
     {
       "id": "336",
@@ -81,7 +93,8 @@
     },
     {
       "id": "405",
-      "name": "Aston Villa"
+      "name": "Aston Villa",
+      "country": "EN"
     },
     {
       "id": "413",
@@ -89,7 +102,8 @@
     },
     {
       "id": "418",
-      "name": "Real Madrid"
+      "name": "Real Madrid",
+      "country": "ES"
     },
     {
       "id": "501",
@@ -101,7 +115,8 @@
     },
     {
       "id": "583",
-      "name": "PSG"
+      "name": "PSG",
+      "country": "FR"
     },
     {
       "id": "660",
@@ -113,23 +128,28 @@
     },
     {
       "id": "826",
-      "name": "Lens"
+      "name": "Lens",
+      "country": "FR"
     },
     {
       "id": "985",
-      "name": "Man Utd"
+      "name": "Man Utd",
+      "country": "EN"
     },
     {
       "id": "1047",
-      "name": "Como"
+      "name": "Como",
+      "country": "IT"
     },
     {
       "id": "1050",
-      "name": "Villarreal"
+      "name": "Villarreal",
+      "country": "ES"
     },
     {
       "id": "1082",
-      "name": "Lille"
+      "name": "Lille",
+      "country": "FR"
     },
     {
       "id": "2282",
@@ -141,11 +161,13 @@
     },
     {
       "id": "6195",
-      "name": "Napoli"
+      "name": "Napoli",
+      "country": "IT"
     },
     {
       "id": "23826",
-      "name": "Leipzig"
+      "name": "Leipzig",
+      "country": "DE"
     },
     {
       "id": "63993",
