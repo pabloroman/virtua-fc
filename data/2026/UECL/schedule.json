@@ -1,0 +1,67 @@
+{
+    "league": [
+        {
+            "round": 1,
+            "date": "2026-09-30"
+        },
+        {
+            "round": 2,
+            "date": "2026-10-08"
+        },
+        {
+            "round": 3,
+            "date": "2026-10-29"
+        },
+        {
+            "round": 4,
+            "date": "2026-11-12"
+        },
+        {
+            "round": 5,
+            "date": "2026-12-03"
+        },
+        {
+            "round": 6,
+            "date": "2026-12-17"
+        },
+        {
+            "round": 7,
+            "date": "2027-01-28"
+        },
+        {
+            "round": 8,
+            "date": "2027-02-04"
+        }
+    ],
+    "knockout": [
+        {
+            "round": 1,
+            "name": "cup.knockout_playoff_round",
+            "first_leg_date": "2027-02-25",
+            "second_leg_date": "2027-03-04"
+        },
+        {
+            "round": 2,
+            "name": "cup.round_of_16",
+            "first_leg_date": "2027-03-18",
+            "second_leg_date": "2027-03-25"
+        },
+        {
+            "round": 3,
+            "name": "cup.quarter_finals",
+            "first_leg_date": "2027-04-15",
+            "second_leg_date": "2027-04-22"
+        },
+        {
+            "round": 4,
+            "name": "cup.semi_finals",
+            "first_leg_date": "2027-05-06",
+            "second_leg_date": "2027-05-13"
+        },
+        {
+            "round": 5,
+            "name": "cup.final",
+            "date": "2027-06-02"
+        }
+    ]
+}
