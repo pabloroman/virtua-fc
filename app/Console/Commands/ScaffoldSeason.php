@@ -12,10 +12,11 @@ use Illuminate\Console\Command;
  *
  * Creates `data/{season}/{COMP}/` for every competition declared in
  * config/countries.php and bootstraps each `schedule.json` by copying the
- * source season's calendar with every date shifted forward by the year
- * difference. Squad data (`teams.json` and EUR/INT pool files) is *not*
- * generated — those come from the scraper — so the command finishes by
- * printing a checklist of the squad files still missing for the new season.
+ * source season's calendar with every date shifted forward by the same whole
+ * number of weeks, so every fixture keeps its weekday (see `shiftDays()`).
+ * Squad data (`teams.json` and EUR/INT pool files) is *not* generated — those
+ * come from the scraper — so the command finishes by printing a checklist of
+ * the squad files still missing for the new season.
  *
  * Typical yearly use:
  *   php artisan app:scaffold-season 2026
@@ -54,7 +55,10 @@ class ScaffoldSeason extends Command
             return self::FAILURE;
         }
 
-        $this->info("Scaffolding data/{$season} from data/{$from} (shift {$yearDiff}y)...");
+        $shiftDays = $this->shiftDays((int) $from, $yearDiff);
+        $shiftWeeks = intdiv($shiftDays, 7);
+
+        $this->info("Scaffolding data/{$season} from data/{$from} (shift {$shiftDays}d = {$shiftWeeks} weeks, weekday-preserving)...");
         $this->newLine();
 
         $missing = [];
@@ -77,9 +81,9 @@ class ScaffoldSeason extends Command
                     $this->line("  {$code}: schedule.json exists (skipped; --force to overwrite)");
                 } else {
                     $data = json_decode(file_get_contents($srcSchedule), true);
-                    $shiftedData = $this->shiftDates($data, $yearDiff);
+                    $shiftedData = $this->shiftDates($data, $shiftDays);
                     file_put_contents($dstSchedule, json_encode($shiftedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
-                    $this->line("  {$code}: schedule.json shifted {$yearDiff}y → data/{$season}/{$code}/");
+                    $this->line("  {$code}: schedule.json shifted {$shiftDays}d → data/{$season}/{$code}/");
                     $shifted++;
                 }
             }
@@ -144,21 +148,43 @@ class ScaffoldSeason extends Command
     }
 
     /**
-     * Recursively shift every YYYY-MM-DD value (under any key) forward by
-     * $yearDiff years, preserving all other fields and structure.
+     * Days to move every fixture forward: the year difference rounded *up* to a
+     * whole number of weeks.
+     *
+     * Whole weeks are what keep the calendar realistic. Every date lands on the
+     * weekday it had in the source season, so leagues stay on Saturday/Sunday,
+     * Champions League nights on Tuesday/Wednesday, Europa/Conference on
+     * Thursday and the domestic cups midweek. A plain +1 year does not: 365 days
+     * is 52 weeks *plus a day*, which slides the whole season one weekday over.
+     * Rounding up rather than down also starts the new season after the old one
+     * finished (1 year → 371 days = 53 weeks).
      */
-    private function shiftDates(mixed $value, int $yearDiff): mixed
+    private function shiftDays(int $from, int $yearDiff): int
+    {
+        // Anchored on 1 August of the source season — a football season's
+        // start — so any leap day inside the span is counted.
+        $anchor = Carbon::parse("{$from}-08-01");
+        $days = (int) $anchor->diffInDays($anchor->copy()->addYears($yearDiff));
+
+        return (int) ceil($days / 7) * 7;
+    }
+
+    /**
+     * Recursively shift every YYYY-MM-DD value (under any key) forward by
+     * $shiftDays days, preserving all other fields and structure.
+     */
+    private function shiftDates(mixed $value, int $shiftDays): mixed
     {
         if (is_array($value)) {
             $out = [];
             foreach ($value as $k => $v) {
-                $out[$k] = $this->shiftDates($v, $yearDiff);
+                $out[$k] = $this->shiftDates($v, $shiftDays);
             }
             return $out;
         }
 
         if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
-            return Carbon::parse($value)->addYears($yearDiff)->format('Y-m-d');
+            return Carbon::parse($value)->addDays($shiftDays)->format('Y-m-d');
         }
 
         return $value;
