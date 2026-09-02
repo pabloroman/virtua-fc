@@ -1,0 +1,155 @@
+{
+  "id": "CL",
+  "name": "UEFA Champions League",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "5",
+      "name": "AC Milan"
+    },
+    {
+      "id": "11",
+      "name": "Arsenal"
+    },
+    {
+      "id": "12",
+      "name": "Roma"
+    },
+    {
+      "id": "13",
+      "name": "Atlético"
+    },
+    {
+      "id": "16",
+      "name": "Dortmund"
+    },
+    {
+      "id": "27",
+      "name": "Bayern Munich"
+    },
+    {
+      "id": "31",
+      "name": "Liverpool"
+    },
+    {
+      "id": "36",
+      "name": "Fenerbahçe"
+    },
+    {
+      "id": "46",
+      "name": "Inter"
+    },
+    {
+      "id": "62",
+      "name": "Slavia Prague"
+    },
+    {
+      "id": "79",
+      "name": "Stuttgart"
+    },
+    {
+      "id": "131",
+      "name": "Barcelona"
+    },
+    {
+      "id": "141",
+      "name": "Galatasaray"
+    },
+    {
+      "id": "150",
+      "name": "Real Betis"
+    },
+    {
+      "id": "234",
+      "name": "Feyenoord"
+    },
+    {
+      "id": "239",
+      "name": "Viking FK"
+    },
+    {
+      "id": "281",
+      "name": "Man City"
+    },
+    {
+      "id": "336",
+      "name": "Sporting"
+    },
+    {
+      "id": "383",
+      "name": "PSV"
+    },
+    {
+      "id": "405",
+      "name": "Aston Villa"
+    },
+    {
+      "id": "413",
+      "name": "LASK"
+    },
+    {
+      "id": "418",
+      "name": "Real Madrid"
+    },
+    {
+      "id": "501",
+      "name": "Bodø/Glimt"
+    },
+    {
+      "id": "540",
+      "name": "Slo. Bratislava"
+    },
+    {
+      "id": "583",
+      "name": "PSG"
+    },
+    {
+      "id": "660",
+      "name": "Shakhtar D."
+    },
+    {
+      "id": "720",
+      "name": "Porto"
+    },
+    {
+      "id": "826",
+      "name": "Lens"
+    },
+    {
+      "id": "985",
+      "name": "Man Utd"
+    },
+    {
+      "id": "1047",
+      "name": "Como"
+    },
+    {
+      "id": "1050",
+      "name": "Villarreal"
+    },
+    {
+      "id": "1082",
+      "name": "Lille"
+    },
+    {
+      "id": "2282",
+      "name": "Club Brugge"
+    },
+    {
+      "id": "2441",
+      "name": "AEK Athens"
+    },
+    {
+      "id": "6195",
+      "name": "Napoli"
+    },
+    {
+      "id": "23826",
+      "name": "Leipzig"
+    },
+    {
+      "id": "63993",
+      "name": "Sabah FK"
+    }
+  ]
+}
