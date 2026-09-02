@@ -10,7 +10,8 @@
     },
     {
       "id": "43",
-      "name": "Heart of Midl."
+      "name": "Heart of Midl.",
+      "country": "GB-SCT"
     },
     {
       "id": "60",
@@ -19,11 +20,13 @@
     },
     {
       "id": "157",
-      "name": "KAA Gent"
+      "name": "KAA Gent",
+      "country": "BE"
     },
     {
       "id": "159",
-      "name": "Red Star"
+      "name": "Red Star",
+      "country": "RS"
     },
     {
       "id": "162",
@@ -32,39 +35,48 @@
     },
     {
       "id": "190",
-      "name": "Copenhagen"
+      "name": "Copenhagen",
+      "country": "DK"
     },
     {
       "id": "208",
-      "name": "CSKA Sofia"
+      "name": "CSKA Sofia",
+      "country": "BG"
     },
     {
       "id": "265",
-      "name": "Panathinaikos"
+      "name": "Panathinaikos",
+      "country": "GR"
     },
     {
       "id": "317",
-      "name": "FC Twente"
+      "name": "FC Twente",
+      "country": "NL"
     },
     {
       "id": "379",
-      "name": "West Ham United"
+      "name": "West Ham United",
+      "country": "EN"
     },
     {
       "id": "447",
-      "name": "Hajduk Split"
+      "name": "Hajduk Split",
+      "country": "HR"
     },
     {
       "id": "449",
-      "name": "Trabzonspor"
+      "name": "Trabzonspor",
+      "country": "TR"
     },
     {
       "id": "475",
-      "name": "Sint-Truiden"
+      "name": "Sint-Truiden",
+      "country": "BE"
     },
     {
       "id": "610",
-      "name": "Ajax"
+      "name": "Ajax",
+      "country": "NL"
     },
     {
       "id": "631",
@@ -73,11 +85,13 @@
     },
     {
       "id": "678",
-      "name": "Aarhus GF"
+      "name": "Aarhus GF",
+      "country": "DK"
     },
     {
       "id": "683",
-      "name": "Olympiacos Piraeus"
+      "name": "Olympiacos Piraeus",
+      "country": "GR"
     },
     {
       "id": "800",
@@ -86,7 +100,8 @@
     },
     {
       "id": "865",
-      "name": "Midtjylland"
+      "name": "Midtjylland",
+      "country": "DK"
     },
     {
       "id": "873",
@@ -95,15 +110,18 @@
     },
     {
       "id": "938",
-      "name": "FC Thun"
+      "name": "FC Thun",
+      "country": "CH"
     },
     {
       "id": "1075",
-      "name": "Braga"
+      "name": "Braga",
+      "country": "PT"
     },
     {
       "id": "1100",
-      "name": "SK Brann"
+      "name": "SK Brann",
+      "country": "NO"
     },
     {
       "id": "1237",
@@ -112,19 +130,23 @@
     },
     {
       "id": "1322",
-      "name": "Jablonec"
+      "name": "Jablonec",
+      "country": "CZ"
     },
     {
       "id": "2719",
-      "name": "Mjällby AIF"
+      "name": "Mjällby AIF",
+      "country": "SE"
     },
     {
       "id": "2778",
-      "name": "Nordsjaelland"
+      "name": "Nordsjaelland",
+      "country": "DK"
     },
     {
       "id": "2790",
-      "name": "FC Lugano"
+      "name": "FC Lugano",
+      "country": "CH"
     },
     {
       "id": "3709",
@@ -133,47 +155,58 @@
     },
     {
       "id": "3900",
-      "name": "B. Banja Luka"
+      "name": "B. Banja Luka",
+      "country": "BA"
     },
     {
       "id": "6251",
-      "name": "KuPS"
+      "name": "KuPS",
+      "country": "FI"
     },
     {
       "id": "10482",
-      "name": "Kairat Almaty"
+      "name": "Kairat Almaty",
+      "country": "KZ"
     },
     {
       "id": "27114",
-      "name": "KF Egnatia"
+      "name": "KF Egnatia",
+      "country": "AL"
     },
     {
       "id": "38204",
-      "name": "Lincoln FC"
+      "name": "Lincoln FC",
+      "country": "GI"
     },
     {
       "id": "40090",
-      "name": "Kauno Zalgiris"
+      "name": "Kauno Zalgiris",
+      "country": "LT"
     },
     {
       "id": "40812",
-      "name": "Univ. Craiova"
+      "name": "Univ. Craiova",
+      "country": "RO"
     },
     {
       "id": "41133",
-      "name": "Iberia 1999"
+      "name": "Iberia 1999",
+      "country": "GE"
     },
     {
       "id": "41916",
-      "name": "Inter Escaldes"
+      "name": "Inter Escaldes",
+      "country": "AD"
     },
     {
       "id": "45457",
-      "name": "Pafos"
+      "name": "Pafos",
+      "country": "CY"
     },
     {
       "id": "48325",
-      "name": "Riga"
+      "name": "Riga",
+      "country": "LV"
     }
   ]
 }

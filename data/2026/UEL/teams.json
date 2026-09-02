@@ -20,15 +20,18 @@
     },
     {
       "id": "58",
-      "name": "RSC Anderlecht"
+      "name": "RSC Anderlecht",
+      "country": "BE"
     },
     {
       "id": "114",
-      "name": "Besiktas"
+      "name": "Besiktas",
+      "country": "TR"
     },
     {
       "id": "122",
-      "name": "Sturm Graz"
+      "name": "Sturm Graz",
+      "country": "AT"
     },
     {
       "id": "148",
@@ -37,15 +40,18 @@
     },
     {
       "id": "156",
-      "name": "Levski Sofia"
+      "name": "Levski Sofia",
+      "country": "BG"
     },
     {
       "id": "197",
-      "name": "Sparta Prague"
+      "name": "Sparta Prague",
+      "country": "CZ"
     },
     {
       "id": "238",
-      "name": "Lech Poznan"
+      "name": "Lech Poznan",
+      "country": "PL"
     },
     {
       "id": "244",
@@ -59,7 +65,8 @@
     },
     {
       "id": "279",
-      "name": "Ferencváros"
+      "name": "Ferencváros",
+      "country": "HU"
     },
     {
       "id": "289",
@@ -68,11 +75,13 @@
     },
     {
       "id": "294",
-      "name": "Benfica"
+      "name": "Benfica",
+      "country": "PT"
     },
     {
       "id": "353",
-      "name": "Lillestrøm SK"
+      "name": "Lillestrøm SK",
+      "country": "NO"
     },
     {
       "id": "368",
@@ -81,7 +90,8 @@
     },
     {
       "id": "371",
-      "name": "Celtic"
+      "name": "Celtic",
+      "country": "GB-SCT"
     },
     {
       "id": "405",
@@ -90,15 +100,18 @@
     },
     {
       "id": "409",
-      "name": "Salzburg"
+      "name": "Salzburg",
+      "country": "AT"
     },
     {
       "id": "419",
-      "name": "Dinamo Zagreb"
+      "name": "Dinamo Zagreb",
+      "country": "HR"
     },
     {
       "id": "467",
-      "name": "NEC Nijmegen"
+      "name": "NEC Nijmegen",
+      "country": "NL"
     },
     {
       "id": "506",
@@ -117,7 +130,8 @@
     },
     {
       "id": "653",
-      "name": "OFI Crete"
+      "name": "OFI Crete",
+      "country": "GR"
     },
     {
       "id": "681",
@@ -126,15 +140,18 @@
     },
     {
       "id": "683",
-      "name": "Olympiacos"
+      "name": "Olympiacos",
+      "country": "GR"
     },
     {
       "id": "710",
-      "name": "NK Celje"
+      "name": "NK Celje",
+      "country": "SI"
     },
     {
       "id": "829",
-      "name": "Omonia Nicosia"
+      "name": "Omonia Nicosia",
+      "country": "CY"
     },
     {
       "id": "873",
@@ -148,7 +165,8 @@
     },
     {
       "id": "941",
-      "name": "Viktoria Plzeň"
+      "name": "Viktoria Plzeň",
+      "country": "CZ"
     },
     {
       "id": "989",
@@ -162,27 +180,33 @@
     },
     {
       "id": "1090",
-      "name": "AZ Alkmaar"
+      "name": "AZ Alkmaar",
+      "country": "NL"
     },
     {
       "id": "2300",
-      "name": "Jagiellonia"
+      "name": "Jagiellonia",
+      "country": "PL"
     },
     {
       "id": "2432",
-      "name": "Torreense"
+      "name": "Torreense",
+      "country": "PT"
     },
     {
       "id": "2976",
-      "name": "H. Beer Sheva"
+      "name": "H. Beer Sheva",
+      "country": "IL"
     },
     {
       "id": "3948",
-      "name": "Union SG"
+      "name": "Union SG",
+      "country": "BE"
     },
     {
       "id": "53453",
-      "name": "Ararat-Armenia"
+      "name": "Ararat-Armenia",
+      "country": "AM"
     }
   ]
 }

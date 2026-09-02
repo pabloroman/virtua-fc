@@ -40,7 +40,8 @@
     },
     {
       "id": "36",
-      "name": "Fenerbahçe"
+      "name": "Fenerbahçe",
+      "country": "TR"
     },
     {
       "id": "46",
@@ -49,7 +50,8 @@
     },
     {
       "id": "62",
-      "name": "Slavia Prague"
+      "name": "Slavia Prague",
+      "country": "CZ"
     },
     {
       "id": "79",
@@ -63,7 +65,8 @@
     },
     {
       "id": "141",
-      "name": "Galatasaray"
+      "name": "Galatasaray",
+      "country": "TR"
     },
     {
       "id": "150",
@@ -72,11 +75,13 @@
     },
     {
       "id": "234",
-      "name": "Feyenoord"
+      "name": "Feyenoord",
+      "country": "NL"
     },
     {
       "id": "239",
-      "name": "Viking FK"
+      "name": "Viking FK",
+      "country": "NO"
     },
     {
       "id": "281",
@@ -85,11 +90,13 @@
     },
     {
       "id": "336",
-      "name": "Sporting"
+      "name": "Sporting",
+      "country": "PT"
     },
     {
       "id": "383",
-      "name": "PSV"
+      "name": "PSV",
+      "country": "NL"
     },
     {
       "id": "405",
@@ -98,7 +105,8 @@
     },
     {
       "id": "413",
-      "name": "LASK"
+      "name": "LASK",
+      "country": "AT"
     },
     {
       "id": "418",
@@ -107,11 +115,13 @@
     },
     {
       "id": "501",
-      "name": "Bodø/Glimt"
+      "name": "Bodø/Glimt",
+      "country": "NO"
     },
     {
       "id": "540",
-      "name": "Slo. Bratislava"
+      "name": "Slo. Bratislava",
+      "country": "SK"
     },
     {
       "id": "583",
@@ -120,11 +130,13 @@
     },
     {
       "id": "660",
-      "name": "Shakhtar D."
+      "name": "Shakhtar D.",
+      "country": "UA"
     },
     {
       "id": "720",
-      "name": "Porto"
+      "name": "Porto",
+      "country": "PT"
     },
     {
       "id": "826",
@@ -153,11 +165,13 @@
     },
     {
       "id": "2282",
-      "name": "Club Brugge"
+      "name": "Club Brugge",
+      "country": "BE"
     },
     {
       "id": "2441",
-      "name": "AEK Athens"
+      "name": "AEK Athens",
+      "country": "GR"
     },
     {
       "id": "6195",
@@ -171,7 +185,8 @@
     },
     {
       "id": "63993",
-      "name": "Sabah FK"
+      "name": "Sabah FK",
+      "country": "AZ"
     }
   ]
 }
