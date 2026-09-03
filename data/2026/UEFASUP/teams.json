@@ -5,11 +5,13 @@
   "clubs": [
     {
       "id": "405",
-      "name": "Aston Villa"
+      "name": "Aston Villa",
+      "country": "EN"
     },
     {
       "id": "583",
-      "name": "Paris Saint-Germain"
+      "name": "Paris Saint-Germain",
+      "country": "FR"
     }
   ]
 }
