@@ -4,39 +4,12 @@
   "seasonID": "2026",
   "clubs": [
     {
-      "id": "5",
-      "name": "AC Milan",
-      "country": "IT"
-    },
-    {
-      "id": "13",
-      "name": "Atlético de Madrid",
-      "country": "ES"
-    },
-    {
-      "id": "31",
-      "name": "Liverpool FC",
-      "country": "EN"
-    },
-    {
-      "id": "131",
-      "name": "FC Barcelona",
-      "country": "ES"
-    },
-    {
       "id": "405",
-      "name": "Aston Villa",
-      "country": "EN"
-    },
-    {
-      "id": "418",
-      "name": "Real Madrid",
-      "country": "ES"
+      "name": "Aston Villa"
     },
     {
       "id": "583",
-      "name": "PSG",
-      "country": "FR"
+      "name": "Paris Saint-Germain"
     }
   ]
 }
