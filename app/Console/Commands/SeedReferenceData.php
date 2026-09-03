@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Stadium\UefaCategory;
 use App\Models\User;
+use App\Support\ClubNames;
 use App\Support\Money;
 use App\Support\TeamColors;
 use Carbon\Carbon;
@@ -548,8 +549,8 @@ class SeedReferenceData extends Command
                 DB::table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
-                    'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
-                    'slug' => Str::slug($data['name'] ?? "unknown-{$transfermarktId}"),
+                    'name' => ClubNames::canonical($data['name'] ?? "Unknown ({$transfermarktId})"),
+                    'slug' => Str::slug(ClubNames::canonical($data['name'] ?? "unknown-{$transfermarktId}")),
                     'country' => $teamCountry,
                     'image' => $data['image'] ?? null,
                     'stadium_name' => $data['stadiumName'] ?? null,
@@ -711,7 +712,8 @@ class SeedReferenceData extends Command
                 ->where('transfermarkt_id', $transfermarktId)
                 ->first();
 
-            $colors = TeamColors::get($club['name']);
+            $name = ClubNames::canonical($club['name']);
+            $colors = TeamColors::get($name);
 
             if ($existingTeam) {
                 $teamId = $existingTeam->id;
@@ -741,8 +743,8 @@ class SeedReferenceData extends Command
                 DB::table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
-                    'name' => $club['name'],
-                    'slug' => Str::slug($club['name']),
+                    'name' => $name,
+                    'slug' => Str::slug($name),
                     'country' => $country,
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
@@ -798,7 +800,7 @@ class SeedReferenceData extends Command
             ->keyBy(fn ($team) => (string) $team->transfermarkt_id);
 
         foreach ($clubs as $club) {
-            $name = trim((string) ($club['name'] ?? ''));
+            $name = ClubNames::canonical(trim((string) ($club['name'] ?? '')));
             $transfermarktId = isset($club['id']) && (string) $club['id'] !== '' ? (string) $club['id'] : null;
 
             if ($name === '' || $transfermarktId === null) {
