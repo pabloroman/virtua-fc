@@ -214,6 +214,46 @@ class ValidateSeasonCommandTest extends TestCase
             ->assertFailed();
     }
 
+    public function test_detects_a_club_entered_in_two_swiss_competitions(): void
+    {
+        // A club knocked out of Champions League qualifying drops into the
+        // Europa League, so a fixture-page scrape lists it under both.
+        $ucl = $this->seedableSwissField();
+        $uel = $this->seedableSwissField();
+        $uel[0] = $ucl[0];
+
+        $this->writeContinental($ucl);
+        $this->writeContinental($uel, 'UEL');
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('is also a UCL entrant')
+            ->assertFailed();
+    }
+
+    public function test_allows_a_super_cup_finalist_to_also_play_in_the_champions_league(): void
+    {
+        // The Super Cup is contested by the prior season's UCL and UEL winners,
+        // who are in that season's European competitions too — not a duplicate.
+        $ucl = $this->seedableSwissField();
+        $this->writeContinental($ucl);
+        $this->writeContinental([$ucl[0], $ucl[1]], 'UEFASUP');
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->doesntExpectOutputToContain('entrant')
+            ->assertFailed(); // ESP1 and friends are still missing from this fixture.
+    }
+
+    public function test_detects_a_continental_knockout_that_is_not_a_two_club_tie(): void
+    {
+        // The 2026 refresh scraped seven clubs onto the Super Cup — a single
+        // tie — and nothing checked it, because only swiss_format had a shape.
+        $this->writeContinental(array_slice($this->seedableSwissField(), 0, 7), 'UEFASUP');
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('single two-club tie, got 7 clubs')
+            ->assertFailed();
+    }
+
     public function test_detects_short_swiss_field(): void
     {
         $this->writeContinental(array_slice($this->seedableSwissField(), 0, 35));

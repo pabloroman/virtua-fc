@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Console;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class ScaffoldSeasonCommandTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_shifts_schedule_dates_forward_one_year(): void
+    public function test_shifts_schedule_dates_forward_a_whole_number_of_weeks(): void
     {
         $srcDir = base_path("data/{$this->from}/ESP1");
         File::ensureDirectoryExists($srcDir);
@@ -47,16 +48,51 @@ class ScaffoldSeasonCommandTest extends TestCase
         $this->artisan('app:scaffold-season', ['season' => $this->to, '--from' => $this->from])
             ->assertSuccessful();
 
+        // A year rounded up to whole weeks: 371 days, so every date keeps its
+        // weekday (league rounds on Sunday here, the cup rounds midweek).
         $league = json_decode(File::get(base_path("data/{$this->to}/ESP1/schedule.json")), true);
-        $this->assertSame('2099-08-17', $league['league'][0]['date']);
-        $this->assertSame('2100-05-24', $league['league'][1]['date']);
+        $this->assertSame('2099-08-23', $league['league'][0]['date']);
+        $this->assertSame('2100-05-30', $league['league'][1]['date']);
 
         $knockout = json_decode(File::get(base_path("data/{$this->to}/ESPCUP/schedule.json")), true);
-        $this->assertSame('2099-10-29', $knockout['knockout'][0]['date']);
+        $this->assertSame('2099-11-04', $knockout['knockout'][0]['date']);
         // Two-legged dates and sibling fields (name) are preserved + shifted.
         $this->assertSame('cup.semi_final', $knockout['knockout'][1]['name']);
-        $this->assertSame('2100-02-04', $knockout['knockout'][1]['first_leg_date']);
-        $this->assertSame('2100-02-25', $knockout['knockout'][1]['second_leg_date']);
+        $this->assertSame('2100-02-10', $knockout['knockout'][1]['first_leg_date']);
+        $this->assertSame('2100-03-03', $knockout['knockout'][1]['second_leg_date']);
+    }
+
+    public function test_every_shifted_date_keeps_its_weekday(): void
+    {
+        // The invariant behind the whole-week shift: national leagues stay on
+        // the weekend and European nights / cups stay midweek.
+        $srcDir = base_path("data/{$this->from}/ESP1");
+        File::ensureDirectoryExists($srcDir);
+        $source = [
+            'league' => [
+                ['round' => 1, 'date' => '2098-08-15'],   // Fri
+                ['round' => 2, 'date' => '2098-08-16'],   // Sat
+                ['round' => 3, 'date' => '2098-08-17'],   // Sun
+                ['round' => 4, 'date' => '2098-12-29'],   // Mon
+                ['round' => 5, 'date' => '2099-02-24'],   // Tue
+                ['round' => 6, 'date' => '2099-03-04'],   // Wed
+                ['round' => 7, 'date' => '2099-03-12'],   // Thu
+            ],
+        ];
+        File::put("{$srcDir}/schedule.json", json_encode($source));
+
+        $this->artisan('app:scaffold-season', ['season' => $this->to, '--from' => $this->from])
+            ->assertSuccessful();
+
+        $shifted = json_decode(File::get(base_path("data/{$this->to}/ESP1/schedule.json")), true);
+
+        foreach ($source['league'] as $i => $round) {
+            $this->assertSame(
+                Carbon::parse($round['date'])->dayOfWeek,
+                Carbon::parse($shifted['league'][$i]['date'])->dayOfWeek,
+                "Round {$round['round']} changed weekday: {$round['date']} → {$shifted['league'][$i]['date']}",
+            );
+        }
     }
 
     public function test_reports_missing_squad_data_and_does_not_invent_teams_json(): void

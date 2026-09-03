@@ -64,7 +64,7 @@ add/remove line, not a reshuffled roster.
 
 | Command | What it does |
 |---------|--------------|
-| `app:scaffold-season {season}` | Create folders, bootstrap schedules from last season. |
+| `app:scaffold-season {season}` | Create folders, bootstrap schedules from last season (dates shifted by whole weeks, so weekdays hold). |
 | `app:normalize-season {season} [--check]` | Force `seasonID`, sort clubs/players, canonical 2-space formatting. `--check` verifies without writing (the CI gate). Idempotent. |
 | `app:validate-season {season}` | Read-only completeness/correctness gate (non-zero exit on any problem). Database-free, so CI can run it without Postgres. |
 | `app:diff-season {season} [--from=] [--format=md]` | Report signings, departures, and club movements vs a previous season. |
@@ -77,7 +77,8 @@ add/remove line, not a reshuffled roster.
    `2025` so the engine keeps using `data/2025/` until the new season is ready.)
 
 2. **Scaffold the data folder** (creates dirs, bootstraps `schedule.json` for
-   every competition by shifting last season's dates forward one year):
+   every competition by shifting last season's dates forward a whole number of
+   weeks):
 
    ```bash
    php artisan app:scaffold-season 2026
@@ -94,8 +95,11 @@ add/remove line, not a reshuffled roster.
    - `data/2026/{CUP}/teams.json` participant lists (ESPCUP, ESPSUP).
    - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists. These are
      independent of the transfer window — the draws are known before it shuts —
-     so they can go in first. Their squads cannot: every participant outside the
-     eight scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025) —
+     so they can go in first. Scrape UCL/UEL/UECL from the **league-phase table**
+     (`/tabelle/pokalwettbewerb/...`), not the fixture list: the fixture list
+     spans qualifying, so it returns every club knocked out on the way in too.
+     Their squads cannot go in first: every participant outside the eight
+     scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025) —
      **Season Refresh → Refresh European pool** derives that list from the
      participant lists and league squads already on the branch and scrapes them
      in one batch, so run it after both are pushed. Add `pot` by hand for a
@@ -163,8 +167,12 @@ add/remove line, not a reshuffled roster.
   competition id, so flipping the base season re-points it for everyone. Do not
   re-seed an active production DB mid-season — a live game would then compute a
   negative year offset for its fixtures.
-- **Year boundary.** A league season spans Aug → Jun; the scaffolder shifts each
-  absolute date by one year, preserving the crossover (Aug 2026 → May 2027).
+- **Year boundary.** A league season spans Aug → Jun; the scaffolder shifts every
+  absolute date by the same whole number of weeks — a year rounded up, so 371
+  days (53 weeks) for a one-year bump. That preserves the crossover (Aug 2026 →
+  May 2027) *and* every fixture's weekday, so leagues stay on Saturday/Sunday,
+  European nights on Tuesday–Thursday and the cups midweek. A plain +1 year would
+  not: 365 days is 52 weeks plus a day, sliding the whole season one weekday over.
 - **World Cup (WC2026) is out of scope.** It is a fixed real-world tournament
   under `data/2025/WC2026/` with its own commands and is intentionally *not*
   tied to the career base season.

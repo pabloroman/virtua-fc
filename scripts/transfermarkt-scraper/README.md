@@ -124,11 +124,28 @@ surface; if it does, something is committing to the branch continuously.
 
 After scraping a supported page, click **Push to GitHub**:
 
-- **League** (stadiums) and **cup/continental** (fixtures) pages → written to
+- **League** (stadiums) and **cup/continental** participant pages → written to
   `data/{season}/{CODE}/teams.json` (the repo code is resolved from the
   Transfermarkt competition id via `season-config.js`).
 - **Single club squad** pages → written to `data/{season}/{EUR|INT}/{id}.json`;
   pick the pool from the selector that appears.
+
+Which page a participant list comes from depends on the competition's shape:
+
+| Competition | Page |
+|---|---|
+| UCL / UEL / UECL | the **league-phase table** — `/tabelle/pokalwettbewerb/{CL\|EL\|UCOL}/saison_id/{year}` |
+| Copa del Rey, Supercopa, UEFA Super Cup | the **full fixture list** — `/gesamtspielplan/pokalwettbewerb/{id}/saison_id/{year}` |
+
+Use the table for the Swiss competitions, never the fixture list: the fixture
+list spans qualifying rounds, so it hands back every club knocked out on the way
+in as well as the 36 in the league phase.
+
+Competitions with a fixed shape are checked before anything is written — 36
+clubs for UCL/UEL/UECL, 4 for the Supercopa, 2 for the Super Cup. On a mismatch
+the push is refused and the popup says what it got; you are almost certainly on
+the wrong page for that competition. Competitions whose field genuinely varies
+by season (the Copa del Rey fielded 116 clubs in 2025) carry no such count.
 
 The first push creates the `season-data/{season}` branch and opens a PR; later
 pushes update the same PR. The popup links straight to it.
