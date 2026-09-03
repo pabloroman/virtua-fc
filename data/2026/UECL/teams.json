@@ -5,147 +5,183 @@
   "clubs": [
     {
       "id": "43",
-      "name": "Heart of Midlothian FC"
+      "name": "Heart of Midlothian FC",
+      "country": "GB-SCT"
     },
     {
       "id": "60",
-      "name": "SC Freiburg"
+      "name": "SC Freiburg",
+      "country": "DE"
     },
     {
       "id": "157",
-      "name": "KAA Gent"
+      "name": "KAA Gent",
+      "country": "BE"
     },
     {
       "id": "159",
-      "name": "Red Star Belgrade"
+      "name": "Red Star Belgrade",
+      "country": "RS"
     },
     {
       "id": "162",
-      "name": "AS Monaco"
+      "name": "AS Monaco",
+      "country": "FR"
     },
     {
       "id": "190",
-      "name": "FC Copenhagen"
+      "name": "FC Copenhagen",
+      "country": "DK"
     },
     {
       "id": "208",
-      "name": "CSKA Sofia"
+      "name": "CSKA Sofia",
+      "country": "BG"
     },
     {
       "id": "265",
-      "name": "Panathinaikos"
+      "name": "Panathinaikos",
+      "country": "GR"
     },
     {
       "id": "317",
-      "name": "FC Twente Enschede"
+      "name": "FC Twente Enschede",
+      "country": "NL"
     },
     {
       "id": "447",
-      "name": "HNK Hajduk Split"
+      "name": "HNK Hajduk Split",
+      "country": "HR"
     },
     {
       "id": "449",
-      "name": "Trabzonspor"
+      "name": "Trabzonspor",
+      "country": "TR"
     },
     {
       "id": "475",
-      "name": "Sint-Truidense VV"
+      "name": "Sint-Truidense VV",
+      "country": "BE"
     },
     {
       "id": "610",
-      "name": "Ajax Amsterdam"
+      "name": "Ajax Amsterdam",
+      "country": "NL"
     },
     {
       "id": "678",
-      "name": "Aarhus GF"
+      "name": "Aarhus GF",
+      "country": "DK"
     },
     {
       "id": "800",
-      "name": "Atalanta BC"
+      "name": "Atalanta BC",
+      "country": "IT"
     },
     {
       "id": "865",
-      "name": "FC Midtjylland"
+      "name": "FC Midtjylland",
+      "country": "DK"
     },
     {
       "id": "938",
-      "name": "FC Thun"
+      "name": "FC Thun",
+      "country": "CH"
     },
     {
       "id": "1075",
-      "name": "SC Braga"
+      "name": "SC Braga",
+      "country": "PT"
     },
     {
       "id": "1100",
-      "name": "SK Brann"
+      "name": "SK Brann",
+      "country": "NO"
     },
     {
       "id": "1237",
-      "name": "Brighton & Hove Albion"
+      "name": "Brighton & Hove Albion",
+      "country": "EN"
     },
     {
       "id": "1322",
-      "name": "FK Jablonec"
+      "name": "FK Jablonec",
+      "country": "CZ"
     },
     {
       "id": "2719",
-      "name": "Mjällby AIF"
+      "name": "Mjällby AIF",
+      "country": "SE"
     },
     {
       "id": "2778",
-      "name": "FC Nordsjaelland"
+      "name": "FC Nordsjaelland",
+      "country": "DK"
     },
     {
       "id": "2790",
-      "name": "FC Lugano"
+      "name": "FC Lugano",
+      "country": "CH"
     },
     {
       "id": "3709",
-      "name": "Getafe CF"
+      "name": "Getafe CF",
+      "country": "ES"
     },
     {
       "id": "3900",
-      "name": "FK Borac Banja Luka"
+      "name": "FK Borac Banja Luka",
+      "country": "BA"
     },
     {
       "id": "6251",
-      "name": "Kuopion Palloseura"
+      "name": "Kuopion Palloseura",
+      "country": "FI"
     },
     {
       "id": "10482",
-      "name": "Kairat Almaty"
+      "name": "Kairat Almaty",
+      "country": "KZ"
     },
     {
       "id": "27114",
-      "name": "KF Egnatia"
+      "name": "KF Egnatia",
+      "country": "AL"
     },
     {
       "id": "38204",
-      "name": "Lincoln Red Imps FC"
+      "name": "Lincoln Red Imps FC",
+      "country": "GI"
     },
     {
       "id": "40090",
-      "name": "FK Kauno Zalgiris"
+      "name": "FK Kauno Zalgiris",
+      "country": "LT"
     },
     {
       "id": "40812",
-      "name": "Universitatea Craiova"
+      "name": "Universitatea Craiova",
+      "country": "RO"
     },
     {
       "id": "41133",
-      "name": "Iberia 1999 Tbilisi"
+      "name": "Iberia 1999 Tbilisi",
+      "country": "GE"
     },
     {
       "id": "41916",
-      "name": "Inter Club d'Escaldes"
+      "name": "Inter Club d'Escaldes",
+      "country": "AD"
     },
     {
       "id": "45457",
-      "name": "Pafos FC"
+      "name": "Pafos FC",
+      "country": "CY"
     },
     {
       "id": "48325",
-      "name": "Riga FC"
+      "name": "Riga FC",
+      "country": "LV"
     }
   ]
 }
