@@ -5,147 +5,183 @@
   "clubs": [
     {
       "id": "5",
-      "name": "AC Milan"
+      "name": "AC Milan",
+      "country": "IT"
     },
     {
       "id": "15",
-      "name": "Bayer 04 Leverkusen"
+      "name": "Bayer 04 Leverkusen",
+      "country": "DE"
     },
     {
       "id": "58",
-      "name": "RSC Anderlecht"
+      "name": "RSC Anderlecht",
+      "country": "BE"
     },
     {
       "id": "114",
-      "name": "Besiktas JK"
+      "name": "Besiktas JK",
+      "country": "TR"
     },
     {
       "id": "122",
-      "name": "SK Sturm Graz"
+      "name": "SK Sturm Graz",
+      "country": "AT"
     },
     {
       "id": "156",
-      "name": "Levski Sofia"
+      "name": "Levski Sofia",
+      "country": "BG"
     },
     {
       "id": "197",
-      "name": "AC Sparta Prague"
+      "name": "AC Sparta Prague",
+      "country": "CZ"
     },
     {
       "id": "238",
-      "name": "Lech Poznan"
+      "name": "Lech Poznan",
+      "country": "PL"
     },
     {
       "id": "244",
-      "name": "Olympique Marseille"
+      "name": "Olympique Marseille",
+      "country": "FR"
     },
     {
       "id": "273",
-      "name": "Stade Rennais FC"
+      "name": "Stade Rennais FC",
+      "country": "FR"
     },
     {
       "id": "279",
-      "name": "Ferencvárosi TC"
+      "name": "Ferencvárosi TC",
+      "country": "HU"
     },
     {
       "id": "289",
-      "name": "Sunderland AFC"
+      "name": "Sunderland AFC",
+      "country": "EN"
     },
     {
       "id": "294",
-      "name": "SL Benfica"
+      "name": "SL Benfica",
+      "country": "PT"
     },
     {
       "id": "353",
-      "name": "Lillestrøm SK"
+      "name": "Lillestrøm SK",
+      "country": "NO"
     },
     {
       "id": "371",
-      "name": "Celtic FC"
+      "name": "Celtic FC",
+      "country": "GB-SCT"
     },
     {
       "id": "409",
-      "name": "Red Bull Salzburg"
+      "name": "Red Bull Salzburg",
+      "country": "AT"
     },
     {
       "id": "419",
-      "name": "GNK Dinamo Zagreb"
+      "name": "GNK Dinamo Zagreb",
+      "country": "HR"
     },
     {
       "id": "467",
-      "name": "NEC Nijmegen"
+      "name": "NEC Nijmegen",
+      "country": "NL"
     },
     {
       "id": "506",
-      "name": "Juventus FC"
+      "name": "Juventus FC",
+      "country": "IT"
     },
     {
       "id": "533",
-      "name": "TSG 1899 Hoffenheim"
+      "name": "TSG 1899 Hoffenheim",
+      "country": "DE"
     },
     {
       "id": "653",
-      "name": "OFI Crete"
+      "name": "OFI Crete",
+      "country": "GR"
     },
     {
       "id": "681",
-      "name": "Real Sociedad"
+      "name": "Real Sociedad",
+      "country": "ES"
     },
     {
       "id": "683",
-      "name": "Olympiacos Piraeus"
+      "name": "Olympiacos Piraeus",
+      "country": "GR"
     },
     {
       "id": "710",
-      "name": "NK Celje"
+      "name": "NK Celje",
+      "country": "SI"
     },
     {
       "id": "829",
-      "name": "Omonia Nicosia"
+      "name": "Omonia Nicosia",
+      "country": "CY"
     },
     {
       "id": "873",
-      "name": "Crystal Palace"
+      "name": "Crystal Palace",
+      "country": "EN"
     },
     {
       "id": "940",
-      "name": "Celta de Vigo"
+      "name": "Celta de Vigo",
+      "country": "ES"
     },
     {
       "id": "941",
-      "name": "FC Viktoria Plzen"
+      "name": "FC Viktoria Plzen",
+      "country": "CZ"
     },
     {
       "id": "989",
-      "name": "AFC Bournemouth"
+      "name": "AFC Bournemouth",
+      "country": "EN"
     },
     {
       "id": "1041",
-      "name": "Olympique Lyon"
+      "name": "Olympique Lyon",
+      "country": "FR"
     },
     {
       "id": "1090",
-      "name": "AZ Alkmaar"
+      "name": "AZ Alkmaar",
+      "country": "NL"
     },
     {
       "id": "2300",
-      "name": "Jagiellonia Bialystok"
+      "name": "Jagiellonia Bialystok",
+      "country": "PL"
     },
     {
       "id": "2432",
-      "name": "SC União Torreense"
+      "name": "SC União Torreense",
+      "country": "PT"
     },
     {
       "id": "2976",
-      "name": "Hapoel Beer Sheva"
+      "name": "Hapoel Beer Sheva",
+      "country": "IL"
     },
     {
       "id": "3948",
-      "name": "Union Saint-Gilloise"
+      "name": "Union Saint-Gilloise",
+      "country": "BE"
     },
     {
       "id": "53453",
-      "name": "FC Ararat-Armenia"
+      "name": "FC Ararat-Armenia",
+      "country": "AM"
     }
   ]
 }
