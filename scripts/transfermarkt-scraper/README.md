@@ -134,12 +134,13 @@ Which page a participant list comes from depends on the competition's shape:
 
 | Competition | Page |
 |---|---|
-| UCL / UEL / UECL | the **league-phase table** — `/tabelle/pokalwettbewerb/{CL\|EL\|UCOL}/saison_id/{year}` |
-| Copa del Rey, Supercopa, UEFA Super Cup | the **full fixture list** — `/gesamtspielplan/pokalwettbewerb/{id}/saison_id/{year}` |
+| UCL / UEL / UECL / UEFA Super Cup | the **participants page** — `/teilnehmer/pokalwettbewerb/{CL\|EL\|UCOL\|USC}/saison_id/{year}` |
+| Copa del Rey, Supercopa | the **full fixture list** — `/gesamtspielplan/pokalwettbewerb/{id}/saison_id/{year}` |
 
-Use the table for the Swiss competitions, never the fixture list: the fixture
-list spans qualifying rounds, so it hands back every club knocked out on the way
-in as well as the 36 in the league phase.
+Use the participants page for the European competitions, never the fixture list:
+the fixture list spans the qualifying rounds, so it hands back every club knocked
+out on the way in as well as the 36 in the league phase (and, for the Super Cup,
+the winners of past editions alongside this year's two finalists).
 
 Competitions with a fixed shape are checked before anything is written — 36
 clubs for UCL/UEL/UECL, 4 for the Supercopa, 2 for the Super Cup. On a mismatch

@@ -95,8 +95,8 @@ add/remove line, not a reshuffled roster.
    - `data/2026/{CUP}/teams.json` participant lists (ESPCUP, ESPSUP).
    - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists. These are
      independent of the transfer window — the draws are known before it shuts —
-     so they can go in first. Scrape UCL/UEL/UECL from the **league-phase table**
-     (`/tabelle/pokalwettbewerb/...`), not the fixture list: the fixture list
+     so they can go in first. Scrape them from the **participants page**
+     (`/teilnehmer/pokalwettbewerb/...`), not the fixture list: the fixture list
      spans qualifying, so it returns every club knocked out on the way in too.
      Their squads cannot go in first: every participant outside the eight
      scraped leagues needs an `EUR` pool file (70 of 108 slots in 2025) —

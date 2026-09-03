@@ -2,23 +2,21 @@
 // competition from Transfermarkt.
 //
 // Two page shapes, because "who is in this competition" means different things
-// for a Swiss league phase than for a knockout bracket:
+// for a European league phase than for a domestic knockout:
 //
-//   Swiss (UCL/UEL/UECL) → the league-phase table
-//     https://www.transfermarkt.com/{slug}/tabelle/pokalwettbewerb/{id}/saison_id/{year}
-//     One row per participant, exactly 36 of them, and qualifying rounds are not
-//     on the page at all.
+//   Continental (UCL/UEL/UECL/UEFASUP) → the participants page
+//     https://www.transfermarkt.com/{slug}/teilnehmer/pokalwettbewerb/{id}/saison_id/{year}
+//     A `table.items` with one club per row — the league-phase field exactly
+//     (36 for the Swiss competitions, 2 for the Super Cup).
 //
-//   Knockout (Copa del Rey, Supercopa, UEFA Super Cup) → the full fixture list
+//   Domestic cups (Copa del Rey, Supercopa) → the full fixture list
 //     https://www.transfermarkt.com/{slug}/gesamtspielplan/pokalwettbewerb/{id}/saison_id/{year}
-//     There is no table to read; the clubs have to come off the fixtures.
+//     Every club that plays a tie, which for these is what we want.
 //
-// The fixture page must NOT be scraped by querying the whole document: it also
-// carries sidebars, nav and related-club widgets whose `/verein/` links are not
-// participants at all (that is how the 2026 Super Cup — a single two-club tie —
-// ended up with seven clubs). Both branches therefore stay inside the page's
-// content tables, and neither falls back to a document-wide query: an empty
-// result makes background.js throw, which is what we want if the markup moves.
+// Do not read a European field off the fixture list: it spans the qualifying
+// rounds, so it hands back every club knocked out on the way in as well. That is
+// how the 2026 refresh produced 37/41/41 clubs for UCL/UEL/UECL against a
+// 36-team league phase, and seven for the Super Cup's single two-club tie.
 //
 // Output format (identical for both shapes):
 // {
@@ -41,7 +39,7 @@
   const seasonMatch = url.match(/saison_id\/(\d{4})/);
   const seasonId = seasonMatch ? seasonMatch[1] : '';
 
-  const isLeaguePhaseTable = /\/tabelle\/pokalwettbewerb\//i.test(url);
+  const isParticipantsPage = /\/teilnehmer\/pokalwettbewerb\//i.test(url);
 
   const clubs = [];
   const seenIds = new Set();
@@ -54,6 +52,7 @@
     const clubId = idMatch[1];
     if (seenIds.has(clubId)) return;
 
+    // Transfermarkt ships trailing whitespace in some names ("FC Ararat-Armenia ").
     const name = link.textContent.trim();
 
     // Skip empty or very short names (likely icons/navigation)
@@ -63,20 +62,18 @@
     clubs.push({ id: clubId, name });
   };
 
-  if (isLeaguePhaseTable) {
-    // One participant per standings row. Taking the row's *first* named club
-    // link keeps the crest link (whose text is empty) and any trailing links
-    // out, and means a row can never contribute two clubs.
-    document.querySelectorAll('.responsive-table table tbody tr').forEach(row => {
-      const before = clubs.length;
-      for (const link of row.querySelectorAll('a[href*="/verein/"]')) {
-        addClub(link);
-        if (clubs.length > before) break;
-      }
+  if (isParticipantsPage) {
+    // One participant per row of `table.items`. The name lives in the row's
+    // `hauptlink` cell; the other club link in the row wraps only the crest
+    // image, so reading the hauptlink directly keeps the row to one club and
+    // never depends on link order.
+    document.querySelectorAll('table.items tbody tr').forEach(row => {
+      const link = row.querySelector('td.hauptlink a[href*="/verein/"]');
+      if (link) addClub(link);
     });
   } else {
-    // Fixture tables only — never the whole document.
-    document.querySelectorAll('.responsive-table a[href*="/verein/"]').forEach(addClub);
+    // Get all club links from the page
+    document.querySelectorAll('a[href*="/verein/"]').forEach(addClub);
   }
 
   // Sort clubs alphabetically by name
