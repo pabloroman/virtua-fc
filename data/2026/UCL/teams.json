@@ -4,189 +4,148 @@
   "seasonID": "2026",
   "clubs": [
     {
-      "id": "5",
-      "name": "AC Milan",
-      "country": "IT"
-    },
-    {
       "id": "11",
-      "name": "Arsenal",
-      "country": "EN"
+      "name": "Arsenal FC"
     },
     {
       "id": "12",
-      "name": "Roma",
-      "country": "IT"
+      "name": "AS Roma"
     },
     {
       "id": "13",
-      "name": "Atlético",
-      "country": "ES"
+      "name": "Atlético de Madrid"
     },
     {
       "id": "16",
-      "name": "Dortmund",
-      "country": "DE"
+      "name": "Borussia Dortmund"
     },
     {
       "id": "27",
-      "name": "Bayern Munich",
-      "country": "DE"
+      "name": "Bayern Munich"
     },
     {
       "id": "31",
-      "name": "Liverpool",
-      "country": "EN"
+      "name": "Liverpool FC"
     },
     {
       "id": "36",
-      "name": "Fenerbahçe",
-      "country": "TR"
+      "name": "Fenerbahce"
     },
     {
       "id": "46",
-      "name": "Inter",
-      "country": "IT"
+      "name": "Inter Milan"
     },
     {
       "id": "62",
-      "name": "Slavia Prague",
-      "country": "CZ"
+      "name": "SK Slavia Prague"
     },
     {
       "id": "79",
-      "name": "Stuttgart",
-      "country": "DE"
+      "name": "VfB Stuttgart"
     },
     {
       "id": "131",
-      "name": "Barcelona",
-      "country": "ES"
+      "name": "FC Barcelona"
     },
     {
       "id": "141",
-      "name": "Galatasaray",
-      "country": "TR"
+      "name": "Galatasaray"
     },
     {
       "id": "150",
-      "name": "Real Betis",
-      "country": "ES"
+      "name": "Real Betis Balompié"
     },
     {
       "id": "234",
-      "name": "Feyenoord",
-      "country": "NL"
+      "name": "Feyenoord Rotterdam"
     },
     {
       "id": "239",
-      "name": "Viking FK",
-      "country": "NO"
+      "name": "Viking FK"
     },
     {
       "id": "281",
-      "name": "Man City",
-      "country": "EN"
+      "name": "Manchester City"
     },
     {
       "id": "336",
-      "name": "Sporting",
-      "country": "PT"
+      "name": "Sporting CP"
     },
     {
       "id": "383",
-      "name": "PSV",
-      "country": "NL"
+      "name": "PSV Eindhoven"
     },
     {
       "id": "405",
-      "name": "Aston Villa",
-      "country": "EN"
+      "name": "Aston Villa"
     },
     {
       "id": "413",
-      "name": "LASK",
-      "country": "AT"
+      "name": "LASK"
     },
     {
       "id": "418",
-      "name": "Real Madrid",
-      "country": "ES"
+      "name": "Real Madrid"
     },
     {
       "id": "501",
-      "name": "Bodø/Glimt",
-      "country": "NO"
+      "name": "FK Bodø/Glimt"
     },
     {
       "id": "540",
-      "name": "Slo. Bratislava",
-      "country": "SK"
+      "name": "Slovan Bratislava"
     },
     {
       "id": "583",
-      "name": "PSG",
-      "country": "FR"
+      "name": "Paris Saint-Germain"
     },
     {
       "id": "660",
-      "name": "Shakhtar D.",
-      "country": "UA"
+      "name": "Shakhtar Donetsk"
     },
     {
       "id": "720",
-      "name": "Porto",
-      "country": "PT"
+      "name": "FC Porto"
     },
     {
       "id": "826",
-      "name": "Lens",
-      "country": "FR"
+      "name": "RC Lens"
     },
     {
       "id": "985",
-      "name": "Man Utd",
-      "country": "EN"
+      "name": "Manchester United"
     },
     {
       "id": "1047",
-      "name": "Como",
-      "country": "IT"
+      "name": "Como 1907"
     },
     {
       "id": "1050",
-      "name": "Villarreal",
-      "country": "ES"
+      "name": "Villarreal CF"
     },
     {
       "id": "1082",
-      "name": "Lille",
-      "country": "FR"
+      "name": "LOSC Lille"
     },
     {
       "id": "2282",
-      "name": "Club Brugge",
-      "country": "BE"
+      "name": "Club Brugge KV"
     },
     {
       "id": "2441",
-      "name": "AEK Athens",
-      "country": "GR"
+      "name": "AEK Athens"
     },
     {
       "id": "6195",
-      "name": "Napoli",
-      "country": "IT"
+      "name": "SSC Napoli"
     },
     {
       "id": "23826",
-      "name": "Leipzig",
-      "country": "DE"
+      "name": "RB Leipzig"
     },
     {
       "id": "63993",
-      "name": "Sabah FK",
-      "country": "AZ"
+      "name": "Sabah FK"
     }
   ]
 }
