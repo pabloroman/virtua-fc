@@ -6,182 +6,218 @@
     {
       "id": "11",
       "name": "Arsenal FC",
-      "country": "EN"
+      "country": "EN",
+      "pot": 1
     },
     {
       "id": "12",
       "name": "AS Roma",
-      "country": "IT"
+      "country": "IT",
+      "pot": 2
     },
     {
       "id": "13",
       "name": "Atlético de Madrid",
-      "country": "ES"
+      "country": "ES",
+      "pot": 1
     },
     {
       "id": "16",
       "name": "Borussia Dortmund",
-      "country": "DE"
+      "country": "DE",
+      "pot": 2
     },
     {
       "id": "27",
       "name": "Bayern Munich",
-      "country": "DE"
+      "country": "DE",
+      "pot": 1
     },
     {
       "id": "31",
       "name": "Liverpool FC",
-      "country": "EN"
+      "country": "EN",
+      "pot": 1
     },
     {
       "id": "36",
       "name": "Fenerbahce",
-      "country": "TR"
+      "country": "TR",
+      "pot": 3
     },
     {
       "id": "46",
       "name": "Inter Milan",
-      "country": "IT"
+      "country": "IT",
+      "pot": 1
     },
     {
       "id": "62",
       "name": "SK Slavia Prague",
-      "country": "CZ"
+      "country": "CZ",
+      "pot": 4
     },
     {
       "id": "79",
       "name": "VfB Stuttgart",
-      "country": "DE"
+      "country": "DE",
+      "pot": 4
     },
     {
       "id": "131",
       "name": "FC Barcelona",
-      "country": "ES"
+      "country": "ES",
+      "pot": 1
     },
     {
       "id": "141",
       "name": "Galatasaray",
-      "country": "TR"
+      "country": "TR",
+      "pot": 3
     },
     {
       "id": "150",
       "name": "Real Betis Balompié",
-      "country": "ES"
+      "country": "ES",
+      "pot": 2
     },
     {
       "id": "234",
       "name": "Feyenoord Rotterdam",
-      "country": "NL"
+      "country": "NL",
+      "pot": 3
     },
     {
       "id": "239",
       "name": "Viking FK",
-      "country": "NO"
+      "country": "NO",
+      "pot": 4
     },
     {
       "id": "281",
       "name": "Manchester City",
-      "country": "EN"
+      "country": "EN",
+      "pot": 1
     },
     {
       "id": "336",
       "name": "Sporting CP",
-      "country": "PT"
+      "country": "PT",
+      "pot": 2
     },
     {
       "id": "383",
       "name": "PSV Eindhoven",
-      "country": "NL"
+      "country": "NL",
+      "pot": 2
     },
     {
       "id": "405",
       "name": "Aston Villa",
-      "country": "EN"
+      "country": "EN",
+      "pot": 2
     },
     {
       "id": "413",
       "name": "LASK",
-      "country": "AT"
+      "country": "AT",
+      "pot": 4
     },
     {
       "id": "418",
       "name": "Real Madrid",
-      "country": "ES"
+      "country": "ES",
+      "pot": 1
     },
     {
       "id": "501",
       "name": "FK Bodø/Glimt",
-      "country": "NO"
+      "country": "NO",
+      "pot": 3
     },
     {
       "id": "540",
       "name": "Slovan Bratislava",
-      "country": "SK"
+      "country": "SK",
+      "pot": 4
     },
     {
       "id": "583",
       "name": "Paris Saint-Germain",
-      "country": "FR"
+      "country": "FR",
+      "pot": 1
     },
     {
       "id": "660",
       "name": "Shakhtar Donetsk",
-      "country": "UA"
+      "country": "UA",
+      "pot": 3
     },
     {
       "id": "720",
       "name": "FC Porto",
-      "country": "PT"
+      "country": "PT",
+      "pot": 2
     },
     {
       "id": "826",
       "name": "RC Lens",
-      "country": "FR"
+      "country": "FR",
+      "pot": 4
     },
     {
       "id": "985",
       "name": "Manchester United",
-      "country": "EN"
+      "country": "EN",
+      "pot": 2
     },
     {
       "id": "1047",
       "name": "Como 1907",
-      "country": "IT"
+      "country": "IT",
+      "pot": 4
     },
     {
       "id": "1050",
       "name": "Villarreal CF",
-      "country": "ES"
+      "country": "ES",
+      "pot": 3
     },
     {
       "id": "1082",
       "name": "LOSC Lille",
-      "country": "FR"
+      "country": "FR",
+      "pot": 3
     },
     {
       "id": "2282",
       "name": "Club Brugge KV",
-      "country": "BE"
+      "country": "BE",
+      "pot": 2
     },
     {
       "id": "2441",
       "name": "AEK Athens",
-      "country": "GR"
+      "country": "GR",
+      "pot": 4
     },
     {
       "id": "6195",
       "name": "SSC Napoli",
-      "country": "IT"
+      "country": "IT",
+      "pot": 3
     },
     {
       "id": "23826",
       "name": "RB Leipzig",
-      "country": "DE"
+      "country": "DE",
+      "pot": 3
     },
     {
       "id": "63993",
       "name": "Sabah FK",
-      "country": "AZ"
+      "country": "AZ",
+      "pot": 4
     }
   ]
 }
