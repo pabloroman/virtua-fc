@@ -24,11 +24,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Added nullable, backfilled, then tightened: every row ends up with a
+        // value and the column carries no default, so an insert path that
+        // forgets to pin a season fails loudly instead of silently inheriting
+        // whatever the global config happens to say that week.
         Schema::table('games', function (Blueprint $table) {
             $table->string('base_season', 10)->nullable()->after('season');
         });
 
         DB::table('games')->whereNull('base_season')->update(['base_season' => '2025']);
+
+        Schema::table('games', function (Blueprint $table) {
+            $table->string('base_season', 10)->nullable(false)->change();
+        });
     }
 
     public function down(): void
