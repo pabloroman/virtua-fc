@@ -24,9 +24,20 @@ const EXPORTS = '\n;globalThis.__BlockedError = BlockedError; globalThis.__PACIN
 
 function loadWorker() {
     const store = {};
+    const messageListeners = [];
+
+    // pacedSleep waits against the wall clock, so a stubbed sleep has to move
+    // that clock or the slice loop never reaches its deadline.
+    let clock = 1700000000000;
+    class FakeDate extends Date {
+        static now() {
+            return clock;
+        }
+    }
+
     const ctx = {
         console: { log() {}, warn() {}, error() {} },
-        setTimeout, clearTimeout, Math, Promise, Object, Error, JSON, Date,
+        setTimeout, clearTimeout, Math, Promise, Object, Error, JSON, Date: FakeDate,
         importScripts: () => {},
         chrome: {
             webRequest: { onCompleted: { addListener: () => {} } },
@@ -41,7 +52,13 @@ function loadWorker() {
                     remove: () => {},
                 },
             },
-            runtime: { onMessage: { addListener: () => {} }, sendMessage: async () => {}, lastError: null },
+            runtime: {
+                // Captured so a test can drive Stop the way the popup does —
+                // batchAborted is script-local, not reachable from outside.
+                onMessage: { addListener: (fn) => { messageListeners.push(fn); } },
+                sendMessage: async () => {},
+                lastError: null,
+            },
             scripting: { executeScript: async () => [{ result: null }] },
             action: { setBadgeText: () => {}, setBadgeBackgroundColor: () => {} },
         },
@@ -51,14 +68,38 @@ function loadWorker() {
     vm.createContext(ctx);
     vm.runInContext(fs.readFileSync(SOURCE, 'utf8') + EXPORTS, ctx);
 
-    const waits = [];
-    ctx.sleep = (ms) => { waits.push(ms); return Promise.resolve(); };
+    // Long waits are served in keepalive slices, so the raw sleeps are not the
+    // waits we care about. Each page attempt pushes a marker, letting a test
+    // group the slices back into "how long did it wait before retry N".
+    const slices = [];
+    ctx.sleep = (ms) => { slices.push(ms); clock += ms; return Promise.resolve(); };
     ctx.updateProgress = async () => {};
     ctx.scrapePlayerPositionsFromTab = async () => ({ positions: ['Central Midfield'] });
 
     store.batchPositions = {};
 
-    return { ctx, store, waits };
+    const markAttempt = () => slices.push('ATTEMPT');
+
+    /** Total slept between consecutive page attempts. */
+    const waitsBetweenAttempts = () => {
+        const totals = [];
+        let current = null;
+        for (const entry of slices) {
+            if (entry === 'ATTEMPT') {
+                if (current !== null) totals.push(current);
+                current = 0;
+            } else if (current !== null) {
+                current += entry;
+            }
+        }
+        if (current) totals.push(current);
+
+        return totals;
+    };
+
+    const stop = () => messageListeners.forEach(fn => fn({ action: 'stopBatch' }, {}, () => {}));
+
+    return { ctx, store, slices, markAttempt, waitsBetweenAttempts, stop };
 }
 
 describe('scrapeBatchPlayerPositions', () => {
@@ -69,8 +110,8 @@ describe('scrapeBatchPlayerPositions', () => {
     });
 
     it('records a player scraped without incident', async () => {
-        const { ctx, store } = worker;
-        ctx.navigateAndWait = async () => {};
+        const { ctx, store, markAttempt } = worker;
+        ctx.navigateAndWait = async () => { markAttempt(); };
 
         await ctx.scrapeBatchPlayerPositions(1, ['1', '2']);
 
@@ -81,10 +122,11 @@ describe('scrapeBatchPlayerPositions', () => {
     });
 
     it('waits and retries on a 403, then records the recovered player', async () => {
-        const { ctx, store, waits } = worker;
+        const { ctx, store, markAttempt, waitsBetweenAttempts } = worker;
         const Blocked = ctx.__BlockedError;
         let attempts = 0;
         ctx.navigateAndWait = async () => {
+            markAttempt();
             if (attempts++ < 2) throw new Blocked(403);
         };
 
@@ -92,32 +134,33 @@ describe('scrapeBatchPlayerPositions', () => {
 
         expect(attempts).toBe(3);
         expect(store.batchPositions).toEqual({ 111: ['Central Midfield'] });
-        // First two rungs of the cooldown ladder, plus up to blockJitterMs.
+
         const [first, second] = ctx.__PACING.blockCooldownsMs;
-        expect(waits[0]).toBeGreaterThanOrEqual(first);
-        expect(waits[1]).toBeGreaterThanOrEqual(second);
+        const waited = waitsBetweenAttempts();
+        expect(waited[0]).toBeGreaterThanOrEqual(first);
+        expect(waited[1]).toBeGreaterThanOrEqual(second);
     });
 
     it('escalates through the whole cooldown ladder before giving up', async () => {
-        const { ctx, waits } = worker;
+        const { ctx, markAttempt, waitsBetweenAttempts } = worker;
         const Blocked = ctx.__BlockedError;
-        ctx.navigateAndWait = async () => { throw new Blocked(403); };
+        ctx.navigateAndWait = async () => { markAttempt(); throw new Blocked(403); };
 
         await ctx.scrapeBatchPlayerPositions(1, ['222']);
 
         const ladder = ctx.__PACING.blockCooldownsMs;
-        expect(waits).toHaveLength(ladder.length);
-        ladder.forEach((rung, i) => expect(waits[i]).toBeGreaterThanOrEqual(rung));
-        // Strictly increasing — a short throttle costs seconds, a ban escalates.
-        for (let i = 1; i < waits.length; i++) {
-            expect(waits[i]).toBeGreaterThan(waits[i - 1]);
+        const waited = waitsBetweenAttempts();
+        expect(waited).toHaveLength(ladder.length);
+        ladder.forEach((rung, i) => expect(waited[i]).toBeGreaterThanOrEqual(rung));
+        for (let i = 1; i < waited.length; i++) {
+            expect(waited[i]).toBeGreaterThan(waited[i - 1]);
         }
     });
 
     it('leaves a blocked player unrecorded so Resume retries him', async () => {
-        const { ctx, store } = worker;
+        const { ctx, store, markAttempt } = worker;
         const Blocked = ctx.__BlockedError;
-        ctx.navigateAndWait = async () => { throw new Blocked(403); };
+        ctx.navigateAndWait = async () => { markAttempt(); throw new Blocked(403); };
 
         await ctx.scrapeBatchPlayerPositions(1, ['222']);
 
@@ -126,24 +169,54 @@ describe('scrapeBatchPlayerPositions', () => {
     });
 
     it('stops the run once too many players fail in a row', async () => {
-        const { ctx, store } = worker;
+        const { ctx, store, markAttempt } = worker;
         const Blocked = ctx.__BlockedError;
-        ctx.navigateAndWait = async () => { throw new Blocked(403); };
+        ctx.navigateAndWait = async () => { markAttempt(); throw new Blocked(403); };
         const ids = Array.from({ length: 10 }, (_, i) => String(i + 1));
 
         await ctx.scrapeBatchPlayerPositions(1, ids);
 
-        // Bailed out rather than grinding through all ten.
         expect(Object.keys(store.batchPositions)).toHaveLength(0);
     });
 
     it('gives an ordinary error one flat backoff, not the ladder', async () => {
-        const { ctx, store, waits } = worker;
-        ctx.navigateAndWait = async () => { throw new Error('Navigation timeout'); };
+        const { ctx, store, markAttempt, waitsBetweenAttempts } = worker;
+        ctx.navigateAndWait = async () => { markAttempt(); throw new Error('Navigation timeout'); };
 
         await ctx.scrapeBatchPlayerPositions(1, ['333']);
 
-        expect(waits).toEqual([ctx.__PACING.retryBackoffMs]);
+        expect(waitsBetweenAttempts()).toEqual([ctx.__PACING.retryBackoffMs]);
+        expect(store.batchPositions).toEqual({});
+    });
+
+    it('never sleeps longer than the MV3 idle timeout in one go', async () => {
+        const { ctx, slices, markAttempt } = worker;
+        const Blocked = ctx.__BlockedError;
+        ctx.navigateAndWait = async () => { markAttempt(); throw new Blocked(403); };
+
+        // The 300s rung would kill the service worker if it were one setTimeout.
+        await ctx.scrapeBatchPlayerPositions(1, ['222']);
+
+        const longest = Math.max(...slices.filter(s => typeof s === 'number'));
+        expect(longest).toBeLessThan(30000);
+    });
+
+    it('stops promptly when Stop is pressed mid-cooldown', async () => {
+        const { ctx, store, markAttempt, stop } = worker;
+        const Blocked = ctx.__BlockedError;
+        let attempts = 0;
+        ctx.navigateAndWait = async () => {
+            markAttempt();
+            attempts++;
+            stop(); // as the popup's Stop button does
+            throw new Blocked(403);
+        };
+
+        await ctx.scrapeBatchPlayerPositions(1, ['444', '555']);
+
+        // The abort is noticed inside the cooldown slices rather than after the
+        // full rung, so neither a retry nor the next player is started.
+        expect(attempts).toBe(1);
         expect(store.batchPositions).toEqual({});
     });
 });

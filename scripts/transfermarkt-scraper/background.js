@@ -59,9 +59,46 @@ function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * An MV3 service worker is torn down after ~30s with no extension API activity,
+ * and a bare setTimeout does not count as activity. Any wait longer than that
+ * therefore kills the batch mid-run: the worker dies, the loop never resumes,
+ * and the popup's Stop/Start stop working because there is nothing listening.
+ *
+ * So long waits are served in slices, each shorter than the idle timeout and
+ * each ending in a real API call to reset it. Slicing also makes Stop responsive
+ * — batchAborted is checked every slice instead of once at the end of a
+ * five-minute sleep.
+ *
+ * Returns false if the run was stopped while waiting.
+ */
+const KEEPALIVE_SLICE_MS = 20000;
+
+async function pacedSleep(totalMs, onRemaining) {
+  const deadline = Date.now() + totalMs;
+
+  while (Date.now() < deadline) {
+    if (batchAborted) {
+      return false;
+    }
+
+    const remaining = deadline - Date.now();
+    if (onRemaining) {
+      await onRemaining(remaining);
+    }
+
+    await sleep(Math.min(KEEPALIVE_SLICE_MS, remaining));
+
+    // Touching an extension API is what actually resets the idle timer.
+    await chrome.storage.local.get('batchPositions');
+  }
+
+  return !batchAborted;
+}
+
 /** Jittered pause between two profile fetches. */
 function batchDelay() {
-  return sleep(randomBetween(BATCH_PACING.minDelayMs, BATCH_PACING.maxDelayMs));
+  return pacedSleep(randomBetween(BATCH_PACING.minDelayMs, BATCH_PACING.maxDelayMs));
 }
 
 /**
@@ -447,17 +484,19 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
         const reason = blocked ? `blocked (HTTP ${err.status})` : 'failed';
 
         console.warn(`[TM Scraper] Player ${playerId} ${reason}; waiting ${Math.round(waitMs / 1000)}s`);
-        await updateProgress({
-          status: 'working',
-          message: `${blocked ? `Blocked (HTTP ${err.status})` : 'Failed'} on ${playerId} — waiting ${Math.round(waitMs / 1000)}s`,
-          current: doneCount + 1,
-          total,
-          pageType: 'batch-positions'
+
+        const label = blocked ? `Blocked (HTTP ${err.status})` : 'Failed';
+        const completed = await pacedSleep(waitMs, async remaining => {
+          await updateProgress({
+            status: 'working',
+            message: `${label} on ${playerId} — retrying in ${Math.ceil(remaining / 1000)}s`,
+            current: doneCount + 1,
+            total,
+            pageType: 'batch-positions'
+          });
         });
 
-        await sleep(waitMs);
-
-        if (batchAborted) {
+        if (!completed) {
           failed = true;
           break;
         }
@@ -495,14 +534,15 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
       if (--playersUntilRest <= 0) {
         const restMs = randomBetween(BATCH_PACING.restMinMs, BATCH_PACING.restMaxMs);
         console.log(`[TM Scraper] Resting ${Math.round(restMs / 1000)}s`);
-        await updateProgress({
-          status: 'working',
-          message: `Resting ${Math.round(restMs / 1000)}s — ${doneCount + 1}/${total}`,
-          current: doneCount + 1,
-          total,
-          pageType: 'batch-positions'
+        await pacedSleep(restMs, async remaining => {
+          await updateProgress({
+            status: 'working',
+            message: `Resting ${Math.ceil(remaining / 1000)}s — ${doneCount + 1}/${total}`,
+            current: doneCount + 1,
+            total,
+            pageType: 'batch-positions'
+          });
         });
-        await sleep(restMs);
         playersUntilRest = randomBetween(BATCH_PACING.restEveryMin, BATCH_PACING.restEveryMax);
       } else {
         await batchDelay();
@@ -1035,6 +1075,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'stopBatch') {
     batchAborted = true;
+
+    // The loop writes its own 'paused' when it notices, but if the worker was
+    // restarted there is no loop to notice — write it here so the popup is
+    // never left showing a run that is not happening.
+    chrome.storage.local.get('batchPositions', data => {
+      const done = Object.keys(data.batchPositions || {}).length;
+      updateProgress({
+        status: 'paused',
+        message: `Paused — ${done} done`,
+        current: done,
+        pageType: 'batch-positions'
+      });
+    });
+
     sendResponse({ stopped: true });
     return true;
   }
