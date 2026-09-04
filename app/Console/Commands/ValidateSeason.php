@@ -94,6 +94,7 @@ class ValidateSeason extends Command
             };
         }
 
+        $this->validateSquadNumbers($season, $competitions);
         $this->warnUnprofiledClubs();
 
         foreach ($this->warnings as $warning) {
@@ -370,6 +371,52 @@ class ValidateSeason extends Command
         }
         $this->loadSchedule($code, "{$dir}/schedule.json");
         $this->line("  {$code}: schedule only ✓");
+    }
+
+    /**
+     * Every squad member must hold a shirt number no team-mate also holds.
+     *
+     * `game_player_templates` is uniquely indexed on (season, team_id, number)
+     * — the guard that stops SetupNewGame silently dropping a player and then
+     * FK-failing on his match-state row. A single duplicated shirt in the
+     * source data therefore aborts `app:refresh-player-templates` for the whole
+     * season, so it belongs in the pre-seed gate rather than in a stack trace.
+     *
+     * Only squad-bearing folders are read: continental participant lists carry
+     * no players, and a club listed in more than one of them (a league squad
+     * that also appears in the domestic cup) is checked once.
+     *
+     * @param  array<int, array{code: string, type: string}>  $competitions
+     */
+    private function validateSquadNumbers(string $season, array $competitions): void
+    {
+        $checked = [];
+
+        foreach ($competitions as ['code' => $code, 'type' => $type]) {
+            if (!in_array($type, ['league', 'cup', 'pool'], true)) {
+                continue;
+            }
+
+            foreach (SeasonData::readCompetitionClubs($season, $code, $type) ?? [] as $club) {
+                if (isset($checked[$club['id']]) || empty($club['numbers'])) {
+                    continue;
+                }
+                $checked[$club['id']] = true;
+
+                $holdersByNumber = [];
+                foreach ($club['numbers'] as $playerId => $number) {
+                    $holdersByNumber[$number][] = ($club['players'][$playerId] ?? $playerId) . " ({$playerId})";
+                }
+
+                foreach ($holdersByNumber as $number => $holders) {
+                    if (count($holders) > 1) {
+                        $this->errors[] = "{$code}: '{$club['name']}' ({$club['id']}) has "
+                            . count($holders) . " players on shirt #{$number}: " . implode(', ', $holders)
+                            . ' — squad numbers must be unique within a club.';
+                    }
+                }
+            }
+        }
     }
 
     /**

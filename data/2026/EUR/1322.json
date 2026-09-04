@@ -119,7 +119,7 @@
       "nationality": [
         "Czech Republic"
       ],
-      "number": "16",
+      "number": "9",
       "position": "Second Striker"
     },
     {
@@ -382,29 +382,6 @@
       ],
       "number": "6",
       "position": "Central Midfield"
-    },
-    {
-      "contract": "Jun 30, 2027",
-      "dateOfBirth": "Dec 25, 2003",
-      "foot": "right",
-      "height": "1,87m",
-      "id": "863911",
-      "injured": false,
-      "loan": {
-        "from": {
-          "id": "197",
-          "image": "https://tmssl.akamaized.net/images/wappen/big/197.png",
-          "name": "AC Sparta Prague"
-        },
-        "until": "Jun 30, 2027"
-      },
-      "marketValue": "€450k",
-      "name": "Kevin-Prince Milla",
-      "nationality": [
-        "Cameroon"
-      ],
-      "number": "11",
-      "position": "Centre-Forward"
     },
     {
       "contract": "-",
