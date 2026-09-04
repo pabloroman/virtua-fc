@@ -17,6 +17,35 @@ function sleep(ms) {
 }
 
 /**
+ * Pacing for the player-positions batch.
+ *
+ * The batch walks a couple of thousand profile pages in one sitting, which is
+ * exactly the shape of traffic Transfermarkt rate-limits. A fixed interval is
+ * the easiest pattern to spot, so every wait is randomised, and the run takes a
+ * longer breather every so often rather than hammering steadily.
+ */
+const BATCH_PACING = {
+  minDelayMs: 2500,        // shortest gap between two profile pages
+  maxDelayMs: 6000,        // longest
+  restEveryMin: 40,        // take a long break somewhere in this range...
+  restEveryMax: 70,        // ...of players
+  restMinMs: 25000,        // how long that break lasts
+  restMaxMs: 60000,
+  retryBackoffMs: 45000,   // wait this long before retrying a failed player
+  maxConsecutiveFailures: 4 // give up after this many in a row (likely blocked)
+};
+
+/** Random integer in [min, max]. */
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/** Jittered pause between two profile fetches. */
+function batchDelay() {
+  return sleep(randomBetween(BATCH_PACING.minDelayMs, BATCH_PACING.maxDelayMs));
+}
+
+/**
  * Extract season ID from URL or default to current year
  */
 function getSeasonId(url) {
@@ -305,6 +334,9 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
     pageType: 'batch-positions'
   });
 
+  let consecutiveFailures = 0;
+  let playersUntilRest = randomBetween(BATCH_PACING.restEveryMin, BATCH_PACING.restEveryMax);
+
   for (let i = 0; i < remaining.length; i++) {
     if (batchAborted) {
       console.log('[TM Scraper] Batch aborted by user');
@@ -330,25 +362,78 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
       pageType: 'batch-positions'
     });
 
+    const profileUrl = `https://www.transfermarkt.com/player/profil/spieler/${playerId}`;
+    let result = null;
+    let failed = false;
+
     try {
-      const profileUrl = `https://www.transfermarkt.com/player/profil/spieler/${playerId}`;
       await navigateAndWait(tabId, profileUrl);
-      const result = await scrapePlayerPositionsFromTab(tabId);
-
-      completedMap[playerId] = result?.positions || [];
-
-      console.log(`[TM Scraper] ${doneCount + 1}/${total} — Player ${playerId}: ${(result?.positions || []).join(', ') || 'no positions found'}`);
+      result = await scrapePlayerPositionsFromTab(tabId);
     } catch (err) {
-      console.error(`[TM Scraper] Error on player ${playerId}:`, err);
-      completedMap[playerId] = [];
+      // One failure is usually a slow page; two in a row on the same player
+      // means we are being throttled, so back off hard before the retry.
+      console.warn(`[TM Scraper] Player ${playerId} failed, backing off:`, err);
+      await updateProgress({
+        status: 'working',
+        message: `Player ${playerId} failed — backing off`,
+        current: doneCount + 1,
+        total,
+        pageType: 'batch-positions'
+      });
+      await sleep(BATCH_PACING.retryBackoffMs);
+
+      try {
+        await navigateAndWait(tabId, profileUrl);
+        result = await scrapePlayerPositionsFromTab(tabId);
+      } catch (retryErr) {
+        console.error(`[TM Scraper] Player ${playerId} failed twice:`, retryErr);
+        failed = true;
+      }
     }
 
-    // Persist after every player
-    await chrome.storage.local.set({ batchPositions: completedMap });
+    if (failed) {
+      // Deliberately not recorded: an unrecorded player is retried on the next
+      // Resume, whereas storing [] would bake a rate-limited page in as
+      // "no secondary position" and quietly lose him.
+      consecutiveFailures++;
 
-    // Throttle
+      if (consecutiveFailures >= BATCH_PACING.maxConsecutiveFailures) {
+        const doneSoFar = Object.keys(completedMap).length;
+        console.error('[TM Scraper] Too many consecutive failures — stopping.');
+        await updateProgress({
+          status: 'paused',
+          message: `Stopped after ${consecutiveFailures} failures in a row — likely rate-limited. Resume later.`,
+          current: doneSoFar,
+          total,
+          pageType: 'batch-positions'
+        });
+        return;
+      }
+    } else {
+      consecutiveFailures = 0;
+      completedMap[playerId] = result?.positions || [];
+      console.log(`[TM Scraper] ${doneCount + 1}/${total} — Player ${playerId}: ${(result?.positions || []).join(', ') || 'no positions found'}`);
+
+      // Persist after every player
+      await chrome.storage.local.set({ batchPositions: completedMap });
+    }
+
     if (i < remaining.length - 1) {
-      await sleep(1200);
+      if (--playersUntilRest <= 0) {
+        const restMs = randomBetween(BATCH_PACING.restMinMs, BATCH_PACING.restMaxMs);
+        console.log(`[TM Scraper] Resting ${Math.round(restMs / 1000)}s`);
+        await updateProgress({
+          status: 'working',
+          message: `Resting ${Math.round(restMs / 1000)}s — ${doneCount + 1}/${total}`,
+          current: doneCount + 1,
+          total,
+          pageType: 'batch-positions'
+        });
+        await sleep(restMs);
+        playersUntilRest = randomBetween(BATCH_PACING.restEveryMin, BATCH_PACING.restEveryMax);
+      } else {
+        await batchDelay();
+      }
     }
   }
 

@@ -20,13 +20,17 @@ use Illuminate\Console\Command;
  */
 class ListMissingPlayerPositions extends Command
 {
+    /** Squad-data position of a player who by definition has no secondary one. */
+    private const GOALKEEPER = 'Goalkeeper';
+
     protected $signature = 'app:list-missing-positions
                             {season : Season to scan (e.g. 2026)}
                             {--country=ES : Country whose league tiers to scan, when no --competition is given}
                             {--competition=* : Explicit competition codes to scan (e.g. ENG1), overriding --country}
                             {--ledger= : CSV of already-attempted ids (default: the ES ledger)}
                             {--output= : Where to write the CSV (default: the generated todo list the extension reads)}
-                            {--all : Ignore the ledger and list every player, for a full re-scrape}';
+                            {--all : Ignore the ledger and list every player, for a full re-scrape}
+                            {--include-goalkeepers : Keep goalkeepers in the list}';
 
     protected $description = 'List players with no secondary-position scrape attempt yet, as a CSV for the browser scraper';
 
@@ -42,7 +46,7 @@ class ListMissingPlayerPositions extends Command
 
         $codes = $this->resolveCompetitions($countryConfig);
         if ($codes === []) {
-            $this->error('No competitions to scan . ');
+            $this->error('No competitions to scan.');
 
             return self::FAILURE;
         }
@@ -53,6 +57,8 @@ class ListMissingPlayerPositions extends Command
 
         $todo = [];
         $rows = [];
+        $skippedKeepers = 0;
+        $includeGoalkeepers = (bool) $this->option('include-goalkeepers');
 
         foreach ($codes as $code) {
             $clubs = SeasonData::readCompetitionClubs($season, $code, 'league');
@@ -65,6 +71,15 @@ class ListMissingPlayerPositions extends Command
             $ids = [];
             foreach ($clubs as $club) {
                 foreach (array_keys($club['players']) as $playerId) {
+                    // A goalkeeper has no secondary position to find, so a
+                    // profile fetch for one spends scraping budget — the scarce
+                    // resource here — to learn nothing.
+                    if (!$includeGoalkeepers && ($club['positions'][$playerId] ?? null) === self::GOALKEEPER) {
+                        $skippedKeepers++;
+
+                        continue;
+                    }
+
                     $ids[$playerId] = true;
                 }
             }
@@ -86,14 +101,18 @@ class ListMissingPlayerPositions extends Command
         }
 
         $this->table(
-            ['competition', 'players', 'attempted', '%', 'with entry', 'pending'],
+            ['competition', 'outfield', 'attempted', '%', 'with entry', 'pending'],
             $rows,
         );
+
+        if ($skippedKeepers > 0) {
+            $this->line("  {$skippedKeepers} goalkeeper(s) skipped (no secondary position to find).");
+        }
 
         $todo = array_keys($todo);
 
         if ($todo === []) {
-            $this->info('Every player has been through the scraper — nothing to do . ');
+            $this->info('Every player has been through the scraper — nothing to do.');
 
             return self::SUCCESS;
         }

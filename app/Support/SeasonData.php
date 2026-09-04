@@ -154,9 +154,10 @@ class SeasonData
      *
      * Each club is `['id' => transfermarktId, 'name' => string,
      * 'players' => array<string id, string name>,
-     * 'numbers' => array<string id, int shirt>]`.
+     * 'numbers' => array<string id, int shirt>,
+     * 'positions' => array<string id, string position>]`.
      *
-     * @return array<int, array{id: string, name: string, players: array<string, string>, numbers: array<string, int>}>|null
+     * @return array<int, array{id: string, name: string, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}>|null
      */
     public static function readCompetitionClubs(string $season, string $code, string $type): ?array
     {
@@ -196,12 +197,13 @@ class SeasonData
 
     /**
      * Normalize a single club entry to {id, name, players[id => name],
-     * numbers[id => shirt]}. Shirt numbers are kept in their own map so a
-     * squad-file consumer can check them without every consumer having to
-     * care: players without a number are simply absent from it.
+     * numbers[id => shirt], positions[id => position]}. Shirt numbers and
+     * positions are kept in their own maps so a squad-file consumer can check
+     * them without every consumer having to care: a player missing either is
+     * simply absent from that map.
      *
      * @param  array<string, mixed>  $club
-     * @return array{id: string, name: string, players: array<string, string>, numbers: array<string, int>}|null
+     * @return array{id: string, name: string, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}|null
      */
     private static function club(array $club): ?array
     {
@@ -212,6 +214,7 @@ class SeasonData
 
         $players = [];
         $numbers = [];
+        $positions = [];
         foreach ($club['players'] ?? [] as $player) {
             if (!is_array($player) || empty($player['id'])) {
                 continue;
@@ -223,6 +226,10 @@ class SeasonData
             if (isset($player['number']) && $player['number'] !== '' && $player['number'] !== null) {
                 $numbers[$playerId] = (int) $player['number'];
             }
+
+            if (!empty($player['position'])) {
+                $positions[$playerId] = (string) $player['position'];
+            }
         }
 
         return [
@@ -230,6 +237,7 @@ class SeasonData
             'name' => (string) ($club['name'] ?? "({$id})"),
             'players' => $players,
             'numbers' => $numbers,
+            'positions' => $positions,
         ];
     }
 }

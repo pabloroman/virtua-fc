@@ -98,7 +98,7 @@ class MergePlayerPositions extends Command
             $this->newLine();
             $this->warn('No --attempted CSV given: recording only the ids that came back with a');
             $this->warn('position. Players scraped with no secondary position stay "pending" and');
-            $this->warn('will be re-scraped next season . ');
+            $this->warn('will be re-scraped next season.');
             $attempted = $downloadedIds;
         } else {
             $attempted = PlayerPositionsData::readLedger((string) $attemptedOption);
