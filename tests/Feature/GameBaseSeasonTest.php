@@ -148,9 +148,10 @@ class GameBaseSeasonTest extends TestCase
     public function test_knockout_placeholders_read_the_games_base_season(): void
     {
         // The release has moved the configured season on, and the folder for it
-        // need not even be on disk yet. World Cup data lives permanently under
-        // data/2025/WC2026/ — which is why reading the configured season here
-        // left tournament games with no knockout placeholders at all.
+        // need not even be on disk yet. WC2026 is the vehicle here only because
+        // it is the one competition on disk whose knockout rounds all carry a
+        // plain `date`; tournament mode itself is retired, and its data folder
+        // is retained for legacy saves.
         config(['season.current' => '2026']);
 
         Competition::factory()->groupStageCup()->create([

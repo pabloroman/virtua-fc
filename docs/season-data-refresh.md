@@ -206,11 +206,7 @@ transition, not just by loading its squad.
   reference data is refreshed. Two consequences: a career started before a
   release keeps playing its original calendar, and **old `data/{season}/`
   folders can never be deleted** — `data/2025/` is load-bearing for every save
-  created before the 2026/27 release (as it already is for `WC2026`).
-- **`--fresh` also wipes the World Cup.** It clears `competitions` and `teams`,
-  including the `WC2026` competition and its national teams, so re-run
-  `php artisan app:seed-world-cup-data` afterwards. World Cup data itself lives
-  permanently under `data/2025/WC2026/` and is not tied to `GAME_SEASON`.
+  created before the 2026/27 release.
 - **Year boundary.** A league season spans Aug → Jun; the scaffolder shifts every
   absolute date by the same whole number of weeks — a year rounded up, so 371
   days (53 weeks) for a one-year bump. That preserves the crossover (Aug 2026 →

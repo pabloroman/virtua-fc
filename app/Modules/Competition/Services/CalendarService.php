@@ -202,8 +202,7 @@ class CalendarService
         // folder it was seeded from — not $game->season, which advances past
         // the on-disk data folder as a career progresses through seasons, and
         // not config('season.current'), which moves for every save at once when
-        // reference data is refreshed. (World Cup data lives permanently under
-        // data/2025/WC2026/, and tournament games are pinned to that season.)
+        // reference data is refreshed.
         $baseSeason = $game->base_season;
         $schedulePath = base_path("data/{$baseSeason}/{$competitionId}/schedule.json");
 
