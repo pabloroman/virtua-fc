@@ -108,13 +108,17 @@ class CupTie extends Model
 
     /**
      * Get the round config for this tie from schedule.json.
+     *
+     * Reads the schedule from the game's own base season, not the shared
+     * Competition::season — a career started before a reference-data refresh
+     * keeps the folder it was seeded from. Eager-load `game` when calling this
+     * over a collection of ties.
      */
     public function getRoundConfig(): ?\App\Modules\Competition\DTOs\PlayoffRoundConfig
     {
-        $competition = $this->competition ?? Competition::find($this->competition_id);
         $rounds = \App\Modules\Competition\Services\LeagueFixtureGenerator::loadKnockoutRounds(
             $this->competition_id,
-            $competition->season ?? config('season.current'),
+            $this->game->base_season,
         );
 
         foreach ($rounds as $round) {

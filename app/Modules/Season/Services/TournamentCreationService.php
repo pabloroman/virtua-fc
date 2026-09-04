@@ -25,6 +25,7 @@ class TournamentCreationService
             'team_id' => $teamId,
             'competition_id' => 'WC2026',
             'season' => '2025',
+            'base_season' => '2025',
             'current_date' => '2026-06-11',
             'needs_welcome' => true,
             'needs_new_season_setup' => true,

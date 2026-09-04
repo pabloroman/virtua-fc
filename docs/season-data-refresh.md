@@ -161,12 +161,52 @@ add/remove line, not a reshuffled roster.
    php artisan app:refresh-player-templates --season=2026 --country=ES
    ```
 
+## Releasing to a database with live saves
+
+Step 6 above (`--fresh`) is the fresh-database path. **On production, never use
+`--fresh`**: it deletes `teams`, and the career tables that outlive a game hold
+RESTRICT foreign keys to it (`manager_stats`, `manager_trophies`,
+`manager_job_histories`, `manager_job_offers`, `manager_season_records`,
+`tournament_summaries`, `user_squad_career_records`). The delete fails outright
+on a database with any career history, and teams are re-inserted with fresh
+UUIDs, so even a successful run would strand every leaderboard row.
+
+Seed without `--fresh` instead. Teams are matched by `transfermarkt_id` and
+updated in place, so team UUIDs — and everything keyed to them — survive, and
+`competition_teams` is keyed `(competition_id, team_id, season)`, so the new
+season's membership is *added* alongside the old rows rather than replacing
+them. In order:
+
+1. Snapshot the database.
+2. Deploy the code, running migrations **before** the env var changes. Careers
+   are pinned to their own base season by `games.base_season` (see below); that
+   column has to exist and be backfilled before the global season moves.
+3. Set `GAME_SEASON=2026`.
+4. `php artisan app:seed-reference-data` — no `--fresh`.
+5. `php artisan app:refresh-player-templates --season=2026`.
+6. `php artisan config:clear`.
+
+What live saves do notice: club names are canonicalised (see
+`App\Support\ClubNames`), and `teams.stadium_name`, `stadium_seats`, `image`
+and `colors` refresh in place. Per-game state is untouched — stadium upgrades
+live in `game_stadiums`, and reputation in `team_reputations`, both keyed by
+`game_id`. Newly promoted clubs are inserted as new rows but never enter an
+existing save, whose competition membership is its own `competition_entries`.
+
+Verify afterwards by taking an existing save through a cup draw and a season
+transition, not just by loading its squad.
+
 ## Notes & caveats
 
-- **Re-seed on a fresh DB / new cohort.** `competitions.season` is one row per
-  competition id, so flipping the base season re-points it for everyone. Do not
-  re-seed an active production DB mid-season — a live game would then compute a
-  negative year offset for its fixtures.
+- **Games are pinned to the season they were created in.** `games.base_season`
+  records which `data/{season}/` folder a save reads its schedules from, and is
+  the origin its fixture dates are offset against (`season - base_season`
+  years). Everything game-scoped reads it rather than `Competition::season` or
+  `config('season.current')`, both of which move for every save at once when
+  reference data is refreshed. Two consequences: a career started before a
+  release keeps playing its original calendar, and **old `data/{season}/`
+  folders can never be deleted** — `data/2025/` is load-bearing for every save
+  created before the 2026/27 release.
 - **Year boundary.** A league season spans Aug → Jun; the scaffolder shifts every
   absolute date by the same whole number of weeks — a year rounded up, so 371
   days (53 weeks) for a one-year bump. That preserves the crossover (Aug 2026 →

@@ -18,6 +18,11 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $player_name
  * @property string $team_id
  * @property string $season
+ * @property string $base_season  Reference-data season this game was created from:
+ *     the `data/{season}/` folder its schedules are read from and the origin its
+ *     fixture dates are offset against (`season - base_season` years). Pinned at
+ *     creation, never `Competition::season` or `config('season.current')` — those
+ *     move for every save at once when reference data is refreshed.
  * @property \Illuminate\Support\Carbon|null $current_date
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -120,6 +125,7 @@ class Game extends Model
         'reserve_team_id',
         'competition_id',
         'season',
+        'base_season',
         'current_date',
         'season_goal',
         'needs_new_season_setup',

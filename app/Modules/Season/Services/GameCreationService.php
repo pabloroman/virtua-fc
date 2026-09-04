@@ -54,6 +54,7 @@ class GameCreationService
             'reserve_team_id' => $reserveTeamId,
             'competition_id' => $competitionId,
             'season' => $season,
+            'base_season' => $season,
             'current_date' => null,
             'season_goal' => null,
             'setup_completed_at' => null,

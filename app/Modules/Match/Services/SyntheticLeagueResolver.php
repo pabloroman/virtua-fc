@@ -214,8 +214,9 @@ class SyntheticLeagueResolver
             return;
         }
 
-        $matchdays = LeagueFixtureGenerator::loadMatchdays($competition->id, $competition->season);
-        $yearDiff = (int) $game->season - (int) $competition->season;
+        $baseSeason = $game->base_season;
+        $matchdays = LeagueFixtureGenerator::loadMatchdays($competition->id, $baseSeason);
+        $yearDiff = (int) $game->season - (int) $baseSeason;
         if ($yearDiff !== 0) {
             $matchdays = LeagueFixtureGenerator::adjustMatchdayYears($matchdays, $yearDiff);
         }

@@ -268,18 +268,18 @@ class CompetitionViewService
             ->values();
     }
 
-    public function getKnockoutRounds(Competition $competition, int $gameSeason): Collection
+    public function getKnockoutRounds(Competition $competition, Game $game): Collection
     {
         return collect(LeagueFixtureGenerator::loadKnockoutRounds(
             $competition->id,
-            $competition->season,
-            $gameSeason,
+            $game->base_season,
+            $game->season,
         ));
     }
 
     public function getKnockoutTies(Game $game, Competition $competition): Collection
     {
-        return CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch', 'competition'])
+        return CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch', 'competition', 'game'])
             ->where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->orderBy('bracket_position')
@@ -419,7 +419,7 @@ class CompetitionViewService
      */
     private function resolveKnockoutContext(Game $game, Competition $competition): array
     {
-        $rounds = $this->getKnockoutRounds($competition, (int) $game->season);
+        $rounds = $this->getKnockoutRounds($competition, $game);
         $ties = $this->getKnockoutTies($game, $competition);
         $playerTie = $this->findPlayerTie($rounds, $ties, $game->team_id);
 

@@ -64,6 +64,13 @@ class WorldCupKnockoutGenerator
 
     /**
      * Get round config from schedule.json.
+     *
+     * Unlike the career-mode generators, this stays on Competition::season.
+     * Tournament mode is retired (config('game.tournament_mode_enabled') is
+     * off), and what remains is legacy: WC2026's row is pinned to the season
+     * its data folder lives under (SeedWorldCupData::SEASON), and
+     * app:seed-reference-data never touches it, so a base-season bump cannot
+     * move it. There is no live career base season to follow here.
      */
     public function getRoundConfig(int $round, string $competitionId, ?string $gameSeason = null): PlayoffRoundConfig
     {

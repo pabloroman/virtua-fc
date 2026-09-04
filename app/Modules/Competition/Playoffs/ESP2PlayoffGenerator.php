@@ -7,7 +7,6 @@ use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Enums\PlayoffState;
 use App\Modules\Competition\Promotions\PromotionSlotAllocator;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
-use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -75,10 +74,13 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
         return 2; // Semifinal + Final
     }
 
-    public function getRoundConfig(int $round, ?string $gameSeason = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, Game $game): PlayoffRoundConfig
     {
-        $competition = Competition::find($this->competitionId);
-        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->competitionId, $competition->season, $gameSeason);
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds(
+            $this->competitionId,
+            $game->base_season,
+            $game->season,
+        );
 
         foreach ($rounds as $config) {
             if ($config->round === $round) {
