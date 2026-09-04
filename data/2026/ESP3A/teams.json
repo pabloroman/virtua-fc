@@ -1422,19 +1422,6 @@
         },
         {
           "contract": "Jun 30, 2027",
-          "dateOfBirth": "May 28, 2004",
-          "id": "1157607",
-          "injured": false,
-          "marketValue": "€100k",
-          "name": "Adrián Ruiz",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "5",
-          "position": "Central Midfield"
-        },
-        {
-          "contract": "Jun 30, 2027",
           "dateOfBirth": "Jan 12, 2004",
           "foot": "right",
           "height": "1,78m",
@@ -1740,6 +1727,29 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Nov 5, 2003",
+          "foot": "left",
+          "height": "1,85m",
+          "id": "894324",
+          "injured": false,
+          "loan": {
+            "from": {
+              "id": "2432",
+              "image": "https://tmssl.akamaized.net/images/wappen/big/2432.png",
+              "name": "SC União Torreense"
+            },
+            "until": "Jun 30, 2027"
+          },
+          "marketValue": "€350k",
+          "name": "Bob Murphy Omoregbe",
+          "nationality": [
+            "Italy",
+            "Nigeria"
+          ],
+          "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "Dec 26, 2004",
           "foot": "right",
           "height": "1,86m",
@@ -1811,6 +1821,18 @@
             "Spain"
           ],
           "number": "9",
+          "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 15, 2006",
+          "id": "1303960",
+          "injured": false,
+          "marketValue": "€300k",
+          "name": "Papa Gaye",
+          "nationality": [
+            "Senegal"
+          ],
           "position": "Centre-Forward"
         }
       ]
@@ -2650,6 +2672,20 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Aug 10, 1999",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "531824",
+          "injured": false,
+          "marketValue": "€300k",
+          "name": "Kike Hermoso",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "Feb 3, 2001",
           "height": "1,89m",
           "id": "634118",
@@ -2754,7 +2790,7 @@
           "foot": "both",
           "height": "1,77m",
           "id": "941130",
-          "injured": false,
+          "injured": true,
           "marketValue": "€300k",
           "name": "Mario Nájera",
           "nationality": [
@@ -2912,6 +2948,17 @@
           ],
           "number": "22",
           "position": "Striker"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Feb 10, 2005",
+          "id": "1563208",
+          "injured": false,
+          "name": "Achore Sánchez",
+          "nationality": [
+            "Ethiopia"
+          ],
+          "position": "Right-Back"
         }
       ]
     },
@@ -3309,7 +3356,7 @@
           "foot": "left",
           "height": "1,91m",
           "id": "689638",
-          "injured": false,
+          "injured": true,
           "marketValue": "€50k",
           "name": "Damián Canedo",
           "nationality": [
@@ -3400,6 +3447,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "22",
           "position": "Central Midfield"
         },
         {
@@ -3471,6 +3519,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "3",
           "position": "Right-Back"
         },
         {
@@ -3484,6 +3533,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "27",
           "position": "Right-Back"
         },
         {
@@ -3614,7 +3664,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "15",
+          "number": "12",
           "position": "Right-Back"
         },
         {
@@ -3653,6 +3703,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "15",
           "position": "Centre-Back"
         }
       ]
@@ -4131,6 +4182,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "18",
           "position": "Right Winger"
         },
         {
@@ -4285,6 +4337,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "12",
           "position": "Right Winger"
         },
         {
@@ -5167,6 +5220,28 @@
           ],
           "number": "8",
           "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 9, 2001",
+          "foot": "right",
+          "height": "1,69m",
+          "id": "466813",
+          "injured": false,
+          "loan": {
+            "from": {
+              "id": "11422",
+              "image": "https://tmssl.akamaized.net/images/wappen/big/11422.png",
+              "name": "CE Sabadell FC"
+            },
+            "until": "Jun 30, 2027"
+          },
+          "marketValue": "€250k",
+          "name": "Miguelete",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Second Striker"
         },
         {
           "contract": "Jun 30, 2027",

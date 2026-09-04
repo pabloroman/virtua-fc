@@ -401,6 +401,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "2",
           "position": "Central Midfield"
         },
         {
@@ -490,6 +491,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "34",
           "position": "Right-Back"
         }
       ]
@@ -529,20 +531,6 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "May 11, 1997",
-          "foot": "right",
-          "height": "1,79m",
-          "id": "318520",
-          "injured": false,
-          "marketValue": "€600k",
-          "name": "Clément Michelin",
-          "nationality": [
-            "France"
-          ],
           "position": "Right-Back"
         },
         {
@@ -627,6 +615,7 @@
             "Qatar",
             "Sudan"
           ],
+          "number": "3",
           "position": "Left-Back"
         },
         {
@@ -863,6 +852,7 @@
             "Israel",
             "Spain"
           ],
+          "number": "23",
           "position": "Right Winger"
         },
         {
@@ -953,6 +943,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "13",
           "position": "Goalkeeper"
         },
         {
@@ -1079,6 +1070,7 @@
           "nationality": [
             "Ghana"
           ],
+          "number": "3",
           "position": "Centre-Back"
         },
         {
@@ -1913,6 +1905,29 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jul 20, 1995",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "332615",
+          "injured": false,
+          "loan": {
+            "from": {
+              "id": "3302",
+              "image": "https://tmssl.akamaized.net/images/wappen/big/3302.png",
+              "name": "UD Almería"
+            },
+            "until": "Jun 30, 2027"
+          },
+          "marketValue": "€500k",
+          "name": "Nélson Monte",
+          "nationality": [
+            "Portugal"
+          ],
+          "number": "20",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "May 18, 2002",
           "foot": "right",
           "height": "1,96m",
@@ -2393,21 +2408,6 @@
         },
         {
           "contract": "Jun 30, 2027",
-          "dateOfBirth": "Jan 2, 1994",
-          "foot": "right",
-          "height": "1,83m",
-          "id": "162056",
-          "injured": false,
-          "marketValue": "€500k",
-          "name": "Gonzalo Melero",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "16",
-          "position": "Central Midfield"
-        },
-        {
-          "contract": "Jun 30, 2027",
           "dateOfBirth": "Jul 18, 1991",
           "foot": "right",
           "height": "1,70m",
@@ -2714,7 +2714,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "48",
+          "number": "16",
           "position": "Centre-Forward"
         }
       ]
@@ -3499,6 +3499,7 @@
             "Spain",
             "Cuba"
           ],
+          "number": "27",
           "position": "Left Winger"
         },
         {
@@ -4424,21 +4425,6 @@
           "position": "Left Winger"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jul 2, 1999",
-          "foot": "left",
-          "height": "1,85m",
-          "id": "429790",
-          "injured": false,
-          "marketValue": "€1.40m",
-          "name": "Luka Ilic",
-          "nationality": [
-            "Serbia"
-          ],
-          "number": "21",
-          "position": "Attacking Midfield"
-        },
-        {
           "contract": "Jun 30, 2027",
           "dateOfBirth": "Jan 18, 1997",
           "foot": "right",
@@ -4605,6 +4591,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "8",
           "position": "Attacking Midfield"
         },
         {
@@ -4696,6 +4683,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "21",
           "position": "Right-Back"
         },
         {
@@ -4762,6 +4750,7 @@
           "nationality": [
             "Italy"
           ],
+          "number": "11",
           "position": "Centre-Back"
         },
         {
@@ -4958,6 +4947,7 @@
             "Greece",
             "Cyprus"
           ],
+          "number": "15",
           "position": "Centre-Back"
         },
         {
@@ -5174,11 +5164,12 @@
             },
             "until": "Jun 30, 2027"
           },
-          "marketValue": "€1.40m",
+          "marketValue": "€5.00m",
           "name": "Matías Orozco",
           "nationality": [
             "Colombia"
           ],
+          "number": "6",
           "position": "Defensive Midfield"
         }
       ]
@@ -5279,6 +5270,7 @@
             "Morocco",
             "France"
           ],
+          "number": "17",
           "position": "Central Midfield"
         },
         {
@@ -5370,21 +5362,6 @@
             "Spain"
           ],
           "number": "19",
-          "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Feb 29, 2000",
-          "foot": "right",
-          "height": "1,78m",
-          "id": "632872",
-          "injured": false,
-          "marketValue": "€100k",
-          "name": "Francisco Mwepu",
-          "nationality": [
-            "Zambia",
-            "Spain"
-          ],
           "position": "Centre-Forward"
         },
         {
@@ -5536,6 +5513,7 @@
           "nationality": [
             "Uruguay"
           ],
+          "number": "25",
           "position": "Centre-Forward"
         },
         {
@@ -5685,19 +5663,6 @@
           ],
           "number": "27",
           "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2029",
-          "dateOfBirth": "Jan 12, 2005",
-          "height": "1,80m",
-          "id": "1502513",
-          "injured": false,
-          "marketValue": "€50k",
-          "name": "José Andújar",
-          "nationality": [
-            "Spain"
-          ],
-          "position": "Central Midfield"
         }
       ]
     },
@@ -5812,6 +5777,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "14",
           "position": "Central Midfield"
         },
         {
@@ -5846,21 +5812,6 @@
         },
         {
           "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jul 20, 1995",
-          "foot": "right",
-          "height": "1,87m",
-          "id": "332615",
-          "injured": false,
-          "marketValue": "€500k",
-          "name": "Nélson Monte",
-          "nationality": [
-            "Portugal"
-          ],
-          "number": "4",
-          "position": "Centre-Back"
-        },
-        {
-          "contract": "Jun 30, 2028",
           "dateOfBirth": "Mar 2, 1999",
           "foot": "right",
           "height": "1,85m",
@@ -5873,20 +5824,6 @@
           ],
           "number": "21",
           "position": "Centre-Back"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Feb 22, 1999",
-          "foot": "right",
-          "height": "1,72m",
-          "id": "341272",
-          "injured": false,
-          "marketValue": "€1.50m",
-          "name": "Álex Pozo",
-          "nationality": [
-            "Spain"
-          ],
-          "position": "Right Winger"
         },
         {
           "contract": "Jun 30, 2030",
@@ -6029,6 +5966,7 @@
           "nationality": [
             "Portugal"
           ],
+          "number": "15",
           "position": "Left-Back"
         },
         {
@@ -6113,6 +6051,7 @@
             "Hungary",
             "Georgia"
           ],
+          "number": "31",
           "position": "Goalkeeper"
         },
         {
@@ -7551,21 +7490,8 @@
             "Equatorial Guinea",
             "Spain"
           ],
+          "number": "25",
           "position": "Goalkeeper"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Apr 26, 2002",
-          "foot": "left",
-          "height": "1,88m",
-          "id": "634259",
-          "injured": false,
-          "marketValue": "€50k",
-          "name": "Javier Vicario",
-          "nationality": [
-            "Spain"
-          ],
-          "position": "Centre-Back"
         },
         {
           "contract": "Jun 30, 2027",
@@ -7664,7 +7590,7 @@
             "Romania",
             "Canada"
           ],
-          "number": "37",
+          "number": "12",
           "position": "Left Winger"
         },
         {
@@ -7759,6 +7685,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "22",
           "position": "Attacking Midfield"
         },
         {
@@ -7925,21 +7852,6 @@
         },
         {
           "contract": "Jun 30, 2028",
-          "dateOfBirth": "May 9, 2001",
-          "foot": "right",
-          "height": "1,69m",
-          "id": "466813",
-          "injured": false,
-          "marketValue": "€250k",
-          "name": "Miguelete",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "10",
-          "position": "Second Striker"
-        },
-        {
-          "contract": "Jun 30, 2028",
           "dateOfBirth": "Jul 8, 1997",
           "foot": "left",
           "height": "1,89m",
@@ -7950,6 +7862,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "21",
           "position": "Attacking Midfield"
         },
         {
@@ -7993,6 +7906,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "25",
           "position": "Goalkeeper"
         },
         {
@@ -8353,6 +8267,21 @@
           "position": "Goalkeeper"
         },
         {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Feb 16, 1998",
+          "foot": "left",
+          "height": "1,73m",
+          "id": "282810",
+          "injured": false,
+          "marketValue": "€1.80m",
+          "name": "Carles Pérez",
+          "nationality": [
+            "Spain"
+          ],
+          "number": "23",
+          "position": "Right Winger"
+        },
+        {
           "contract": "Jun 30, 2028",
           "dateOfBirth": "Apr 18, 1997",
           "foot": "right",
@@ -8409,6 +8338,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "3",
           "position": "Right-Back"
         },
         {
@@ -8470,21 +8400,6 @@
             "Spain"
           ],
           "number": "14",
-          "position": "Central Midfield"
-        },
-        {
-          "contract": "Jun 30, 2030",
-          "dateOfBirth": "Apr 19, 2000",
-          "foot": "right",
-          "height": "1,82m",
-          "id": "593482",
-          "injured": false,
-          "marketValue": "€18.00m",
-          "name": "Azzedine Ounahi",
-          "nationality": [
-            "Morocco"
-          ],
-          "number": "18",
           "position": "Central Midfield"
         },
         {
@@ -8854,6 +8769,20 @@
           ],
           "number": "8",
           "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 12, 2004",
+          "foot": "left",
+          "height": "1,70m",
+          "id": "646738",
+          "injured": false,
+          "marketValue": "€1.20m",
+          "name": "Juan Larios",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Left-Back"
         },
         {
           "contract": "Jun 30, 2027",
@@ -9369,7 +9298,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "26",
+          "number": "7",
           "position": "Left Winger"
         },
         {

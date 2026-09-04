@@ -100,6 +100,7 @@
             "England",
             "Canada"
           ],
+          "number": "23",
           "position": "Centre-Back"
         },
         {
@@ -418,6 +419,21 @@
           "position": "Centre-Forward"
         },
         {
+          "contract": "Jun 30, 2029",
+          "dateOfBirth": "Jun 5, 2008",
+          "foot": "right",
+          "height": "1,90m",
+          "id": "1136279",
+          "injured": false,
+          "marketValue": "€150k",
+          "name": "Valeri Vladimirov",
+          "nationality": [
+            "Bulgaria"
+          ],
+          "number": "35",
+          "position": "Centre-Back"
+        },
+        {
           "contract": "Jun 30, 2031",
           "dateOfBirth": "Jan 13, 2006",
           "foot": "left",
@@ -587,7 +603,7 @@
           "foot": "left",
           "height": "1,92m",
           "id": "371149",
-          "injured": true,
+          "injured": false,
           "marketValue": "€35.00m",
           "name": "Evan Ndicka",
           "nationality": [
@@ -1277,7 +1293,7 @@
           "position": "Goalkeeper"
         },
         {
-          "contract": "Jun 30, 2027",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Nov 10, 1999",
           "foot": "right",
           "height": "1,83m",
@@ -1680,6 +1696,22 @@
       "transfermarktId": "252",
       "players": [
         {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Oct 27, 1992",
+          "foot": "right",
+          "height": "1,78m",
+          "id": "94529",
+          "injured": false,
+          "marketValue": "€2.40m",
+          "name": "Stephan El Shaarawy",
+          "nationality": [
+            "Italy",
+            "Egypt"
+          ],
+          "number": "92",
+          "position": "Left Winger"
+        },
+        {
           "contract": "Jun 30, 2028",
           "dateOfBirth": "Jan 13, 1993",
           "foot": "right",
@@ -1709,6 +1741,22 @@
           ],
           "number": "97",
           "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "May 25, 1995",
+          "foot": "right",
+          "height": "1,89m",
+          "id": "272812",
+          "injured": false,
+          "marketValue": "€2.00m",
+          "name": "Kingsley Ehizibue",
+          "nationality": [
+            "Netherlands",
+            "Nigeria"
+          ],
+          "number": "3",
+          "position": "Right-Back"
         },
         {
           "contract": "-",
@@ -1852,6 +1900,7 @@
             "England",
             "The Gambia"
           ],
+          "number": "16",
           "position": "Right-Back"
         },
         {
@@ -2029,7 +2078,7 @@
           "foot": "right",
           "height": "1,78m",
           "id": "1061820",
-          "injured": true,
+          "injured": false,
           "marketValue": "€5.00m",
           "name": "Lorenzo Venturino",
           "nationality": [
@@ -2176,21 +2225,6 @@
             "Spain"
           ],
           "number": "4",
-          "position": "Centre-Back"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Jan 12, 1995",
-          "foot": "left",
-          "height": "1,85m",
-          "id": "197747",
-          "injured": false,
-          "marketValue": "€6.00m",
-          "name": "Alessio Romagnoli",
-          "nationality": [
-            "Italy"
-          ],
-          "number": "13",
           "position": "Centre-Back"
         },
         {
@@ -2674,6 +2708,20 @@
           "position": "Centre-Back"
         },
         {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Nov 2, 2006",
+          "foot": "right",
+          "id": "1253815",
+          "injured": false,
+          "marketValue": "€200k",
+          "name": "Ricardo Bordon",
+          "nationality": [
+            "Brazil"
+          ],
+          "number": "33",
+          "position": "Centre-Back"
+        },
+        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Feb 7, 2007",
           "foot": "right",
@@ -2687,7 +2735,7 @@
             "Argentina"
           ],
           "number": "8",
-          "position": "Central Midfield"
+          "position": "Centre-Back"
         }
       ]
     },
@@ -3169,6 +3217,22 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Aug 25, 1992",
+          "foot": "left",
+          "height": "1,82m",
+          "id": "86784",
+          "injured": false,
+          "marketValue": "€1.40m",
+          "name": "Ricardo Rodríguez",
+          "nationality": [
+            "Switzerland",
+            "Chile"
+          ],
+          "number": "13",
+          "position": "Left-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "Sep 1, 1992",
           "foot": "left",
           "height": "1,85m",
@@ -3245,7 +3309,7 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2029",
+          "contract": "Jun 30, 2030",
           "dateOfBirth": "Jun 29, 1997",
           "foot": "left",
           "height": "1,83m",
@@ -3256,6 +3320,7 @@
           "nationality": [
             "Italy"
           ],
+          "number": "8",
           "position": "Defensive Midfield"
         },
         {
@@ -3356,6 +3421,7 @@
           "nationality": [
             "Scotland"
           ],
+          "number": "2",
           "position": "Right-Back"
         },
         {
@@ -3410,6 +3476,7 @@
           "nationality": [
             "Portugal"
           ],
+          "number": "21",
           "position": "Central Midfield"
         },
         {
@@ -3489,7 +3556,7 @@
           "foot": "right",
           "height": "1,92m",
           "id": "622380",
-          "injured": true,
+          "injured": false,
           "marketValue": "€15.00m",
           "name": "Cesare Casadei",
           "nationality": [
@@ -3572,6 +3639,7 @@
             "Algeria",
             "Belgium"
           ],
+          "number": "45",
           "position": "Right-Back"
         },
         {
@@ -3934,6 +4002,7 @@
             "Italy",
             "Cote d'Ivoire"
           ],
+          "number": "29",
           "position": "Right Winger"
         },
         {
@@ -4028,6 +4097,7 @@
             "Sweden",
             "The Gambia"
           ],
+          "number": "25",
           "position": "Left Winger"
         },
         {
@@ -4242,7 +4312,7 @@
           "foot": "right",
           "height": "1,80m",
           "id": "332697",
-          "injured": true,
+          "injured": false,
           "marketValue": "€30.00m",
           "name": "Weston McKennie",
           "nationality": [
@@ -5134,7 +5204,7 @@
           "foot": "right",
           "height": "1,93m",
           "id": "1144700",
-          "injured": true,
+          "injured": false,
           "loan": {
             "from": {
               "id": "430",
@@ -6546,6 +6616,7 @@
             "Netherlands",
             "Nigeria"
           ],
+          "number": "22",
           "position": "Centre-Forward"
         },
         {
@@ -6663,20 +6734,6 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Nov 15, 1995",
-          "foot": "right",
-          "height": "1,84m",
-          "id": "226025",
-          "injured": false,
-          "marketValue": "€1.20m",
-          "name": "Luca Mazzitelli",
-          "nationality": [
-            "Italy"
-          ],
-          "position": "Central Midfield"
-        },
-        {
           "contract": "Jun 30, 2028",
           "dateOfBirth": "Nov 2, 1993",
           "foot": "right",
@@ -6758,6 +6815,7 @@
             "Italy",
             "Cote d'Ivoire"
           ],
+          "number": "90",
           "position": "Centre-Forward"
         },
         {
@@ -6811,6 +6869,7 @@
             "Spain",
             "England"
           ],
+          "number": "97",
           "position": "Goalkeeper"
         },
         {
@@ -6865,20 +6924,6 @@
             "Greece"
           ],
           "number": "9",
-          "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "May 24, 2001",
-          "foot": "right",
-          "height": "1,85m",
-          "id": "532495",
-          "injured": false,
-          "marketValue": "€400k",
-          "name": "Marlon Mustapha",
-          "nationality": [
-            "Austria"
-          ],
           "position": "Centre-Forward"
         },
         {
@@ -7143,6 +7188,7 @@
           "nationality": [
             "Italy"
           ],
+          "number": "21",
           "position": "Central Midfield"
         },
         {
@@ -7233,6 +7279,7 @@
             "Angola",
             "France"
           ],
+          "number": "18",
           "position": "Centre-Forward"
         },
         {
@@ -7541,6 +7588,7 @@
             "France",
             "Algeria"
           ],
+          "number": "79",
           "position": "Attacking Midfield"
         },
         {
@@ -7623,21 +7671,6 @@
             "France"
           ],
           "number": "19",
-          "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jan 5, 2003",
-          "foot": "right",
-          "height": "1,80m",
-          "id": "1111663",
-          "injured": false,
-          "marketValue": "€3.50m",
-          "name": "Kingstone Mutandwa",
-          "nationality": [
-            "Zambia"
-          ],
-          "number": "18",
           "position": "Centre-Forward"
         },
         {
@@ -7960,6 +7993,7 @@
           "nationality": [
             "Argentina"
           ],
+          "number": "22",
           "position": "Right Winger"
         },
         {
@@ -8052,6 +8086,7 @@
           "nationality": [
             "Georgia"
           ],
+          "number": "2",
           "position": "Centre-Back"
         },
         {
@@ -8304,7 +8339,7 @@
           "position": "Right Winger"
         },
         {
-          "contract": "Jun 30, 2028",
+          "contract": "Jun 30, 2030",
           "dateOfBirth": "Aug 4, 1993",
           "foot": "right",
           "height": "1,83m",
@@ -8604,21 +8639,7 @@
           "position": "Attacking Midfield"
         },
         {
-          "contract": "-",
-          "dateOfBirth": "Jul 14, 2005",
-          "foot": "left",
-          "height": "1,87m",
-          "id": "741539",
-          "injured": false,
-          "marketValue": "€175k",
-          "name": "Dinis Rodrigues",
-          "nationality": [
-            "Portugal"
-          ],
-          "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2030",
+          "contract": "Jun 30, 2032",
           "dateOfBirth": "Jul 23, 2004",
           "foot": "right",
           "height": "1,86m",
@@ -8653,7 +8674,7 @@
             "Italy"
           ],
           "number": "2",
-          "position": "Right Midfield"
+          "position": "Right-Back"
         },
         {
           "contract": "Jun 30, 2030",
@@ -8677,7 +8698,7 @@
           "foot": "left",
           "height": "1,84m",
           "id": "1005165",
-          "injured": false,
+          "injured": true,
           "marketValue": "€12.00m",
           "name": "Giovane",
           "nationality": [
@@ -8685,6 +8706,20 @@
           ],
           "number": "23",
           "position": "Centre-Forward"
+        },
+        {
+          "contract": "-",
+          "dateOfBirth": "Apr 15, 2008",
+          "foot": "left",
+          "id": "1270926",
+          "injured": false,
+          "marketValue": "€100k",
+          "name": "Claudio Pugliese",
+          "nationality": [
+            "Italy"
+          ],
+          "number": "12",
+          "position": "Goalkeeper"
         }
       ]
     },
@@ -8738,6 +8773,7 @@
           "nationality": [
             "Croatia"
           ],
+          "number": "15",
           "position": "Centre-Back"
         },
         {
@@ -8867,6 +8903,7 @@
           "nationality": [
             "Belgium"
           ],
+          "number": "20",
           "position": "Right-Back"
         },
         {
@@ -8905,6 +8942,7 @@
           "nationality": [
             "Italy"
           ],
+          "number": "94",
           "position": "Second Striker"
         },
         {
@@ -9042,6 +9080,7 @@
           "nationality": [
             "Denmark"
           ],
+          "number": "19",
           "position": "Centre-Forward"
         },
         {
@@ -9126,7 +9165,7 @@
             "Italy"
           ],
           "number": "7",
-          "position": "Attacking Midfield"
+          "position": "Right Winger"
         },
         {
           "contract": "Jun 30, 2027",
@@ -9226,6 +9265,7 @@
           "nationality": [
             "Ghana"
           ],
+          "number": "55",
           "position": "Defensive Midfield"
         },
         {
@@ -9475,6 +9515,7 @@
           "nationality": [
             "Slovakia"
           ],
+          "number": "89",
           "position": "Centre-Forward"
         },
         {

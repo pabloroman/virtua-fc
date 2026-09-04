@@ -596,7 +596,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "17",
+          "number": "19",
           "position": "Left Winger"
         },
         {
@@ -657,6 +657,7 @@
             "Spain",
             "Senegal"
           ],
+          "number": "18",
           "position": "Attacking Midfield"
         },
         {
@@ -782,6 +783,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "4",
           "position": "Centre-Back"
         },
         {
@@ -887,6 +889,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "18",
           "position": "Attacking Midfield"
         },
         {
@@ -1034,6 +1037,7 @@
             "Bulgaria",
             "Spain"
           ],
+          "number": "12",
           "position": "Centre-Back"
         },
         {
@@ -1222,36 +1226,6 @@
             "Spain"
           ],
           "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2029",
-          "dateOfBirth": "Feb 11, 2005",
-          "foot": "right",
-          "height": "1,75m",
-          "id": "945500",
-          "injured": false,
-          "marketValue": "€600k",
-          "name": "Rayane Belaid",
-          "nationality": [
-            "Spain",
-            "Algeria"
-          ],
-          "position": "Attacking Midfield"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "May 5, 2004",
-          "foot": "left",
-          "height": "1,86m",
-          "id": "945763",
-          "injured": false,
-          "marketValue": "€500k",
-          "name": "Dani Martinez",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "5",
-          "position": "Centre-Back"
         },
         {
           "contract": "Jun 30, 2028",
@@ -1740,6 +1714,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "29",
           "position": "Centre-Forward"
         },
         {
@@ -1908,6 +1883,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "19",
           "position": "Centre-Forward"
         },
         {
@@ -2206,7 +2182,7 @@
           "dateOfBirth": "Sep 20, 2003",
           "height": "1,80m",
           "id": "1124142",
-          "injured": false,
+          "injured": true,
           "marketValue": "€200k",
           "name": "Diego Aznar",
           "nationality": [
@@ -2885,6 +2861,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "14",
           "position": "Central Midfield"
         },
         {
@@ -2971,6 +2948,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "16",
           "position": "Central Midfield"
         },
         {
@@ -2987,28 +2965,6 @@
           ],
           "number": "29",
           "position": "Right Winger"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Mar 18, 2007",
-          "foot": "right",
-          "height": "1,89m",
-          "id": "1521235",
-          "injured": false,
-          "loan": {
-            "from": {
-              "id": "21550",
-              "image": "https://tmssl.akamaized.net/images/wappen/big/21550.png",
-              "name": "Recreativo Granada"
-            },
-            "until": "Jun 30, 2027"
-          },
-          "name": "Rayan Zinebi",
-          "nationality": [
-            "Morocco",
-            "Spain"
-          ],
-          "position": "Centre-Forward"
         }
       ]
     },
@@ -3298,6 +3254,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "12",
           "position": "Right Winger"
         },
         {
@@ -4113,6 +4070,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "24",
           "position": "Centre-Back"
         },
         {
@@ -4604,7 +4562,6 @@
           "nationality": [
             "Spain"
           ],
-          "number": "6",
           "position": "Central Midfield"
         },
         {
@@ -4776,6 +4733,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "18",
           "position": "Centre-Forward"
         },
         {
@@ -4804,7 +4762,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "18",
+          "number": "6",
           "position": "Central Midfield"
         },
         {
@@ -4864,6 +4822,7 @@
           "nationality": [
             "Puerto Rico"
           ],
+          "number": "25",
           "position": "Right Winger"
         },
         {
@@ -5604,6 +5563,20 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 7, 2004",
+          "foot": "right",
+          "height": "1,72m",
+          "id": "961902",
+          "injured": false,
+          "marketValue": "€300k",
+          "name": "Neco Celorio",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Attacking Midfield"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "Feb 9, 2003",
           "foot": "right",
           "height": "1,65m",
@@ -5974,20 +5947,6 @@
         },
         {
           "contract": "Jun 30, 2027",
-          "dateOfBirth": "Sep 25, 2003",
-          "height": "1,85m",
-          "id": "946262",
-          "injured": false,
-          "marketValue": "€150k",
-          "name": "Raul Giménez",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "5",
-          "position": "Centre-Back"
-        },
-        {
-          "contract": "Jun 30, 2027",
           "dateOfBirth": "Jun 24, 2002",
           "foot": "right",
           "height": "1,77m",
@@ -6084,7 +6043,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "15",
+          "number": "24",
           "position": "Right-Back"
         },
         {
@@ -6665,18 +6624,6 @@
         },
         {
           "contract": "Jun 30, 2027",
-          "dateOfBirth": "Mar 17, 2002",
-          "id": "1123340",
-          "injured": false,
-          "marketValue": "€100k",
-          "name": "Gerard Urbina",
-          "nationality": [
-            "Spain"
-          ],
-          "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2027",
           "dateOfBirth": "Dec 27, 2002",
           "id": "1190412",
           "injured": false,
@@ -6724,6 +6671,17 @@
           ],
           "number": "7",
           "position": "Right Winger"
+        },
+        {
+          "contract": "Jun 30, 2027",
+          "dateOfBirth": "Jun 24, 2005",
+          "id": "1594684",
+          "injured": false,
+          "name": "Santi Pallarés",
+          "nationality": [
+            "Spain"
+          ],
+          "position": "Right-Back"
         }
       ]
     },
@@ -6746,6 +6704,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "9",
           "position": "Centre-Forward"
         },
         {
@@ -6805,6 +6764,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "5",
           "position": "Centre-Back"
         },
         {
@@ -6880,6 +6840,7 @@
             "Guinea",
             "Cote d'Ivoire"
           ],
+          "number": "21",
           "position": "Left-Back"
         },
         {
@@ -6894,6 +6855,7 @@
           "nationality": [
             "Netherlands"
           ],
+          "number": "22",
           "position": "Central Midfield"
         },
         {
@@ -6937,6 +6899,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "31",
           "position": "Attacking Midfield"
         },
         {
@@ -6969,6 +6932,22 @@
         },
         {
           "contract": "Jun 30, 2027",
+          "dateOfBirth": "Mar 26, 2003",
+          "foot": "right",
+          "height": "1,87m",
+          "id": "1038746",
+          "injured": false,
+          "marketValue": "€100k",
+          "name": "Mateo Prevedini",
+          "nationality": [
+            "Argentina",
+            "Italy"
+          ],
+          "number": "19",
+          "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2027",
           "dateOfBirth": "Apr 13, 2003",
           "foot": "left",
           "height": "1,74m",
@@ -6995,6 +6974,7 @@
             "Denmark",
             "Nigeria"
           ],
+          "number": "20",
           "position": "Centre-Forward"
         },
         {
@@ -7018,6 +6998,7 @@
             "Panama",
             "United States"
           ],
+          "number": "3",
           "position": "Centre-Back"
         },
         {
@@ -7062,6 +7043,18 @@
           ],
           "number": "14",
           "position": "Central Midfield"
+        },
+        {
+          "contract": "Jun 30, 2028",
+          "dateOfBirth": "Jan 1, 2007",
+          "id": "1594685",
+          "injured": false,
+          "name": "Daniel Igweike",
+          "nationality": [
+            "Nigeria"
+          ],
+          "number": "15",
+          "position": "Centre-Back"
         }
       ]
     },
@@ -7356,6 +7349,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "19",
           "position": "Centre-Forward"
         },
         {

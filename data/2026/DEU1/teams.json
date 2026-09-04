@@ -137,6 +137,7 @@
             "Croatia",
             "Germany"
           ],
+          "number": "3",
           "position": "Left-Back"
         },
         {
@@ -259,6 +260,7 @@
           "nationality": [
             "Bosnia-Herzegovina"
           ],
+          "number": "15",
           "position": "Centre-Forward"
         },
         {
@@ -282,7 +284,7 @@
           "foot": "right",
           "height": "1,90m",
           "id": "538964",
-          "injured": false,
+          "injured": true,
           "loan": {
             "from": {
               "id": "1025",
@@ -346,22 +348,6 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jul 18, 2005",
-          "foot": "right",
-          "height": "1,90m",
-          "id": "744558",
-          "injured": false,
-          "marketValue": "€2.50m",
-          "name": "Julian Pauli",
-          "nationality": [
-            "Germany",
-            "England"
-          ],
-          "number": "3",
-          "position": "Centre-Back"
-        },
-        {
           "contract": "Jun 30, 2030",
           "dateOfBirth": "Nov 4, 2005",
           "foot": "right",
@@ -397,6 +383,7 @@
             "England",
             "Wales"
           ],
+          "number": "47",
           "position": "Right Winger"
         },
         {
@@ -464,7 +451,7 @@
           "foot": "both",
           "height": "1,87m",
           "id": "1168219",
-          "injured": false,
+          "injured": true,
           "marketValue": "€45.00m",
           "name": "Said El Mala",
           "nationality": [
@@ -832,6 +819,7 @@
             "Morocco",
             "France"
           ],
+          "number": "29",
           "position": "Left Winger"
         },
         {
@@ -1621,7 +1609,7 @@
           "foot": "right",
           "height": "1,74m",
           "id": "383362",
-          "injured": false,
+          "injured": true,
           "marketValue": "€4.00m",
           "name": "Enzo Leopold",
           "nationality": [
@@ -1712,21 +1700,6 @@
           ],
           "number": "29",
           "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Aug 13, 2000",
-          "foot": "right",
-          "height": "1,90m",
-          "id": "544148",
-          "injured": false,
-          "marketValue": "€2.00m",
-          "name": "Tomas Cvancara",
-          "nationality": [
-            "Czech Republic"
-          ],
-          "number": "31",
-          "position": "Centre-Forward"
         },
         {
           "contract": "Jun 30, 2029",
@@ -2241,6 +2214,22 @@
           "position": "Goalkeeper"
         },
         {
+          "contract": "Jun 30, 2031",
+          "dateOfBirth": "Nov 11, 2004",
+          "foot": "right",
+          "height": "1,93m",
+          "id": "1022523",
+          "injured": false,
+          "marketValue": "€500k",
+          "name": "Jeremiaha Maluze",
+          "nationality": [
+            "Germany",
+            "Nigeria"
+          ],
+          "number": "37",
+          "position": "Centre-Back"
+        },
+        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Jan 19, 2007",
           "foot": "right",
@@ -2313,7 +2302,7 @@
             "Denmark"
           ],
           "number": "35",
-          "position": "Left Winger"
+          "position": "Centre-Forward"
         }
       ]
     },
@@ -3300,21 +3289,6 @@
           "position": "Central Midfield"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Nov 24, 1997",
-          "foot": "right",
-          "height": "1,76m",
-          "id": "279009",
-          "injured": false,
-          "marketValue": "€1.50m",
-          "name": "Marco Richter",
-          "nationality": [
-            "Germany"
-          ],
-          "number": "22",
-          "position": "Attacking Midfield"
-        },
-        {
           "contract": "Jun 30, 2028",
           "dateOfBirth": "Jul 9, 1997",
           "foot": "right",
@@ -3420,21 +3394,6 @@
             "Ireland"
           ],
           "number": "8",
-          "position": "Attacking Midfield"
-        },
-        {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jun 16, 1999",
-          "foot": "left",
-          "height": "1,77m",
-          "id": "562948",
-          "injured": false,
-          "marketValue": "€2.50m",
-          "name": "Hyun-seok Hong",
-          "nationality": [
-            "Korea, South"
-          ],
-          "number": "13",
           "position": "Attacking Midfield"
         },
         {
@@ -3634,7 +3593,7 @@
           "foot": "left",
           "height": "1,82m",
           "id": "298603",
-          "injured": true,
+          "injured": false,
           "marketValue": "€5.00m",
           "name": "Miro Muheim",
           "nationality": [
@@ -3742,22 +3701,6 @@
           ],
           "number": "11",
           "position": "Attacking Midfield"
-        },
-        {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Apr 6, 1997",
-          "foot": "right",
-          "height": "1,88m",
-          "id": "529895",
-          "injured": false,
-          "marketValue": "€3.00m",
-          "name": "Daniel Elfadli",
-          "nationality": [
-            "Libya",
-            "Germany"
-          ],
-          "number": "8",
-          "position": "Centre-Back"
         },
         {
           "contract": "Jun 30, 2030",
@@ -4612,22 +4555,6 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Nov 10, 1999",
-          "foot": "both",
-          "height": "1,69m",
-          "id": "390661",
-          "injured": false,
-          "marketValue": "€800k",
-          "name": "Jason Ceka",
-          "nationality": [
-            "Germany",
-            "Albania"
-          ],
-          "number": "11",
-          "position": "Right Winger"
-        },
-        {
           "contract": "Jun 30, 2027",
           "dateOfBirth": "Nov 1, 2000",
           "foot": "right",
@@ -5001,7 +4928,7 @@
           "foot": "right",
           "height": "1,81m",
           "id": "272278",
-          "injured": true,
+          "injured": false,
           "marketValue": "€12.00m",
           "name": "Chris Führich",
           "nationality": [
@@ -5219,7 +5146,7 @@
           "foot": "right",
           "height": "1,80m",
           "id": "616344",
-          "injured": false,
+          "injured": true,
           "marketValue": "€15.00m",
           "name": "Tiago Tomás",
           "nationality": [
@@ -5261,28 +5188,12 @@
           "position": "Attacking Midfield"
         },
         {
-          "contract": "Jun 30, 2030",
-          "dateOfBirth": "Dec 8, 2004",
-          "foot": "left",
-          "height": "1,77m",
-          "id": "707242",
-          "injured": false,
-          "marketValue": "€10.00m",
-          "name": "Badredine Bouanani",
-          "nationality": [
-            "Algeria",
-            "France"
-          ],
-          "number": "27",
-          "position": "Right Winger"
-        },
-        {
           "contract": "Jun 30, 2031",
           "dateOfBirth": "Dec 16, 2005",
           "foot": "right",
           "height": "1,84m",
           "id": "710886",
-          "injured": true,
+          "injured": false,
           "marketValue": "€7.00m",
           "name": "Leo Sauer",
           "nationality": [
@@ -5667,7 +5578,7 @@
           "foot": "right",
           "height": "1,77m",
           "id": "559324",
-          "injured": true,
+          "injured": false,
           "loan": {
             "from": {
               "id": "610",
@@ -5681,6 +5592,7 @@
           "nationality": [
             "Netherlands"
           ],
+          "number": "44",
           "position": "Defensive Midfield"
         },
         {
@@ -5758,6 +5670,7 @@
           "nationality": [
             "Senegal"
           ],
+          "number": "16",
           "position": "Left-Back"
         },
         {
@@ -5781,7 +5694,7 @@
           "foot": "right",
           "height": "1,91m",
           "id": "821350",
-          "injured": true,
+          "injured": false,
           "marketValue": "€5.00m",
           "name": "Oskar Wójcik",
           "nationality": [
@@ -5804,21 +5717,6 @@
           ],
           "number": "23",
           "position": "Defensive Midfield"
-        },
-        {
-          "contract": "-",
-          "dateOfBirth": "May 31, 2001",
-          "foot": "right",
-          "height": "1,91m",
-          "id": "830108",
-          "injured": false,
-          "marketValue": "€2.00m",
-          "name": "Julián Malatini",
-          "nationality": [
-            "Argentina"
-          ],
-          "number": "22",
-          "position": "Centre-Back"
         },
         {
           "contract": "Jun 30, 2028",
@@ -5871,6 +5769,7 @@
           "nationality": [
             "Brazil"
           ],
+          "number": "13",
           "position": "Right-Back"
         },
         {
@@ -7167,22 +7066,6 @@
           "position": "Central Midfield"
         },
         {
-          "contract": "-",
-          "dateOfBirth": "Mar 16, 2002",
-          "foot": "left",
-          "height": "1,70m",
-          "id": "557614",
-          "injured": false,
-          "marketValue": "€2.00m",
-          "name": "Nathanaël Mbuku",
-          "nationality": [
-            "DR Congo",
-            "France"
-          ],
-          "number": "34",
-          "position": "Left Winger"
-        },
-        {
           "contract": "Jun 30, 2030",
           "dateOfBirth": "May 15, 2002",
           "foot": "right",
@@ -7893,7 +7776,7 @@
           "foot": "right",
           "height": "1,92m",
           "id": "73517",
-          "injured": true,
+          "injured": false,
           "marketValue": "€800k",
           "name": "Ørjan Nyland",
           "nationality": [
@@ -7955,7 +7838,7 @@
           "foot": "right",
           "height": "1,89m",
           "id": "215599",
-          "injured": true,
+          "injured": false,
           "marketValue": "€3.50m",
           "name": "Lukas Klostermann",
           "nationality": [
@@ -8055,7 +7938,7 @@
           "foot": "right",
           "height": "1,76m",
           "id": "467434",
-          "injured": false,
+          "injured": true,
           "marketValue": "€20.00m",
           "name": "Rocco Reitz",
           "nationality": [
@@ -8117,7 +8000,7 @@
           "foot": "left",
           "height": "1,78m",
           "id": "700106",
-          "injured": false,
+          "injured": true,
           "loan": {
             "from": {
               "id": "1237",
@@ -8236,21 +8119,6 @@
           ],
           "number": "21",
           "position": "Central Midfield"
-        },
-        {
-          "contract": "Jun 30, 2029",
-          "dateOfBirth": "Feb 7, 2005",
-          "foot": "right",
-          "height": "1,80m",
-          "id": "926694",
-          "injured": false,
-          "marketValue": "€20.00m",
-          "name": "Arthur Vermeeren",
-          "nationality": [
-            "Belgium"
-          ],
-          "number": "48",
-          "position": "Defensive Midfield"
         },
         {
           "contract": "Jun 30, 2031",

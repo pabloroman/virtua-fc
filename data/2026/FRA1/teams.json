@@ -263,21 +263,6 @@
           "position": "Central Midfield"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Mar 16, 2003",
-          "foot": "right",
-          "height": "1,94m",
-          "id": "745341",
-          "injured": false,
-          "marketValue": "€100k",
-          "name": "Yann Lienard",
-          "nationality": [
-            "France"
-          ],
-          "number": "50",
-          "position": "Goalkeeper"
-        },
-        {
           "contract": "Jun 30, 2028",
           "dateOfBirth": "Jun 21, 2001",
           "foot": "right",
@@ -1224,7 +1209,7 @@
           "foot": "left",
           "height": "1,75m",
           "id": "287635",
-          "injured": false,
+          "injured": true,
           "marketValue": "€500k",
           "name": "Assane Dioussé",
           "nationality": [
@@ -1417,21 +1402,6 @@
           "position": "Attacking Midfield"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Oct 19, 2002",
-          "foot": "right",
-          "height": "1,76m",
-          "id": "658534",
-          "injured": false,
-          "marketValue": "€800k",
-          "name": "Lasso Coulibaly",
-          "nationality": [
-            "Cote d'Ivoire"
-          ],
-          "number": "21",
-          "position": "Right Winger"
-        },
-        {
           "contract": "Jun 30, 2030",
           "dateOfBirth": "Mar 25, 2003",
           "foot": "left",
@@ -1547,7 +1517,7 @@
           "foot": "right",
           "height": "1,81m",
           "id": "830890",
-          "injured": true,
+          "injured": false,
           "marketValue": "€3.00m",
           "name": "Marvin Senaya",
           "nationality": [
@@ -2622,21 +2592,6 @@
           "position": "Central Midfield"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jan 14, 2006",
-          "foot": "right",
-          "height": "1,94m",
-          "id": "1231401",
-          "injured": false,
-          "marketValue": "€400k",
-          "name": "Victor Orakpo",
-          "nationality": [
-            "Nigeria"
-          ],
-          "number": "14",
-          "position": "Centre-Forward"
-        },
-        {
           "contract": "-",
           "dateOfBirth": "Jan 30, 2009",
           "id": "1297633",
@@ -3136,22 +3091,6 @@
           "position": "Goalkeeper"
         },
         {
-          "contract": "Jun 30, 2029",
-          "dateOfBirth": "Jun 23, 2002",
-          "foot": "right",
-          "height": "1,88m",
-          "id": "621993",
-          "injured": false,
-          "marketValue": "€8.00m",
-          "name": "Andrew Omobamidele",
-          "nationality": [
-            "Ireland",
-            "Nigeria"
-          ],
-          "number": "2",
-          "position": "Centre-Back"
-        },
-        {
           "contract": "Jun 30, 2027",
           "dateOfBirth": "Mar 14, 2005",
           "foot": "right",
@@ -3210,6 +3149,7 @@
           "nationality": [
             "Denmark"
           ],
+          "number": "40",
           "position": "Centre-Forward"
         },
         {
@@ -3704,7 +3644,7 @@
           "foot": "right",
           "height": "1,71m",
           "id": "507496",
-          "injured": false,
+          "injured": true,
           "marketValue": "€500k",
           "name": "Felix Mambimbi",
           "nationality": [
@@ -4010,6 +3950,19 @@
           ],
           "number": "30",
           "position": "Centre-Forward"
+        },
+        {
+          "contract": "Jun 30, 2030",
+          "dateOfBirth": "Apr 27, 2009",
+          "id": "1524445",
+          "injured": false,
+          "name": "Djibril Ouziad",
+          "nationality": [
+            "France",
+            "Morocco"
+          ],
+          "number": "20",
+          "position": "Right-Back"
         }
       ]
     },
@@ -4209,7 +4162,7 @@
           "foot": "right",
           "height": "1,90m",
           "id": "407745",
-          "injured": false,
+          "injured": true,
           "marketValue": "€1.50m",
           "name": "Maik Nawrocki",
           "nationality": [
@@ -4627,6 +4580,21 @@
           ],
           "number": "20",
           "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2030",
+          "dateOfBirth": "Jul 28, 2000",
+          "foot": "right",
+          "height": "1,80m",
+          "id": "405397",
+          "injured": false,
+          "marketValue": "€12.00m",
+          "name": "Keito Nakamura",
+          "nationality": [
+            "Japan"
+          ],
+          "number": "11",
+          "position": "Left Winger"
         },
         {
           "contract": "Jun 30, 2027",
@@ -5592,7 +5560,7 @@
           "foot": "left",
           "height": "1,73m",
           "id": "770895",
-          "injured": false,
+          "injured": true,
           "marketValue": "€4.00m",
           "name": "Ismaël Boura",
           "nationality": [
@@ -5722,7 +5690,7 @@
           "foot": "right",
           "height": "1,88m",
           "id": "986299",
-          "injured": false,
+          "injured": true,
           "marketValue": "€2.50m",
           "name": "Yvann Titi",
           "nationality": [
@@ -5811,21 +5779,6 @@
           ],
           "number": "36",
           "position": "Right Winger"
-        },
-        {
-          "contract": "Jun 30, 2030",
-          "dateOfBirth": "Jan 12, 2007",
-          "foot": "right",
-          "height": "1,75m",
-          "id": "1372119",
-          "injured": false,
-          "marketValue": "€600k",
-          "name": "Elijah Odede",
-          "nationality": [
-            "Nigeria"
-          ],
-          "number": "12",
-          "position": "Left Winger"
         }
       ]
     },
@@ -6213,6 +6166,7 @@
             "Guinea",
             "France"
           ],
+          "number": "20",
           "position": "Right-Back"
         },
         {
@@ -6782,7 +6736,7 @@
           "foot": "right",
           "height": "1,77m",
           "id": "138055",
-          "injured": false,
+          "injured": true,
           "marketValue": "€1.80m",
           "name": "Haris Belkebla",
           "nationality": [
@@ -7368,17 +7322,18 @@
           "position": "Left-Back"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Aug 30, 2003",
-          "foot": "right",
-          "height": "1,74m",
-          "id": "924800",
+          "contract": "Jun 30, 2030",
+          "dateOfBirth": "Mar 18, 2004",
+          "foot": "left",
+          "height": "1,67m",
+          "id": "922685",
           "injured": false,
-          "marketValue": "€600k",
-          "name": "Axel Camblan",
+          "marketValue": "€5.00m",
+          "name": "Giovani Versini",
           "nationality": [
             "France"
           ],
+          "number": "10",
           "position": "Right Winger"
         },
         {
@@ -7568,7 +7523,7 @@
           "foot": "left",
           "height": "1,75m",
           "id": "324690",
-          "injured": false,
+          "injured": true,
           "marketValue": "€4.00m",
           "name": "Jonathan Ikoné",
           "nationality": [
@@ -7802,7 +7757,7 @@
           "foot": "left",
           "height": "1,78m",
           "id": "955281",
-          "injured": false,
+          "injured": true,
           "marketValue": "€10.00m",
           "name": "Nhoa Sangui",
           "nationality": [
@@ -7849,7 +7804,7 @@
           "foot": "left",
           "height": "1,79m",
           "id": "1185941",
-          "injured": false,
+          "injured": true,
           "name": "Emmanuel Mbemba",
           "nationality": [
             "France",

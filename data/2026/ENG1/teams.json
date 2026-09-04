@@ -294,7 +294,7 @@
           "foot": "right",
           "height": "1,82m",
           "id": "520624",
-          "injured": true,
+          "injured": false,
           "marketValue": "€70.00m",
           "name": "Bruno Guimarães",
           "nationality": [
@@ -334,22 +334,6 @@
           ],
           "number": "3",
           "position": "Centre-Back"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Jun 18, 2001",
-          "foot": "right",
-          "height": "1,78m",
-          "id": "655488",
-          "injured": false,
-          "marketValue": "€45.00m",
-          "name": "Gabriel Martinelli",
-          "nationality": [
-            "Brazil",
-            "Italy"
-          ],
-          "number": "11",
-          "position": "Left Winger"
         },
         {
           "contract": "Jun 30, 2031",
@@ -489,7 +473,7 @@
             "England",
             "Ireland"
           ],
-          "number": "18",
+          "number": "10",
           "position": "Left Winger"
         },
         {
@@ -509,7 +493,7 @@
           "position": "Goalkeeper"
         },
         {
-          "contract": "-",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Aug 29, 1997",
           "foot": "right",
           "height": "1,80m",
@@ -521,6 +505,7 @@
             "England",
             "Jamaica"
           ],
+          "number": "2",
           "position": "Right-Back"
         },
         {
@@ -606,7 +591,7 @@
           "foot": "right",
           "height": "1,78m",
           "id": "538216",
-          "injured": true,
+          "injured": false,
           "marketValue": "€32.00m",
           "name": "Hayden Hackney",
           "nationality": [
@@ -845,7 +830,7 @@
           "foot": "right",
           "height": "1,75m",
           "id": "341092",
-          "injured": false,
+          "injured": true,
           "marketValue": "€13.00m",
           "name": "Federico Chiesa",
           "nationality": [
@@ -1149,7 +1134,7 @@
           "foot": "right",
           "height": "1,96m",
           "id": "1086619",
-          "injured": false,
+          "injured": true,
           "marketValue": "€25.00m",
           "name": "Giovanni Leoni",
           "nationality": [
@@ -1902,6 +1887,7 @@
             "Senegal",
             "France"
           ],
+          "number": "7",
           "position": "Right Winger"
         },
         {
@@ -1916,6 +1902,7 @@
           "nationality": [
             "Argentina"
           ],
+          "number": "17",
           "position": "Central Midfield"
         },
         {
@@ -1966,21 +1953,6 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jan 2, 2006",
-          "foot": "right",
-          "height": "1,70m",
-          "id": "994536",
-          "injured": false,
-          "marketValue": "€15.00m",
-          "name": "Claudio Echeverri",
-          "nationality": [
-            "Argentina"
-          ],
-          "number": "30",
-          "position": "Attacking Midfield"
-        },
-        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Jan 12, 2006",
           "foot": "right",
@@ -2007,6 +1979,7 @@
           "nationality": [
             "Brazil"
           ],
+          "number": "37",
           "position": "Right Winger"
         },
         {
@@ -2032,6 +2005,7 @@
           "height": "1,74m",
           "id": "1187640",
           "injured": false,
+          "marketValue": "€8.00m",
           "name": "Ryan McAidoo",
           "nationality": [
             "England"
@@ -2331,21 +2305,6 @@
           ],
           "number": "46",
           "position": "Right Midfield"
-        },
-        {
-          "contract": "Jun 30, 2030",
-          "dateOfBirth": "Jan 1, 2002",
-          "foot": "right",
-          "height": "1,75m",
-          "id": "658536",
-          "injured": false,
-          "marketValue": "€22.00m",
-          "name": "Simon Adingra",
-          "nationality": [
-            "Cote d'Ivoire"
-          ],
-          "number": "24",
-          "position": "Left Winger"
         },
         {
           "contract": "Jun 30, 2030",
@@ -2904,6 +2863,7 @@
             "France",
             "Cameroon"
           ],
+          "number": "23",
           "position": "Left Winger"
         }
       ]
@@ -3036,21 +2996,6 @@
           ],
           "number": "18",
           "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Aug 9, 1997",
-          "foot": "left",
-          "height": "1,78m",
-          "id": "387626",
-          "injured": false,
-          "marketValue": "€14.00m",
-          "name": "Leon Bailey",
-          "nationality": [
-            "Jamaica"
-          ],
-          "number": "31",
-          "position": "Right Winger"
         },
         {
           "contract": "Jun 30, 2030",
@@ -4011,6 +3956,7 @@
           "nationality": [
             "Netherlands"
           ],
+          "number": "9",
           "position": "Centre-Forward"
         },
         {
@@ -4922,7 +4868,7 @@
           "position": "Left-Back"
         },
         {
-          "contract": "-",
+          "contract": "Jun 30, 2031",
           "dateOfBirth": "Feb 3, 2005",
           "foot": "right",
           "height": "1,88m",
@@ -5119,13 +5065,14 @@
           "foot": "left",
           "height": "1,80m",
           "id": "316125",
-          "injured": false,
+          "injured": true,
           "marketValue": "€10.00m",
           "name": "Ben Chilwell",
           "nationality": [
             "England",
             "New Zealand"
           ],
+          "number": "33",
           "position": "Left-Back"
         },
         {
@@ -5187,7 +5134,7 @@
             "Japan"
           ],
           "number": "18",
-          "position": "Attacking Midfield"
+          "position": "Central Midfield"
         },
         {
           "contract": "Jun 30, 2027",
@@ -5257,6 +5204,7 @@
             "Netherlands",
             "Curacao"
           ],
+          "number": "23",
           "position": "Central Midfield"
         },
         {
@@ -5381,7 +5329,7 @@
           "foot": "left",
           "height": "1,86m",
           "id": "689637",
-          "injured": false,
+          "injured": true,
           "marketValue": "€20.00m",
           "name": "Chadi Riad",
           "nationality": [
@@ -5457,6 +5405,7 @@
           "nationality": [
             "Chile"
           ],
+          "number": "24",
           "position": "Right Winger"
         },
         {
@@ -5473,21 +5422,6 @@
           ],
           "number": "25",
           "position": "Right-Back"
-        },
-        {
-          "contract": "Jun 30, 2030",
-          "dateOfBirth": "May 13, 2005",
-          "foot": "left",
-          "height": "1,78m",
-          "id": "967319",
-          "injured": false,
-          "marketValue": "€10.00m",
-          "name": "Romain Esse",
-          "nationality": [
-            "England",
-            "Cote d'Ivoire"
-          ],
-          "position": "Right Winger"
         },
         {
           "contract": "Jun 30, 2029",
@@ -5542,6 +5476,7 @@
             "Italy",
             "Nigeria"
           ],
+          "number": "21",
           "position": "Centre-Back"
         }
       ]
@@ -5749,6 +5684,7 @@
           "nationality": [
             "Austria"
           ],
+          "number": "22",
           "position": "Centre-Back"
         },
         {
@@ -5794,6 +5730,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "20",
           "position": "Central Midfield"
         },
         {
@@ -5894,7 +5831,7 @@
           "foot": "right",
           "height": "1,87m",
           "id": "931838",
-          "injured": true,
+          "injured": false,
           "loan": {
             "from": {
               "id": "24",
@@ -5908,6 +5845,7 @@
           "nationality": [
             "Sweden"
           ],
+          "number": "15",
           "position": "Central Midfield"
         },
         {
@@ -6372,7 +6310,7 @@
           "foot": "left",
           "height": "1,79m",
           "id": "973085",
-          "injured": false,
+          "injured": true,
           "marketValue": "€55.00m",
           "name": "Carlos Baleba",
           "nationality": [
@@ -7338,6 +7276,7 @@
             "England",
             "DR Congo"
           ],
+          "number": "30",
           "position": "Centre-Back"
         },
         {
@@ -8096,6 +8035,7 @@
             "Nigeria",
             "England"
           ],
+          "number": "39",
           "position": "Right Midfield"
         },
         {
@@ -8180,6 +8120,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "14",
           "position": "Defensive Midfield"
         },
         {
@@ -8298,7 +8239,7 @@
       "transfermarktId": "3008",
       "players": [
         {
-          "contract": "Jun 30, 2027",
+          "contract": "Jun 30, 2028",
           "dateOfBirth": "Oct 20, 1992",
           "foot": "right",
           "height": "1,85m",
@@ -8343,7 +8284,7 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2027",
+          "contract": "Jun 30, 2028",
           "dateOfBirth": "Jan 20, 1994",
           "foot": "right",
           "height": "1,91m",
@@ -8420,7 +8361,7 @@
           "position": "Right Midfield"
         },
         {
-          "contract": "Jun 30, 2028",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Jun 4, 1996",
           "foot": "right",
           "height": "1,88m",
@@ -8481,7 +8422,7 @@
           "position": "Right-Back"
         },
         {
-          "contract": "Jun 30, 2027",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Sep 11, 1999",
           "foot": "right",
           "height": "1,71m",
@@ -8508,6 +8449,7 @@
             "Wales",
             "Sierra Leone"
           ],
+          "number": "7",
           "position": "Left Winger"
         },
         {
@@ -8663,6 +8605,7 @@
             "England",
             "Nigeria"
           ],
+          "number": "42",
           "position": "Central Midfield"
         },
         {
@@ -8681,22 +8624,7 @@
           "position": "Right-Back"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Jun 3, 2001",
-          "foot": "left",
-          "height": "1,80m",
-          "id": "729940",
-          "injured": false,
-          "marketValue": "€400k",
-          "name": "Matty Jacob",
-          "nationality": [
-            "England"
-          ],
-          "number": "16",
-          "position": "Left-Back"
-        },
-        {
-          "contract": "Jun 30, 2028",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Oct 16, 2003",
           "foot": "right",
           "height": "1,85m",
@@ -8711,7 +8639,7 @@
           "position": "Centre-Back"
         },
         {
-          "contract": "Jun 30, 2028",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Jun 1, 2002",
           "foot": "left",
           "height": "1,77m",

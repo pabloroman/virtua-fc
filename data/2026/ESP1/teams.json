@@ -199,6 +199,7 @@
             "Canada",
             "United States"
           ],
+          "number": "15",
           "position": "Centre-Forward"
         },
         {
@@ -246,21 +247,6 @@
           ],
           "number": "19",
           "position": "Centre-Forward"
-        },
-        {
-          "contract": "Jun 30, 2029",
-          "dateOfBirth": "Apr 22, 2002",
-          "foot": "right",
-          "height": "1,84m",
-          "id": "618813",
-          "injured": false,
-          "marketValue": "€1.50m",
-          "name": "Carlos Martín",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "12",
-          "position": "Right Winger"
         },
         {
           "contract": "Jun 30, 2030",
@@ -356,7 +342,7 @@
           "position": "Central Midfield"
         },
         {
-          "contract": "Jun 30, 2028",
+          "contract": "Jun 30, 2029",
           "dateOfBirth": "Sep 30, 2005",
           "foot": "left",
           "height": "1,93m",
@@ -371,7 +357,7 @@
           "position": "Goalkeeper"
         },
         {
-          "contract": "Jun 30, 2027",
+          "contract": "Jun 30, 2030",
           "dateOfBirth": "May 5, 2004",
           "foot": "left",
           "height": "1,86m",
@@ -933,6 +919,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "25",
           "position": "Central Midfield"
         },
         {
@@ -1376,6 +1363,7 @@
             "France",
             "Spain"
           ],
+          "number": "20",
           "position": "Right Winger"
         },
         {
@@ -1467,7 +1455,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "15",
+          "number": "18",
           "position": "Left Winger"
         },
         {
@@ -1573,7 +1561,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "41",
+          "number": "27",
           "position": "Right-Back"
         },
         {
@@ -1971,20 +1959,6 @@
           "position": "Attacking Midfield"
         },
         {
-          "contract": "Jun 30, 2028",
-          "dateOfBirth": "Sep 11, 2000",
-          "foot": "left",
-          "height": "1,95m",
-          "id": "607780",
-          "injured": false,
-          "marketValue": "€300k",
-          "name": "Miguel Ángel Morro",
-          "nationality": [
-            "Spain"
-          ],
-          "position": "Goalkeeper"
-        },
-        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Sep 9, 2002",
           "foot": "right",
@@ -2028,6 +2002,21 @@
           ],
           "number": "33",
           "position": "Centre-Back"
+        },
+        {
+          "contract": "Jun 30, 2031",
+          "dateOfBirth": "Feb 11, 2005",
+          "foot": "right",
+          "height": "1,75m",
+          "id": "945500",
+          "injured": false,
+          "marketValue": "€600k",
+          "name": "Rayane Belaid",
+          "nationality": [
+            "Spain",
+            "Algeria"
+          ],
+          "position": "Attacking Midfield"
         },
         {
           "contract": "Jun 30, 2031",
@@ -2219,6 +2208,7 @@
             "Portugal",
             "Sao Tome and Principe"
           ],
+          "number": "20",
           "position": "Left Winger"
         },
         {
@@ -2273,6 +2263,7 @@
             "France",
             "Mali"
           ],
+          "number": "24",
           "position": "Defensive Midfield"
         },
         {
@@ -2310,6 +2301,7 @@
           "nationality": [
             "Belgium"
           ],
+          "number": "19",
           "position": "Centre-Forward"
         },
         {
@@ -2882,7 +2874,7 @@
           "foot": "right",
           "height": "1,79m",
           "id": "1375227",
-          "injured": true,
+          "injured": false,
           "marketValue": "€20.00m",
           "name": "Thiago Pitarch",
           "nationality": [
@@ -4170,6 +4162,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "2",
           "position": "Right-Back"
         },
         {
@@ -4582,6 +4575,7 @@
             "Spain",
             "Mali"
           ],
+          "number": "24",
           "position": "Right Winger"
         },
         {
@@ -4605,6 +4599,7 @@
             "Uruguay",
             "Spain"
           ],
+          "number": "20",
           "position": "Centre-Back"
         },
         {
@@ -4627,7 +4622,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "24",
+          "number": "17",
           "position": "Left-Back"
         },
         {
@@ -4831,6 +4826,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "6",
           "position": "Defensive Midfield"
         },
         {
@@ -5130,6 +5126,7 @@
           "nationality": [
             "Uruguay"
           ],
+          "number": "21",
           "position": "Centre-Back"
         },
         {
@@ -5665,6 +5662,7 @@
           "nationality": [
             "England"
           ],
+          "number": "10",
           "position": "Attacking Midfield"
         },
         {
@@ -6906,21 +6904,6 @@
           "position": "Right Winger"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Nov 21, 2004",
-          "foot": "right",
-          "height": "1,89m",
-          "id": "646734",
-          "injured": false,
-          "marketValue": "€500k",
-          "name": "Tomás Mendes",
-          "nationality": [
-            "Guinea-Bissau",
-            "Spain"
-          ],
-          "position": "Defensive Midfield"
-        },
-        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Jan 24, 2003",
           "foot": "right",
@@ -7041,6 +7024,7 @@
             "Guinea",
             "Spain"
           ],
+          "number": "24",
           "position": "Central Midfield"
         },
         {
@@ -7287,7 +7271,7 @@
           "nationality": [
             "Spain"
           ],
-          "number": "43",
+          "number": "13",
           "position": "Goalkeeper"
         },
         {
@@ -7698,21 +7682,6 @@
           "position": "Centre-Forward"
         },
         {
-          "contract": "Jun 30, 2027",
-          "dateOfBirth": "Aug 6, 2003",
-          "foot": "left",
-          "height": "1,68m",
-          "id": "668179",
-          "injured": false,
-          "marketValue": "€15.00m",
-          "name": "Carlos Álvarez",
-          "nationality": [
-            "Spain"
-          ],
-          "number": "10",
-          "position": "Attacking Midfield"
-        },
-        {
           "contract": "Jun 30, 2029",
           "dateOfBirth": "Apr 11, 2001",
           "foot": "right",
@@ -7748,6 +7717,7 @@
             "Serbia",
             "Croatia"
           ],
+          "number": "20",
           "position": "Centre-Forward"
         },
         {
@@ -7784,6 +7754,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "32",
           "position": "Goalkeeper"
         },
         {
@@ -7821,6 +7792,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "31",
           "position": "Right-Back"
         },
         {
@@ -7874,6 +7846,7 @@
             "France",
             "Cote d'Ivoire"
           ],
+          "number": "16",
           "position": "Centre-Back"
         },
         {
@@ -8152,22 +8125,6 @@
         },
         {
           "contract": "Jun 30, 2028",
-          "dateOfBirth": "Jan 3, 1997",
-          "foot": "right",
-          "height": "1,80m",
-          "id": "469669",
-          "injured": false,
-          "marketValue": "€2.00m",
-          "name": "Yvan Neyou",
-          "nationality": [
-            "Cameroon",
-            "France"
-          ],
-          "number": "16",
-          "position": "Defensive Midfield"
-        },
-        {
-          "contract": "Jun 30, 2028",
           "dateOfBirth": "Mar 10, 1999",
           "foot": "right",
           "height": "1,88m",
@@ -8216,6 +8173,7 @@
           "nationality": [
             "Spain"
           ],
+          "number": "20",
           "position": "Centre-Forward"
         },
         {
