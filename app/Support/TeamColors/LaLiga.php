@@ -31,13 +31,6 @@ final class LaLiga implements TeamColorProvider
                 'secondary' => 'white',
                 'number' => 'black',
             ],
-            // Alias: the 2026 dataset renames this club.
-            'Athletic Bilbao' => [
-                'pattern' => 'stripes',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'black',
-            ],
             'Real Betis Balompié' => [
                 'pattern' => 'stripes',
                 'primary' => 'green-600',
@@ -69,13 +62,6 @@ final class LaLiga implements TeamColorProvider
                 'number' => 'blue-900',
             ],
             'RC Celta' => [
-                'pattern' => 'solid',
-                'primary' => 'sky-400',
-                'secondary' => 'sky-400',
-                'number' => 'white',
-            ],
-            // Alias: the 2026 dataset renames this club.
-            'Celta de Vigo' => [
                 'pattern' => 'solid',
                 'primary' => 'sky-400',
                 'secondary' => 'sky-400',

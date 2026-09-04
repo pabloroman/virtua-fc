@@ -79,7 +79,8 @@ final class PrimeraFederacionA implements TeamColorProvider
                 'secondary' => 'white',
                 'number' => 'white',
             ],
-            // Alias: the 2026 dataset renames this club.
+            // A separate club from Ourense CF above (tm 60225 vs 55398);
+            // both played the 2025 Copa del Rey.
             'UD Ourense' => [
                 'pattern' => 'solid',
                 'primary' => 'blue-600',
