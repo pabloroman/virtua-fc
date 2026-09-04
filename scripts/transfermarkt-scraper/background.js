@@ -32,8 +32,27 @@ const BATCH_PACING = {
   restMinMs: 25000,        // how long that break lasts
   restMaxMs: 60000,
   retryBackoffMs: 45000,   // wait this long before retrying a failed player
-  maxConsecutiveFailures: 4 // give up after this many in a row (likely blocked)
+  maxConsecutiveFailures: 4, // give up after this many in a row (likely blocked)
+
+  // Escalating cooldowns for an outright block (HTTP 403/429/503). Each entry
+  // is tried in turn on the same player; the run only gives up once the last
+  // one has failed too, so a short throttle costs seconds and a real ban is
+  // still eventually detected rather than being retried forever.
+  blockCooldownsMs: [10000, 30000, 90000, 300000],
+  blockJitterMs: 5000
 };
+
+/** HTTP statuses that mean "stop asking", not "this page is broken". */
+const BLOCKED_STATUS_CODES = [403, 429, 503];
+
+/** Thrown by navigateAndWait when the page came back with a blocked status. */
+class BlockedError extends Error {
+  constructor(status) {
+    super(`HTTP ${status}`);
+    this.name = 'BlockedError';
+    this.status = status;
+  }
+}
 
 /** Random integer in [min, max]. */
 function randomBetween(min, max) {
@@ -57,10 +76,34 @@ function getSeasonId(url) {
 }
 
 /**
- * Navigate to a URL and wait for it to load
+ * Last main-frame HTTP status seen per tab.
+ *
+ * chrome.tabs fires `complete` for a 403 exactly as it does for a real page —
+ * the tab loaded something, it just wasn't the player. webRequest is the only
+ * place the status code is visible, so we stash it here and let
+ * navigateAndWait read it back.
+ */
+const lastMainFrameStatus = {};
+
+chrome.webRequest.onCompleted.addListener(
+  details => {
+    if (details.tabId >= 0) {
+      lastMainFrameStatus[details.tabId] = details.statusCode;
+    }
+  },
+  { urls: ['https://www.transfermarkt.com/*'], types: ['main_frame'] }
+);
+
+/**
+ * Navigate to a URL and wait for it to load.
+ *
+ * Throws BlockedError when the response carried a blocked status, so callers
+ * can tell "Transfermarkt is refusing us" apart from "that page is slow".
  */
 async function navigateAndWait(tabId, url) {
   console.log('[TM Scraper] Navigating to:', url);
+
+  delete lastMainFrameStatus[tabId];
 
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -74,6 +117,15 @@ async function navigateAndWait(tabId, url) {
         chrome.tabs.onUpdated.removeListener(listener);
         clearTimeout(timeout);
         console.log('[TM Scraper] Page loaded:', url);
+
+        const status = lastMainFrameStatus[tabId];
+        if (BLOCKED_STATUS_CODES.includes(status)) {
+          console.warn(`[TM Scraper] Blocked (HTTP ${status}):`, url);
+          reject(new BlockedError(status));
+
+          return;
+        }
+
         // Extra delay for page to fully render
         setTimeout(() => resolve(), 1500);
       }
@@ -366,28 +418,49 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
     let result = null;
     let failed = false;
 
-    try {
-      await navigateAndWait(tabId, profileUrl);
-      result = await scrapePlayerPositionsFromTab(tabId);
-    } catch (err) {
-      // One failure is usually a slow page; two in a row on the same player
-      // means we are being throttled, so back off hard before the retry.
-      console.warn(`[TM Scraper] Player ${playerId} failed, backing off:`, err);
-      await updateProgress({
-        status: 'working',
-        message: `Player ${playerId} failed — backing off`,
-        current: doneCount + 1,
-        total,
-        pageType: 'batch-positions'
-      });
-      await sleep(BATCH_PACING.retryBackoffMs);
-
+    // Attempt 0 is the real one; the rest are retries after a wait. A blocked
+    // status walks the cooldown ladder, an ordinary error gets the flat backoff.
+    for (let attempt = 0; ; attempt++) {
       try {
         await navigateAndWait(tabId, profileUrl);
         result = await scrapePlayerPositionsFromTab(tabId);
-      } catch (retryErr) {
-        console.error(`[TM Scraper] Player ${playerId} failed twice:`, retryErr);
-        failed = true;
+        break;
+      } catch (err) {
+        const blocked = err instanceof BlockedError;
+        const cooldowns = BATCH_PACING.blockCooldownsMs;
+
+        if (blocked && attempt >= cooldowns.length) {
+          console.error(`[TM Scraper] Player ${playerId} still blocked after ${attempt} cooldowns.`);
+          failed = true;
+          break;
+        }
+
+        if (!blocked && attempt >= 1) {
+          console.error(`[TM Scraper] Player ${playerId} failed twice:`, err);
+          failed = true;
+          break;
+        }
+
+        const waitMs = blocked
+          ? cooldowns[attempt] + randomBetween(0, BATCH_PACING.blockJitterMs)
+          : BATCH_PACING.retryBackoffMs;
+        const reason = blocked ? `blocked (HTTP ${err.status})` : 'failed';
+
+        console.warn(`[TM Scraper] Player ${playerId} ${reason}; waiting ${Math.round(waitMs / 1000)}s`);
+        await updateProgress({
+          status: 'working',
+          message: `${blocked ? `Blocked (HTTP ${err.status})` : 'Failed'} on ${playerId} — waiting ${Math.round(waitMs / 1000)}s`,
+          current: doneCount + 1,
+          total,
+          pageType: 'batch-positions'
+        });
+
+        await sleep(waitMs);
+
+        if (batchAborted) {
+          failed = true;
+          break;
+        }
       }
     }
 
