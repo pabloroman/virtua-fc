@@ -106,7 +106,7 @@ class ShowFastMode
         $isPureKnockout = $competition->handler_type === 'knockout_cup';
 
         if ($playedKnockoutTie || $isPureKnockout) {
-            $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
+            $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game);
             $tiesByRound = $this->competitionViewService->getKnockoutTies($game, $competition);
 
             // Anchor on the round of the just-played match when available.

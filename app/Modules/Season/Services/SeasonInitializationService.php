@@ -37,6 +37,25 @@ class SeasonInitializationService
     /** @var array<string, ?Competition> */
     private array $competitionCache = [];
 
+    /** @var array<string, string> */
+    private array $baseSeasonCache = [];
+
+    /**
+     * The reference-data season a game was created from — the `data/{season}/`
+     * folder its schedules come from and the origin its fixture dates are
+     * offset against. Read from the game rather than Competition::season, which
+     * is shared by every save and moves when reference data is refreshed.
+     */
+    private function baseSeasonFor(string $gameId): string
+    {
+        if (! array_key_exists($gameId, $this->baseSeasonCache)) {
+            $this->baseSeasonCache[$gameId] = Game::where('id', $gameId)->value('base_season')
+                ?? config('season.current');
+        }
+
+        return $this->baseSeasonCache[$gameId];
+    }
+
     private function findCompetition(string $competitionId): ?Competition
     {
         if (! array_key_exists($competitionId, $this->competitionCache)) {
@@ -56,7 +75,7 @@ class SeasonInitializationService
             return;
         }
 
-        $baseSeason = $competition->season;
+        $baseSeason = $this->baseSeasonFor($gameId);
         $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $baseSeason);
 
         $yearDiff = (int) $season - (int) $baseSeason;
@@ -145,7 +164,7 @@ class SeasonInitializationService
         }
 
         // Load schedule and adjust dates for the season
-        $baseSeason = $competition->season;
+        $baseSeason = $this->baseSeasonFor($gameId);
         $schedulePath = base_path("data/{$baseSeason}/{$competitionId}/schedule.json");
         if (!file_exists($schedulePath)) {
             Log::warning("[SeasonInit] Schedule missing: {$schedulePath}");

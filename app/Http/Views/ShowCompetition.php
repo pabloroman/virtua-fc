@@ -106,7 +106,7 @@ class ShowCompetition
         $leaguePhaseComplete = false;
 
         if ($competition->handler_type === 'league_with_playoff') {
-            $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
+            $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game);
             $knockoutTies = $this->competitionViewService->getKnockoutTies($game, $competition);
             $leaguePhaseComplete = $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings);
         }
@@ -131,7 +131,7 @@ class ShowCompetition
     private function showSwissFormat(Game $game, Competition $competition, \Illuminate\Support\Collection $userLeagues, \Illuminate\Support\Collection $otherLeagues)
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
-        $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
+        $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game);
         $knockoutTies = $this->competitionViewService->getKnockoutTies($game, $competition);
 
         return view('swiss-standings', [
@@ -152,7 +152,7 @@ class ShowCompetition
 
     private function showCup(Game $game, Competition $competition, \Illuminate\Support\Collection $userLeagues, \Illuminate\Support\Collection $otherLeagues)
     {
-        $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
+        $rounds = $this->competitionViewService->getKnockoutRounds($competition, $game);
         $tiesByRound = $this->competitionViewService->getKnockoutTies($game, $competition);
         $playerTie = $this->competitionViewService->findPlayerTie($rounds, $tiesByRound, $game->team_id);
         $maxRound = $rounds->max('round');
@@ -174,7 +174,7 @@ class ShowCompetition
     {
         $standings = $this->competitionViewService->getStandings($game, $competition);
         $groupStageComplete = $this->competitionViewService->isLeaguePhaseComplete($game, $competition, $standings);
-        $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game->season);
+        $knockoutRounds = $this->competitionViewService->getKnockoutRounds($competition, $game);
         $knockoutTies = $this->competitionViewService->getKnockoutTies($game, $competition);
         $playerTie = $this->competitionViewService->findPlayerTie($knockoutRounds, $knockoutTies, $game->team_id);
 

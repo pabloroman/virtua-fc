@@ -38,7 +38,6 @@ class CupDrawService
         }
 
         $competition = Competition::find($competitionId);
-        $season = $competition->season ?? config('season.current');
 
         // For domestic cups, lower-category teams get home advantage
         $applyHomeAdvantageRule = $competition->scope === Competition::SCOPE_DOMESTIC
@@ -48,7 +47,7 @@ class CupDrawService
         $strategy = $this->resolvePairingStrategy($competitionId);
 
         // Get all teams eligible for this round, paired by bracket structure
-        $pairedTeams = $this->getPairedTeamsForRound($gameId, $competitionId, $season, $roundNumber, $strategy, $applyHomeAdvantageRule);
+        $pairedTeams = $this->getPairedTeamsForRound($gameId, $competitionId, $roundNumber, $strategy, $applyHomeAdvantageRule);
 
         $pairCount = $pairedTeams->count();
 
@@ -196,7 +195,6 @@ class CupDrawService
     private function getPairedTeamsForRound(
         string $gameId,
         string $competitionId,
-        string $season,
         int $roundNumber,
         CupDrawPairingStrategy $strategy,
         bool $applyHomeAdvantageRule,
@@ -428,14 +426,33 @@ class CupDrawService
             return [];
         }
 
-        if (! array_key_exists($gameId, $this->gameSeasonCache)) {
-            $this->gameSeasonCache[$gameId] = Game::where('id', $gameId)->value('season');
-        }
-        $gameSeason = $this->gameSeasonCache[$gameId];
+        [$gameSeason, $baseSeason] = $this->seasonsFor($gameId);
 
-        return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season, $gameSeason);
+        return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $baseSeason, $gameSeason);
     }
 
-    /** @var array<string, ?string> */
+    /**
+     * The game's current season and the reference-data season it was created
+     * from. The base season comes from the game rather than Competition::season
+     * so that a career started before a data refresh keeps reading the folder
+     * it was seeded from.
+     *
+     * @return array{0: ?string, 1: string}
+     */
+    private function seasonsFor(string $gameId): array
+    {
+        if (! array_key_exists($gameId, $this->gameSeasonCache)) {
+            $game = Game::select(['season', 'base_season'])->find($gameId);
+
+            $this->gameSeasonCache[$gameId] = [
+                $game?->season,
+                $game?->base_season ?? config('season.current'),
+            ];
+        }
+
+        return $this->gameSeasonCache[$gameId];
+    }
+
+    /** @var array<string, array{0: ?string, 1: string}> */
     private array $gameSeasonCache = [];
 }

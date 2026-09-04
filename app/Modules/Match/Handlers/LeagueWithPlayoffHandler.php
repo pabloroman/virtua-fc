@@ -129,7 +129,7 @@ class LeagueWithPlayoffHandler extends CupCompetitionHandler
     private function generatePlayoffRound(Game $game, PlayoffGenerator $generator, int $round): void
     {
         $competitionId = $generator->getCompetitionId();
-        $config = $generator->getRoundConfig($round, $game->season);
+        $config = $generator->getRoundConfig($round, $game);
         $matchups = $generator->generateMatchups($game, $round);
 
         // Matchups are either [homeId, awayId] or [homeId, awayId, bracketPosition].

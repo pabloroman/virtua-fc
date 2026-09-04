@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $player_name
  * @property string $team_id
  * @property string $season
+ * @property string $base_season
  * @property \Illuminate\Support\Carbon|null $current_date
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -120,6 +121,7 @@ class Game extends Model
         'reserve_team_id',
         'competition_id',
         'season',
+        'base_season',
         'current_date',
         'season_goal',
         'needs_new_season_setup',
@@ -778,6 +780,24 @@ class Game extends Model
     public function getFormattedSeasonAttribute(): string
     {
         return self::formatSeason($this->season);
+    }
+
+    /**
+     * The reference-data season this game was created from.
+     *
+     * Two things key off it: the `data/{season}/` folder the game's schedules
+     * are read from, and the origin its fixture dates are offset against
+     * (`$game->season - $game->base_season` years). It is pinned at creation
+     * rather than read from `Competition::season` or `config('season.current')`
+     * so that bumping the base season for a new release leaves careers already
+     * in flight untouched.
+     *
+     * Falls back to the configured season for rows written before the column
+     * existed (and for models built without it in tests).
+     */
+    public function getBaseSeasonAttribute(): string
+    {
+        return $this->attributes['base_season'] ?? config('season.current');
     }
 
     // ==========================================

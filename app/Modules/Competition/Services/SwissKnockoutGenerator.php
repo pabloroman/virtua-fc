@@ -3,7 +3,6 @@
 namespace App\Modules\Competition\Services;
 
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
-use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -52,10 +51,13 @@ class SwissKnockoutGenerator
         [[7, 8], 0],   // 7/8 vs winners from bracket 0 (9/10 vs 23/24)
     ];
 
-    public function getRoundConfig(int $round, string $competitionId, ?string $gameSeason = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, string $competitionId, ?Game $game = null): PlayoffRoundConfig
     {
-        $competition = Competition::find($competitionId);
-        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season, $gameSeason);
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds(
+            $competitionId,
+            $game?->base_season ?? config('season.current'),
+            $game?->season,
+        );
 
         foreach ($rounds as $config) {
             if ($config->round === $round) {

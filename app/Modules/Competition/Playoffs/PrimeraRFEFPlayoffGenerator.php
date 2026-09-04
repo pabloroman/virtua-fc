@@ -96,10 +96,13 @@ class PrimeraRFEFPlayoffGenerator implements PlayoffGenerator
         return 2; // Bracket semifinals + bracket finals
     }
 
-    public function getRoundConfig(int $round, ?string $gameSeason = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, ?Game $game = null): PlayoffRoundConfig
     {
-        $competition = Competition::find($this->competitionId);
-        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->competitionId, $competition->season, $gameSeason);
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds(
+            $this->competitionId,
+            $game?->base_season ?? config('season.current'),
+            $game?->season,
+        );
 
         foreach ($rounds as $config) {
             if ($config->round === $round) {
