@@ -114,7 +114,9 @@ class ScaffoldSeason extends Command
                 $this->line("  - {$path}");
             }
             $this->newLine();
-            $this->line('Also append any new players to data/players/player_positions_ES.json.');
+            $this->line('Then top up secondary positions:');
+            $this->line("  php artisan app:list-missing-positions {$season}   # writes the scraper's batch list");
+            $this->line('  php artisan app:merge-player-positions <download> --attempted=<list>');
         }
 
         return self::SUCCESS;

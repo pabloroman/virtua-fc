@@ -105,11 +105,40 @@ add/remove line, not a reshuffled roster.
      in one batch, so run it after both are pushed. Add `pot` by hand for a
      true-to-life first-season draw; a re-scrape now preserves it.
    - `data/2026/EUR/{id}.json` and `data/2026/INT/{id}.json` pool teams.
-   - Append any new players to `data/players/player_positions_ES.json`
-     (secondary positions; keyed by player id, not season-scoped).
+   - Secondary positions (`data/players/player_positions_ES.json`, keyed by
+     player id and *not* season-scoped) are topped up by their own two
+     commands — see step 3b.
 
    `ESP3PO` (Primera RFEF playoff) is intentionally schedule-only — no
    `teams.json`; its bracket is generated per-game.
+
+3b. **Top up secondary positions.** Ask which players the scraper has never
+   been pointed at, which writes the batch list the extension reads:
+
+   ```bash
+   php artisan app:list-missing-positions 2026
+   ```
+
+   It prints per-competition coverage and writes
+   `scripts/transfermarkt-scraper/player-ids-todo.csv`. In the extension pick
+   **Pending positions** under *Batch player positions*, Start, then Download
+   JSON and merge it back:
+
+   ```bash
+   php artisan app:merge-player-positions ~/Downloads/player_positions.json \
+       --attempted=scripts/transfermarkt-scraper/player-ids-todo.csv
+   ```
+
+   Pass `--attempted` and commit the updated ledger CSV alongside the JSON.
+   The scraper only returns players that *have* a secondary position, so the
+   ledger is the only record that the rest were looked at; without it they come
+   back as "pending" every season. The merge is a union — entries for players
+   who have left the league are still live data for them elsewhere, so nothing
+   is pruned.
+
+   Use `--competition=ENG1` (repeatable) with `--suffix` to cover a foreign
+   league in its own `player_positions_{SUFFIX}.json`; the template service
+   globs every such file.
 
 4. **Normalize** (forces every `seasonID` to `2026`, sorts clubs/players so
    re-scrapes diff cleanly, and backfills each club's `country` — so you can skip
