@@ -115,6 +115,24 @@ final class Bundesliga implements TeamColorProvider
                 'secondary' => 'blue-700',
                 'number' => 'white',
             ],
+            'FC Schalke 04' => [
+                'pattern' => 'solid',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'SC Paderborn 07' => [
+                'pattern' => 'stripes',
+                'primary' => 'blue-700',
+                'secondary' => 'black',
+                'number' => 'white',
+            ],
+            'SV 07 Elversberg' => [
+                'pattern' => 'solid',
+                'primary' => 'red-600',
+                'secondary' => 'black',
+                'number' => 'white',
+            ],
         ];
     }
 }

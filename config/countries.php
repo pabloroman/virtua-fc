@@ -211,6 +211,7 @@ return [
             8519 => 368,   // Sevilla Atlético → Sevilla FC
             3679 => 13,    // Atlético Madrileño → Atlético de Madrid
             2865 => 150,   // Betis Deportivo Balompié → Real Betis Balompié
+            11603 => 897,  // RC Deportivo Fabril → Deportivo A Coruña
         ],
 
         'continental_slots' => [
