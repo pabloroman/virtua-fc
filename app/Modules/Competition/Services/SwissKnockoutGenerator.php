@@ -51,12 +51,12 @@ class SwissKnockoutGenerator
         [[7, 8], 0],   // 7/8 vs winners from bracket 0 (9/10 vs 23/24)
     ];
 
-    public function getRoundConfig(int $round, string $competitionId, ?Game $game = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, string $competitionId, Game $game): PlayoffRoundConfig
     {
         $rounds = LeagueFixtureGenerator::loadKnockoutRounds(
             $competitionId,
-            $game?->base_season ?? config('season.current'),
-            $game?->season,
+            $game->base_season,
+            $game->season,
         );
 
         foreach ($rounds as $config) {

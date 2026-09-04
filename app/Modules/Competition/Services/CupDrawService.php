@@ -437,22 +437,20 @@ class CupDrawService
      * so that a career started before a data refresh keeps reading the folder
      * it was seeded from.
      *
-     * @return array{0: ?string, 1: string}
+     * @return array{0: string, 1: string}
      */
     private function seasonsFor(string $gameId): array
     {
         if (! array_key_exists($gameId, $this->gameSeasonCache)) {
-            $game = Game::select(['season', 'base_season'])->find($gameId);
+            $game = Game::select(['season', 'base_season'])->find($gameId)
+                ?? throw new \RuntimeException("Cannot resolve a base season: game {$gameId} does not exist");
 
-            $this->gameSeasonCache[$gameId] = [
-                $game?->season,
-                $game?->base_season ?? config('season.current'),
-            ];
+            $this->gameSeasonCache[$gameId] = [$game->season, $game->base_season];
         }
 
         return $this->gameSeasonCache[$gameId];
     }
 
-    /** @var array<string, array{0: ?string, 1: string}> */
+    /** @var array<string, array{0: string, 1: string}> */
     private array $gameSeasonCache = [];
 }

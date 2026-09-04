@@ -74,12 +74,12 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
         return 2; // Semifinal + Final
     }
 
-    public function getRoundConfig(int $round, ?Game $game = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, Game $game): PlayoffRoundConfig
     {
         $rounds = LeagueFixtureGenerator::loadKnockoutRounds(
             $this->competitionId,
-            $game?->base_season ?? config('season.current'),
-            $game?->season,
+            $game->base_season,
+            $game->season,
         );
 
         foreach ($rounds as $config) {

@@ -45,12 +45,15 @@ class SeasonInitializationService
      * folder its schedules come from and the origin its fixture dates are
      * offset against. Read from the game rather than Competition::season, which
      * is shared by every save and moves when reference data is refreshed.
+     *
+     * Throws rather than defaulting: generating a season's fixtures against a
+     * guessed calendar is worse than not generating them.
      */
     private function baseSeasonFor(string $gameId): string
     {
         if (! array_key_exists($gameId, $this->baseSeasonCache)) {
             $this->baseSeasonCache[$gameId] = Game::where('id', $gameId)->value('base_season')
-                ?? config('season.current');
+                ?? throw new \RuntimeException("Cannot resolve a base season: game {$gameId} does not exist");
         }
 
         return $this->baseSeasonCache[$gameId];

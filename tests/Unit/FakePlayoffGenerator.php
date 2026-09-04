@@ -28,7 +28,7 @@ class FakePlayoffGenerator implements PlayoffGenerator
     public function generateMatchups(\App\Models\Game $game, int $round): array { return []; }
     public function isComplete(\App\Models\Game $game): bool { return $this->state === PlayoffState::Completed; }
     public function state(\App\Models\Game $game): PlayoffState { return $this->state; }
-    public function getRoundConfig(int $round, ?\App\Models\Game $game = null): PlayoffRoundConfig
+    public function getRoundConfig(int $round, \App\Models\Game $game): PlayoffRoundConfig
     {
         return new PlayoffRoundConfig(
             round: $round,

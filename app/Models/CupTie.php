@@ -118,7 +118,7 @@ class CupTie extends Model
     {
         $rounds = \App\Modules\Competition\Services\LeagueFixtureGenerator::loadKnockoutRounds(
             $this->competition_id,
-            $this->game?->base_season ?? config('season.current'),
+            $this->game->base_season,
         );
 
         foreach ($rounds as $round) {
