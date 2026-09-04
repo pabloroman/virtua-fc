@@ -1,14 +1,43 @@
 [
   {
-    "id": "401530",
+    "id": "12282",
     "positions": [
-      "Right-Back"
+      "Left-Back",
+      "Defensive Midfield"
     ]
   },
   {
-    "id": "935245",
+    "id": "15799",
     "positions": [
-      "Right-Back"
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "30321",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "35047",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "40433",
+    "positions": [
+      "Second Striker",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "57500",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
     ]
   },
   {
@@ -19,149 +48,42 @@
     ]
   },
   {
-    "id": "811778",
+    "id": "59323",
     "positions": [
-      "Left Midfield",
-      "Centre-Back"
+      "Left Winger",
+      "Right Winger"
     ]
   },
   {
-    "id": "413112",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "369081",
-    "positions": [
-      "Right Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "640428",
+    "id": "59561",
     "positions": [
       "Defensive Midfield",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "319745",
-    "positions": [
-      "Attacking Midfield",
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "581678",
-    "positions": [
-      "Central Midfield",
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "861410",
-    "positions": [
-      "Right Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "371998",
-    "positions": [
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "412363",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1057316",
-    "positions": [
       "Attacking Midfield"
     ]
   },
   {
-    "id": "314678",
+    "id": "67550",
     "positions": [
-      "Attacking Midfield",
-      "Left Winger"
+      "Defensive Midfield"
     ]
   },
   {
-    "id": "342229",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "935230",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "404418",
+    "id": "70245",
     "positions": [
       "Left-Back"
     ]
   },
   {
-    "id": "844637",
+    "id": "71548",
     "positions": [
+      "Left-Back",
       "Right-Back"
     ]
   },
   {
-    "id": "616631",
+    "id": "72047",
     "positions": [
-      "Left Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "282411",
-    "positions": [
-      "Central Midfield",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "424042",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "689505",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "775605",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "961297",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "889435",
-    "positions": [
-      "Defensive Midfield"
+      "Right Winger"
     ]
   },
   {
@@ -171,83 +93,36 @@
     ]
   },
   {
-    "id": "548111",
+    "id": "74294",
     "positions": [
-      "Attacking Midfield",
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "76467",
+    "positions": [
       "Right Winger"
     ]
   },
   {
-    "id": "486031",
+    "id": "85288",
     "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "576028",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "742201",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "406040",
-    "positions": [
-      "Right Winger",
+      "Central Midfield",
       "Left Winger"
     ]
   },
   {
-    "id": "125781",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "576024",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "238407",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "985383",
+    "id": "85295",
     "positions": [
       "Left-Back"
     ]
   },
   {
-    "id": "246291",
+    "id": "85383",
     "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "99922",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "374139",
-    "positions": [
-      "Left Midfield"
+      "Left Winger",
+      "Right Winger"
     ]
   },
   {
@@ -258,7 +133,805 @@
     ]
   },
   {
-    "id": "933908",
+    "id": "89733",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "99353",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "99922",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "102423",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "111508",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "111621",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "111961",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "112515",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "120095",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "125781",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "126737",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "126751",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "127048",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "127838",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "129444",
+    "positions": [
+      "Defensive Midfield",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "129674",
+    "positions": [
+      "Left-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "134936",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "138803",
+    "positions": [
+      "Right Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "138935",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "139435",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "142021",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "142031",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "143812",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "146660",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "153238",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "158792",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "162056",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "162063",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "165007",
+    "positions": [
+      "Left Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "166677",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "167721",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "168157",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "169497",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "170472",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "175446",
+    "positions": [
+      "Left-Back",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "175449",
+    "positions": [
+      "Central Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "177467",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "177847",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "182712",
+    "positions": [
+      "Left-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "184767",
+    "positions": [
+      "Centre-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "187673",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "188854",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "192009",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "196948",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "197126",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "197131",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "198015",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "199369",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "203043",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "205562",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "207922",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "208116",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "212723",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "212849",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "213260",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "213670",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "216464",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "217115",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "217144",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "217145",
+    "positions": [
+      "Central Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "221150",
+    "positions": [
+      "Right-Back",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "221309",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "221321",
+    "positions": [
+      "Defensive Midfield",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "221899",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "225122",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "225593",
+    "positions": [
+      "Centre-Forward",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "229804",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "230222",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "230784",
+    "positions": [
+      "Central Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "237617",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "238407",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "238868",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "238872",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "243760",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "243879",
+    "positions": [
+      "Central Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "245744",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "246204",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "246291",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "246968",
+    "positions": [
+      "Second Striker",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "247250",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "249513",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "251046",
+    "positions": [
+      "Defensive Midfield",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "251845",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "251848",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "251876",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "251896",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "252677",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "254037",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "255495",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "255501",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "255508",
+    "positions": [
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "255729",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "255995",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "256429",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "257062",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "258923",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "261502",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "261503",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "262365",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "263727",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "264372",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "265289",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "268167",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "268670",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "268957",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "271021",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "276111",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "277533",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "277635",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "278837",
+    "positions": [
+      "Right Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "281588",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "281755",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "281914",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "281989",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "282410",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "282411",
+    "positions": [
+      "Central Midfield",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "282417",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "282421",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "282700",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "284854",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "284888",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "285323",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "286375",
     "positions": [
       "Right Winger"
     ]
@@ -271,1605 +944,16 @@
     ]
   },
   {
-    "id": "336869",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "466801",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "907559",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "261503",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "357885",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "348795",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "85288",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "724520",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "461617",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "602105",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "961087",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "378139",
-    "positions": [
-      "Right-Back",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "167721",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "127048",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "591916",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "710671",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "255501",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "300168",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "938729",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "834491",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "1312698",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "126751",
+    "id": "288255",
     "positions": [
       "Attacking Midfield",
       "Defensive Midfield"
     ]
   },
   {
-    "id": "571020",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "834752",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "709187",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "338425",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "668183",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "255508",
-    "positions": [
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "563137",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "610622",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "346289",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "298583",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "623024",
-    "positions": [
-      "Left Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "367466",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "170472",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "328480",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "342385",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "285323",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "394236",
-    "positions": [
-      "Left Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "375382",
-    "positions": [
-      "Central Midfield",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "518644",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "355861",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "278837",
-    "positions": [
-      "Right Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "617081",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "413262",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "573775",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "628366",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "466794",
-    "positions": [
-      "Right-Back",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "480267",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "196948",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "636688",
+    "id": "288318",
     "positions": [
       "Left Winger"
-    ]
-  },
-  {
-    "id": "705395",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "411975",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "182712",
-    "positions": [
-      "Left-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "636695",
-    "positions": [
-      "Central Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "1018920",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "683840",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "326330",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "646740",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "636703",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "293385",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "411295",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "258923",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "937958",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "398184",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "766583",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "439022",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "538996",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "57500",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "1032280",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "676042",
-    "positions": [
-      "Right Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "711625",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "569384",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "395234",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "74294",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "212723",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "263727",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "345886",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "500067",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "177847",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "639733",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "687609",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "217115",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "40433",
-    "positions": [
-      "Second Striker",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "355628",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "229804",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "366930",
-    "positions": [
-      "Left Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "661145",
-    "positions": [
-      "Left-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "711374",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "502722",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "378293",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "634431",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "372246",
-    "positions": [
-      "Right Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "309110",
-    "positions": [
-      "Central Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "907813",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "555143",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "616369",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "225122",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1007378",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "405398",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "351478",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "692070",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "102423",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "709372",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "819590",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "822331",
-    "positions": [
-      "Left-Back",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "705813",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "625651",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "243879",
-    "positions": [
-      "Central Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "506248",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "783396",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "408471",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "225593",
-    "positions": [
-      "Centre-Forward",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "647435",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "358032",
-    "positions": [
-      "Centre-Forward",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "628498",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "834744",
-    "positions": [
-      "Left Winger",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "720518",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "452483",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "627290",
-    "positions": [
-      "Defensive Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "203043",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "501418",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "412829",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "937955",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "962125",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "909758",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "531404",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "549027",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "217144",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "398163",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "548188",
-    "positions": [
-      "Left Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "912392",
-    "positions": [
-      "Left Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "339816",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "706947",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "342048",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "277533",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "1064506",
-    "positions": [
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "361254",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "276111",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "929899",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "349884",
-    "positions": [
-      "Right Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "168157",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "395122",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "462070",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "603696",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "538006",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "15799",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "429790",
-    "positions": [
-      "Central Midfield",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "1127730",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "593412",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "337284",
-    "positions": [
-      "Central Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "620164",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "743951",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "861981",
-    "positions": [
-      "Left-Back",
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "341263",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "255495",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "618809",
-    "positions": [
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "505493",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "129674",
-    "positions": [
-      "Left-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "590690",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "707230",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "293388",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "526050",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "568835",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "610083",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "625660",
-    "positions": [
-      "Defensive Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "557057",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1232057",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "668179",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "921345",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1063340",
-    "positions": [
-      "Left Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "632741",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "628886",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "252677",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "251876",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "657430",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "142031",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "142021",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "513031",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "335225",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1063574",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "720038",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1301775",
-    "positions": [
-      "Right Winger",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "706138",
-    "positions": [
-      "Second Striker",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "245744",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1101641",
-    "positions": [
-      "Left Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "666547",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "834742",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1076815",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "939374",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "638124",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "112515",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "331505",
-    "positions": [
-      "Centre-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "545647",
-    "positions": [
-      "Left-Back",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "652331",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "617074",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "143812",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "1064471",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "764859",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "892929",
-    "positions": [
-      "Right Winger",
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "341110",
-    "positions": [
-      "Left Midfield",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "960571",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "599231",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "905997",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "72047",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "658115",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "448628",
-    "positions": [
-      "Left Winger",
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "169497",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "1065442",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "213670",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "710677",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "552425",
-    "positions": [
-      "Right Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "1038512",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "634131",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "175449",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "935231",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "624942",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "213260",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "710679",
-    "positions": [
-      "Left-Back",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "298575",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "805714",
-    "positions": [
-      "Left-Back",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "480763",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "780630",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "356197",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "953901",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "1061336",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "985806",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "230784",
-    "positions": [
-      "Central Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "380598",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "59561",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "733576",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "357628",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "638793",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "343052",
-    "positions": [
-      "Centre-Forward",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "729814",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "246968",
-    "positions": [
-      "Second Striker",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "177467",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1063553",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "581326",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "591957",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "533568",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "175446",
-    "positions": [
-      "Left-Back",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "495621",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "431190",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "465967",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "284854",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
     ]
   },
   {
@@ -1879,1444 +963,15 @@
     ]
   },
   {
-    "id": "798114",
-    "positions": [
-      "Central Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "165007",
-    "positions": [
-      "Left Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "718034",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "1124136",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "334222",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "898352",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "741142",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "221150",
-    "positions": [
-      "Right-Back",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "249513",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "390688",
-    "positions": [
-      "Left-Back",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "76467",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "111508",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "948273",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
     "id": "290249",
     "positions": [
       "Defensive Midfield"
     ]
   },
   {
-    "id": "281989",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "282421",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1061122",
-    "positions": [
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "419648",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "126737",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "696764",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "560705",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "640109",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "1034853",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "451801",
+    "id": "291039",
     "positions": [
       "Right-Back"
-    ]
-  },
-  {
-    "id": "765467",
-    "positions": [
-      "Left Midfield",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "527966",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "85295",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "268670",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "192009",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "517753",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "525578",
-    "positions": [
-      "Defensive Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "1384911",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "560483",
-    "positions": [
-      "Centre-Forward",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "30321",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "618813",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "257062",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "455181",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "622988",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "362086",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "560417",
-    "positions": [
-      "Second Striker",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "632896",
-    "positions": [
-      "Right-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "12282",
-    "positions": [
-      "Left-Back",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "129444",
-    "positions": [
-      "Defensive Midfield",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "826224",
-    "positions": [
-      "Centre-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "35047",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "593482",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "423444",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "288255",
-    "positions": [
-      "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "974251",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "341278",
-    "positions": [
-      "Right Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "205562",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "537382",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "895326",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "264372",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "99353",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "631821",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "340376",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "59323",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "458777",
-    "positions": [
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "466807",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "400104",
-    "positions": [
-      "Centre-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "184767",
-    "positions": [
-      "Centre-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "557147",
-    "positions": [
-      "Defensive Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "596899",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "590687",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "581674",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "187673",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "568148",
-    "positions": [
-      "Central Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "636385",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "741256",
-    "positions": [
-      "Left Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "610461",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "271021",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "457422",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "519651",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "237617",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "617060",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "562058",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "487951",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "510396",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "566575",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "438971",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "603940",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "707450",
-    "positions": [
-      "Central Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "581781",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "382836",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "566574",
-    "positions": [
-      "Central Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "611075",
-    "positions": [
-      "Central Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "153238",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1116801",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "913539",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "134936",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "511021",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "898737",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "534379",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "741292",
-    "positions": [
-      "Second Striker",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "405395",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "199369",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "396333",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "635930",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "251046",
-    "positions": [
-      "Defensive Midfield",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "398056",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "923080",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "622951",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "281588",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "711388",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "776703",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1064717",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "207922",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "623524",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "1078436",
-    "positions": [
-      "Centre-Back",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "455066",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1057394",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "960562",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "1109577",
-    "positions": [
-      "Right Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "625654",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "396334",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "635939",
-    "positions": [
-      "Second Striker",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "483453",
-    "positions": [
-      "Right-Back",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "667996",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "926849",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "825184",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "962111",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "390823",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "166677",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "636300",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "364237",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "268167",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "509483",
-    "positions": [
-      "Centre-Back",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "904712",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "1064469",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "505308",
-    "positions": [
-      "Left Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "628621",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "580525",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "332305",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1013789",
-    "positions": [
-      "Attacking Midfield",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "973805",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "857832",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "892685",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "882710",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "844299",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "854079",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "318520",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "281755",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "388125",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "860669",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "658269",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "710484",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "926763",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "569390",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "587520",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "251845",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "710004",
-    "positions": [
-      "Left Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "970866",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "339820",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "333016",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "740253",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "629511",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "1262996",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "636116",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "715628",
-    "positions": [
-      "Central Midfield",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "933795",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "936981",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "663258",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "522730",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "1393961",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1056966",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "335216",
-    "positions": [
-      "Second Striker",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "197131",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "531277",
-    "positions": [
-      "Centre-Forward",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "707568",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "502682",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "632080",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "379743",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "345083",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "569876",
-    "positions": [
-      "Defensive Midfield",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "581701",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "628923",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1463355",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "286375",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "337917",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "610238",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "945709",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "709215",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "644900",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "340870",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "635904",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "442794",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "294388",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "720532",
-    "positions": [
-      "Left Winger",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "597083",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "281914",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "256429",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "828338",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "628461",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "717957",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "722351",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "1064413",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "254037",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "885179",
-    "positions": [
-      "Left-Back",
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "277635",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "531476",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "524008",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "89733",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1178393",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "298983",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "598765",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "111961",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "539965",
-    "positions": [
-      "Left Winger",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "1027993",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1103986",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "891923",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "354697",
-    "positions": [
-      "Central Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "1209286",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "1371198",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "238872",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "483573",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "708499",
-    "positions": [
-      "Left-Back",
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "429901",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "632930",
-    "positions": [
-      "Right Winger",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "295622",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "330352",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "295065",
-    "positions": [
-      "Defensive Midfield"
     ]
   },
   {
@@ -3327,212 +982,125 @@
     ]
   },
   {
-    "id": "368982",
+    "id": "293385",
     "positions": [
       "Left Winger",
-      "Centre-Forward"
+      "Second Striker"
     ]
   },
   {
-    "id": "261502",
+    "id": "293388",
     "positions": [
-      "Left Winger",
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "294388",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "295065",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "295622",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "298575",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "298583",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "298983",
+    "positions": [
+      "Right Winger",
       "Attacking Midfield"
     ]
   },
   {
-    "id": "331496",
+    "id": "300168",
     "positions": [
-      "Left Winger",
-      "Right-Back"
+      "Central Midfield"
     ]
   },
   {
-    "id": "505675",
+    "id": "309110",
     "positions": [
-      "Left Winger",
-      "Attacking Midfield"
+      "Central Midfield",
+      "Right Winger"
     ]
   },
   {
-    "id": "522110",
+    "id": "311266",
     "positions": [
-      "Left Winger"
+      "Central Midfield",
+      "Right Winger"
     ]
   },
   {
-    "id": "564388",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "197126",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "709804",
+    "id": "311696",
     "positions": [
       "Right Winger",
       "Left Winger"
     ]
   },
   {
-    "id": "707272",
-    "positions": [
-      "Right-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "435493",
-    "positions": [
-      "Right-Back",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "1185057",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "628464",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "857482",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "767229",
-    "positions": [
-      "Centre-Back",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "230222",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "961936",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "394694",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "699771",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "724969",
+    "id": "313830",
     "positions": [
       "Defensive Midfield",
       "Attacking Midfield"
     ]
   },
   {
-    "id": "247250",
+    "id": "314678",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "318520",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "319745",
+    "positions": [
+      "Attacking Midfield",
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "326330",
     "positions": [
       "Defensive Midfield"
     ]
   },
   {
-    "id": "188854",
+    "id": "327126",
     "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "364603",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1064103",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "434990",
-    "positions": [
-      "Left Winger",
+      "Central Midfield",
       "Right-Back"
     ]
   },
   {
-    "id": "821820",
-    "positions": [
-      "Second Striker",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "941567",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "997814",
-    "positions": [
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "530552",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "332615",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "243760",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "611816",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "718876",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "649033",
+    "id": "328480",
     "positions": [
       "Central Midfield"
     ]
@@ -3545,118 +1113,64 @@
     ]
   },
   {
-    "id": "536030",
+    "id": "330352",
     "positions": [
-      "Right-Back",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "442805",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "854097",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "696506",
-    "positions": [
-      "Defensive Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "537762",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "570421",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "524197",
-    "positions": [
-      "Left Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "288318",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1072157",
-    "positions": [
-      "Second Striker",
       "Attacking Midfield"
     ]
   },
   {
-    "id": "221899",
+    "id": "331496",
     "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "251896",
-    "positions": [
+      "Left Winger",
       "Right-Back"
     ]
   },
   {
-    "id": "500191",
+    "id": "331505",
     "positions": [
-      "Right-Back"
+      "Centre-Back",
+      "Right Midfield"
     ]
   },
   {
-    "id": "636360",
+    "id": "332305",
     "positions": [
-      "Right-Back"
+      "Centre-Forward",
+      "Left Winger"
     ]
   },
   {
-    "id": "448844",
+    "id": "332615",
     "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "709997",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "442816",
-    "positions": [
+      "Right-Back",
       "Left-Back"
     ]
   },
   {
-    "id": "670341",
+    "id": "333016",
     "positions": [
-      "Central Midfield"
+      "Right Winger",
+      "Left Winger"
     ]
   },
   {
-    "id": "937710",
+    "id": "334222",
     "positions": [
-      "Central Midfield"
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "335216",
+    "positions": [
+      "Second Striker",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "335225",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
     ]
   },
   {
@@ -3667,130 +1181,168 @@
     ]
   },
   {
-    "id": "689639",
+    "id": "336869",
     "positions": [
-      "Defensive Midfield",
-      "Centre-Back"
+      "Central Midfield"
     ]
   },
   {
-    "id": "531413",
+    "id": "337066",
     "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "455348",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "282410",
-    "positions": [
+      "Attacking Midfield",
       "Right Winger"
     ]
   },
   {
-    "id": "262365",
+    "id": "337284",
+    "positions": [
+      "Central Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "337917",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "338425",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "339816",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "339820",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "340376",
     "positions": [
       "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "340867",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "340870",
+    "positions": [
+      "Right Winger",
       "Second Striker"
     ]
   },
   {
-    "id": "707608",
+    "id": "341110",
     "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "198015",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "522719",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1151630",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "355791",
-    "positions": [
+      "Left Midfield",
       "Left-Back"
     ]
   },
   {
-    "id": "814966",
+    "id": "341263",
     "positions": [
-      "Left-Back"
+      "Right-Back"
     ]
   },
   {
-    "id": "265289",
+    "id": "341278",
     "positions": [
+      "Right Winger",
       "Central Midfield"
     ]
   },
   {
-    "id": "709998",
+    "id": "342048",
     "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "162063",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "525113",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "146660",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "541646",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "709214",
-    "positions": [
+      "Left Winger",
       "Attacking Midfield"
     ]
   },
   {
-    "id": "540654",
+    "id": "342223",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "342229",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "342385",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "343052",
+    "positions": [
+      "Centre-Forward",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "345083",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "345886",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "346289",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "347594",
     "positions": [
       "Centre-Back"
     ]
   },
   {
-    "id": "633111",
+    "id": "348795",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "349884",
     "positions": [
       "Right Winger",
-      "Left Winger"
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "351478",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
     ]
   },
   {
@@ -3801,196 +1353,10 @@
     ]
   },
   {
-    "id": "700565",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "536619",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "255729",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "461959",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "622031",
-    "positions": [
-      "Centre-Forward",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "503602",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "827950",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "783419",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "433358",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "1204959",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "711381",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "291039",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "158792",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "556713",
-    "positions": [
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "212849",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "1030425",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "127838",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "217145",
+    "id": "354697",
     "positions": [
       "Central Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "473402",
-    "positions": [
-      "Right Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "566965",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "632904",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "612880",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "895335",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "593357",
-    "positions": [
-      "Second Striker",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "85383",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "715679",
-    "positions": [
       "Right-Back"
-    ]
-  },
-  {
-    "id": "70245",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "603969",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "282700",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "238868",
-    "positions": [
-      "Right Winger"
     ]
   },
   {
@@ -4001,269 +1367,9 @@
     ]
   },
   {
-    "id": "1054429",
-    "positions": [
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "543537",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "162056",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "569866",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "139435",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "585700",
-    "positions": [
-      "Right Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "535959",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "715683",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "221309",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "702911",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "412041",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "447823",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "347594",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "638138",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "374081",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "313830",
-    "positions": [
-      "Defensive Midfield",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "480955",
+    "id": "355628",
     "positions": [
       "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "634267",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "342223",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "435500",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "884158",
-    "positions": [
-      "Centre-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "1114719",
-    "positions": [
-      "Right Midfield"
-    ]
-  },
-  {
-    "id": "711631",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "906315",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "251848",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "208116",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "505673",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "1171102",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "255995",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "682588",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "221321",
-    "positions": [
-      "Defensive Midfield",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "652330",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "537763",
-    "positions": [
-      "Left Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "340867",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "541920",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "67550",
-    "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "857830",
-    "positions": [
-      "Left Winger",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "138803",
-    "positions": [
-      "Right Winger",
-      "Central Midfield"
-    ]
-  },
-  {
-    "id": "111621",
-    "positions": [
-      "Right Winger",
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1180386",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "638235",
-    "positions": [
-      "Centre-Forward",
-      "Right Winger"
     ]
   },
   {
@@ -4274,35 +1380,484 @@
     ]
   },
   {
-    "id": "577407",
+    "id": "355791",
     "positions": [
-      "Attacking Midfield",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "355861",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "356197",
+    "positions": [
       "Left Winger"
     ]
   },
   {
-    "id": "699607",
+    "id": "357628",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "357885",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "358032",
+    "positions": [
+      "Centre-Forward",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "361254",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "362086",
     "positions": [
       "Left Winger",
       "Right Winger"
     ]
   },
   {
-    "id": "534376",
+    "id": "364237",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "364603",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "366930",
+    "positions": [
+      "Left Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "367466",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "368982",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "369081",
+    "positions": [
+      "Right Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "371998",
+    "positions": [
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "372246",
+    "positions": [
+      "Right Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "373683",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "374081",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "374139",
+    "positions": [
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "374142",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "375382",
+    "positions": [
+      "Central Midfield",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "377795",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "378139",
+    "positions": [
+      "Right-Back",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "378293",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "379534",
     "positions": [
       "Right-Back"
     ]
   },
   {
-    "id": "71548",
+    "id": "379743",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "380598",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "382836",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "388125",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "390688",
     "positions": [
       "Left-Back",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "390823",
+    "positions": [
       "Right-Back"
     ]
   },
   {
-    "id": "560107",
+    "id": "394236",
     "positions": [
+      "Left Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "394694",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "395122",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "395234",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "396160",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "396333",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "396334",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "398056",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "398163",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "398184",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "399357",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "400104",
+    "positions": [
+      "Centre-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "401530",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "401624",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "404418",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "405395",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "405398",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "406040",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "408471",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "411295",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "411975",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "412041",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "412363",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "412829",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "413112",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "413262",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "419648",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "423444",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "424042",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "429790",
+    "positions": [
+      "Central Midfield",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "429901",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "431190",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "433358",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "434990",
+    "positions": [
+      "Left Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "435493",
+    "positions": [
+      "Right-Back",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "435500",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "438971",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "439022",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "442794",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "442802",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "442805",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "442816",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "443222",
+    "positions": [
+      "Left Winger",
       "Right Winger"
     ]
   },
@@ -4314,139 +1869,116 @@
     ]
   },
   {
-    "id": "138935",
+    "id": "447823",
     "positions": [
-      "Central Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "448628",
+    "positions": [
+      "Left Winger",
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "448844",
+    "positions": [
       "Centre-Back"
     ]
   },
   {
-    "id": "377795",
+    "id": "451801",
     "positions": [
-      "Centre-Back"
+      "Right-Back"
     ]
   },
   {
-    "id": "710657",
+    "id": "452483",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "455066",
     "positions": [
       "Attacking Midfield"
     ]
   },
   {
-    "id": "625655",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "471474",
-    "positions": [
-      "Right Winger",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "337066",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "895480",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "572271",
-    "positions": [
-      "Attacking Midfield",
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "625064",
+    "id": "455181",
     "positions": [
       "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "455348",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "457422",
+    "positions": [
+      "Right Winger",
       "Second Striker"
     ]
   },
   {
-    "id": "379534",
+    "id": "458777",
     "positions": [
-      "Right-Back"
+      "Left Midfield"
     ]
   },
   {
-    "id": "513441",
+    "id": "461617",
     "positions": [
-      "Left-Back",
-      "Defensive Midfield"
+      "Right Winger",
+      "Attacking Midfield"
     ]
   },
   {
-    "id": "664420",
-    "positions": [
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "268957",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "396160",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "374142",
+    "id": "461619",
     "positions": [
       "Centre-Back"
     ]
   },
   {
-    "id": "120095",
+    "id": "461959",
     "positions": [
       "Attacking Midfield",
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "442802",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "817753",
-    "positions": [
-      "Right Winger",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "311696",
-    "positions": [
-      "Right Winger",
       "Left Winger"
     ]
   },
   {
-    "id": "556059",
+    "id": "462070",
     "positions": [
       "Central Midfield"
     ]
   },
   {
-    "id": "311266",
+    "id": "465967",
     "positions": [
-      "Central Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "466794",
+    "positions": [
+      "Right-Back",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "466801",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "466807",
+    "positions": [
       "Right Winger"
     ]
   },
@@ -4457,6 +1989,304 @@
     ]
   },
   {
+    "id": "471474",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "473402",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "480267",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "480763",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "480955",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "483453",
+    "positions": [
+      "Right-Back",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "483573",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "486031",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "487951",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "495621",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "500067",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "500191",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "501418",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "502682",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "502722",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "503602",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "505308",
+    "positions": [
+      "Left Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "505493",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "505673",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "505675",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "506248",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "509483",
+    "positions": [
+      "Centre-Back",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "510396",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "511021",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "513031",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "513441",
+    "positions": [
+      "Left-Back",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "517753",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "518644",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "519651",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "522110",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "522719",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "522730",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "524008",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "524197",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "525113",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "525578",
+    "positions": [
+      "Defensive Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "526050",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "527838",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "527966",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "530552",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "531277",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "531404",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "531413",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "531476",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "533568",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "534376",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
     "id": "534377",
     "positions": [
       "Right Winger",
@@ -4464,44 +2294,1281 @@
     ]
   },
   {
-    "id": "327126",
+    "id": "534379",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "535959",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "536030",
+    "positions": [
+      "Right-Back",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "536619",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "537382",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "537762",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "537763",
+    "positions": [
+      "Left Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "538006",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "538996",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "539965",
+    "positions": [
+      "Left Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "540654",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "540676",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "541646",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "541920",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "543537",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "545647",
+    "positions": [
+      "Left-Back",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "548111",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "548188",
+    "positions": [
+      "Left Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "549027",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "552425",
+    "positions": [
+      "Right Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "555143",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "556059",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "556713",
+    "positions": [
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "557057",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "557147",
+    "positions": [
+      "Defensive Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "560107",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "560417",
+    "positions": [
+      "Second Striker",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "560483",
+    "positions": [
+      "Centre-Forward",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "560705",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "562058",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "563137",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "564388",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "566574",
+    "positions": [
+      "Central Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "566575",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "566965",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "568148",
+    "positions": [
+      "Central Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "568835",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "569384",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "569390",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "569866",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "569876",
+    "positions": [
+      "Defensive Midfield",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "570421",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "571020",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "572271",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "573775",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "576024",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "576028",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "577407",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "580525",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "581326",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "581674",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "581678",
+    "positions": [
+      "Central Midfield",
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "581701",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "581781",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "585700",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "587520",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "590687",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "590690",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "591916",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "591957",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "593357",
+    "positions": [
+      "Second Striker",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "593412",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "593482",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "596899",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "597083",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "598765",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "599231",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "602105",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "603696",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "603940",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "603969",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "610083",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "610238",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "610461",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "610622",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "611075",
+    "positions": [
+      "Central Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "611816",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "612880",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "616369",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "616631",
+    "positions": [
+      "Left Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "617060",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "617074",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "617081",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "618809",
+    "positions": [
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "618813",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "620164",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "622031",
+    "positions": [
+      "Centre-Forward",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "622951",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "622952",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "622988",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "623024",
+    "positions": [
+      "Left Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "623524",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "624942",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "625064",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "625651",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "625654",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "625655",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "625660",
+    "positions": [
+      "Defensive Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "626954",
+    "positions": [
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "627290",
+    "positions": [
+      "Defensive Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "628366",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "628461",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "628464",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "628496",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "628498",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "628621",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "628886",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "628923",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "629511",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "631821",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "632080",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "632741",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "632896",
+    "positions": [
+      "Right-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "632904",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "632930",
+    "positions": [
+      "Right Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "633111",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "634131",
+    "positions": [
+      "Central Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "634267",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "634431",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "635904",
+    "positions": [
+      "Centre-Forward",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "635930",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "635939",
+    "positions": [
+      "Second Striker",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "636116",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "636300",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "636360",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "636385",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "636688",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "636695",
     "positions": [
       "Central Midfield",
       "Right-Back"
     ]
   },
   {
-    "id": "246204",
+    "id": "636703",
     "positions": [
+      "Central Midfield",
       "Left Winger"
     ]
   },
   {
-    "id": "1296876",
+    "id": "638124",
     "positions": [
-      "Left Winger"
+      "Central Midfield"
     ]
   },
   {
-    "id": "961948",
+    "id": "638138",
     "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "638235",
+    "positions": [
+      "Centre-Forward",
       "Right Winger"
     ]
   },
   {
-    "id": "895458",
+    "id": "638793",
     "positions": [
-      "Right-Back"
+      "Left Winger"
     ]
   },
   {
-    "id": "1063333",
+    "id": "639733",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "640109",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "640428",
+    "positions": [
+      "Defensive Midfield",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "644900",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "646740",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "647435",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "649033",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "652330",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "652331",
     "positions": [
       "Left-Back"
     ]
   },
   {
-    "id": "461619",
+    "id": "657430",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "658115",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "658269",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "661145",
+    "positions": [
+      "Left-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "663258",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "664420",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "666547",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "667996",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "668179",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "668183",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "668276",
+    "positions": [
+      "Right Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "670341",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "676042",
+    "positions": [
+      "Right Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "682588",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "683840",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "687609",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "689505",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "689639",
+    "positions": [
+      "Defensive Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "692070",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "692210",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "696506",
+    "positions": [
+      "Defensive Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "696764",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "699607",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "699771",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "700565",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "702911",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "705395",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "705813",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "706138",
+    "positions": [
+      "Second Striker",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "706947",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "707230",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "707272",
+    "positions": [
+      "Right-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "707450",
+    "positions": [
+      "Central Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "707568",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "707608",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "708499",
+    "positions": [
+      "Left-Back",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "709187",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "709214",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "709215",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "709372",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "709804",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "709997",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "709998",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "710004",
+    "positions": [
+      "Left Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "710484",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "710657",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "710671",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "710677",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "710679",
+    "positions": [
+      "Left-Back",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "711374",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "711377",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "711380",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "711381",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "711388",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "711625",
     "positions": [
       "Centre-Back"
     ]
@@ -4513,20 +3580,797 @@
     ]
   },
   {
-    "id": "668276",
+    "id": "711631",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "715628",
+    "positions": [
+      "Central Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "715679",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "715683",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "717957",
+    "positions": [
+      "Right-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "718034",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "718876",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "720038",
+    "positions": [
+      "Central Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "720518",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "720532",
+    "positions": [
+      "Left Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "721660",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "722351",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "724520",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "724969",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "729814",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "733576",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "740253",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "741142",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "741256",
+    "positions": [
+      "Left Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "741292",
+    "positions": [
+      "Second Striker",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "742201",
+    "positions": [
+      "Left Winger",
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "743951",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "764859",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "765467",
+    "positions": [
+      "Left Midfield",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "766583",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "767229",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "775605",
+    "positions": [
+      "Attacking Midfield",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "776703",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "780630",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "783396",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "783419",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "796885",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "798114",
+    "positions": [
+      "Central Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "805714",
+    "positions": [
+      "Left-Back",
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "811778",
+    "positions": [
+      "Left Midfield",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "814966",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "817753",
+    "positions": [
+      "Right Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "819590",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "821820",
+    "positions": [
+      "Second Striker",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "822331",
+    "positions": [
+      "Left-Back",
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "825184",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "826224",
+    "positions": [
+      "Centre-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "827950",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "828338",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "834491",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "834492",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "834742",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "834744",
+    "positions": [
+      "Left Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "834752",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "844299",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "844637",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "848514",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "854079",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "854097",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "857482",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "857830",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "857832",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "860669",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "861410",
+    "positions": [
+      "Right Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "861981",
+    "positions": [
+      "Left-Back",
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "882710",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "884158",
+    "positions": [
+      "Centre-Back",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "885179",
+    "positions": [
+      "Left-Back",
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "889435",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "891923",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "892685",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "892929",
+    "positions": [
+      "Right Winger",
+      "Left Midfield"
+    ]
+  },
+  {
+    "id": "895326",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "895335",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "895458",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "895480",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "898352",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "898737",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "904712",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "905997",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "906315",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "907559",
+    "positions": [
+      "Defensive Midfield"
+    ]
+  },
+  {
+    "id": "907813",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "909758",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "912392",
+    "positions": [
+      "Left Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "913539",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "921345",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "923080",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "926763",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "926849",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "929899",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "933795",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "933908",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "935230",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "935231",
     "positions": [
       "Right Winger",
       "Centre-Forward"
     ]
   },
   {
-    "id": "997827",
+    "id": "935245",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "935457",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "936981",
+    "positions": [
+      "Defensive Midfield",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "937710",
     "positions": [
       "Central Midfield"
     ]
   },
   {
-    "id": "1061660",
+    "id": "937945",
+    "positions": [
+      "Left Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "937955",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "937958",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "938729",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "939374",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "941567",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "945709",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "948273",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "953901",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "960562",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "960571",
+    "positions": [
+      "Centre-Forward",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "961087",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "961297",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "961936",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "961948",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "962111",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "962125",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "962145",
+    "positions": [
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "964190",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "970866",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "973805",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "974251",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "979325",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "982007",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "984708",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "985383",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "985806",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "989115",
+    "positions": [
+      "Central Midfield",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "997814",
+    "positions": [
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "997827",
     "positions": [
       "Central Midfield"
     ]
@@ -4539,85 +4383,23 @@
     ]
   },
   {
-    "id": "935457",
-    "positions": [
-      "Attacking Midfield",
-      "Right Winger"
-    ]
-  },
-  {
     "id": "1000630",
     "positions": [
       "Right Winger"
     ]
   },
   {
-    "id": "834492",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1344793",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "1064538",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "984708",
-    "positions": [
-      "Left Winger"
-    ]
-  },
-  {
-    "id": "216464",
+    "id": "1007378",
     "positions": [
       "Right Winger",
       "Second Striker"
     ]
   },
   {
-    "id": "401624",
+    "id": "1013789",
     "positions": [
-      "Defensive Midfield"
-    ]
-  },
-  {
-    "id": "989115",
-    "positions": [
-      "Central Midfield",
-      "Right-Back"
-    ]
-  },
-  {
-    "id": "373683",
-    "positions": [
-      "Right-Back",
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "626954",
-    "positions": [
-      "Left Midfield"
-    ]
-  },
-  {
-    "id": "540676",
-    "positions": [
-      "Left-Back"
-    ]
-  },
-  {
-    "id": "527838",
-    "positions": [
-      "Centre-Back"
+      "Attacking Midfield",
+      "Centre-Forward"
     ]
   },
   {
@@ -4627,49 +4409,95 @@
     ]
   },
   {
-    "id": "628496",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "282417",
-    "positions": [
-      "Centre-Back"
-    ]
-  },
-  {
-    "id": "796885",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "284888",
+    "id": "1018920",
     "positions": [
       "Central Midfield"
     ]
   },
   {
-    "id": "1108203",
+    "id": "1027993",
     "positions": [
-      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1030425",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1032280",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1034853",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "1038512",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "1054429",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1055860",
+    "positions": [
       "Right Winger"
     ]
   },
   {
-    "id": "622952",
+    "id": "1056966",
     "positions": [
-      "Right Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1056971",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1057316",
+    "positions": [
       "Attacking Midfield"
     ]
   },
   {
-    "id": "692210",
+    "id": "1057394",
     "positions": [
-      "Right Winger",
-      "Attacking Midfield"
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1061122",
+    "positions": [
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "1061336",
+    "positions": [
+      "Centre-Back",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1061660",
+    "positions": [
+      "Central Midfield"
     ]
   },
   {
@@ -4680,15 +4508,64 @@
     ]
   },
   {
-    "id": "1056971",
+    "id": "1063333",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "1063340",
+    "positions": [
+      "Left Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "1063553",
     "positions": [
       "Left Winger"
     ]
   },
   {
-    "id": "848514",
+    "id": "1063574",
     "positions": [
       "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1064103",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1064413",
+    "positions": [
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1064469",
+    "positions": [
+      "Centre-Back"
+    ]
+  },
+  {
+    "id": "1064471",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1064506",
+    "positions": [
+      "Centre-Forward"
+    ]
+  },
+  {
+    "id": "1064538",
+    "positions": [
+      "Left Winger"
     ]
   },
   {
@@ -4698,33 +4575,119 @@
     ]
   },
   {
-    "id": "399357",
+    "id": "1064717",
     "positions": [
-      "Left Winger",
       "Right Winger"
     ]
   },
   {
-    "id": "443222",
+    "id": "1065442",
     "positions": [
-      "Left Winger",
       "Right Winger"
     ]
   },
   {
-    "id": "964190",
+    "id": "1072157",
+    "positions": [
+      "Second Striker",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1076815",
     "positions": [
       "Right-Back"
     ]
   },
   {
-    "id": "711380",
+    "id": "1078436",
+    "positions": [
+      "Centre-Back",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "1101641",
+    "positions": [
+      "Left Winger",
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "1103986",
+    "positions": [
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1105810",
     "positions": [
       "Left Winger"
     ]
   },
   {
-    "id": "1055860",
+    "id": "1108203",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1109577",
+    "positions": [
+      "Right Winger",
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1114719",
+    "positions": [
+      "Right Midfield"
+    ]
+  },
+  {
+    "id": "1116801",
+    "positions": [
+      "Attacking Midfield",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1124136",
+    "positions": [
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "1127730",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1151630",
+    "positions": [
+      "Left Winger",
+      "Right Winger"
+    ]
+  },
+  {
+    "id": "1171102",
+    "positions": [
+      "Attacking Midfield",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1178393",
+    "positions": [
+      "Right Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1178816",
     "positions": [
       "Right Winger"
     ]
@@ -4737,9 +4700,15 @@
     ]
   },
   {
-    "id": "721660",
+    "id": "1180386",
     "positions": [
       "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1185057",
+    "positions": [
+      "Right-Back"
     ]
   },
   {
@@ -4749,7 +4718,39 @@
     ]
   },
   {
-    "id": "979325",
+    "id": "1201529",
+    "positions": [
+      "Left Winger",
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1201530",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1204959",
+    "positions": [
+      "Left-Back"
+    ]
+  },
+  {
+    "id": "1209286",
+    "positions": [
+      "Central Midfield"
+    ]
+  },
+  {
+    "id": "1232057",
+    "positions": [
+      "Right Winger",
+      "Second Striker"
+    ]
+  },
+  {
+    "id": "1262996",
     "positions": [
       "Centre-Back"
     ]
@@ -4762,54 +4763,53 @@
     ]
   },
   {
-    "id": "1201529",
-    "positions": [
-      "Left Winger",
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "962145",
-    "positions": [
-      "Centre-Forward"
-    ]
-  },
-  {
-    "id": "1201530",
-    "positions": [
-      "Attacking Midfield"
-    ]
-  },
-  {
-    "id": "1178816",
-    "positions": [
-      "Right Winger"
-    ]
-  },
-  {
-    "id": "937945",
-    "positions": [
-      "Left Winger",
-      "Second Striker"
-    ]
-  },
-  {
-    "id": "1105810",
+    "id": "1296876",
     "positions": [
       "Left Winger"
     ]
   },
   {
-    "id": "711377",
+    "id": "1301775",
+    "positions": [
+      "Right Winger",
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "1312698",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1344793",
     "positions": [
       "Right Winger"
     ]
   },
   {
-    "id": "982007",
+    "id": "1371198",
     "positions": [
-      "Left Winger",
-      "Right Winger"
+      "Right-Back"
+    ]
+  },
+  {
+    "id": "1384911",
+    "positions": [
+      "Right Winger",
+      "Left Winger"
+    ]
+  },
+  {
+    "id": "1393961",
+    "positions": [
+      "Attacking Midfield"
+    ]
+  },
+  {
+    "id": "1463355",
+    "positions": [
+      "Left Winger"
     ]
   }
 ]
