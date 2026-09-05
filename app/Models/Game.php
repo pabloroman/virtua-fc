@@ -779,11 +779,30 @@ class Game extends Model
     }
 
     /**
+     * Format a season year for compact display: "2025" → "25/26".
+     * Derived from formatSeason() so the two cannot drift apart.
+     */
+    public static function formatSeasonShort(string $season): string
+    {
+        return substr(self::formatSeason($season), 2);
+    }
+
+    /**
      * Get the season formatted for display (e.g. "2025/26").
      */
     public function getFormattedSeasonAttribute(): string
     {
         return self::formatSeason($this->season);
+    }
+
+    /**
+     * Whether this save was created from an older reference-data season than
+     * the one currently seeded — its squads predate the latest data refresh.
+     * Saves cannot be migrated to newer data, so this is fixed for their life.
+     */
+    public function isFromPastBaseSeason(): bool
+    {
+        return (int) $this->base_season < (int) config('season.current');
     }
 
     // ==========================================

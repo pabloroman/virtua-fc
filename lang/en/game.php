@@ -415,6 +415,7 @@ return [
     // Game modes
     'mode_all' => 'All',
     'mode_career' => 'Club Manager',
+    'mode_with_season' => ':mode - :season',
     'mode_career_desc' => 'Take charge of one club. Build a long-term project.',
     'mode_career_pro' => 'Pro Manager',
     'mode_career_pro_desc' => 'Build your manager career from the ground up.',
@@ -422,6 +423,7 @@ return [
     'mode_tournament' => 'National team',
     'mode_tournament_desc' => 'Take a nation to the World Cup.',
     'mode_tournament_badge' => 'World Cup',
+    'legacy_saves_notice' => 'Saved careers keep the squads they started with. To play with :season data, start a new career.',
     'wc2026_name' => 'World Cup 2026',
     'career_unlock_hint' => 'Win the World Cup to unlock',
     'b_team_not_playable' => 'B teams are not playable',
