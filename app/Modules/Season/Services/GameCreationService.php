@@ -20,13 +20,18 @@ class GameCreationService
         $gameId = Uuid::uuid4()->toString();
 
         // Find competition for the selected team (prefer primary league, then any)
-        $competitionTeam = CompetitionTeam::where('team_id', $teamId)
+        // Scoped to each competition's current season: an unscoped lookup can
+        // match a row from a previous season and start the career in the club's
+        // old division. $competitionTeam->season below also seeds base_season,
+        // which pins the save to a data/{season}/ folder for its whole life, so
+        // a stale row here is not something a later rollover corrects.
+        $competitionTeam = CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)
             ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_LEAGUE)->where('tier', 1))
             ->first()
-            ?? CompetitionTeam::where('team_id', $teamId)
+            ?? CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)
                 ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY))
                 ->first()
-            ?? CompetitionTeam::where('team_id', $teamId)->first();
+            ?? CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)->first();
 
         $team = Team::with('reserveTeam')->find($teamId);
 

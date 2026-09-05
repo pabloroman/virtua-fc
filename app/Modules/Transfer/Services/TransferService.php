@@ -14,6 +14,7 @@ use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
@@ -1040,11 +1041,17 @@ class TransferService
 
         $userReputation = TeamReputation::resolveLevel($game->id, $game->team_id);
 
-        $sameLeagueIds = $game->competition
-            ->teams()
-            ->wherePivot('season', $game->season)
-            ->where('teams.id', '!=', $game->team_id)
-            ->pluck('teams.id')
+        // Read the game's own league membership, not the reference pivot.
+        // competition_teams only ever holds the seeded reference season, while
+        // $game->season advances every rollover — so the old lookup matched
+        // nothing from a game's second season onward and rival filtering
+        // silently stopped applying. competition_entries is game-scoped and is
+        // rewritten by promotion/relegation, so it also tracks clubs that have
+        // come up or gone down since the career began.
+        $sameLeagueIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where('team_id', '!=', $game->team_id)
+            ->pluck('team_id')
             ->all();
 
         if (empty($sameLeagueIds)) {

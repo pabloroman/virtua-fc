@@ -303,7 +303,8 @@ class JobOfferService
             return null;
         }
 
-        return CompetitionTeam::whereIn('competition_id', $tierIds)
+        return CompetitionTeam::forCurrentSeason()
+            ->whereIn('competition_id', $tierIds)
             ->where('team_id', $teamId)
             ->value('competition_id');
     }
@@ -320,19 +321,19 @@ class JobOfferService
             return null;
         }
 
-        $competitionTeam = CompetitionTeam::where('team_id', $teamId)
+        $competitionTeam = CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)
             ->whereHas('competition', fn ($q) => $q
                 ->where('role', Competition::ROLE_LEAGUE)
                 ->where('country', $team->country)
                 ->where('tier', 1))
             ->first()
-            ?? CompetitionTeam::where('team_id', $teamId)
+            ?? CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)
                 ->whereHas('competition', fn ($q) => $q
                     ->where('role', Competition::ROLE_LEAGUE)
                     ->where('country', $team->country))
                 ->orderBy('competition_id')
                 ->first()
-            ?? CompetitionTeam::where('team_id', $teamId)->first();
+            ?? CompetitionTeam::forCurrentSeason()->where('team_id', $teamId)->first();
 
         return $competitionTeam?->competition_id
             ?? $this->countryConfig->competitionForTier($team->country, 1);
@@ -559,7 +560,8 @@ class JobOfferService
             return collect();
         }
 
-        $teamIdsAtTier = CompetitionTeam::whereIn('competition_id', $tierCompetitionIds)
+        $teamIdsAtTier = CompetitionTeam::forCurrentSeason()
+            ->whereIn('competition_id', $tierCompetitionIds)
             ->whereIn('team_id', function ($q) {
                 $q->select('id')->from('teams')->whereNull('parent_team_id');
             })
@@ -621,7 +623,8 @@ class JobOfferService
             return collect();
         }
 
-        $teamIds = CompetitionTeam::whereIn('competition_id', $tierIds)
+        $teamIds = CompetitionTeam::forCurrentSeason()
+            ->whereIn('competition_id', $tierIds)
             ->whereIn('team_id', function ($q) {
                 $q->select('id')->from('teams')->whereNull('parent_team_id');
             })

@@ -125,11 +125,13 @@ class Competition extends Model
         'tier' => 'integer',
     ];
 
+    /** @see CompetitionTeam::SEASON_MATCHES_COMPETITION — teams for this competition's own season. */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'competition_teams')
             ->withPivot('season')
-            ->orderBy('name');
+            ->orderBy('name')
+            ->whereRaw(CompetitionTeam::SEASON_MATCHES_COMPETITION);
     }
 
     public function shortName(): string

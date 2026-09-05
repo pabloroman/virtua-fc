@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -203,6 +204,15 @@ class UnsolicitedRivalExclusionTest extends TestCase
             'competition_id' => $laLiga->id,
             'season' => $season,
             'current_date' => '2025-08-01',
+        ]);
+
+        // Mirror what SetupNewGame::copyCompetitionTeamsToGame() does at game
+        // creation: league membership a live game reads comes from the
+        // game-scoped competition_entries table, not the competition_teams
+        // reference pivot attached above. getRivalTeamIds() reads the former.
+        CompetitionEntry::insert([
+            ['game_id' => $game->id, 'competition_id' => $laLiga->id, 'team_id' => $userTeam->id, 'entry_round' => 1],
+            ['game_id' => $game->id, 'competition_id' => $aiLeague->id, 'team_id' => $aiTeam->id, 'entry_round' => 1],
         ]);
 
         // Seed reputations so TeamReputation::resolveLevel matches the intent
