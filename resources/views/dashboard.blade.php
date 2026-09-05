@@ -16,6 +16,12 @@
                     <a href="{{ route('select-team') }}" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 text-sm bg-surface-700 border border-border-strong font-semibold text-text-body shadow-xs hover:bg-surface-600 hover:text-text-primary rounded-lg focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150">+ {{ __('app.new_game') }}</a>
                 @endif
             </div>
+
+            @if($hasLegacySaves)
+                <p class="mt-3 text-sm text-text-secondary">
+                    {{ __('game.legacy_saves_notice', ['season' => \App\Models\Game::formatSeason(config('season.current'))]) }}
+                </p>
+            @endif
         </div>
 
         @if($errors->has('limit'))
@@ -37,25 +43,9 @@
                         @endif
                         <h3 class="text-xl font-semibold leading-tight text-text-primary">{{ $game->team->name }}</h3>
                         <dl class="flex flex-col justify-between">
-                            @if($game->isTournamentMode())
-                                <dd class="mb-1">
-                                    <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
-                                        {{ __('game.mode_tournament_badge') }}
-                                    </span>
-                                </dd>
-                            @elseif($game->isProManagerMode())
                             <dd class="mb-1">
-                                <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
-                                    {{ __('game.mode_career_pro') }}
-                                </span>
+                                <x-game-mode-badge :game="$game" />
                             </dd>
-                            @elseif($game->isCareerMode())
-                            <dd class="mb-1">
-                                <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
-                                    {{ __('game.mode_career') }}
-                                </span>
-                            </dd>
-                            @endif
 
                             <hr class="pt-4 mt-4 border-t border-border-default">
 

@@ -415,6 +415,7 @@ return [
     // Game modes
     'mode_all' => 'Todos',
     'mode_career' => 'Club Manager',
+    'mode_with_season' => ':mode - :season',
     'mode_career_desc' => 'Toma el mando de un club. Construye un proyecto a largo plazo.',
     'mode_career_pro' => 'Pro Manager',
     'mode_career_pro_desc' => 'Forja tu carrera de entrenador desde abajo.',
@@ -422,6 +423,7 @@ return [
     'mode_tournament' => 'Selección nacional',
     'mode_tournament_desc' => 'Lleva a una selección al Mundial.',
     'mode_tournament_badge' => 'Copa del Mundo',
+    'legacy_saves_notice' => 'Las partidas guardadas mantienen las plantillas con las que empezaron. Para jugar con los datos :season, empieza una partida nueva.',
     'wc2026_name' => 'Copa del Mundo 2026',
     'career_unlock_hint' => 'Gana el Mundial para desbloquearlo',
     'b_team_not_playable' => 'Las filiales no son jugables',
