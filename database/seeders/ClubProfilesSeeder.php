@@ -310,6 +310,7 @@ class ClubProfilesSeeder extends Seeder
         'Leixões SC' => ClubProfile::REPUTATION_MODEST,
 
         // Local — recently promoted sides with little top-flight history
+        'Académico Viseu FC' => ClubProfile::REPUTATION_LOCAL,
         'CF Estrela Amadora' => ClubProfile::REPUTATION_LOCAL,
         'AVS Futebol SAD' => ClubProfile::REPUTATION_LOCAL,
         'FC Alverca' => ClubProfile::REPUTATION_LOCAL,
@@ -331,6 +332,8 @@ class ClubProfilesSeeder extends Seeder
         'Vitesse Arnhem' => ClubProfile::REPUTATION_ESTABLISHED,
 
         // Modest
+        'ADO Den Haag' => ClubProfile::REPUTATION_MODEST,
+        'SC Cambuur Leeuwarden' => ClubProfile::REPUTATION_MODEST,
         'FC Groningen' => ClubProfile::REPUTATION_MODEST,
         'SC Heerenveen' => ClubProfile::REPUTATION_MODEST,
         'NEC Nijmegen' => ClubProfile::REPUTATION_MODEST,
@@ -782,6 +785,7 @@ class ClubProfilesSeeder extends Seeder
         'AVS Futebol SAD' => 1,
         'FC Alverca' => 1,
         'CD Tondela' => 2,
+        'Académico Viseu FC' => 2,
 
         // ── Netherlands ──────────────────────────────────────────────
         // The opposite profile: small grounds, near-permanent sell-outs
@@ -805,6 +809,8 @@ class ClubProfilesSeeder extends Seeder
         'Fortuna Sittard' => 5,
         'Excelsior Rotterdam' => 5,
         'SC Telstar' => 5,
+        'ADO Den Haag' => 8,            // fervent Haagse support
+        'SC Cambuur Leeuwarden' => 9,   // routinely sells out the Kooi
     ];
 
     /**

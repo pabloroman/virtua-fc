@@ -116,6 +116,13 @@ final class PrimeiraLiga implements TeamColorProvider
                 'number' => 'yellow-400',
             ],
 
+            'Académico Viseu FC' => [
+                'pattern' => 'stripes',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+
             // Recently relegated / promotion candidates — kept so a season's
             // promoted side is not seeded with the default blue kit.
             'Boavista FC' => [

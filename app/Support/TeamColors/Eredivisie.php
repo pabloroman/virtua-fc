@@ -116,6 +116,19 @@ final class Eredivisie implements TeamColorProvider
                 'number' => 'black',
             ],
 
+            'ADO Den Haag' => [
+                'pattern' => 'halves',
+                'primary' => 'green-600',
+                'secondary' => 'yellow-400',
+                'number' => 'white',
+            ],
+            'SC Cambuur Leeuwarden' => [
+                'pattern' => 'stripes',
+                'primary' => 'blue-700',
+                'secondary' => 'yellow-400',
+                'number' => 'white',
+            ],
+
             // Recently relegated / promotion candidates — kept so a season's
             // promoted side is not seeded with the default blue kit.
             'Willem II Tilburg' => [
