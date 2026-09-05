@@ -222,10 +222,14 @@ return [
             ],
         ],
 
+        // Cup winner slots, applied in order, best competition first: a
+        // later cascade sees what an earlier one handed out.
         'cup_winner_slot' => [
-            'cup' => 'ESPCUP',
-            'competition' => 'UEL',
-            'league' => 'ESP1',
+            [
+                'cup' => 'ESPCUP',
+                'competition' => 'UEL',
+                'league' => 'ESP1',
+            ],
         ],
 
         'continental_competitions' => [
@@ -295,18 +299,94 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // FA Cup, EFL Cup and Community Shield. Each cup starts at the round
+        // the Premier League joins, because only the top flight is playable:
+        // the qualifying rounds contain nobody the user can be. That also
+        // means every club enters at round 1, with each round's field
+        // halving cleanly and no entryRound needed anywhere.
+        'domestic_cups' => [
+            'ENGCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — an open draw is what the FA Cup does.
+                // CrossCategoryPairing would make a Premier League tie
+                // impossible in the third round, since every playable club
+                // is tier 1 and every ghost tier 99.
+                'short_name' => 'FA Cup',
+                'abbreviation' => 'FA',
+                'neutral_venues' => [
+                    'cup.semi_finals' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                    'cup.final' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+            'ENGLC' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                'short_name' => 'EFL Cup',
+                'abbreviation' => 'EFL',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+            'ENGSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Community Shield',
+                'abbreviation' => 'Shield',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+        ],
+
+        // Champion v FA Cup winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'ENGSUP',
+            'cup' => 'ENGCUP',
+            'league' => 'ENG1',
+            'teams' => 2,
+        ],
+
+        // Only the top flight is playable, so tier 1 auto-qualifies and every
+        // other entrant is a ghost preserved from the data file. No
+        // target_size: with no second tier there is nothing to backfill from,
+        // so it could only turn a shortfall into a thrown season transition
+        // — a stuck save — rather than repair anything.
+        'cup_qualification' => [
+            'ENGCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+            'ENGLC' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
         'promotions' => [],
 
+        // No UECL positions: England's Conference League place belongs to the
+        // EFL Cup winner, declared below, not to the league table.
         'continental_slots' => [
             'ENG1' => [
                 'UCL' => [1, 2, 3, 4, 5],
                 'UEL' => [6],
-                'UECL' => [7],
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [
+            [
+                'cup' => 'ENGCUP',
+                'competition' => 'UEL',
+                'league' => 'ENG1',
+            ],
+            [
+                'cup' => 'ENGLC',
+                'competition' => 'UECL',
+                'league' => 'ENG1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -366,7 +446,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -426,7 +506,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -486,7 +566,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -546,7 +626,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -606,7 +686,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [

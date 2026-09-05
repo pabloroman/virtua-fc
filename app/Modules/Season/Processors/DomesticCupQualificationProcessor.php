@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -108,6 +109,15 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
     ): void {
         $playableTierCompetitions = $this->playableTierCompetitions($countryCode);
         if (empty($playableTierCompetitions)) {
+            return;
+        }
+
+        // A cup declared in config but not yet seeded has no competitions row,
+        // and competition_entries.competition_id is a foreign key. This loop
+        // runs for every country in every game, so without this guard a cup
+        // whose data hasn't landed yet would break season transitions in
+        // saves that have nothing to do with it.
+        if (!Competition::whereKey($cupId)->exists()) {
             return;
         }
 

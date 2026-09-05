@@ -1,0 +1,15 @@
+{
+  "id": "ENGSUP",
+  "name": "Community Shield",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "11",
+      "name": "Arsenal FC"
+    },
+    {
+      "id": "873",
+      "name": "Crystal Palace"
+    }
+  ]
+}

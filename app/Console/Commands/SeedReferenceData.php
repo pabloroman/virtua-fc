@@ -7,6 +7,7 @@ use App\Modules\Stadium\UefaCategory;
 use App\Models\User;
 use App\Support\ClubNames;
 use App\Support\Money;
+use App\Support\SeasonData;
 use App\Support\TeamColors;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
@@ -801,7 +802,11 @@ class SeedReferenceData extends Command
 
         foreach ($clubs as $club) {
             $name = ClubNames::canonical(trim((string) ($club['name'] ?? '')));
-            $transfermarktId = isset($club['id']) && (string) $club['id'] !== '' ? (string) $club['id'] : null;
+            // Same id resolution the season validator uses, so a cup list
+            // composed from a league stadiums scrape (which writes
+            // `transfermarktId`, not `id`) seeds instead of silently
+            // warning past every club.
+            $transfermarktId = SeasonData::resolveTransfermarktId($club);
 
             if ($name === '' || $transfermarktId === null) {
                 $this->warn("  Skipping cup club without a name or transfermarkt id in {$competitionId}: " . ($name ?: '(unnamed)'));

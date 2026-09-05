@@ -8,6 +8,7 @@ use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
@@ -80,6 +81,13 @@ class SupercupQualificationProcessor implements SeasonProcessor
         $supercupId = $config['competition'];
         $size = $this->countryConfig->supercupSize($countryCode);
         $cupFinalRound = LeagueFixtureGenerator::finalKnockoutRound($cupId, $game->base_season);
+
+        // A supercup declared in config but not yet seeded has no
+        // competitions row, and competition_entries.competition_id is a
+        // foreign key — inserting its field would fail outright.
+        if (!Competition::whereKey($supercupId)->exists()) {
+            return;
+        }
 
         // Skip when this country isn't part of the game (no top-league
         // entries). The 4-qualifier guard below catches partial-data bugs

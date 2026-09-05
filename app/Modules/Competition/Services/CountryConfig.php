@@ -253,13 +253,17 @@ class CountryConfig
     }
 
     /**
-     * Get cup winner qualification slot config for a country.
+     * Cup winner qualification slots for a country, in the order they should
+     * be applied. A country with two cups feeding two different European
+     * competitions (England: FA Cup to the Europa League, EFL Cup to the
+     * Conference League) declares the better slot first, so the second
+     * cascade sees what the first handed out.
      *
-     * @return array{cup: string, competition: string, league: string}|null
+     * @return array<int, array{cup: string, competition: string, league: string}>
      */
-    public function cupWinnerSlot(string $countryCode): ?array
+    public function cupWinnerSlots(string $countryCode): array
     {
-        return $this->get($countryCode)['cup_winner_slot'] ?? null;
+        return $this->get($countryCode)['cup_winner_slot'] ?? [];
     }
 
     /**

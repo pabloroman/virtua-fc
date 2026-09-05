@@ -151,6 +151,7 @@ class ValidateSeason extends Command
             $this->warnings[] = "{$code}: no schedule.json (knockout/round dates) found.";
         }
         $this->validateEntryRounds($code, $dir, $clubs);
+        $this->validateBracketParity($code, $dir, $clubs);
         $this->line("  {$code}: " . count($clubs) . " clubs ✓");
     }
 
@@ -176,6 +177,61 @@ class ValidateSeason extends Command
             if ($entryRound < 1 || ($lastRound !== null && $entryRound > $lastRound)) {
                 $this->errors[] = "{$code}: club '{$name}' has entryRound {$entryRound}, outside rounds 1–" . ($lastRound ?? '?') . '.';
             }
+        }
+    }
+
+    /**
+     * A knockout is a chain of halvings, so every round's field has to be
+     * even. Walk the rounds: each one starts with the winners of the last
+     * plus whoever enters at it, and must halve.
+     *
+     * A cup that fails this doesn't fail loudly — CupDrawService throws
+     * OddCupDrawPoolException, ConductNextCupRoundDraw swallows it, and the
+     * competition simply stops mid-season. A warning here is the only place
+     * it's visible before a save is already broken.
+     *
+     * Warning rather than error: the supercup skip-ahead is applied per game
+     * by CupEntryRoundService and isn't visible in the data, so a cup that
+     * feeds a supercup can read as odd here and still be right.
+     *
+     * @param  array<int, array<string, mixed>>  $clubs
+     */
+    private function validateBracketParity(string $code, string $dir, array $clubs): void
+    {
+        $schedule = file_exists("{$dir}/schedule.json")
+            ? json_decode((string) file_get_contents("{$dir}/schedule.json"), true)
+            : null;
+        $rounds = array_map(fn ($round) => (int) ($round['round'] ?? 0), $schedule['knockout'] ?? []);
+
+        if ($rounds === []) {
+            return;
+        }
+
+        sort($rounds);
+
+        $entrantsByRound = [];
+        foreach ($clubs as $club) {
+            $entryRound = max(1, (int) ($club['entryRound'] ?? 1));
+            $entrantsByRound[$entryRound] = ($entrantsByRound[$entryRound] ?? 0) + 1;
+        }
+
+        $survivors = 0;
+        foreach ($rounds as $round) {
+            $field = $survivors + ($entrantsByRound[$round] ?? 0);
+
+            if ($field % 2 !== 0) {
+                $this->warnings[] = "{$code}: round {$round} fields {$field} clubs, which is odd — "
+                    . 'the draw will leave a club unpaired and the cup will stop there.';
+
+                return;
+            }
+
+            $survivors = intdiv($field, 2);
+        }
+
+        if ($survivors !== 1) {
+            $this->warnings[] = "{$code}: the rounds resolve to {$survivors} winners, not 1 — "
+                . 'the field and the declared rounds disagree.';
         }
     }
 

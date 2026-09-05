@@ -414,6 +414,77 @@ class DomesticCupQualificationTest extends TestCase
         $this->assertSame(2, $rounds[$lateGhost->id], 'a ghost keeps its seeded entry round');
     }
 
+    // =========================================
+    // A one-tier country (England): no top_per_group, no target_size
+    // =========================================
+
+    public function test_single_tier_country_rebuilds_its_cup_from_tier_1_plus_ghosts(): void
+    {
+        Competition::factory()->league()->create(['id' => 'ENG1', 'country' => 'EN', 'tier' => 1]);
+        Competition::factory()->knockoutCup()->create(['id' => 'ENGCUP', 'country' => 'EN']);
+
+        // 20 Premier League clubs, and 44 ghosts already in the cup from the
+        // data file — the shape SeedReferenceData produces.
+        $premierLeague = [];
+        for ($i = 0; $i < 20; $i++) {
+            $team = Team::factory()->create(['country' => 'EN']);
+            $premierLeague[] = $team;
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ENG1',
+                'team_id' => $team->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        for ($i = 0; $i < 44; $i++) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ENGCUP',
+                'team_id' => Team::factory()->create(['country' => 'EN'])->id,
+                'entry_round' => 1,
+            ]);
+        }
+
+        $this->runProcessor();
+
+        $entries = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ENGCUP')
+            ->pluck('team_id')
+            ->all();
+
+        // England declares no target_size: with no second tier there is
+        // nothing to backfill from, so the field is exactly the 20 league
+        // clubs plus the preserved ghosts — and it halves cleanly.
+        $this->assertCount(64, $entries);
+        foreach ($premierLeague as $team) {
+            $this->assertContains($team->id, $entries);
+        }
+    }
+
+    public function test_a_cup_declared_in_config_but_not_seeded_is_skipped(): void
+    {
+        // ENG1 exists (it sits in every country's transfer pool) but the cup
+        // competition row does not, so the rebuild must not attempt an insert
+        // that the competition_entries foreign key would reject.
+        Competition::factory()->league()->create(['id' => 'ENG1', 'country' => 'EN', 'tier' => 1]);
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ENG1',
+            'team_id' => Team::factory()->create(['country' => 'EN'])->id,
+            'entry_round' => 1,
+        ]);
+
+        $this->runProcessor();
+
+        $this->assertSame(
+            0,
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ENGCUP')
+                ->count(),
+        );
+    }
+
     private function runProcessor(): void
     {
         app(DomesticCupQualificationProcessor::class)->process(

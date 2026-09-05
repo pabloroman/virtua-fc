@@ -110,6 +110,7 @@ class Competition extends Model
         'WC2026'    => 'el',
         'PRESEASON' => 'el',
         'ESP3PO'    => 'el',
+        'ENGSUP'    => 'el',
     ];
 
     protected $fillable = [
