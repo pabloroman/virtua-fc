@@ -22,7 +22,7 @@ final class SelectTeam
         // Tiers may declare sibling competitions (e.g. Primera RFEF's ESP3A and
         // ESP3B both live at tier 3), so the tiers list is keyed by competition
         // ID rather than tier number to keep every league selectable.
-        $countries = Cache::remember('career_mode_countries:v2', 3600, function () use ($countryConfig) {
+        $countries = Cache::remember('career_mode_countries:v3', 3600, function () use ($countryConfig) {
             $countries = [];
 
             foreach ($countryConfig->playableCountryCodes() as $code) {

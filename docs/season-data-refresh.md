@@ -175,7 +175,10 @@ Seed without `--fresh` instead. Teams are matched by `transfermarkt_id` and
 updated in place, so team UUIDs — and everything keyed to them — survive, and
 `competition_teams` is keyed `(competition_id, team_id, season)`, so the new
 season's membership is *added* alongside the old rows rather than replacing
-them. In order:
+them. Reads are scoped to each competition's own season
+(`CompetitionTeam::SEASON_MATCHES_COMPETITION`), so those old rows stay
+queryable for the saves that still need them without leaking into the new
+season's team lists. In order:
 
 1. Snapshot the database.
 2. Deploy the code, running migrations **before** the env var changes. Careers

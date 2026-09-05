@@ -542,6 +542,10 @@ class UefaQualificationProcessor implements SeasonProcessor
             ->join('competitions', 'competition_teams.competition_id', '=', 'competitions.id')
             ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
             ->where('competitions.country', 'EU')
+            // Each competition's current season only — the pivot keeps previous
+            // seasons' rows, which would pad the pool with clubs that have since
+            // dropped out of the European pool entirely.
+            ->whereColumn('competition_teams.season', 'competitions.season')
             ->whereNotIn('competition_teams.team_id', $usedTeamIds)
             ->whereNotIn('teams.country', $configuredCountries)
             ->distinct()

@@ -475,7 +475,13 @@ class SeedReferenceData extends Command
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
-        $season = $this->season;
+        // Same resolution seedCompetitionRecord() uses for competitions.season.
+        // The two must agree: reads are scoped by comparing a pivot row's season
+        // against its competition's (CompetitionTeam::SEASON_MATCHES_COMPETITION),
+        // so a cup whose teams.json seasonID lagged GAME_SEASON would link its
+        // clubs under one season, record the competition under another, and then
+        // resolve to no teams at all.
+        $season = $teamsData['seasonID'] ?? $this->season;
 
         // Seed competition record
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $flag, $role);
