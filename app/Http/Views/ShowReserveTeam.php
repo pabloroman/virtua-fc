@@ -38,6 +38,7 @@ class ShowReserveTeam
             'reserveCount' => $count,
             'avgAge' => $avgAge,
             'avgOverall' => $avgOverall,
+            'tier' => $game->currentInvestment->youth_academy_tier ?? 0,
         ]);
     }
 }
