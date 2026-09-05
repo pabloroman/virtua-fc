@@ -1,0 +1,489 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/159.png",
+  "name": "Red Star Belgrade",
+  "country": "RS",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 1989",
+      "foot": "both",
+      "height": "1,92m",
+      "id": "41384",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Marko Arnautovic",
+      "nationality": [
+        "Austria",
+        "Serbia"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 6, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "139915",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Aleksandar Katai",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 29, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "177547",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Matheus",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 26, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "202228",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Milos Veljkovic",
+      "nationality": [
+        "Serbia",
+        "Switzerland"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 13, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "233129",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Mirko Ivanic",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "4",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 3, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "241457",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Derrick Luckassen",
+      "nationality": [
+        "Ghana",
+        "Netherlands"
+      ],
+      "number": "32",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 7, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "259953",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Rade Krunic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "33",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 31, 1995",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "271455",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Mihailo Ristic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 29, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "320854",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Timi Max Elsnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 16, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "346647",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Yuta Nakayama",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 27, 1998",
+      "foot": "right",
+      "height": "1,64m",
+      "id": "414243",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Mohammed Abu Fani",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 26, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "422281",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "449",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/449.png",
+          "name": "Trabzonspor"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€3.50m",
+      "name": "Muhammed Cham",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "70",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 11, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "510782",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Rodrigão",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 13, 1998",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "548650",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "88",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/88.png",
+          "name": "Widzew Lodz"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€2.50m",
+      "name": "Osman Bukari",
+      "nationality": [
+        "Ghana",
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 18, 2003",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "615033",
+      "injured": false,
+      "marketValue": "€2.20m",
+      "name": "Loizos Loizou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "75",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 27, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "645588",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Tomás Händel",
+      "nationality": [
+        "Portugal",
+        "Austria"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 4, 2002",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "692807",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Ivan Gutesa",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "77",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 28, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "706253",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Vladimir Lucic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 15, 2000",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "748795",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Franklin Tebo Uchenna",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 23, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "822458",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Bamba Dieng",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Aug 7, 2008",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "927795",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Ye-geon Kim",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 18, 2006",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "932920",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Stefan Gudelj",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 24, 2007",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "952771",
+      "injured": true,
+      "marketValue": "€10.00m",
+      "name": "Adem Avdic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "71",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 26, 2006",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1068235",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Kristiyan Balov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2008",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1073632",
+      "injured": false,
+      "marketValue": "€25.00m",
+      "name": "Vasilije Kostov",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 15, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1111843",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Mahmudu Bajo",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 4, 2008",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "1122960",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Dimitrije Saric",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "55",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2009",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "1141848",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Savo Radanovic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 20, 2009",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "1205973",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Matej Strika",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 15, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1300277",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Matej Gashtarov",
+      "nationality": [
+        "North Macedonia",
+        "Serbia"
+      ],
+      "number": "60",
+      "position": "Defensive Midfield"
+    }
+  ],
+  "stadiumName": "Rajko Mitić",
+  "stadiumSeats": "49167",
+  "transfermarktId": "159"
+}

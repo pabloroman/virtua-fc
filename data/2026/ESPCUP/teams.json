@@ -1,0 +1,471 @@
+{
+  "id": "CDR",
+  "name": "Copa del Rey",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "13",
+      "name": "Atlético de Madrid"
+    },
+    {
+      "id": "131",
+      "name": "FC Barcelona"
+    },
+    {
+      "id": "134",
+      "name": "Xerez CD"
+    },
+    {
+      "id": "142",
+      "name": "Real Zaragoza"
+    },
+    {
+      "id": "150",
+      "name": "Real Betis Balompié"
+    },
+    {
+      "id": "171",
+      "name": "Real Murcia CF"
+    },
+    {
+      "id": "237",
+      "name": "RCD Mallorca"
+    },
+    {
+      "id": "331",
+      "name": "CA Osasuna"
+    },
+    {
+      "id": "366",
+      "name": "Real Valladolid CF"
+    },
+    {
+      "id": "367",
+      "name": "Rayo Vallecano"
+    },
+    {
+      "id": "368",
+      "name": "Sevilla FC"
+    },
+    {
+      "id": "418",
+      "name": "Real Madrid"
+    },
+    {
+      "id": "472",
+      "name": "UD Las Palmas"
+    },
+    {
+      "id": "621",
+      "name": "Athletic Bilbao"
+    },
+    {
+      "id": "630",
+      "name": "Racing Santander"
+    },
+    {
+      "id": "648",
+      "name": "CD Tenerife"
+    },
+    {
+      "id": "666",
+      "name": "Real Jaén CF"
+    },
+    {
+      "id": "681",
+      "name": "Real Sociedad"
+    },
+    {
+      "id": "714",
+      "name": "RCD Espanyol Barcelona"
+    },
+    {
+      "id": "897",
+      "name": "Deportivo A Coruña"
+    },
+    {
+      "id": "940",
+      "name": "Celta de Vigo"
+    },
+    {
+      "id": "993",
+      "name": "Córdoba CF"
+    },
+    {
+      "id": "1049",
+      "name": "Valencia CF"
+    },
+    {
+      "id": "1050",
+      "name": "Villarreal CF"
+    },
+    {
+      "id": "1084",
+      "name": "Málaga CF"
+    },
+    {
+      "id": "1108",
+      "name": "Deportivo Alavés"
+    },
+    {
+      "id": "1176",
+      "name": "Racing Ferrol"
+    },
+    {
+      "id": "1244",
+      "name": "CD Leganés"
+    },
+    {
+      "id": "1531",
+      "name": "Elche CF"
+    },
+    {
+      "id": "1532",
+      "name": "Albacete Balompié"
+    },
+    {
+      "id": "1533",
+      "name": "SD Eibar"
+    },
+    {
+      "id": "1536",
+      "name": "Burgos CF"
+    },
+    {
+      "id": "2296",
+      "name": "CD Numancia"
+    },
+    {
+      "id": "2448",
+      "name": "Sporting Gijón"
+    },
+    {
+      "id": "2497",
+      "name": "Real Oviedo"
+    },
+    {
+      "id": "2502",
+      "name": "CD Castellón"
+    },
+    {
+      "id": "2687",
+      "name": "Cádiz CF"
+    },
+    {
+      "id": "2923",
+      "name": "CD Badajoz"
+    },
+    {
+      "id": "3302",
+      "name": "UD Almería"
+    },
+    {
+      "id": "3368",
+      "name": "Levante UD"
+    },
+    {
+      "id": "3708",
+      "name": "Barakaldo CF"
+    },
+    {
+      "id": "3709",
+      "name": "Getafe CF"
+    },
+    {
+      "id": "4032",
+      "name": "SD Ponferradina"
+    },
+    {
+      "id": "4542",
+      "name": "Cultural Leonesa"
+    },
+    {
+      "id": "5358",
+      "name": "SD Huesca"
+    },
+    {
+      "id": "5648",
+      "name": "Gimnàstic de Tarragona"
+    },
+    {
+      "id": "5650",
+      "name": "Pontevedra CF"
+    },
+    {
+      "id": "6212",
+      "name": "Real Ávila CF"
+    },
+    {
+      "id": "7077",
+      "name": "FC Cartagena"
+    },
+    {
+      "id": "7803",
+      "name": "CD Manacor"
+    },
+    {
+      "id": "7971",
+      "name": "Hércules CF"
+    },
+    {
+      "id": "8568",
+      "name": "AD Ceuta FC"
+    },
+    {
+      "id": "10718",
+      "name": "FC Andorra"
+    },
+    {
+      "id": "10907",
+      "name": "Zamora CF"
+    },
+    {
+      "id": "11000",
+      "name": "CD Lugo"
+    },
+    {
+      "id": "11245",
+      "name": "UD San Sebastián de los Reyes"
+    },
+    {
+      "id": "11259",
+      "name": "CD Alcoyano"
+    },
+    {
+      "id": "11422",
+      "name": "CE Sabadell FC"
+    },
+    {
+      "id": "11596",
+      "name": "AD Alcorcón"
+    },
+    {
+      "id": "11602",
+      "name": "CP Cacereño"
+    },
+    {
+      "id": "11615",
+      "name": "CD Guijuelo"
+    },
+    {
+      "id": "12321",
+      "name": "Girona FC"
+    },
+    {
+      "id": "12405",
+      "name": "Real Unión Club"
+    },
+    {
+      "id": "12567",
+      "name": "CD Eldense"
+    },
+    {
+      "id": "12588",
+      "name": "Gimnástica de Torrelavega"
+    },
+    {
+      "id": "12697",
+      "name": "UE Sant Andreu"
+    },
+    {
+      "id": "13222",
+      "name": "CD Mirandés"
+    },
+    {
+      "id": "13227",
+      "name": "Coruxo FC"
+    },
+    {
+      "id": "13241",
+      "name": "UD Ibiza"
+    },
+    {
+      "id": "13244",
+      "name": "Utebo FC"
+    },
+    {
+      "id": "13436",
+      "name": "RSD Alcalá"
+    },
+    {
+      "id": "13702",
+      "name": "CF Rayo Majadahonda"
+    },
+    {
+      "id": "16022",
+      "name": "Antequera CF"
+    },
+    {
+      "id": "16575",
+      "name": "SD Amorebieta"
+    },
+    {
+      "id": "16596",
+      "name": "Peña Sport FC"
+    },
+    {
+      "id": "16602",
+      "name": "UB Conquense"
+    },
+    {
+      "id": "16795",
+      "name": "Granada CF"
+    },
+    {
+      "id": "18443",
+      "name": "CD Don Benito"
+    },
+    {
+      "id": "18687",
+      "name": "CD Atlético Baleares"
+    },
+    {
+      "id": "18691",
+      "name": "Club Portugalete"
+    },
+    {
+      "id": "20220",
+      "name": "Arosa SC"
+    },
+    {
+      "id": "20528",
+      "name": "CE Europa"
+    },
+    {
+      "id": "20844",
+      "name": "Real Avilés Industrial"
+    },
+    {
+      "id": "24420",
+      "name": "UD Logroñés"
+    },
+    {
+      "id": "25483",
+      "name": "CD Covadonga"
+    },
+    {
+      "id": "28014",
+      "name": "UD Poblense"
+    },
+    {
+      "id": "29198",
+      "name": "Trival Valderas Alcorcón"
+    },
+    {
+      "id": "29271",
+      "name": "CD Tudelano"
+    },
+    {
+      "id": "33306",
+      "name": "Gimnástica Segoviana CF"
+    },
+    {
+      "id": "36285",
+      "name": "CD Laredo"
+    },
+    {
+      "id": "38059",
+      "name": "Ciudad Lucena"
+    },
+    {
+      "id": "41409",
+      "name": "CD Varea"
+    },
+    {
+      "id": "41604",
+      "name": "Atlético Tordesillas"
+    },
+    {
+      "id": "41709",
+      "name": "CE Manresa"
+    },
+    {
+      "id": "44584",
+      "name": "Deportiva Minera"
+    },
+    {
+      "id": "46854",
+      "name": "Mérida AD"
+    },
+    {
+      "id": "49957",
+      "name": "Águilas FC"
+    },
+    {
+      "id": "50684",
+      "name": "CD Coria"
+    },
+    {
+      "id": "52397",
+      "name": "Unionistas CF"
+    },
+    {
+      "id": "55436",
+      "name": "CD Pamplona"
+    },
+    {
+      "id": "55644",
+      "name": "CP Mijas Las Lagunas"
+    },
+    {
+      "id": "55881",
+      "name": "UD Llanera"
+    },
+    {
+      "id": "56725",
+      "name": "CD Cieza"
+    },
+    {
+      "id": "60225",
+      "name": "UD Ourense"
+    },
+    {
+      "id": "61498",
+      "name": "CD Cuarte"
+    },
+    {
+      "id": "67752",
+      "name": "Calvo Sotelo Puertollano CF"
+    },
+    {
+      "id": "68575",
+      "name": "CD Atlético Paso"
+    },
+    {
+      "id": "69169",
+      "name": "CD Tarancón"
+    },
+    {
+      "id": "77673",
+      "name": "CF Calamocha"
+    },
+    {
+      "id": "78108",
+      "name": "UD Castellonense"
+    },
+    {
+      "id": "83058",
+      "name": "UE Tavernes"
+    },
+    {
+      "id": "83848",
+      "name": "Reus FC Reddis"
+    },
+    {
+      "id": "91184",
+      "name": "CD Cenicero"
+    },
+    {
+      "id": "101648",
+      "name": "CD Extremadura 1924"
+    },
+    {
+      "id": "123418",
+      "name": "CP Talayuela"
+    },
+    {
+      "id": "134733",
+      "name": "Atlético Calatayud CF"
+    }
+  ]
+}

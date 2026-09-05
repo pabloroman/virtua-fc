@@ -127,6 +127,30 @@ final class PrimeraFederacionB implements TeamColorProvider
                 'secondary' => 'white',
                 'number' => 'black',
             ],
+            'Águilas FC' => [
+                'pattern' => 'solid',
+                'primary' => 'white',
+                'secondary' => 'blue-700',
+                'number' => 'blue-700',
+            ],
+            'Real Jaén CF' => [
+                'pattern' => 'solid',
+                'primary' => 'white',
+                'secondary' => 'blue-700',
+                'number' => 'blue-700',
+            ],
+            'UE Sant Andreu' => [
+                'pattern' => 'stripes',
+                'primary' => 'yellow-400',
+                'secondary' => 'red-600',
+                'number' => 'black',
+            ],
+            'CF Rayo Majadahonda' => [
+                'pattern' => 'sash',
+                'primary' => 'white',
+                'secondary' => 'red-500',
+                'number' => 'black',
+            ],
         ];
     }
 }

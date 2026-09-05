@@ -1,0 +1,518 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/62.png",
+  "name": "SK Slavia Prague",
+  "country": "CZ",
+  "players": [
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 13, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "108416",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Ivan Schranz",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "26",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 17, 1994",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "189630",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Ondrej Kolar",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 26, 1995",
+      "foot": "right",
+      "height": "1,99m",
+      "id": "198614",
+      "injured": false,
+      "marketValue": "€2.70m",
+      "name": "Tomas Chory",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "25",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 31, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "216278",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Tomas Holes",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 27, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "242089",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Jindrich Stanek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "36",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Oct 23, 1996",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "292779",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Lukas Provod",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 31, 1999",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "321204",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Michal Sadílek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 29, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "405855",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Mojmír Chytil",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 4, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "421758",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Danijel Sturm",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 13, 2001",
+      "height": "1,90m",
+      "id": "486605",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Jakub Markovic",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "35",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 31, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "493758",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "David Doudera",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "21",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2000",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "500054",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "David Jurásek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "39",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 28, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "534568",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Tomas Vlcek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 8, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "544149",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "David Zima",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 8, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "567738",
+      "injured": true,
+      "marketValue": "€7.00m",
+      "name": "Igoh Ogbu",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 2, 2006",
+      "height": "1,89m",
+      "id": "765094",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Mikulas Konecny",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "42",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Sep 1, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "804799",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Ange N'Guessan",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 13, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "816875",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Denis Halinsky",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 8, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "944827",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Stepan Chaloupek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 28, 2004",
+      "foot": "right",
+      "id": "985844",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Emmanuel Ayaosi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 28, 2006",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "991036",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Elias Pitak",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "43",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 12, 2006",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "995525",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Pavel Kacor",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "32",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 20, 2004",
+      "height": "1,71m",
+      "id": "1001305",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "David Moses",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 10, 2003",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1010818",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Sahmkou Camara",
+      "nationality": [
+        "Guinea",
+        "France"
+      ],
+      "number": "41",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 20, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1018224",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Wiktor Nowak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 14, 2007",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1078215",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Jakub Kolisek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "45",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Apr 30, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1157676",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Adonija Ouanda",
+      "nationality": [
+        "Canada",
+        "Cote d'Ivoire"
+      ],
+      "number": "18",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Apr 6, 2007",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1161403",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Nazar Domchak",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 31, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1238634",
+      "injured": false,
+      "marketValue": "€2.70m",
+      "name": "Youssoupha Sanyang",
+      "nationality": [
+        "The Gambia",
+        "Senegal"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 25, 2006",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "1292977",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Oskar Kubiak",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jul 13, 2004",
+      "height": "1,74m",
+      "id": "1372515",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Samuel Isife",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "14",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 18, 2004",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1379813",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Hamidou Kante",
+      "nationality": [
+        "Senegal"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jan 19, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1381483",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Toumani Diakite",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 13, 2007",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1457962",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Mubarak Suleiman",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "15",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Fortuna Arena",
+  "stadiumSeats": "19370",
+  "transfermarktId": "62"
+}

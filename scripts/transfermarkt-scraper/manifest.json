@@ -3,8 +3,8 @@
   "name": "Transfermarkt Scraper",
   "version": "1.1",
   "description": "Scrape competition and player data from Transfermarkt and export as JSON",
-  "permissions": ["activeTab", "scripting", "tabs", "storage"],
-  "host_permissions": ["https://api.github.com/*"],
+  "permissions": ["activeTab", "scripting", "tabs", "storage", "webRequest"],
+  "host_permissions": ["https://api.github.com/*", "https://www.transfermarkt.com/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -20,7 +20,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["esp-player-ids.csv", "wolrld-cup-player-ids.csv"],
+      "resources": ["player-ids-todo.csv", "esp-player-ids.csv", "wolrld-cup-player-ids.csv"],
       "matches": ["<all_urls>"]
     }
   ]

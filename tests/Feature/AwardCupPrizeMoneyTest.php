@@ -76,6 +76,25 @@ class AwardCupPrizeMoneyTest extends TestCase
         $this->assertSame(1_100_000_000, $this->awardFor('UCL', roundNumber: 1)); // knockout playoff
     }
 
+    public function test_the_efl_cup_pays_less_than_the_fa_cup_at_every_stage(): void
+    {
+        // Both English cups run in the 2026 data.
+        $this->game->update(['base_season' => '2026']);
+
+        // Finals: the FA Cup is worth twice the EFL Cup.
+        $this->assertSame(200_000_000, $this->awardFor('ENGCUP', roundNumber: 6));
+        $this->assertSame(100_000_000, $this->awardFor('ENGLC', roundNumber: 5));
+
+        // Semi-finals, likewise.
+        $this->assertSame(100_000_000, $this->awardFor('ENGCUP', roundNumber: 5));
+        $this->assertSame(50_000_000, $this->awardFor('ENGLC', roundNumber: 4));
+
+        // And the shorter bracket must not make the EFL Cup's opening round
+        // worth more than the FA Cup's, which sharing one table would.
+        $this->assertSame(10_000_000, $this->awardFor('ENGCUP', roundNumber: 1));
+        $this->assertSame(10_000_000, $this->awardFor('ENGLC', roundNumber: 1));
+    }
+
     public function test_nothing_is_paid_when_the_user_is_not_the_winner(): void
     {
         $this->assertSame(0, $this->awardFor('ESPCUP', roundNumber: 7, winner: $this->opponent));

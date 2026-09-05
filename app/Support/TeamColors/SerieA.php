@@ -127,6 +127,24 @@ final class SerieA implements TeamColorProvider
                 'secondary' => 'black',
                 'number' => 'white',
             ],
+            'AC Monza' => [
+                'pattern' => 'halves',
+                'primary' => 'red-600',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'Frosinone Calcio' => [
+                'pattern' => 'stripes',
+                'primary' => 'yellow-400',
+                'secondary' => 'blue-700',
+                'number' => 'white',
+            ],
+            'Venezia FC' => [
+                'pattern' => 'solid',
+                'primary' => 'black',
+                'secondary' => 'orange-500',
+                'number' => 'white',
+            ],
         ];
     }
 }

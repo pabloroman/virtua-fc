@@ -54,6 +54,9 @@ return [
     // Knockout round names
     'first_round' => 'Primera ronda',
     'second_round' => 'Segunda ronda',
+    'third_round' => 'Tercera ronda',
+    'fourth_round' => 'Cuarta ronda',
+    'fifth_round' => 'Quinta ronda',
     'round_of_32' => 'Dieciseisavos de final',
     'round_of_16' => 'Octavos de final',
     'quarter_finals' => 'Cuartos de final',

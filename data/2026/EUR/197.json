@@ -1,0 +1,466 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/197.png",
+  "name": "AC Sparta Prague",
+  "country": "CZ",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 20, 1992",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "142219",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Jaroslav Zeleny",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 25, 1992",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "143798",
+      "injured": true,
+      "marketValue": "€1.00m",
+      "name": "Pavel Kaderabek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "3",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 18, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "256085",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Roman Macek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 13, 1998",
+      "height": "1,85m",
+      "id": "293360",
+      "injured": true,
+      "marketValue": "€850k",
+      "name": "Jakub Martinec",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 24, 1997",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "419723",
+      "injured": true,
+      "marketValue": "€450k",
+      "name": "Elias Cobbaut",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 13, 2000",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "430310",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Andrew Irving",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 7, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "435587",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Jonatan Braut Brunes",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 13, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "463610",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Loïc Mbe Soh",
+      "nationality": [
+        "France",
+        "Cameroon"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 18, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "485583",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Ki-Jana Hoever",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 10, 1999",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "488784",
+      "injured": true,
+      "marketValue": "€1.30m",
+      "name": "Magnus Kofod Andersen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 8, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "510310",
+      "injured": true,
+      "marketValue": "€3.50m",
+      "name": "Sivert Mannsverk",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 30, 2001",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "539197",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Matej Rynes",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "11",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 24, 2002",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "543726",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Krisztián Hegyi",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "47",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 28, 2002",
+      "foot": "left",
+      "height": "1,98m",
+      "id": "610607",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Jakub Surovcik",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 29, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "615618",
+      "injured": false,
+      "marketValue": "€2.30m",
+      "name": "Santiago Eneme",
+      "nationality": [
+        "Equatorial Guinea"
+      ],
+      "number": "5",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 2, 2003",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "652061",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Adam Karabec",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 20, 2003",
+      "height": "1,90m",
+      "id": "655300",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Patrik Vydra",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "26",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 3, 2002",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "659804",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "John Mercado",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 20, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "662701",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Joao Grimaldo",
+      "nationality": [
+        "Peru"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 11, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "707327",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Martin Suchomel",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "2",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 30, 2003",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "726714",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1123",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1123.png",
+          "name": "Norwich City"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€4.50m",
+      "name": "Matej Jurasek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "31",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 7, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "743629",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Josimar Alcócer",
+      "nationality": [
+        "Costa Rica",
+        "Nicaragua"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 26, 2004",
+      "height": "1,93m",
+      "id": "836196",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Matyas Vojta",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 25, 2002",
+      "foot": "right",
+      "height": "2,01m",
+      "id": "890617",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Tobias Guddal",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 19, 2004",
+      "height": "1,87m",
+      "id": "929887",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Adam Sevinsky",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 10, 2003",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "972353",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Ebrima Singhateh",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "27",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 23, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1013797",
+      "injured": true,
+      "marketValue": "€500k",
+      "name": "Ondrej Penxa",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "52",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 4, 2003",
+      "height": "1,87m",
+      "id": "1118150",
+      "injured": true,
+      "marketValue": "€4.50m",
+      "name": "Emmanuel Uchenna",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 18, 2007",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "1161671",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Viktor Vitályos",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 7, 2008",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1206877",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Hugo Sochurek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "38",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "epet Arena",
+  "stadiumSeats": "18243",
+  "transfermarktId": "197"
+}

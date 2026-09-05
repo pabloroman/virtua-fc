@@ -1,0 +1,473 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/449.png",
+  "name": "Trabzonspor",
+  "country": "TR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 8, 1991",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "107010",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Stefan Savić",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 9, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "137616",
+      "injured": true,
+      "marketValue": "€1.20m",
+      "name": "Okay Yokuşlu",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 15, 1992",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "148455",
+      "injured": false,
+      "marketValue": "€22.00m",
+      "name": "Mohamed Salah",
+      "nationality": [
+        "Egypt"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 4, 1993",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "207877",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Ruslan Malinovskyi",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 23, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "225693",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Fabinho",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 2, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "234509",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "985",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/985.png",
+          "name": "Manchester United"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€10.00m",
+      "name": "André Onana",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 23, 1995",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "236471",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Ozan Tufan",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "11",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 28, 1993",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "248271",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Umut Nayir",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 28, 1994",
+      "foot": "right",
+      "height": "2,01m",
+      "id": "272855",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Paul Onuachu",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 18, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "275683",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Melih Kabasakal",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "57",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 7, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "294100",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Metehan Mimaroğlu",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 13, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "295024",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Samet Akaydin",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 5, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "390379",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Mustafa Eskihellaç",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "19",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 12, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "395234",
+      "injured": false,
+      "marketValue": "€7.50m",
+      "name": "Batista Mendy",
+      "nationality": [
+        "France",
+        "Guinea-Bissau"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 6, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "405399",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Denis Drăguș",
+      "nationality": [
+        "Romania"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 19, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "514887",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Aral Şimşir",
+      "nationality": [
+        "Türkiye",
+        "Denmark"
+      ],
+      "number": "58",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 19, 2001",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "583917",
+      "injured": false,
+      "marketValue": "€11.00m",
+      "name": "Ernest Muci",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "7",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Sep 18, 2002",
+      "foot": "both",
+      "height": "1,76m",
+      "id": "611855",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Sidny Lopes Cabral",
+      "nationality": [
+        "Cape Verde",
+        "Netherlands"
+      ],
+      "number": "55",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 6, 2000",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "615350",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Cenk Özkacar",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "39",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 5, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "665048",
+      "injured": true,
+      "marketValue": "€11.00m",
+      "name": "Arseniy Batagov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Mar 7, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "671669",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Noah Saviolo",
+      "nationality": [
+        "Portugal",
+        "Belgium"
+      ],
+      "number": "70",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 6, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "674241",
+      "injured": true,
+      "marketValue": "€7.00m",
+      "name": "Tim Jabol-Folcarelli",
+      "nationality": [
+        "France",
+        "Martinique"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 24, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "743376",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Cihan Çanak",
+      "nationality": [
+        "Türkiye",
+        "Belgium"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 13, 2001",
+      "foot": "right",
+      "height": "1,65m",
+      "id": "783094",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Benjamin Bouchouari",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 23, 2003",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "985825",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Chibuike Nwaiwu",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 2, 2006",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1054214",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Onuralp Çevikkan",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 3, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1072017",
+      "injured": false,
+      "marketValue": "€11.00m",
+      "name": "Wagner Pina",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 2, 2006",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "1152080",
+      "injured": false,
+      "name": "Erol Can Çolak",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "96",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 1, 2006",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "1174140",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Ahmet Yıldırım",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 18, 2008",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1241698",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "René Mitongo",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "49",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Papara Park",
+  "stadiumSeats": "41061",
+  "transfermarktId": "449"
+}

@@ -94,6 +94,7 @@ class ValidateSeason extends Command
             };
         }
 
+        $this->validateSquadNumbers($season, $competitions);
         $this->warnUnprofiledClubs();
 
         foreach ($this->warnings as $warning) {
@@ -150,6 +151,7 @@ class ValidateSeason extends Command
             $this->warnings[] = "{$code}: no schedule.json (knockout/round dates) found.";
         }
         $this->validateEntryRounds($code, $dir, $clubs);
+        $this->validateBracketParity($code, $dir, $clubs);
         $this->line("  {$code}: " . count($clubs) . " clubs ✓");
     }
 
@@ -175,6 +177,93 @@ class ValidateSeason extends Command
             if ($entryRound < 1 || ($lastRound !== null && $entryRound > $lastRound)) {
                 $this->errors[] = "{$code}: club '{$name}' has entryRound {$entryRound}, outside rounds 1–" . ($lastRound ?? '?') . '.';
             }
+        }
+    }
+
+    /**
+     * A knockout is a chain of halvings, so every round's field has to be
+     * even. Walk the rounds: each one starts with the winners of the last
+     * plus whoever enters at it, and must halve.
+     *
+     * A cup that fails this doesn't fail loudly — CupDrawService throws
+     * OddCupDrawPoolException, ConductNextCupRoundDraw swallows it, and the
+     * competition simply stops mid-season. A warning here is the only place
+     * it's visible before a save is already broken.
+     *
+     * Warning rather than error, because the field is reshaped again at each
+     * season's close by DomesticCupQualificationProcessor. What the data
+     * declares is only the opening field.
+     *
+     * @param  array<int, array<string, mixed>>  $clubs
+     */
+    private function validateBracketParity(string $code, string $dir, array $clubs): void
+    {
+        $schedule = file_exists("{$dir}/schedule.json")
+            ? json_decode((string) file_get_contents("{$dir}/schedule.json"), true)
+            : null;
+        $rounds = array_map(fn ($round) => (int) ($round['round'] ?? 0), $schedule['knockout'] ?? []);
+
+        if ($rounds === []) {
+            return;
+        }
+
+        sort($rounds);
+
+        $entrantsByRound = [];
+        foreach ($clubs as $club) {
+            $entryRound = max(1, (int) ($club['entryRound'] ?? 1));
+            $entrantsByRound[$entryRound] = ($entrantsByRound[$entryRound] ?? 0) + 1;
+        }
+
+        $this->applySupercupSkipAhead($code, $entrantsByRound);
+
+        $survivors = 0;
+        foreach ($rounds as $round) {
+            $field = $survivors + ($entrantsByRound[$round] ?? 0);
+
+            if ($field % 2 !== 0) {
+                $this->warnings[] = "{$code}: round {$round} fields {$field} clubs, which is odd — "
+                    . 'the draw will leave a club unpaired and the cup will stop there.';
+
+                return;
+            }
+
+            $survivors = intdiv($field, 2);
+        }
+
+        if ($survivors !== 1) {
+            $this->warnings[] = "{$code}: the rounds resolve to {$survivors} winners, not 1 — "
+                . 'the field and the declared rounds disagree.';
+        }
+    }
+
+    /**
+     * Move the supercup field to the round it skips ahead to, the way
+     * CupEntryRoundService does at season setup. Spain's four Supercopa
+     * clubs join the Copa at the round of 32, which is what makes its
+     * opening round even — without applying it here, a correctly sized
+     * cup reads as odd.
+     *
+     * @param  array<int, int>  $entrantsByRound
+     */
+    private function applySupercupSkipAhead(string $code, array &$entrantsByRound): void
+    {
+        foreach (config('countries') as $country) {
+            $supercup = $country['supercup'] ?? null;
+            if (($supercup['cup'] ?? null) !== $code) {
+                continue;
+            }
+
+            $skipToRound = (int) ($supercup['cup_entry_round'] ?? 0);
+            if ($skipToRound < 2) {
+                return;
+            }
+
+            $moving = min((int) ($supercup['teams'] ?? 4), $entrantsByRound[1] ?? 0);
+            $entrantsByRound[1] -= $moving;
+            $entrantsByRound[$skipToRound] = ($entrantsByRound[$skipToRound] ?? 0) + $moving;
+
+            return;
         }
     }
 
@@ -370,6 +459,52 @@ class ValidateSeason extends Command
         }
         $this->loadSchedule($code, "{$dir}/schedule.json");
         $this->line("  {$code}: schedule only ✓");
+    }
+
+    /**
+     * Every squad member must hold a shirt number no team-mate also holds.
+     *
+     * `game_player_templates` is uniquely indexed on (season, team_id, number)
+     * — the guard that stops SetupNewGame silently dropping a player and then
+     * FK-failing on his match-state row. A single duplicated shirt in the
+     * source data therefore aborts `app:refresh-player-templates` for the whole
+     * season, so it belongs in the pre-seed gate rather than in a stack trace.
+     *
+     * Only squad-bearing folders are read: continental participant lists carry
+     * no players, and a club listed in more than one of them (a league squad
+     * that also appears in the domestic cup) is checked once.
+     *
+     * @param  array<int, array{code: string, type: string}>  $competitions
+     */
+    private function validateSquadNumbers(string $season, array $competitions): void
+    {
+        $checked = [];
+
+        foreach ($competitions as ['code' => $code, 'type' => $type]) {
+            if (!in_array($type, ['league', 'cup', 'pool'], true)) {
+                continue;
+            }
+
+            foreach (SeasonData::readCompetitionClubs($season, $code, $type) ?? [] as $club) {
+                if (isset($checked[$club['id']]) || empty($club['numbers'])) {
+                    continue;
+                }
+                $checked[$club['id']] = true;
+
+                $holdersByNumber = [];
+                foreach ($club['numbers'] as $playerId => $number) {
+                    $holdersByNumber[$number][] = ($club['players'][$playerId] ?? $playerId) . " ({$playerId})";
+                }
+
+                foreach ($holdersByNumber as $number => $holders) {
+                    if (count($holders) > 1) {
+                        $this->errors[] = "{$code}: '{$club['name']}' ({$club['id']}) has "
+                            . count($holders) . " players on shirt #{$number}: " . implode(', ', $holders)
+                            . ' — squad numbers must be unique within a club.';
+                    }
+                }
+            }
+        }
     }
 
     /**

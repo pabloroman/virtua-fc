@@ -90,7 +90,7 @@ add/remove line, not a reshuffled roster.
 3. **Drop in scraped squads.** From the browser scraper, write into
    `data/2026/`:
    - `data/2026/{LEAGUE}/teams.json` for each playable + foreign league
-     (ESP1, ESP2, ESP3A, ESP3B, ENG1, DEU1, FRA1, ITA1) — clubs + squads,
+     (ESP1, ESP2, ESP3A, ESP3B, ENG1, DEU1, FRA1, ITA1, POR1, NED1) — clubs + squads,
      reflecting real promotion/relegation. **Set `"seasonID": "2026"`.**
    - `data/2026/{CUP}/teams.json` participant lists (ESPCUP, ESPSUP).
    - `data/2026/{UCL,UEL,UECL,UEFASUP}/teams.json` participant lists. These are
@@ -105,11 +105,40 @@ add/remove line, not a reshuffled roster.
      in one batch, so run it after both are pushed. Add `pot` by hand for a
      true-to-life first-season draw; a re-scrape now preserves it.
    - `data/2026/EUR/{id}.json` and `data/2026/INT/{id}.json` pool teams.
-   - Append any new players to `data/players/player_positions_ES.json`
-     (secondary positions; keyed by player id, not season-scoped).
+   - Secondary positions (`data/players/player_positions_ES.json`, keyed by
+     player id and *not* season-scoped) are topped up by their own two
+     commands — see step 3b.
 
    `ESP3PO` (Primera RFEF playoff) is intentionally schedule-only — no
    `teams.json`; its bracket is generated per-game.
+
+3b. **Top up secondary positions.** Ask which players the scraper has never
+   been pointed at, which writes the batch list the extension reads:
+
+   ```bash
+   php artisan app:list-missing-positions 2026
+   ```
+
+   It prints per-competition coverage and writes
+   `scripts/transfermarkt-scraper/player-ids-todo.csv`. In the extension pick
+   **Pending positions** under *Batch player positions*, Start, then Download
+   JSON and merge it back:
+
+   ```bash
+   php artisan app:merge-player-positions ~/Downloads/player_positions.json \
+       --attempted=scripts/transfermarkt-scraper/player-ids-todo.csv
+   ```
+
+   Pass `--attempted` and commit the updated ledger CSV alongside the JSON.
+   The scraper only returns players that *have* a secondary position, so the
+   ledger is the only record that the rest were looked at; without it they come
+   back as "pending" every season. The merge is a union — entries for players
+   who have left the league are still live data for them elsewhere, so nothing
+   is pruned.
+
+   Use `--competition=ENG1` (repeatable) with `--suffix` to cover a foreign
+   league in its own `player_positions_{SUFFIX}.json`; the template service
+   globs every such file.
 
 4. **Normalize** (forces every `seasonID` to `2026`, sorts clubs/players so
    re-scrapes diff cleanly, and backfills each club's `country` — so you can skip
@@ -198,6 +227,45 @@ existing save, whose competition membership is its own `competition_entries`.
 
 Verify afterwards by taking an existing save through a cup draw and a season
 transition, not just by loading its squad.
+
+## Adding a new country
+
+A season refresh moves existing leagues forward; adding a *country* is a
+separate, one-off job. `config/countries.php` is the master registry — anything
+keyed off it (career-mode team selection, seeding, UEFA qualification, synthetic
+simulation of leagues the user is not in) picks the country up with no further
+code change. What does need writing, in order:
+
+1. **A competition config class** in `app/Modules/Competition/Configs/` —
+   TV-revenue curve, season goals, award lang keys and standings zones. Copy the
+   closest-shaped existing league (`Ligue1Config` for an 18-club division). A
+   country with no `config_class` still works, but falls back to
+   `DefaultLeagueConfig`'s generic money.
+2. **A `config/countries.php` block** — `tiers`, `continental_slots`,
+   `continental_competitions` and `support`. Foreign single-tier countries carry
+   `domestic_cups => []`, `promotions => []` and `cup_winner_slot => null`. Add
+   the new league to the other countries' `support.transfer_pool` too, or its
+   players are untradeable everywhere else.
+3. **Display names** — `SHORT_NAMES` and `ABBREVIATIONS` in `app/Models/Competition.php`.
+4. **Translations** in both `lang/es/` and `lang/en/` for the new award keys.
+5. **A kit-colour provider** in `app/Support/TeamColors/`, registered in both
+   `TeamColors::teams()` and `TeamColors::allGrouped()`.
+6. **Club profiles** in `database/seeders/ClubProfilesSeeder.php` — reputation,
+   fan loyalty, preferred formation. Unlisted clubs silently become
+   local-reputation, neutral-loyalty; `app:validate-season -v` lists them.
+7. **Naming-rights brands** in `config/commercial.php` keyed to the new country,
+   or its clubs can only sign the country-agnostic GLOBAL sponsors.
+8. **A `data/{season}/{CODE}/schedule.json`** — `app:scaffold-season` can only
+   shift a *previous* season's calendar, and a new league has none, so write it
+   by hand (copy a same-sized league's file and move the dates). The validator
+   requires exactly `2 × (teams − 1)` rounds.
+9. **A `scripts/transfermarkt-scraper/season-config.js` entry** mapping the repo
+   code to the Transfermarkt competition id, then scrape `teams.json`.
+
+Afterwards: clubs promoted out of the `EUR` pool into the new league should have
+their `data/{season}/EUR/{id}.json` deleted, so the league file is the single
+squad source. Clubs from that country playing *below* the new top flight must
+keep their pool file, or the European participant lists stop validating.
 
 ## Notes & caveats
 

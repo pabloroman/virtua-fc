@@ -1,0 +1,351 @@
+{
+  "id": "FAC",
+  "name": "FA Cup",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "11",
+      "name": "Arsenal FC"
+    },
+    {
+      "id": "22",
+      "name": "Derby County",
+      "stadiumName": "Pride Park Stadium",
+      "stadiumSeats": "33597"
+    },
+    {
+      "id": "29",
+      "name": "Everton FC"
+    },
+    {
+      "id": "31",
+      "name": "Liverpool FC"
+    },
+    {
+      "id": "148",
+      "name": "Tottenham Hotspur"
+    },
+    {
+      "id": "164",
+      "name": "Blackburn Rovers",
+      "stadiumName": "Ewood Park",
+      "stadiumSeats": "31367"
+    },
+    {
+      "id": "180",
+      "name": "Southampton FC",
+      "stadiumName": "St Mary's Stadium",
+      "stadiumSeats": "32384"
+    },
+    {
+      "id": "281",
+      "name": "Manchester City"
+    },
+    {
+      "id": "289",
+      "name": "Sunderland AFC"
+    },
+    {
+      "id": "337",
+      "name": "Birmingham City",
+      "stadiumName": "St. Andrew's @ Knighthead Park",
+      "stadiumSeats": "29409"
+    },
+    {
+      "id": "349",
+      "name": "Barnsley FC",
+      "stadiumName": "Oakwell Stadium",
+      "stadiumSeats": "24009"
+    },
+    {
+      "id": "350",
+      "name": "Sheffield United",
+      "stadiumName": "Bramall Lane",
+      "stadiumSeats": "32702"
+    },
+    {
+      "id": "355",
+      "name": "Bolton Wanderers",
+      "stadiumName": "Toughsheet Community Stadium",
+      "stadiumSeats": "28723"
+    },
+    {
+      "id": "358",
+      "name": "Charlton Athletic",
+      "stadiumName": "The Valley",
+      "stadiumSeats": "26875"
+    },
+    {
+      "id": "379",
+      "name": "West Ham United",
+      "stadiumName": "London Stadium",
+      "stadiumSeats": "62500"
+    },
+    {
+      "id": "399",
+      "name": "Leeds United"
+    },
+    {
+      "id": "405",
+      "name": "Aston Villa"
+    },
+    {
+      "id": "466",
+      "name": "Preston North End",
+      "stadiumName": "Deepdale",
+      "stadiumSeats": "23408"
+    },
+    {
+      "id": "512",
+      "name": "Stoke City",
+      "stadiumName": "bet365 Stadium",
+      "stadiumSeats": "30089"
+    },
+    {
+      "id": "543",
+      "name": "Wolverhampton Wanderers",
+      "stadiumName": "Molineux Stadium",
+      "stadiumSeats": "31750"
+    },
+    {
+      "id": "603",
+      "name": "Cardiff City",
+      "stadiumName": "Cardiff City Stadium",
+      "stadiumSeats": "33280"
+    },
+    {
+      "id": "631",
+      "name": "Chelsea FC"
+    },
+    {
+      "id": "641",
+      "name": "Middlesbrough FC",
+      "stadiumName": "Riverside Stadium",
+      "stadiumSeats": "33746"
+    },
+    {
+      "id": "677",
+      "name": "Ipswich Town"
+    },
+    {
+      "id": "698",
+      "name": "Bristol City",
+      "stadiumName": "Ashton Gate",
+      "stadiumSeats": "27000"
+    },
+    {
+      "id": "703",
+      "name": "Nottingham Forest"
+    },
+    {
+      "id": "762",
+      "name": "Newcastle United"
+    },
+    {
+      "id": "873",
+      "name": "Crystal Palace"
+    },
+    {
+      "id": "931",
+      "name": "Fulham FC"
+    },
+    {
+      "id": "984",
+      "name": "West Bromwich Albion",
+      "stadiumName": "The Hawthorns",
+      "stadiumSeats": "26850"
+    },
+    {
+      "id": "985",
+      "name": "Manchester United"
+    },
+    {
+      "id": "988",
+      "name": "Oxford United",
+      "stadiumName": "Kassam Stadium",
+      "stadiumSeats": "12500"
+    },
+    {
+      "id": "989",
+      "name": "AFC Bournemouth"
+    },
+    {
+      "id": "990",
+      "name": "Coventry City"
+    },
+    {
+      "id": "991",
+      "name": "Milton Keynes Dons",
+      "stadiumName": "Stadium mk",
+      "stadiumSeats": "30500"
+    },
+    {
+      "id": "1003",
+      "name": "Leicester City",
+      "stadiumName": "King Power Stadium",
+      "stadiumSeats": "32259"
+    },
+    {
+      "id": "1010",
+      "name": "Watford FC",
+      "stadiumName": "Vicarage Road",
+      "stadiumSeats": "21577"
+    },
+    {
+      "id": "1020",
+      "name": "Portsmouth FC",
+      "stadiumName": "Fratton Park",
+      "stadiumSeats": "20688"
+    },
+    {
+      "id": "1027",
+      "name": "Bradford City",
+      "stadiumName": "University of Bradford Stadium",
+      "stadiumSeats": "25136"
+    },
+    {
+      "id": "1028",
+      "name": "Millwall FC",
+      "stadiumName": "The Den",
+      "stadiumSeats": "20146"
+    },
+    {
+      "id": "1031",
+      "name": "Luton Town",
+      "stadiumName": "Kenilworth Road",
+      "stadiumSeats": "11850"
+    },
+    {
+      "id": "1032",
+      "name": "Reading FC",
+      "stadiumName": "Select Car Leasing Stadium",
+      "stadiumSeats": "24161"
+    },
+    {
+      "id": "1035",
+      "name": "Sheffield Wednesday",
+      "stadiumName": "Hillsborough",
+      "stadiumSeats": "39859"
+    },
+    {
+      "id": "1039",
+      "name": "Queens Park Rangers",
+      "stadiumName": "Loftus Road Stadium",
+      "stadiumSeats": "18360"
+    },
+    {
+      "id": "1045",
+      "name": "Notts County",
+      "stadiumName": "Meadow Lane",
+      "stadiumSeats": "20229"
+    },
+    {
+      "id": "1071",
+      "name": "Wigan Athletic",
+      "stadiumName": "Brick Community Stadium",
+      "stadiumSeats": "25133"
+    },
+    {
+      "id": "1072",
+      "name": "Peterborough United",
+      "stadiumName": "Weston Homes Stadium",
+      "stadiumSeats": "15314"
+    },
+    {
+      "id": "1098",
+      "name": "Stockport County",
+      "stadiumName": "Edgeley Park",
+      "stadiumSeats": "10832"
+    },
+    {
+      "id": "1110",
+      "name": "Huddersfield Town",
+      "stadiumName": "Accu Stadium",
+      "stadiumSeats": "24500"
+    },
+    {
+      "id": "1112",
+      "name": "Wrexham AFC",
+      "stadiumName": "STōK Cae Ras",
+      "stadiumSeats": "13341"
+    },
+    {
+      "id": "1123",
+      "name": "Norwich City",
+      "stadiumName": "Carrow Road",
+      "stadiumSeats": "27244"
+    },
+    {
+      "id": "1132",
+      "name": "Burnley FC",
+      "stadiumName": "Turf Moor",
+      "stadiumSeats": "21994"
+    },
+    {
+      "id": "1148",
+      "name": "Brentford FC"
+    },
+    {
+      "id": "1150",
+      "name": "Leyton Orient",
+      "stadiumName": "BetWright Stadium",
+      "stadiumSeats": "9241"
+    },
+    {
+      "id": "1181",
+      "name": "Blackpool FC",
+      "stadiumName": "Bloomfield Road",
+      "stadiumSeats": "16220"
+    },
+    {
+      "id": "1198",
+      "name": "Lincoln City",
+      "stadiumName": "LNER Stadium",
+      "stadiumSeats": "10130"
+    },
+    {
+      "id": "1237",
+      "name": "Brighton & Hove Albion"
+    },
+    {
+      "id": "2262",
+      "name": "Plymouth Argyle",
+      "stadiumName": "Home Park",
+      "stadiumSeats": "18173"
+    },
+    {
+      "id": "2288",
+      "name": "Swansea City",
+      "stadiumName": "Swansea.com Stadium",
+      "stadiumSeats": "21088"
+    },
+    {
+      "id": "2454",
+      "name": "Doncaster Rovers",
+      "stadiumName": "Eco-Power Stadium",
+      "stadiumSeats": "15231"
+    },
+    {
+      "id": "2805",
+      "name": "Wycombe Wanderers",
+      "stadiumName": "Adams Park",
+      "stadiumSeats": "10137"
+    },
+    {
+      "id": "3008",
+      "name": "Hull City"
+    },
+    {
+      "id": "3820",
+      "name": "Mansfield Town",
+      "stadiumName": "One Call Stadium",
+      "stadiumSeats": "9186"
+    },
+    {
+      "id": "3884",
+      "name": "AFC Wimbledon",
+      "stadiumName": "Cherry Red Records Stadium",
+      "stadiumSeats": "9215"
+    }
+  ]
+}

@@ -1,0 +1,570 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/265.png",
+  "name": "Panathinaikos",
+  "country": "GR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 16, 1989",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "46001",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Moussa Sissoko",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "32",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 5, 1992",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "111196",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Stefan de Vrij",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 5, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "137648",
+      "injured": true,
+      "marketValue": "€1.80m",
+      "name": "Sverrir Ingi Ingason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 28, 1993",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "162571",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Anastasios Bakasetas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "31",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 23, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "242273",
+      "injured": true,
+      "marketValue": "€5.00m",
+      "name": "Pedro Chirivella",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 25, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "242637",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Konstantinos Kotsaris",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "70",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 6, 1996",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "262523",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Davide Calabria",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 24, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "282199",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Erik Palmer-Brown",
+      "nationality": [
+        "United States"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 2, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "283170",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Iñaki Peña",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 5, 1996",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "311178",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Georgios Kyriakopoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "77",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 8, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "317806",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Cyriel Dessers",
+      "nationality": [
+        "Nigeria",
+        "Belgium"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 20, 1998",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "354340",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Rick van Drongelen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 20, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "354587",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "232",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/232.png",
+          "name": "Spartak Moscow"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€7.00m",
+      "name": "Levi García",
+      "nationality": [
+        "Trinidad and Tobago"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 9, 1995",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "360791",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1030",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1030.png",
+          "name": "AA Argentinos Juniors"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€900k",
+      "name": "Lucas Chaves",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 7, 2000",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "491296",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Anass Zaroury",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 7, 2001",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "543513",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Elmin Rastoder",
+      "nationality": [
+        "North Macedonia",
+        "Switzerland"
+      ],
+      "number": "74",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 16, 2002",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "564529",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1003",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1003.png",
+          "name": "Leicester City"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€9.00m",
+      "name": "Victor Kristiansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "34",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 24, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "615639",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Milos Pantovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "72",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 22, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "623561",
+      "injured": true,
+      "marketValue": "€1.50m",
+      "name": "Triantafyllos Tsapras",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "19",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 1, 1999",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "635336",
+      "injured": false,
+      "marketValue": "€14.00m",
+      "name": "Imrân Louza",
+      "nationality": [
+        "Morocco",
+        "France"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 20, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "676318",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Facundo Pellistri",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "28",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 6, 1999",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "684998",
+      "injured": false,
+      "marketValue": "€3.80m",
+      "name": "Kings Kangwa",
+      "nationality": [
+        "Zambia"
+      ],
+      "number": "42",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 30, 2003",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "854325",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Étienne Camara",
+      "nationality": [
+        "France",
+        "Guinea"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 24, 2004",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "898021",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Georgios Kyriopoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "30",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 25, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "905184",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Andreas Tetteh",
+      "nationality": [
+        "Greece",
+        "Ghana"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 16, 2002",
+      "foot": "right",
+      "id": "905189",
+      "injured": true,
+      "marketValue": "€1.00m",
+      "name": "Pavlos Pantelidis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 14, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "906748",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Vicente Taborda",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 6, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1024285",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Adriano Jagusic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 24, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1031590",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Sotiris Kontouris",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 14, 2005",
+      "foot": "right",
+      "id": "1047109",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Georgios Katris",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 3, 2007",
+      "id": "1077461",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Giannis Bokos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "39",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 25, 2005",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1305935",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Santino Andino",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "10",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 2009",
+      "height": "1,87m",
+      "id": "1329907",
+      "injured": false,
+      "name": "Vasilios Lavdas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "56",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 9, 2009",
+      "id": "1340846",
+      "injured": false,
+      "name": "Iason Nebis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "53",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 28, 2009",
+      "id": "1405490",
+      "injured": false,
+      "name": "Christos Gitonas",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 25, 2009",
+      "foot": "right",
+      "id": "1487539",
+      "injured": false,
+      "name": "Panagiotis Biniaris",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "44",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Olympiako Stadio Athinon \"Spyros Louis\"",
+  "stadiumSeats": "69618",
+  "transfermarktId": "265"
+}

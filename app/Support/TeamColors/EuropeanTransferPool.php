@@ -7,64 +7,6 @@ final class EuropeanTransferPool implements TeamColorProvider
     public static function teams(): array
     {
         return [
-            // Portugal
-            'SL Benfica' => [
-                'pattern' => 'solid',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'FC Porto' => [
-                'pattern' => 'stripes',
-                'primary' => 'blue-700',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'Sporting CP' => [
-                'pattern' => 'stripes',
-                'primary' => 'green-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'SC Braga' => [
-                'pattern' => 'solid',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-
-            // Netherlands
-            'Ajax Amsterdam' => [
-                'pattern' => 'bar',
-                'primary' => 'white',
-                'secondary' => 'red-600',
-                'number' => 'red-600',
-            ],
-            'Feyenoord Rotterdam' => [
-                'pattern' => 'halves',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'PSV Eindhoven' => [
-                'pattern' => 'stripes',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'FC Utrecht' => [
-                'pattern' => 'solid',
-                'primary' => 'red-600',
-                'secondary' => 'white',
-                'number' => 'white',
-            ],
-            'Go Ahead Eagles' => [
-                'pattern' => 'stripes',
-                'primary' => 'red-600',
-                'secondary' => 'yellow-400',
-                'number' => 'yellow-400',
-            ],
-
             // Turkey
             'Galatasaray' => [
                 'pattern' => 'halves',

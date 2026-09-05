@@ -127,6 +127,24 @@ final class PremierLeague implements TeamColorProvider
                 'secondary' => 'sky-400',
                 'number' => 'sky-400',
             ],
+            'Coventry City' => [
+                'pattern' => 'solid',
+                'primary' => 'sky-500',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'Hull City' => [
+                'pattern' => 'stripes',
+                'primary' => 'amber-500',
+                'secondary' => 'black',
+                'number' => 'white',
+            ],
+            'Ipswich Town' => [
+                'pattern' => 'solid',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
         ];
     }
 }

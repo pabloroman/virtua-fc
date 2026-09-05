@@ -23,13 +23,13 @@ Everything a cup needs beyond its participants and calendar lives in `config/cou
 | Key | Purpose |
 |-----|---------|
 | `domestic_cups.<cup>.handler` | Competition handler, `knockout_cup` for every current cup. |
-| `domestic_cups.<cup>.config_class` | Prize money per round (`DomesticKnockoutCupConfig` subclasses). |
+| `domestic_cups.<cup>.config_class` | Prize money per round (a `CompetitionConfig` implementation — `KnockoutCupConfig` and `SupercupConfig` are the shared ones). |
 | `domestic_cups.<cup>.draw_pairing` | Draw strategy: `CrossCategoryPairing` for a Copa del Rey–style draw, `SeededBracketPairing` for a supercup whose ties follow from the qualifying seeds, random when unset. |
 | `domestic_cups.<cup>.short_name` / `abbreviation` | Compact labels for tight layouts. |
 | `domestic_cups.<cup>.neutral_venues` | Round name ⇒ venue for ties away from the home ground; `'*'` for every round. |
 | `supercup` | Which cup and league feed the supercup, `teams` (4 for a final four, 2 for champion v cup winner), and `cup_entry_round` when the supercup field skips ahead in the main cup. |
 | `cup_qualification.<cup>` | Which playable tiers qualify and Spain's `target_size` floor. |
-| `cup_winner_slot` | The UEFA competition the cup winner qualifies for. |
+| `cup_winner_slot` | A list of cup ⇒ UEFA competition places, applied best competition first. England declares two: the FA Cup pays a Europa League place, the EFL Cup a Conference League one. |
 
 The data folder supplies the rest: `data/<season>/<cup>/teams.json` lists the participants (`id`, `name`, optional `entryRound`, `stadiumName`, `stadiumSeats`) and `schedule.json` the knockout rounds. The final is always the last round of the schedule, so no round number is repeated in config.
 
@@ -54,7 +54,7 @@ The engine keeps the field even against simulation drift the other way: `cup_qua
 
 ## Adding a Cup to a Country
 
-Spain is the only country with cups declared so far. To bring another country to the same point, nothing beyond config and data should be needed:
+Spain and England have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
 
 1. Declare the cups, supercup, qualification rules and cup-winner slot in `config/countries.php`, following the Spanish block.
 2. Add a prize config per cup under `app/Modules/Competition/Configs/`.
@@ -68,8 +68,43 @@ Spain is the only country with cups declared so far. To bring another country to
 |------|---------|
 | `config/countries.php` | Cup, supercup and qualification declarations per country |
 | `app/Modules/Competition/Services/CupEntryRoundService.php` | Entry-round assignment at season setup |
+| `app/Modules/Season/Processors/UefaQualificationProcessor.php` | Cup-winner European places and their cascades |
 | `app/Modules/Competition/Services/CupDrawService.php` | Draw mechanics and pairing-strategy resolution |
 | `app/Modules/Competition/Services/NeutralVenueResolver.php` | Config-declared and UEFA neutral grounds |
 | `app/Modules/Season/Processors/SupercupQualificationProcessor.php` | Supercup field derivation |
 | `app/Modules/Season/Processors/DomesticCupQualificationProcessor.php` | Cup field rebuild each season |
 | `app/Console/Commands/SeedReferenceData.php` | Ghost team creation (`seedCupTeams`) |
+
+## England: a cup trimmed to its playable rounds
+
+Only England's top flight is playable, so the FA Cup's qualifying rounds and the
+EFL Cup's early rounds contain nobody the user can be. Each English cup therefore
+starts at the round the Premier League joins:
+
+| Cup | Field | Rounds |
+|-----|-------|--------|
+| `ENGCUP` (FA Cup) | 64 — 20 Premier League clubs + 44 ghosts | third round to the final |
+| `ENGLC` (EFL Cup) | 32 — 20 Premier League clubs + 12 ghosts | third round to the final, semi-finals over two legs; pays half the FA Cup (`EflCupConfig`) |
+| `ENGSUP` (Community Shield) | 2 — champion v FA Cup winner | one round, at Wembley |
+
+Round *numbers* in `schedule.json` run from 1; the round *names* carry the real
+competition's round, which is why the FA Cup opens on `cup.third_round`. Because
+every club enters at round 1, England needs no `entryRound` anywhere — the field
+halves cleanly on its own. A country that wants its full pyramid still can:
+`entryRound` is what makes that work, and Spain's Copa is the model.
+
+Three things worth knowing before adding a cup to a third country:
+
+- **A ghost can win a cup.** It is then refused the European place its cup pays
+  (`UefaQualificationProcessor` treats a winner with no squad as no winner) and
+  the place cascades to the league table. The deeper the ghost field, the more
+  often this matters.
+- **`target_size` is not always wanted.** It only repairs a shortfall by pulling
+  more clubs from `top_per_group`. A country whose only playable tier is the top
+  flight has no such group, so declaring it could only turn a shortfall into a
+  thrown season transition. England omits it.
+- **A draw pairing is a choice, not a default.** `CrossCategoryPairing` keeps the
+  big clubs apart, which suits a Copa del Rey field spanning four divisions. In a
+  country where every playable club is tier 1 and every ghost tier 99 it would
+  make a top-flight tie impossible, so England declares none and gets the open
+  draw `RandomPairing` provides.
