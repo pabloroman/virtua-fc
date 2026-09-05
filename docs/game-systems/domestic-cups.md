@@ -84,7 +84,7 @@ starts at the round the Premier League joins:
 | Cup | Field | Rounds |
 |-----|-------|--------|
 | `ENGCUP` (FA Cup) | 64 — 20 Premier League clubs + 44 ghosts | third round to the final |
-| `ENGLC` (EFL Cup) | 32 — 20 Premier League clubs + 12 ghosts | third round to the final, semi-finals over two legs |
+| `ENGLC` (EFL Cup) | 32 — 20 Premier League clubs + 12 ghosts | third round to the final, semi-finals over two legs; pays half the FA Cup (`EflCupConfig`) |
 | `ENGSUP` (Community Shield) | 2 — champion v FA Cup winner | one round, at Wembley |
 
 Round *numbers* in `schedule.json` run from 1; the round *names* carry the real

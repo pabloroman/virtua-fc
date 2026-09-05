@@ -321,7 +321,10 @@ return [
             ],
             'ENGLC' => [
                 'handler' => 'knockout_cup',
-                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // Its own table, not the shared one: the EFL Cup pays half
+                // the FA Cup at every stage, and its shorter bracket would
+                // otherwise start it partway up the generic scale.
+                'config_class' => \App\Modules\Competition\Configs\EflCupConfig::class,
                 'short_name' => 'EFL Cup',
                 'abbreviation' => 'EFL',
                 'neutral_venues' => [
