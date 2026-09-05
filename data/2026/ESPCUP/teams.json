@@ -24,6 +24,10 @@
       "name": "Real Betis Balompié"
     },
     {
+      "id": "171",
+      "name": "Real Murcia CF"
+    },
+    {
       "id": "237",
       "name": "RCD Mallorca"
     },
@@ -104,6 +108,10 @@
       "name": "Deportivo Alavés"
     },
     {
+      "id": "1176",
+      "name": "Racing Ferrol"
+    },
+    {
       "id": "1244",
       "name": "CD Leganés"
     },
@@ -176,6 +184,10 @@
       "name": "SD Huesca"
     },
     {
+      "id": "5648",
+      "name": "Gimnàstic de Tarragona"
+    },
+    {
       "id": "5650",
       "name": "Pontevedra CF"
     },
@@ -192,6 +204,10 @@
       "name": "CD Manacor"
     },
     {
+      "id": "7971",
+      "name": "Hércules CF"
+    },
+    {
       "id": "8568",
       "name": "AD Ceuta FC"
     },
@@ -204,6 +220,10 @@
       "name": "Zamora CF"
     },
     {
+      "id": "11000",
+      "name": "CD Lugo"
+    },
+    {
       "id": "11245",
       "name": "UD San Sebastián de los Reyes"
     },
@@ -214,6 +234,14 @@
     {
       "id": "11422",
       "name": "CE Sabadell FC"
+    },
+    {
+      "id": "11596",
+      "name": "AD Alcorcón"
+    },
+    {
+      "id": "11602",
+      "name": "CP Cacereño"
     },
     {
       "id": "11615",
@@ -246,6 +274,10 @@
     {
       "id": "13227",
       "name": "Coruxo FC"
+    },
+    {
+      "id": "13241",
+      "name": "UD Ibiza"
     },
     {
       "id": "13244",
@@ -300,6 +332,10 @@
       "name": "CE Europa"
     },
     {
+      "id": "20844",
+      "name": "Real Avilés Industrial"
+    },
+    {
       "id": "24420",
       "name": "UD Logroñés"
     },
@@ -346,6 +382,10 @@
     {
       "id": "44584",
       "name": "Deportiva Minera"
+    },
+    {
+      "id": "46854",
+      "name": "Mérida AD"
     },
     {
       "id": "49957",

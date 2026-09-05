@@ -190,9 +190,9 @@ class ValidateSeason extends Command
      * competition simply stops mid-season. A warning here is the only place
      * it's visible before a save is already broken.
      *
-     * Warning rather than error: the supercup skip-ahead is applied per game
-     * by CupEntryRoundService and isn't visible in the data, so a cup that
-     * feeds a supercup can read as odd here and still be right.
+     * Warning rather than error, because the field is reshaped again at each
+     * season's close by DomesticCupQualificationProcessor. What the data
+     * declares is only the opening field.
      *
      * @param  array<int, array<string, mixed>>  $clubs
      */
@@ -215,6 +215,8 @@ class ValidateSeason extends Command
             $entrantsByRound[$entryRound] = ($entrantsByRound[$entryRound] ?? 0) + 1;
         }
 
+        $this->applySupercupSkipAhead($code, $entrantsByRound);
+
         $survivors = 0;
         foreach ($rounds as $round) {
             $field = $survivors + ($entrantsByRound[$round] ?? 0);
@@ -232,6 +234,36 @@ class ValidateSeason extends Command
         if ($survivors !== 1) {
             $this->warnings[] = "{$code}: the rounds resolve to {$survivors} winners, not 1 — "
                 . 'the field and the declared rounds disagree.';
+        }
+    }
+
+    /**
+     * Move the supercup field to the round it skips ahead to, the way
+     * CupEntryRoundService does at season setup. Spain's four Supercopa
+     * clubs join the Copa at the round of 32, which is what makes its
+     * opening round even — without applying it here, a correctly sized
+     * cup reads as odd.
+     *
+     * @param  array<int, int>  $entrantsByRound
+     */
+    private function applySupercupSkipAhead(string $code, array &$entrantsByRound): void
+    {
+        foreach (config('countries') as $country) {
+            $supercup = $country['supercup'] ?? null;
+            if (($supercup['cup'] ?? null) !== $code) {
+                continue;
+            }
+
+            $skipToRound = (int) ($supercup['cup_entry_round'] ?? 0);
+            if ($skipToRound < 2) {
+                return;
+            }
+
+            $moving = min((int) ($supercup['teams'] ?? 4), $entrantsByRound[1] ?? 0);
+            $entrantsByRound[1] -= $moving;
+            $entrantsByRound[$skipToRound] = ($entrantsByRound[$skipToRound] ?? 0) + $moving;
+
+            return;
         }
     }
 
