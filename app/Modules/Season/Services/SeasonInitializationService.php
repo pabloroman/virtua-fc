@@ -209,9 +209,10 @@ class SeasonInitializationService
     /**
      * Conduct cup draws for every knockout cup this game participates in
      * — the country's domestic cups and supercup, plus continental
-     * knockouts (UEFASUP). Entry rounds are settled first (tier rules,
-     * supercup skip-ahead, European entrants, parity) so round 1 is drawn
-     * from the right field.
+     * knockouts (UEFASUP). Entry rounds are settled first — the round each
+     * club's data file declared, then the supercup skip-ahead — so round 1
+     * is drawn from the right field. Parity is not adjusted here; it comes
+     * from the cup's own size (see cup_qualification.target_size).
      */
     public function conductCupDraws(string $gameId, string $countryCode): void
     {
