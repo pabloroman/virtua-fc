@@ -35,6 +35,8 @@
     { code: 'DEU1',    tmId: 'L1',      name: 'Bundesliga',                      kind: 'league',      batch: true },
     { code: 'FRA1',    tmId: 'FR1',     name: 'Ligue 1',                         kind: 'league',      batch: true },
     { code: 'ITA1',    tmId: 'IT1',     name: 'Serie A',                         kind: 'league',      batch: true },
+    { code: 'POR1',    tmId: 'PO1',     name: 'Liga Portugal',                   kind: 'league',      batch: true },
+    { code: 'NED1',    tmId: 'NL1',     name: 'Eredivisie',                      kind: 'league',      batch: true },
     { code: 'ESPCUP',  tmId: 'CDR',     name: 'Copa del Rey',                    kind: 'cup',         batch: false },
     { code: 'ESPSUP',  tmId: 'SUC',     name: 'Supercopa de España',            kind: 'cup',         batch: false, expectedClubs: 4 },
     { code: 'UCL',     tmId: 'CL',      name: 'UEFA Champions League',           kind: 'continental', batch: false, expectedClubs: 36 },

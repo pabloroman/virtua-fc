@@ -280,26 +280,91 @@ class ClubProfilesSeeder extends Seeder
         'Frosinone Calcio' => ClubProfile::REPUTATION_MODEST,
 
         // =============================================
+        // Portugal - Liga Portugal (POR1)
+        // =============================================
+
+        // Continental — the big three, perennial UCL/UEL entrants
+        'SL Benfica' => ClubProfile::REPUTATION_CONTINENTAL,
+        'FC Porto' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Sporting CP' => ClubProfile::REPUTATION_CONTINENTAL,
+
+        // Established
+        'SC Braga' => ClubProfile::REPUTATION_ESTABLISHED,
+        'Vitória Guimarães SC' => ClubProfile::REPUTATION_ESTABLISHED,
+        'Boavista FC' => ClubProfile::REPUTATION_ESTABLISHED,
+
+        // Modest
+        'Moreirense FC' => ClubProfile::REPUTATION_MODEST,
+        'CD Santa Clara' => ClubProfile::REPUTATION_MODEST,
+        'FC Famalicão' => ClubProfile::REPUTATION_MODEST,
+        'Gil Vicente FC' => ClubProfile::REPUTATION_MODEST,
+        'GD Estoril Praia' => ClubProfile::REPUTATION_MODEST,
+        'Rio Ave FC' => ClubProfile::REPUTATION_MODEST,
+        'Casa Pia AC' => ClubProfile::REPUTATION_MODEST,
+        'FC Arouca' => ClubProfile::REPUTATION_MODEST,
+        'CD Nacional' => ClubProfile::REPUTATION_MODEST,
+        'CS Marítimo' => ClubProfile::REPUTATION_MODEST,
+        'SC Farense' => ClubProfile::REPUTATION_MODEST,
+        'Portimonense SC' => ClubProfile::REPUTATION_MODEST,
+        'Vitória FC' => ClubProfile::REPUTATION_MODEST,
+        'Leixões SC' => ClubProfile::REPUTATION_MODEST,
+
+        // Local — recently promoted sides with little top-flight history
+        'CF Estrela Amadora' => ClubProfile::REPUTATION_LOCAL,
+        'AVS Futebol SAD' => ClubProfile::REPUTATION_LOCAL,
+        'FC Alverca' => ClubProfile::REPUTATION_LOCAL,
+        'CD Tondela' => ClubProfile::REPUTATION_LOCAL,
+
+        // =============================================
+        // Netherlands - Eredivisie (NED1)
+        // =============================================
+
+        // Continental
+        'Ajax Amsterdam' => ClubProfile::REPUTATION_CONTINENTAL,
+        'PSV Eindhoven' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Feyenoord Rotterdam' => ClubProfile::REPUTATION_CONTINENTAL,
+
+        // Established
+        'AZ Alkmaar' => ClubProfile::REPUTATION_ESTABLISHED,
+        'FC Twente Enschede' => ClubProfile::REPUTATION_ESTABLISHED,
+        'FC Utrecht' => ClubProfile::REPUTATION_ESTABLISHED,
+        'Vitesse Arnhem' => ClubProfile::REPUTATION_ESTABLISHED,
+
+        // Modest
+        'FC Groningen' => ClubProfile::REPUTATION_MODEST,
+        'SC Heerenveen' => ClubProfile::REPUTATION_MODEST,
+        'NEC Nijmegen' => ClubProfile::REPUTATION_MODEST,
+        'Sparta Rotterdam' => ClubProfile::REPUTATION_MODEST,
+        'Go Ahead Eagles' => ClubProfile::REPUTATION_MODEST,
+        'NAC Breda' => ClubProfile::REPUTATION_MODEST,
+        'Willem II Tilburg' => ClubProfile::REPUTATION_MODEST,
+        'PEC Zwolle' => ClubProfile::REPUTATION_MODEST,
+        'FC Volendam' => ClubProfile::REPUTATION_MODEST,
+        'De Graafschap' => ClubProfile::REPUTATION_MODEST,
+        'FC Den Bosch' => ClubProfile::REPUTATION_MODEST,
+
+        // Local
+        'Fortuna Sittard' => ClubProfile::REPUTATION_LOCAL,
+        'Heracles Almelo' => ClubProfile::REPUTATION_LOCAL,
+        'Excelsior Rotterdam' => ClubProfile::REPUTATION_LOCAL,
+        'SC Telstar' => ClubProfile::REPUTATION_LOCAL,
+        'RKC Waalwijk' => ClubProfile::REPUTATION_LOCAL,
+        'Almere City FC' => ClubProfile::REPUTATION_LOCAL,
+
+        // =============================================
         // European transfer pool (EUR)
         // =============================================
 
         // Continental
-        'SL Benfica' => ClubProfile::REPUTATION_CONTINENTAL,
-        'FC Porto' => ClubProfile::REPUTATION_CONTINENTAL,
-        'Ajax Amsterdam' => ClubProfile::REPUTATION_CONTINENTAL,
         'Galatasaray' => ClubProfile::REPUTATION_CONTINENTAL,
-        'Sporting CP' => ClubProfile::REPUTATION_CONTINENTAL,
         'Celtic FC' => ClubProfile::REPUTATION_CONTINENTAL,
         'Fenerbahce' => ClubProfile::REPUTATION_CONTINENTAL,
-        'Feyenoord Rotterdam' => ClubProfile::REPUTATION_CONTINENTAL,
-        'PSV Eindhoven' => ClubProfile::REPUTATION_CONTINENTAL,
         'Olympiacos Piraeus' => ClubProfile::REPUTATION_CONTINENTAL,
         'Red Bull Salzburg' => ClubProfile::REPUTATION_CONTINENTAL,
         'Shakhtar Donetsk' => ClubProfile::REPUTATION_CONTINENTAL,
 
         // Established
         'Club Brugge KV' => ClubProfile::REPUTATION_ESTABLISHED,
-        'SC Braga' => ClubProfile::REPUTATION_ESTABLISHED,
         'FC Copenhagen' => ClubProfile::REPUTATION_ESTABLISHED,
         'Rangers FC' => ClubProfile::REPUTATION_ESTABLISHED,
         'Red Star Belgrade' => ClubProfile::REPUTATION_ESTABLISHED,
@@ -315,7 +380,6 @@ class ClubProfilesSeeder extends Seeder
         'Besiktas JK' => ClubProfile::REPUTATION_ESTABLISHED,
         'Trabzonspor' => ClubProfile::REPUTATION_ESTABLISHED,
         'AEK Athens' => ClubProfile::REPUTATION_ESTABLISHED,
-        'AZ Alkmaar' => ClubProfile::REPUTATION_ESTABLISHED,
         'AC Sparta Prague' => ClubProfile::REPUTATION_ESTABLISHED,
         'HNK Hajduk Split' => ClubProfile::REPUTATION_ESTABLISHED,
 
@@ -329,14 +393,10 @@ class ClubProfilesSeeder extends Seeder
         'FC Viktoria Plzen' => ClubProfile::REPUTATION_MODEST,
         'Ludogorets Razgrad' => ClubProfile::REPUTATION_MODEST,
         'Maccabi Tel Aviv' => ClubProfile::REPUTATION_MODEST,
-        'FC Utrecht' => ClubProfile::REPUTATION_MODEST,
         'SK Brann' => ClubProfile::REPUTATION_MODEST,
         'Qarabağ FK' => ClubProfile::REPUTATION_MODEST,
-        'Go Ahead Eagles' => ClubProfile::REPUTATION_MODEST,
         'Pafos FC' => ClubProfile::REPUTATION_MODEST,
         'Kairat Almaty' => ClubProfile::REPUTATION_MODEST,
-        'FC Twente Enschede' => ClubProfile::REPUTATION_MODEST,
-        'NEC Nijmegen' => ClubProfile::REPUTATION_MODEST,
         'KAA Gent' => ClubProfile::REPUTATION_MODEST,
         'Sint-Truidense VV' => ClubProfile::REPUTATION_MODEST,
         'Slovan Bratislava' => ClubProfile::REPUTATION_MODEST,
@@ -698,6 +758,53 @@ class ClubProfilesSeeder extends Seeder
         'SS Lazio' => 3,                // 62.4%
         'FC Empoli' => 2,               // 54.3%
         'ACF Fiorentina' => 3,           // 47.2%
+
+        // ── Portugal ─────────────────────────────────────────────────
+        // Portuguese grounds run well below the top-five average: the big
+        // three fill large stadiums, but most of the division plays in
+        // half-empty municipal grounds built for Euro 2004.
+        'SL Benfica' => 7,              // ~82%, 64k Luz
+        'FC Porto' => 7,                // ~82%
+        'Sporting CP' => 8,             // ~86%
+        'SC Braga' => 4,
+        'Vitória Guimarães SC' => 6,
+        'Boavista FC' => 4,
+        'CD Nacional' => 3,
+        'Rio Ave FC' => 3,
+        'Moreirense FC' => 2,
+        'FC Famalicão' => 2,
+        'Gil Vicente FC' => 2,
+        'GD Estoril Praia' => 2,
+        'Casa Pia AC' => 1,
+        'FC Arouca' => 2,
+        'CD Santa Clara' => 3,
+        'CF Estrela Amadora' => 2,
+        'AVS Futebol SAD' => 1,
+        'FC Alverca' => 1,
+        'CD Tondela' => 2,
+
+        // ── Netherlands ──────────────────────────────────────────────
+        // The opposite profile: small grounds, near-permanent sell-outs
+        // and season-ticket waiting lists throughout the division.
+        'Ajax Amsterdam' => 9,
+        'PSV Eindhoven' => 9,
+        'Feyenoord Rotterdam' => 9,
+        'FC Groningen' => 8,
+        'FC Utrecht' => 8,
+        'FC Twente Enschede' => 8,
+        'AZ Alkmaar' => 7,
+        'SC Heerenveen' => 7,
+        'NEC Nijmegen' => 8,
+        'Go Ahead Eagles' => 8,
+        'NAC Breda' => 8,
+        'Sparta Rotterdam' => 7,
+        'PEC Zwolle' => 7,
+        'FC Volendam' => 7,
+        'Willem II Tilburg' => 7,
+        'Heracles Almelo' => 6,
+        'Fortuna Sittard' => 5,
+        'Excelsior Rotterdam' => 5,
+        'SC Telstar' => 5,
     ];
 
     /**
@@ -813,14 +920,25 @@ class ClubProfilesSeeder extends Seeder
         'Hellas Verona' => '3-4-3',
         'US Cremonese' => '3-5-2',
 
-        // ── European pool ────────────────────────────────────────────
+        // ── Portugal ─────────────────────────────────────────────────
         'SL Benfica' => '4-3-3',
         'FC Porto' => '4-2-3-1',
-        'Ajax Amsterdam' => '4-3-3',
         'Sporting CP' => '3-4-3',                 // Amorim legacy shape
-        'Celtic FC' => '4-3-3',
+        'SC Braga' => '4-4-2',
+        'Vitória Guimarães SC' => '4-2-3-1',
+
+        // ── Netherlands ──────────────────────────────────────────────
+        // The Dutch school is 4-3-3 almost without exception.
+        'Ajax Amsterdam' => '4-3-3',
         'Feyenoord Rotterdam' => '4-3-3',
         'PSV Eindhoven' => '4-3-3',
+        'AZ Alkmaar' => '4-3-3',
+        'FC Twente Enschede' => '4-3-3',
+        'FC Utrecht' => '4-3-3',
+        'Go Ahead Eagles' => '4-2-3-1',
+
+        // ── European pool ────────────────────────────────────────────
+        'Celtic FC' => '4-3-3',
 
         // ── International pool ───────────────────────────────────────
         'CA Boca Juniors' => '4-3-3',
@@ -907,13 +1025,18 @@ class ClubProfilesSeeder extends Seeder
         'Cagliari Calcio' => -1,
         'Como 1907' => 1,                         // Fabregas progressive
 
-        // ── European pool ────────────────────────────────────────────
+        // ── Portugal ─────────────────────────────────────────────────
         'SL Benfica' => 1,
-        'Ajax Amsterdam' => 1,
         'Sporting CP' => 1,
-        'Celtic FC' => 1,
+
+        // ── Netherlands ──────────────────────────────────────────────
+        'Ajax Amsterdam' => 1,
         'Feyenoord Rotterdam' => 1,
         'PSV Eindhoven' => 1,
+        'AZ Alkmaar' => 1,
+
+        // ── European pool ────────────────────────────────────────────
+        'Celtic FC' => 1,
         'Red Bull Salzburg' => 1,                 // Red Bull press
 
         // ── International pool ───────────────────────────────────────

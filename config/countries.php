@@ -262,7 +262,10 @@ return [
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
-                // EUR club pool — individual team files, includes NLD/POR teams
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
+                // EUR club pool — individual team files, for European clubs
+                // outside the modelled leagues
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 // INT club pool — non-European clubs (South America, MLS, etc.)
                 // for transfer market only; never participates in fixtures
@@ -326,6 +329,8 @@ return [
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -384,6 +389,8 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -442,6 +449,8 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -500,6 +509,128 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+                'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'PT' => [
+        'name' => 'Portugal',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'POR1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\PrimeiraLigaConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'POR1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3, 4],
+                'UECL' => [5],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+                'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'NL' => [
+        'name' => 'Países Bajos',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'NED1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\EredivisieConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'NED1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3, 4],
+                'UECL' => [5, 6],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
