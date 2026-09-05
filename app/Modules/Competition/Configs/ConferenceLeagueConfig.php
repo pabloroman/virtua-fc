@@ -9,12 +9,13 @@ class ConferenceLeagueConfig implements CompetitionConfig
     /**
      * UECL knockout round prize money (in cents).
      */
+    /** Keyed by rounds remaining after the one won: 0 is the final. */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 275_000_000,      // €2.75M — win Knockout Playoff = reach R16
-        2 => 310_000_000,      // €3.1M  — win R16 = reach QF
-        3 => 375_000_000,      // €3.75M — win QF = reach SF
-        4 => 460_000_000,      // €4.6M  — win SF = reach Final
-        5 => 625_000_000,      // €6.25M — win Final (champion)
+        0 => 625_000_000,      // €6.25M — win Final (champion)
+        1 => 460_000_000,      // €4.6M  — win SF = reach Final
+        2 => 375_000_000,      // €3.75M — win QF = reach SF
+        3 => 310_000_000,      // €3.1M  — win R16 = reach QF
+        4 => 275_000_000,      // €2.75M — win Knockout Playoff = reach R16
     ];
 
     public function getTvRevenue(int $position): int
@@ -49,9 +50,9 @@ class ConferenceLeagueConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal] ?? 0;
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int

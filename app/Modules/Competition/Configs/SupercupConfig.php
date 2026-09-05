@@ -15,9 +15,14 @@ use App\Modules\Competition\Contracts\CompetitionConfig;
  */
 class SupercupConfig implements CompetitionConfig
 {
+    /**
+     * Keyed by rounds remaining after the one won: 0 is the final. A final
+     * four pays a semi-final win and then the trophy; a two-club supercup
+     * plays only round one, which is its final, and is paid as one.
+     */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 100_000_000, // €1M — semi-final (or the final of a two-club supercup)
-        2 => 300_000_000, // €3M — winner
+        0 => 300_000_000, // €3M — winner
+        1 => 100_000_000, // €1M — semi-final
     ];
 
     public function getTvRevenue(int $position): int
@@ -40,9 +45,9 @@ class SupercupConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal] ?? 0;
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int

@@ -47,10 +47,17 @@ interface CompetitionConfig
     public function getStandingsZones(): array;
 
     /**
-     * Get prize money for advancing past a knockout round (in cents).
+     * Prize money for winning a knockout tie (in cents), keyed by how many
+     * rounds remain after it: 0 is the final, 1 the semi-final, and so on.
+     *
+     * Counting back from the final rather than forward from round one is what
+     * lets a config serve cups of different lengths — a round number means
+     * nothing on its own, since round 5 is the Copa del Rey's quarter-final
+     * and the Champions League final.
+     *
      * Returns 0 for competitions without knockout prize money.
      */
-    public function getKnockoutPrizeMoney(int $roundNumber): int;
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int;
 
     /**
      * Get the bonus paid to a team for qualifying out of the league phase,

@@ -7,15 +7,21 @@ use App\Modules\Competition\Contracts\CompetitionConfig;
 class KnockoutCupConfig implements CompetitionConfig
 {
     /**
-     * Copa del Rey knockout round prize money (in cents).
+     * Domestic knockout cup prize money (in cents), keyed by how many rounds
+     * remain after the one just won: 0 is the final, 1 the semi-final, and so
+     * on back through the early rounds.
+     *
+     * Counting from the final is what lets one table serve cups of different
+     * lengths — the Copa del Rey's seven rounds and a shorter cup's five —
+     * without the early rounds of one being paid as the latter stages of another.
      */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 10_000_000,       // €100K - Round of 64/32
-        2 => 20_000_000,       // €200K - Round of 32/16
+        0 => 200_000_000,      // €2M   - Final
+        1 => 100_000_000,      // €1M   - Semi-finals
+        2 => 50_000_000,       // €500K - Quarter-finals
         3 => 30_000_000,       // €300K - Round of 16
-        4 => 50_000_000,       // €500K - Quarter-finals
-        5 => 100_000_000,      // €1M - Semi-finals
-        6 => 200_000_000,      // €2M - Final
+        4 => 20_000_000,       // €200K - Round of 32
+        5 => 10_000_000,       // €100K - earlier rounds
     ];
 
     public function getTvRevenue(int $position): int
@@ -38,9 +44,12 @@ class KnockoutCupConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? self::KNOCKOUT_PRIZE_MONEY[1];
+        // A cup may have more preliminary rounds than the table describes;
+        // they all pay the earliest-round rate.
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal]
+            ?? self::KNOCKOUT_PRIZE_MONEY[array_key_last(self::KNOCKOUT_PRIZE_MONEY)];
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int

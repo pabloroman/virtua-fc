@@ -3,6 +3,7 @@
 namespace App\Modules\Match\Listeners;
 
 use App\Modules\Match\Events\CupTieResolved;
+use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\FinancialTransaction;
 
 class AwardCupPrizeMoney
@@ -18,7 +19,18 @@ class AwardCupPrizeMoney
             return;
         }
 
-        $amount = $competition->getConfig()->getKnockoutPrizeMoney($event->cupTie->round_number);
+        // Prize tables are written from the final backwards, because a round
+        // number means nothing on its own: round 5 is the Copa's quarter-final
+        // and the Champions League final. Count back from the last round the
+        // cup's schedule declares instead.
+        $finalRound = LeagueFixtureGenerator::finalKnockoutRound($competition->id, $event->game->base_season);
+        if ($finalRound === null) {
+            return;
+        }
+
+        $roundsFromFinal = $finalRound - $event->cupTie->round_number;
+
+        $amount = $competition->getConfig()->getKnockoutPrizeMoney($roundsFromFinal);
 
         if ($amount <= 0) {
             return;
