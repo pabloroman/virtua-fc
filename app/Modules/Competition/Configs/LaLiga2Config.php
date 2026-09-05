@@ -109,7 +109,7 @@ class LaLiga2Config implements CompetitionConfig, HasSeasonGoals
         return 'season.zamora';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }

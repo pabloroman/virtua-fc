@@ -107,7 +107,7 @@ class SerieAConfig implements CompetitionConfig, HasSeasonGoals
         return 'season.best_goalkeeper_serie_a';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }

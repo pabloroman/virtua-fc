@@ -18,9 +18,10 @@ class PrimeraRFEFPlayoffConfig implements CompetitionConfig
      * Knockout prize money by round (in cents).
      * Round 1: Bracket semifinal. Round 2: Bracket final (promotion).
      */
+    /** Keyed by rounds remaining after the one won: 0 is the final. */
     private const KNOCKOUT_PRIZE_MONEY = [
+        0 => 100_000_000,  // €1M — winning the bracket final (promotion)
         1 => 20_000_000,   // €200K — reaching the bracket final
-        2 => 100_000_000,  // €1M — winning the bracket final (promotion)
     ];
 
     public function getTvRevenue(int $position): int
@@ -43,9 +44,9 @@ class PrimeraRFEFPlayoffConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal] ?? 0;
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int

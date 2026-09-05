@@ -103,7 +103,7 @@ class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }

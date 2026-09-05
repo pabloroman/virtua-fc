@@ -114,7 +114,7 @@ class PremierLeagueConfig implements CompetitionConfig, HasSeasonGoals
         return 'season.golden_glove';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }

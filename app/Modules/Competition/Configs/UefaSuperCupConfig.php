@@ -10,8 +10,9 @@ class UefaSuperCupConfig implements CompetitionConfig
      * UEFA Super Cup prize money (in cents). Single match: only the winner
      * of round 1 (the final) is rewarded.
      */
+    /** Keyed by rounds remaining after the one won: 0 is the final. */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 500_000_000, // €5M — Winner
+        0 => 500_000_000, // €5M — Winner
     ];
 
     public function getTvRevenue(int $position): int
@@ -34,9 +35,9 @@ class UefaSuperCupConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal] ?? 0;
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int

@@ -106,7 +106,7 @@ class Ligue1Config implements CompetitionConfig, HasSeasonGoals
         return 'season.best_goalkeeper_ligue1';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }

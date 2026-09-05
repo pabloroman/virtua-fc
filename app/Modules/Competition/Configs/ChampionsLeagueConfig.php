@@ -9,12 +9,13 @@ class ChampionsLeagueConfig implements CompetitionConfig
     /**
      * UCL knockout round prize money (in cents).
      */
+    /** Keyed by rounds remaining after the one won: 0 is the final. */
     private const KNOCKOUT_PRIZE_MONEY = [
-        1 => 1_100_000_000,    // €11M   — win Knockout Playoff = reach R16
-        2 => 1_250_000_000,    // €12.5M — win R16 = reach QF
-        3 => 1_500_000_000,    // €15M   — win QF = reach SF
-        4 => 1_850_000_000,    // €18.5M — win SF = reach Final
-        5 => 2_500_000_000,    // €25M   — win Final (champion)
+        0 => 2_500_000_000,    // €25M   — win Final (champion)
+        1 => 1_850_000_000,    // €18.5M — win SF = reach Final
+        2 => 1_500_000_000,    // €15M   — win QF = reach SF
+        3 => 1_250_000_000,    // €12.5M — win R16 = reach QF
+        4 => 1_100_000_000,    // €11M   — win Knockout Playoff = reach R16
     ];
 
     /**
@@ -87,9 +88,9 @@ class ChampionsLeagueConfig implements CompetitionConfig
         return 'season.best_goalkeeper';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
-        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
+        return self::KNOCKOUT_PRIZE_MONEY[$roundsFromFinal] ?? 0;
     }
 
     public function getLeaguePhaseQualificationBonus(int $position): int
