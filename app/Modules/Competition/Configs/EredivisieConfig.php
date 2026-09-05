@@ -109,7 +109,7 @@ class EredivisieConfig implements CompetitionConfig, HasSeasonGoals
         return 'season.best_goalkeeper_eredivisie';
     }
 
-    public function getKnockoutPrizeMoney(int $roundNumber): int
+    public function getKnockoutPrizeMoney(int $roundsFromFinal): int
     {
         return 0;
     }
