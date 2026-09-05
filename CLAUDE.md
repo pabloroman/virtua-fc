@@ -68,7 +68,7 @@ Domain logic is organized into modules under `app/Modules/`, each with services,
 | **Squad** | Squad composition | `PlayerGeneratorService`, `EligibilityService` | `squad-page-redesign.md` |
 | **ReserveTeam** | Reserve / B-team and U23 cascades | `ReserveTeamService` | — |
 | **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` | `transfer-market.md`, `market-value-dynamics.md`, `release-clauses.md` |
-| **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService` | — |
+| **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, `CupEntryRoundService` | `domestic-cups.md` |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` | `club-economy-system.md` |
 | **Stadium** | Capacity, attendance, upgrades & naming rights | `GameStadiumResolver`, `StadiumUpgradeService`, `MatchAttendanceService`, `FanLoyaltyService`, `SeasonTicketPricingService`, `DemandCurveService`, `NamingRightsService` | `stadium-and-facilities.md` |
 | **Reputation** | Club & competition reputation | `ReputationSummaryService` | `reputation-system.md` |

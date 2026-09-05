@@ -90,7 +90,7 @@ Simplest handler. Batches by `round_number`. `beforeMatches()` and `afterMatches
 
 ### KnockoutCupHandler (`knockout_cup`)
 
-Used for Copa del Rey, Supercopa. Batches by `scheduled_date`. `beforeMatches()` is a no-op. `afterMatches()` resolves cup ties and dispatches `CupTieResolved`. Next round generation happens via the `ConductNextCupRoundDraw` listener, which calls `CupDrawService` for random draw pairing.
+Used for every domestic cup and supercup (Copa del Rey, Supercopa). Batches by `scheduled_date`. `beforeMatches()` is a no-op. `afterMatches()` resolves cup ties and dispatches `CupTieResolved`. Next round generation happens via the `ConductNextCupRoundDraw` listener, which calls `CupDrawService` for random draw pairing.
 
 ### SwissFormatHandler (`swiss_format`)
 

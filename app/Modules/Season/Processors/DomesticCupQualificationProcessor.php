@@ -13,8 +13,8 @@ use App\Models\Team;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Rebuilds domestic cup participants (e.g. Copa del Rey) at the end of each
- * season based on the configured qualification rules.
+ * Rebuilds domestic cup participants (Copa del Rey, FA Cup, EFL Cup…) at
+ * the end of each season based on each country's `cup_qualification` rules.
  *
  * Runs before PromotionRelegationProcessor (priority 85) so that this
  * season's CompetitionEntry still reflects this season's divisions and
@@ -25,8 +25,9 @@ use Illuminate\Support\Facades\Log;
  *     (e.g. ESP1, ESP2 → all teams in those leagues).
  *  2. Add the top N non-reserves from each competition in `top_per_group`
  *     (e.g. ESP3A and ESP3B → top 5 each).
- *  3. Preserve any regional teams already in the cup that aren't in any
- *     playable tier (lower-division seed teams from data/<year>/ESPCUP).
+ *  3. Preserve any "ghost" teams already in the cup that aren't in any
+ *     playable tier (lower-division seed teams from data/<year>/<cup>),
+ *     entry round included — their data file is the only source for it.
  *  3b. Force-include any team in this country's supercup field. The
  *      downstream setup pipeline bumps these teams to a later entry_round
  *      via an UPDATE — if a supercup-qualifying cup finalist (e.g. a
@@ -40,10 +41,14 @@ use Illuminate\Support\Facades\Log;
  *     after the supercup bump), and silent shortfalls are what produced
  *     the 93 broken Copa del Rey draws in production.
  *
+ * Qualifiers from a playable tier are written at round 1. The supercup
+ * skip-ahead and bracket parity are applied later, at season setup, by
+ * CupEntryRoundService.
+ *
  * Reserve teams (Team::parent_team_id is set) never qualify, regardless
  * of finishing position. They're skipped at every step.
  */
-class CopaQualificationProcessor implements SeasonProcessor
+class DomesticCupQualificationProcessor implements SeasonProcessor
 {
     public function __construct(
         private CountryConfig $countryConfig,
@@ -117,6 +122,7 @@ class CopaQualificationProcessor implements SeasonProcessor
         }
 
         $reserveLookup = array_flip($reserveTeamIdsForCountry);
+
         $qualifiers = [];
 
         // 1. Auto-qualify tiers.
@@ -166,8 +172,10 @@ class CopaQualificationProcessor implements SeasonProcessor
         if (!empty($excludeFromRegional)) {
             $regionalQuery->whereNotIn('team_id', $excludeFromRegional);
         }
+        $preservedRegional = [];
         foreach ($regionalQuery->pluck('team_id') as $teamId) {
             $qualifiers[$teamId] = true;
+            $preservedRegional[$teamId] = true;
         }
 
         // 3b. Force-include the supercup-qualifying teams. The supercup
@@ -188,7 +196,7 @@ class CopaQualificationProcessor implements SeasonProcessor
                 ->where('competition_id', $supercupConfig['competition'])
                 ->pluck('team_id');
             foreach ($supercupTeamIds as $teamId) {
-                if (isset($reserveLookup[$teamId])) {
+                if (isset($reserveLookup[$teamId]) || isset($qualifiers[$teamId])) {
                     continue;
                 }
                 $qualifiers[$teamId] = true;
@@ -219,7 +227,7 @@ class CopaQualificationProcessor implements SeasonProcessor
 
             if (count($qualifiers) < $targetSize) {
                 throw new \RuntimeException(sprintf(
-                    '[CopaQualification] %s for game %s: target_size %d unreachable, got %d. '
+                    '[DomesticCupQualification] %s for game %s: target_size %d unreachable, got %d. '
                     . 'Check cup_qualification rule, reserve filtering, or league sizes.',
                     $cupId,
                     $game->id,
@@ -230,8 +238,8 @@ class CopaQualificationProcessor implements SeasonProcessor
         }
 
         // Replace cup entries: clear playable-tier + reserves, upsert the
-        // new field. Regional teams added in step 3 are preserved by the
-        // upsert (no rows for them are deleted).
+        // new field. Regional teams added in step 3 keep their existing
+        // rows (and entry rounds) — nothing is deleted or written for them.
         $teamIdsToClear = array_unique(array_merge($playableTierTeamIds, $reserveTeamIdsForCountry));
         if (!empty($teamIdsToClear)) {
             CompetitionEntry::where('game_id', $game->id)
@@ -240,16 +248,22 @@ class CopaQualificationProcessor implements SeasonProcessor
                 ->delete();
         }
 
-        if (empty($qualifiers)) {
-            return;
+        $rows = [];
+        foreach (array_keys($qualifiers) as $teamId) {
+            if (isset($preservedRegional[$teamId])) {
+                continue;
+            }
+            $rows[] = [
+                'game_id' => $game->id,
+                'competition_id' => $cupId,
+                'team_id' => $teamId,
+                'entry_round' => 1,
+            ];
         }
 
-        $rows = array_map(fn (string $teamId) => [
-            'game_id' => $game->id,
-            'competition_id' => $cupId,
-            'team_id' => $teamId,
-            'entry_round' => 1,
-        ], array_keys($qualifiers));
+        if ($rows === []) {
+            return;
+        }
 
         CompetitionEntry::upsert(
             $rows,
@@ -257,7 +271,7 @@ class CopaQualificationProcessor implements SeasonProcessor
             ['entry_round']
         );
 
-        Log::info("[CopaQualification] {$cupId}: " . count($rows) . ' qualifiers');
+        Log::info("[DomesticCupQualification] {$cupId}: " . count($qualifiers) . ' qualifiers');
     }
 
     /**

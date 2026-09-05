@@ -211,7 +211,11 @@ class CupDrawService
                 ? $this->getTeamTierMap($gameId, $enteringTeams)
                 : [];
 
-            $orderedTeams = $strategy->pairTeams($enteringTeams, $teamTierMap);
+            $orderedTeams = $strategy->pairTeams(
+                $enteringTeams,
+                $teamTierMap,
+                $this->getTeamSeedMap($gameId, $competitionId, $enteringTeams),
+            );
 
             return $this->chunkIntoPairs($orderedTeams, $competitionId, $roundNumber);
         }
@@ -232,7 +236,11 @@ class CupDrawService
             ? $this->getTeamTierMap($gameId, $allTeams)
             : [];
 
-        $orderedTeams = $strategy->pairTeams($allTeams, $teamTierMap);
+        $orderedTeams = $strategy->pairTeams(
+            $allTeams,
+            $teamTierMap,
+            $this->getTeamSeedMap($gameId, $competitionId, $allTeams),
+        );
 
         return $this->chunkIntoPairs($orderedTeams, $competitionId, $roundNumber);
     }
@@ -363,6 +371,24 @@ class CupDrawService
      * @param Collection<string> $teamIds
      * @return array<string, int>
      */
+    /**
+     * Seeds for the clubs in this round, for competitions that seed their
+     * bracket instead of drawing it. Empty for everything else.
+     *
+     * @param  Collection<int, string>  $teamIds
+     * @return array<string, int>
+     */
+    private function getTeamSeedMap(string $gameId, string $competitionId, Collection $teamIds): array
+    {
+        return CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->whereIn('team_id', $teamIds)
+            ->whereNotNull('seed')
+            ->pluck('seed', 'team_id')
+            ->map(fn ($seed) => (int) $seed)
+            ->all();
+    }
+
     private function getTeamTierMap(string $gameId, Collection $teamIds): array
     {
         // The collection-level pluck is deliberate: a builder-level pluck() would

@@ -101,6 +101,23 @@ class LeagueFixtureGenerator
     }
 
     /**
+     * The round number of a knockout competition's final — the last round in
+     * its schedule.json — or null when the competition has no knockout
+     * schedule. Processors that need "the cup final" (supercup and UEFA
+     * cup-winner qualification) read it from here instead of repeating the
+     * round number in config.
+     */
+    public static function finalKnockoutRound(string $competitionId, string $baseSeason): ?int
+    {
+        $rounds = self::loadKnockoutRounds($competitionId, $baseSeason);
+        if ($rounds === []) {
+            return null;
+        }
+
+        return max(array_map(fn (PlayoffRoundConfig $round) => $round->round, $rounds));
+    }
+
+    /**
      * Adjust knockout round dates by a year offset.
      *
      * @param  PlayoffRoundConfig[]  $rounds

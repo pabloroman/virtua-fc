@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $competition_id
  * @property string $team_id
  * @property int $entry_round
+ * @property int|null $seed
  * @property-read \App\Models\Competition $competition
  * @property-read \App\Models\Game $game
  * @property-read \App\Models\Team $team
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CompetitionEntry whereCompetitionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CompetitionEntry whereEntryRound($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CompetitionEntry whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CompetitionEntry whereSeed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CompetitionEntry whereTeamId($value)
  * @mixin \Eloquent
  */
@@ -35,10 +37,12 @@ class CompetitionEntry extends Model
         'competition_id',
         'team_id',
         'entry_round',
+        'seed',
     ];
 
     protected $casts = [
         'entry_round' => 'integer',
+        'seed' => 'integer',
     ];
 
     public function game(): BelongsTo

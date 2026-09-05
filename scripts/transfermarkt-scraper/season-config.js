@@ -148,25 +148,28 @@
 
   // Build a canonical teams.json string for a league/cup/continental result.
   //
-  // `previousClubs` (the clubs array already on the branch) carries UEFA seeding
-  // pots forward. The scraper cannot read pots off Transfermarkt — they are
-  // entered by hand — so without this a re-scrape would destroy them with no way
-  // to reconstruct them. Clubs that dropped out lose their pot with them, and a
-  // newly drawn club arrives without one; `app:validate-season` then reports the
-  // file as partially potted, which is the right signal after a draw changes.
+  // `previousClubs` (the clubs array already on the branch) carries hand-entered
+  // fields forward: UEFA seeding pots on continental lists and the `entryRound`
+  // a domestic cup club joins at. The scraper cannot read either off
+  // Transfermarkt, so without this a re-scrape would destroy them with no way
+  // to reconstruct them. Clubs that dropped out lose theirs with them, and a
+  // newly drawn club arrives without one; `app:validate-season` then reports a
+  // partially potted continental file, which is the right signal after a draw
+  // changes, while a cup club without an entry round simply joins at round 1.
   function toTeamsJson(result, comp, season, previousClubs) {
-    const pots = new Map();
-    if (comp.kind === 'continental' && Array.isArray(previousClubs)) {
+    const carried = new Map();
+    const carriedKey = comp.kind === 'continental' ? 'pot' : (comp.kind === 'cup' ? 'entryRound' : null);
+    if (carriedKey && Array.isArray(previousClubs)) {
       for (const club of previousClubs) {
-        if (club && club.pot !== undefined) pots.set(resolveClubId(club), club.pot);
+        if (club && club[carriedKey] !== undefined) carried.set(resolveClubId(club), club[carriedKey]);
       }
     }
 
     const clubs = (result.clubs || [])
       .map(sortClubPlayers)
       .map(club => {
-        const pot = pots.get(resolveClubId(club));
-        return pot === undefined || club.pot !== undefined ? club : { ...club, pot };
+        const value = carried.get(resolveClubId(club));
+        return value === undefined || club[carriedKey] !== undefined ? club : { ...club, [carriedKey]: value };
       })
       .sort(byId(resolveClubId));
 

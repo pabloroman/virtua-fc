@@ -85,6 +85,16 @@ describe('toTeamsJson — pot preservation on continental re-scrapes', () => {
         expect(clubs[0]).not.toHaveProperty('pot');
     });
 
+    it('carries a cup club\'s entryRound forward the same way', () => {
+        const rescraped = { id: 'CDR', clubs: [{ id: '11', name: 'Arsenal' }, { id: '22', name: 'Derby County' }] };
+        const stored = [{ id: '11', name: 'Arsenal', entryRound: 3 }];
+
+        const clubs = parse(SeasonConfig.toTeamsJson(rescraped, ESPCUP, '2026', stored)).clubs;
+
+        expect(clubs.find(c => c.id === '11').entryRound).toBe(3);
+        expect(clubs.find(c => c.id === '22')).not.toHaveProperty('entryRound');
+    });
+
     it('is unchanged when there is nothing stored yet', () => {
         expect(SeasonConfig.toTeamsJson(scraped, UCL, '2026', null))
             .toBe(SeasonConfig.toTeamsJson(scraped, UCL, '2026'));

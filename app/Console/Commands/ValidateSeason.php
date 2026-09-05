@@ -149,7 +149,33 @@ class ValidateSeason extends Command
         if (!file_exists("{$dir}/schedule.json")) {
             $this->warnings[] = "{$code}: no schedule.json (knockout/round dates) found.";
         }
+        $this->validateEntryRounds($code, $dir, $clubs);
         $this->line("  {$code}: " . count($clubs) . " clubs ✓");
+    }
+
+    /**
+     * A club's `entryRound` has to be a round the cup actually has.
+     *
+     * @param  array<int, array<string, mixed>>  $clubs
+     */
+    private function validateEntryRounds(string $code, string $dir, array $clubs): void
+    {
+        $schedule = file_exists("{$dir}/schedule.json")
+            ? json_decode((string) file_get_contents("{$dir}/schedule.json"), true)
+            : null;
+        $rounds = array_map(fn ($round) => (int) ($round['round'] ?? 0), $schedule['knockout'] ?? []);
+        $lastRound = $rounds === [] ? null : max($rounds);
+
+        foreach ($clubs as $club) {
+            if (!isset($club['entryRound'])) {
+                continue;
+            }
+            $entryRound = (int) $club['entryRound'];
+            $name = $club['name'] ?? '(unnamed)';
+            if ($entryRound < 1 || ($lastRound !== null && $entryRound > $lastRound)) {
+                $this->errors[] = "{$code}: club '{$name}' has entryRound {$entryRound}, outside rounds 1–" . ($lastRound ?? '?') . '.';
+            }
+        }
     }
 
     /**

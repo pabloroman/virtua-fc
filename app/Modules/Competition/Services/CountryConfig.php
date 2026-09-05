@@ -265,11 +265,21 @@ class CountryConfig
     /**
      * Get supercup config for a country.
      *
-     * @return array{competition: string, cup: string, league: string, cup_final_round: int, cup_entry_round?: int}|null
+     * @return array{competition: string, cup: string, league: string, teams?: int, cup_entry_round?: int}|null
      */
     public function supercup(string $countryCode): ?array
     {
         return $this->get($countryCode)['supercup'] ?? null;
+    }
+
+    /**
+     * Number of clubs in a country's supercup: 4 for a final four (both cup
+     * finalists plus the league's top two), 2 for a champions-v-cup-winner
+     * one-off. Defaults to the final four, the shape ESPSUP always had.
+     */
+    public function supercupSize(string $countryCode): int
+    {
+        return (int) ($this->supercup($countryCode)['teams'] ?? 4);
     }
 
     /**
@@ -283,12 +293,61 @@ class CountryConfig
     }
 
     /**
+     * The config entry of a domestic cup, looked up by competition ID across
+     * every country. Null for anything that isn't a domestic cup (leagues,
+     * UEFA competitions, promotion playoffs).
+     *
+     * @return array{handler?: string, config_class?: class-string, draw_pairing?: class-string, short_name?: string, abbreviation?: string, neutral_venues?: array<string, array{name: string, capacity: int}>}|null
+     */
+    public function domesticCup(string $competitionId): ?array
+    {
+        foreach ($this->allCountries() as $config) {
+            if (isset($config['domestic_cups'][$competitionId])) {
+                return $config['domestic_cups'][$competitionId];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Neutral venue for a domestic cup round, if the cup declares one.
+     *
+     * `neutral_venues` is keyed by round name (e.g. 'cup.final'); a '*' key
+     * applies to every round of the competition (final-four supercups).
+     *
+     * @return array{name: string, capacity: int}|null
+     */
+    public function neutralVenue(string $competitionId, string $roundName): ?array
+    {
+        $venues = $this->domesticCup($competitionId)['neutral_venues'] ?? [];
+
+        return $venues[$roundName] ?? $venues['*'] ?? null;
+    }
+
+    /**
+     * Compact display name declared for a domestic cup, if any.
+     */
+    public function cupShortName(string $competitionId): ?string
+    {
+        return $this->domesticCup($competitionId)['short_name'] ?? null;
+    }
+
+    /**
+     * Ultra-compact tag declared for a domestic cup, if any.
+     */
+    public function cupAbbreviation(string $competitionId): ?string
+    {
+        return $this->domesticCup($competitionId)['abbreviation'] ?? null;
+    }
+
+    /**
      * Get the cup qualification rule for a specific domestic cup, if defined.
      *
      * Describes which teams from the playable tiers qualify for the cup at
      * the start of the following season. See config/countries.php for shape.
      *
-     * @return array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>}|null
+     * @return array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int}|null
      */
     public function cupQualification(string $countryCode, string $cupId): ?array
     {

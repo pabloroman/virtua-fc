@@ -14,6 +14,7 @@ High-level documentation of the game systems that power VirtuaFC. These document
 | [Match Simulation](match-simulation.md) | xG formula, energy system, formations, mentality, events, penalties |
 | [Injury System](injury-system.md) | Injury probability, durability, medical tiers, recovery |
 | [Season Lifecycle](season-lifecycle.md) | Season flow, matchday progression, end-of-season pipeline |
+| [Domestic Cups & Ghost Teams](domestic-cups.md) | Declaring national cups and supercups per country, squad-less lower-division entrants, entry rounds and bracket parity |
 | [Club Economy System](club-economy-system.md) | Budget allocation, revenue sources, investment tiers, debt |
 | [Stadium & Facilities](stadium-and-facilities.md) | Long-term vision: attendance, fan base, ticketing, sponsor portfolio, capital upgrades |
 | [Reputation System](reputation-system.md) | Dynamic reputation tiers based on sustained performance |

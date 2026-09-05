@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class RandomPairing implements CupDrawPairingStrategy
 {
-    public function pairTeams(Collection $teams, array $teamTierMap): Collection
+    public function pairTeams(Collection $teams, array $teamTierMap, array $teamSeedMap = []): Collection
     {
         return $teams->shuffle()->values();
     }

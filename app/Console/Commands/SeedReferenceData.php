@@ -772,6 +772,21 @@ class SeedReferenceData extends Command
         return $teamIdMap;
     }
 
+    /**
+     * Link a cup's participants to the competition, creating "ghost" teams
+     * for clubs the leagues don't carry.
+     *
+     * A ghost is a lower-division side that exists only as a cup entrant:
+     * a name, a crest and a country, no squad. Its matches are resolved from
+     * a default strength, so a cup can field the whole pyramid without
+     * seeding a roster per club. Every club is identified by its
+     * Transfermarkt `id`, which is what links it to a league row when one
+     * exists and keeps a ghost the same club across seasons.
+     *
+     * Per-club keys: `id`, `name`, optional `entryRound` (the round the
+     * club joins at, defaulting to the first), `stadiumName`,
+     * `stadiumSeats`.
+     */
     private function seedCupTeams(array $clubs, string $competitionId, string $season, string $country = 'ES'): void
     {
         $count = 0;
@@ -779,47 +794,40 @@ class SeedReferenceData extends Command
         // Get existing teams by transfermarkt_id
         $teamsByTransfermarktId = DB::table('teams')
             ->whereNotNull('transfermarkt_id')
-            ->pluck('id', 'transfermarkt_id')
-            ->toArray();
-
-        // Get supercup teams for entry round calculation (config-driven)
-        $supercupTeamIds = [];
-        $supercupEntryRound = 3;
-        $countryConfig = app(CountryConfig::class);
-        $supercupConfig = $countryConfig->supercup($country);
-
-        if ($supercupConfig && $supercupConfig['cup'] === $competitionId) {
-            $supercupEntryRound = $supercupConfig['cup_entry_round'] ?? 3;
-            $supercupTeamIds = DB::table('competition_teams')
-                ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
-                ->where('competition_teams.competition_id', $supercupConfig['competition'])
-                ->where('competition_teams.season', $season)
-                ->whereNotNull('teams.transfermarkt_id')
-                ->pluck('teams.transfermarkt_id')
-                ->map(fn ($id) => (string) $id)
-                ->toArray();
-        }
+            ->get(['id', 'transfermarkt_id', 'name', 'country'])
+            ->keyBy(fn ($team) => (string) $team->transfermarkt_id);
 
         foreach ($clubs as $club) {
-            $cupTeamId = $club['id'];
+            $name = trim((string) ($club['name'] ?? ''));
+            $transfermarktId = isset($club['id']) && (string) $club['id'] !== '' ? (string) $club['id'] : null;
 
-            // Determine entry round (supercup teams enter later)
-            $entryRound = in_array($cupTeamId, $supercupTeamIds) ? $supercupEntryRound : 1;
+            if ($name === '' || $transfermarktId === null) {
+                $this->warn("  Skipping cup club without a name or transfermarkt id in {$competitionId}: " . ($name ?: '(unnamed)'));
+                continue;
+            }
 
-            // Find or create team
-            $teamId = $teamsByTransfermarktId[$cupTeamId] ?? null;
+            // Entry round as the data file declares it, and nothing else:
+            // the supercup skip-ahead is derived per game by
+            // CupEntryRoundService, not baked into the seed data.
+            $entryRound = max(1, (int) ($club['entryRound'] ?? 1));
 
-            if (!$teamId) {
-                $teamId = Str::uuid()->toString();
-                DB::table('teams')->insert([
-                    'id' => $teamId,
-                    'transfermarkt_id' => (int) $cupTeamId,
-                    'name' => $club['name'],
-                    'slug' => Str::slug($club['name']),
-                    'country' => $country,
-                    'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
-                ]);
-                $teamsByTransfermarktId[$cupTeamId] = $teamId;
+            $existing = $teamsByTransfermarktId[$transfermarktId] ?? null;
+
+            // A cup entrant resolving to a club of another country is a
+            // wrong id (they are typed by hand for lower-division sides).
+            // Linking it would drag a foreign club into the cup.
+            if ($existing && $existing->country !== $country) {
+                $this->warn("  Skipping {$name}: id {$transfermarktId} belongs to {$existing->name} ({$existing->country})");
+                continue;
+            }
+
+            $teamId = $existing?->id;
+
+            if ($teamId === null) {
+                $teamId = $this->createGhostTeam($club, $name, $transfermarktId, $country);
+                $teamsByTransfermarktId[$transfermarktId] = (object) [
+                    'id' => $teamId, 'transfermarkt_id' => $transfermarktId, 'name' => $name, 'country' => $country,
+                ];
             }
 
             // Link team to cup competition
@@ -838,6 +846,46 @@ class SeedReferenceData extends Command
         }
 
         $this->line("  Cup teams: {$count}");
+    }
+
+    /**
+     * Insert a ghost team row for a cup-only club and return its id.
+     */
+    private function createGhostTeam(array $club, string $name, string $transfermarktId, string $country): string
+    {
+        $teamId = Str::uuid()->toString();
+        $stadiumSeats = isset($club['stadiumSeats'])
+            ? (int) str_replace(['.', ','], '', (string) $club['stadiumSeats'])
+            : 0;
+
+        DB::table('teams')->insert([
+            'id' => $teamId,
+            'transfermarkt_id' => (int) $transfermarktId,
+            'name' => $name,
+            'slug' => $this->uniqueTeamSlug($name),
+            'country' => $country,
+            'image' => "https://tmssl.akamaized.net/images/wappen/big/{$transfermarktId}.png",
+            'stadium_name' => $club['stadiumName'] ?? null,
+            'stadium_seats' => $stadiumSeats,
+            'uefa_stadium_category' => UefaCategory::deriveFromCapacity($stadiumSeats),
+        ]);
+
+        return $teamId;
+    }
+
+    /**
+     * Team slugs are unique across every country, so a taken slug falls back
+     * to a counter (two "Athletic" sides in different pyramids, say).
+     */
+    private function uniqueTeamSlug(string $name): string
+    {
+        $base = Str::slug($name) ?: 'team';
+
+        for ($candidate = $base, $i = 2; ; $candidate = "{$base}-" . $i++) {
+            if (!DB::table('teams')->where('slug', $candidate)->exists()) {
+                return $candidate;
+            }
+        }
     }
 
     private function loadJson(string $path): array

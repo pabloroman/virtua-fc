@@ -60,7 +60,10 @@ class Competition extends Model
 
     /**
      * Short display names for competitions, keyed by competition ID.
-     * Falls back to the full name if not mapped here.
+     * Domestic cups declare theirs in config/countries.php instead
+     * (`domestic_cups.<cup>.short_name`); this map covers leagues, UEFA
+     * competitions and the odd fixed competition. Falls back to the full
+     * name if not mapped anywhere.
      */
     private const SHORT_NAMES = [
         'ESP1'    => 'Liga',
@@ -68,8 +71,6 @@ class Competition extends Model
         'ESP3A'   => 'Primera Fed. - I',
         'ESP3B'   => 'Primera Fed. - II',
         'ESP3PO'  => 'Playoff ascenso',
-        'ESPCUP'  => 'Copa del Rey',
-        'ESPSUP'  => 'Supercopa',
         'ENG1'    => 'Premier League',
         'DEU1'    => 'Bundesliga',
         'FRA1'    => 'Ligue 1',
@@ -82,16 +83,15 @@ class Competition extends Model
         'PRESEASON' => 'Amistoso',
     ];
 
-    // Ultra-compact tags for tight layouts (narrow dashboard column). Falls back
-    // to shortName() for anything not listed here.
+    // Ultra-compact tags for tight layouts (narrow dashboard column). Domestic
+    // cups declare theirs in config (`domestic_cups.<cup>.abbreviation`).
+    // Falls back to shortName() for anything not listed anywhere.
     private const ABBREVIATIONS = [
         'ESP1'    => 'Liga',
         'ESP2'    => 'Liga 2',
         'ESP3A'   => '1ªFed I',
         'ESP3B'   => '1ªFed II',
         'ESP3PO'  => 'Playoff',
-        'ESPCUP'  => 'Copa',
-        'ESPSUP'  => 'Supercopa',
         'ENG1'    => 'Premier',
         'UCL'     => 'UCL',
         'UEL'     => 'UEL',
@@ -136,12 +136,16 @@ class Competition extends Model
 
     public function shortName(): string
     {
-        return self::SHORT_NAMES[$this->id] ?? $this->name;
+        return app(CountryConfig::class)->cupShortName($this->id)
+            ?? self::SHORT_NAMES[$this->id]
+            ?? $this->name;
     }
 
     public function abbreviation(): string
     {
-        return self::ABBREVIATIONS[$this->id] ?? $this->shortName();
+        return app(CountryConfig::class)->cupAbbreviation($this->id)
+            ?? self::ABBREVIATIONS[$this->id]
+            ?? $this->shortName();
     }
 
     /**

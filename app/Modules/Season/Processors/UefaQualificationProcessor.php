@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Modules\Competition\Services\SwissDrawService;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
@@ -246,12 +247,13 @@ class UefaQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Find the domestic cup winner from the final cup tie.
+     * Find the domestic cup winner from the final cup tie. The final is the
+     * last round of the cup's schedule.json for the game's base season.
      */
     private function getCupWinner(string $gameId, string $countryCode, string $cupId): ?string
     {
-        $supercupConfig = $this->countryConfig->supercup($countryCode);
-        $finalRound = $supercupConfig['cup_final_round'] ?? null;
+        $baseSeason = Game::where('id', $gameId)->value('base_season');
+        $finalRound = $baseSeason ? LeagueFixtureGenerator::finalKnockoutRound($cupId, $baseSeason) : null;
 
         if (!$finalRound) {
             return null;

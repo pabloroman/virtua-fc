@@ -10,11 +10,11 @@ use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Season\Processors\CopaQualificationProcessor;
+use App\Modules\Season\Processors\DomesticCupQualificationProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CopaQualificationTest extends TestCase
+class DomesticCupQualificationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -381,9 +381,42 @@ class CopaQualificationTest extends TestCase
         $this->assertSame(0, $round1 % 2, 'round 1 must be even');
     }
 
+    // ---------------------------------------------------------------------
+    // Entry rounds — tier qualifiers are written at round 1; ghost teams
+    // keep whatever round their data file gave them.
+    // ---------------------------------------------------------------------
+
+    public function test_ghost_teams_keep_their_seeded_entry_round(): void
+    {
+        $earlyGhost = Team::factory()->create(['country' => 'ES', 'name' => 'CD Numancia']);
+        $lateGhost = Team::factory()->create(['country' => 'ES', 'name' => 'Real Jaén CF']);
+        foreach ([[$earlyGhost, 1], [$lateGhost, 2]] as [$team, $round]) {
+            CompetitionEntry::create([
+                'game_id' => $this->game->id,
+                'competition_id' => 'ESPCUP',
+                'team_id' => $team->id,
+                'entry_round' => $round,
+            ]);
+        }
+
+        $this->runProcessor();
+
+        $rounds = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPCUP')
+            ->pluck('entry_round', 'team_id')
+            ->map(fn ($round) => (int) $round)
+            ->all();
+
+        foreach ($this->teamsByCompetition['ESP1'] as $team) {
+            $this->assertSame(1, $rounds[$team->id], 'tier qualifiers join at round 1');
+        }
+        $this->assertSame(1, $rounds[$earlyGhost->id]);
+        $this->assertSame(2, $rounds[$lateGhost->id], 'a ghost keeps its seeded entry round');
+    }
+
     private function runProcessor(): void
     {
-        app(CopaQualificationProcessor::class)->process(
+        app(DomesticCupQualificationProcessor::class)->process(
             $this->game,
             new SeasonTransitionData(oldSeason: '2025', newSeason: '2026', competitionId: 'ESP1'),
         );
