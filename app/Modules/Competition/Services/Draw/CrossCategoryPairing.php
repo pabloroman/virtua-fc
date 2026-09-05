@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
  */
 class CrossCategoryPairing implements CupDrawPairingStrategy
 {
-    public function pairTeams(Collection $teams, array $teamTierMap): Collection
+    public function pairTeams(Collection $teams, array $teamTierMap, array $teamSeedMap = []): Collection
     {
         $sorted = $teams
             ->sort(fn ($a, $b) => ($teamTierMap[$a] ?? 99) <=> ($teamTierMap[$b] ?? 99))

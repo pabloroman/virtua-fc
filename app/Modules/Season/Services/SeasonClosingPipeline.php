@@ -11,7 +11,7 @@ use App\Modules\Season\Processors\AIFreeAgentSigningProcessor;
 use App\Modules\Season\Processors\AIReserveCallUpProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
-use App\Modules\Season\Processors\CopaQualificationProcessor;
+use App\Modules\Season\Processors\DomesticCupQualificationProcessor;
 use App\Modules\Season\Processors\FinalizeOtherLeaguesProcessor;
 use App\Modules\Season\Processors\LeaderboardStatsProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
@@ -71,7 +71,7 @@ class SeasonClosingPipeline
         FinalizeOtherLeaguesProcessor $finalizeOtherLeagues,
         SeasonSimulationProcessor $seasonSimulation,
         SupercupQualificationProcessor $supercupQualification,
-        CopaQualificationProcessor $copaQualification,
+        DomesticCupQualificationProcessor $domesticCupQualification,
         PromotionRelegationProcessor $promotionRelegation,
         ReputationUpdateProcessor $reputationUpdate,
         FanLoyaltyUpdateProcessor $fanLoyaltyUpdate,
@@ -102,7 +102,7 @@ class SeasonClosingPipeline
             $finalizeOtherLeagues,
             $seasonSimulation,
             $supercupQualification,
-            $copaQualification,
+            $domesticCupQualification,
             $promotionRelegation,
             $reputationUpdate,
             $fanLoyaltyUpdate,

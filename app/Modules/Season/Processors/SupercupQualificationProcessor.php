@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
@@ -17,7 +18,9 @@ use RuntimeException;
 /**
  * Determines supercup qualifiers for the next season, driven by country config.
  *
- * Qualification rules (RFEF for ESP, generalised for any country):
+ * The country's `supercup.teams` picks the format:
+ *
+ * Final four (4 — Spain, Italy), RFEF rules generalised for any country:
  *  1. The two cup finalists always qualify (cup winner + cup runner-up).
  *  2. The league champion qualifies, unless already in slot 1–2.
  *  3. The league runner-up qualifies, unless already in slot 1–3.
@@ -36,7 +39,14 @@ use RuntimeException;
  * remains. Implementing this priority order also matters for downstream
  * display: the persisted entry order labels each slot's role.
  *
- * Priority: 25 (runs after stats reset but before fixture generation)
+ * One-off (2 — Germany, France, England's Community Shield): the cup
+ * winner plays the league champion; when the champion did the double the
+ * league runner-up steps in. The cup runner-up never qualifies.
+ *
+ * The cup final is the last round of the cup's schedule.json, so no round
+ * number is repeated in config.
+ *
+ * Priority: 80 (after the season simulation, before the cup field rebuild)
  */
 class SupercupQualificationProcessor implements SeasonProcessor
 {
@@ -58,17 +68,18 @@ class SupercupQualificationProcessor implements SeasonProcessor
             return $data;
         }
 
-        $this->processCountrySupercup($game, $data, $supercupConfig);
+        $this->processCountrySupercup($game, $data, $supercupConfig, $countryCode);
 
         return $data;
     }
 
-    private function processCountrySupercup(Game $game, SeasonTransitionData $data, array $config): void
+    private function processCountrySupercup(Game $game, SeasonTransitionData $data, array $config, string $countryCode): void
     {
         $cupId = $config['cup'];
         $leagueId = $config['league'];
         $supercupId = $config['competition'];
-        $cupFinalRound = $config['cup_final_round'];
+        $size = $this->countryConfig->supercupSize($countryCode);
+        $cupFinalRound = LeagueFixtureGenerator::finalKnockoutRound($cupId, $game->base_season);
 
         // Skip when this country isn't part of the game (no top-league
         // entries). The 4-qualifier guard below catches partial-data bugs
@@ -87,19 +98,21 @@ class SupercupQualificationProcessor implements SeasonProcessor
         // full reserve roster rather than per-source; it covers both the
         // GameStanding/SimulatedSeason path and a reserve cup-finalist
         // (shouldn't happen in practice but cheap to guard against).
-        $reserveTeamIds = Team::where('country', $game->country ?? 'ES')
+        $reserveTeamIds = Team::where('country', $countryCode)
             ->whereNotNull('parent_team_id')
             ->pluck('id')
             ->all();
 
-        $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound, $reserveTeamIds);
+        $cupFinalists = $cupFinalRound !== null
+            ? $this->getCupFinalists($game->id, $cupId, $cupFinalRound, $reserveTeamIds)
+            : ['winner' => null, 'runnerUp' => null];
 
-        // Fetch league top 4 — enough to backfill 3rd/4th slots when both
-        // cup finalists overlap with the league champion/runner-up.
-        $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4, $reserveTeamIds);
+        // Fetch as many league positions as there are slots — enough to
+        // backfill 3rd/4th when both cup finalists overlap with the league
+        // champion/runner-up (or 2nd when the champion did the double).
+        $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, $size, $reserveTeamIds);
 
-        // Determine the 4 supercup qualifiers
-        $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
+        $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams, $size);
 
         if (count($qualifiers) === 0
             && $cupFinalists['winner'] === null
@@ -126,15 +139,16 @@ class SupercupQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        if (count($qualifiers) !== 4) {
+        if (count($qualifiers) !== $size) {
             // Source of Population A in the cup-draw incident: cup didn't
-            // run AND fewer than 4 league top teams are available, so the
-            // supercup ends up with < 4 entries and the downstream draw
-            // creates the wrong bracket. Surface this loudly — silent
-            // shortfalls are how the bug stayed hidden in the first place.
+            // run AND fewer league top teams are available than slots, so
+            // the supercup ends up short and the downstream draw creates
+            // the wrong bracket. Surface this loudly — silent shortfalls
+            // are how the bug stayed hidden in the first place.
             throw new RuntimeException(sprintf(
-                '[SupercupQualification] expected 4 qualifiers for %s in game %s, got %d. '
+                '[SupercupQualification] expected %d qualifiers for %s in game %s, got %d. '
                 . 'cup_winner=%s cup_runnerup=%s league_top_teams=%d',
+                $size,
                 $supercupId,
                 $game->id,
                 count($qualifiers),
@@ -236,18 +250,21 @@ class SupercupQualificationProcessor implements SeasonProcessor
     }
 
     /**
-     * Determine the 4 supercup qualifiers in RFEF priority order: the two
-     * cup finalists hold their slots regardless of league finish, then
-     * league positions fill what remains, in order. When a cup finalist
-     * also happens to be league 1st/2nd, the league's slot is what
-     * cascades down to 3rd / 4th — mirroring "la plaza de la Supercopa
-     * se otorga al 3º (y 4º si fuera necesario) clasificado de la Liga".
+     * Determine the supercup qualifiers in priority order: the cup
+     * finalists hold their slots regardless of league finish, then league
+     * positions fill what remains, in order. When a cup finalist also
+     * happens to be league 1st/2nd, the league's slot is what cascades
+     * down to 3rd / 4th — mirroring "la plaza de la Supercopa se otorga al
+     * 3º (y 4º si fuera necesario) clasificado de la Liga".
+     *
+     * A two-club supercup only seats the cup winner: the champion (or the
+     * runner-up, when the champion did the double) takes the other slot.
      *
      * @param  array{winner: string|null, runnerUp: string|null}  $cupFinalists
      * @param  array<int, string>  $leagueTopTeams  league positions 1..N (1st first)
-     * @return array<string>  up to 4 team IDs
+     * @return array<string>  up to $size team IDs
      */
-    private function determineQualifiers(array $cupFinalists, array $leagueTopTeams): array
+    private function determineQualifiers(array $cupFinalists, array $leagueTopTeams, int $size): array
     {
         $qualifiers = [];
         $usedTeams = [];
@@ -256,13 +273,13 @@ class SupercupQualificationProcessor implements SeasonProcessor
             $qualifiers[] = $cupFinalists['winner'];
             $usedTeams[$cupFinalists['winner']] = true;
         }
-        if ($cupFinalists['runnerUp']) {
+        if ($cupFinalists['runnerUp'] && $size > 2) {
             $qualifiers[] = $cupFinalists['runnerUp'];
             $usedTeams[$cupFinalists['runnerUp']] = true;
         }
 
         foreach ($leagueTopTeams as $teamId) {
-            if (count($qualifiers) >= 4) {
+            if (count($qualifiers) >= $size) {
                 break;
             }
 
@@ -287,14 +304,20 @@ class SupercupQualificationProcessor implements SeasonProcessor
             ->where('competition_id', $supercupId)
             ->delete();
 
-        // Insert new qualifiers in batch
+        // Insert new qualifiers in batch, seeded by the priority order
+        // above: the bracket is fixed by how each club qualified, so the
+        // order has to survive to the draw (SeededBracketPairing).
         if (!empty($teamIds)) {
-            $rows = array_map(fn ($teamId) => [
-                'game_id' => $gameId,
-                'competition_id' => $supercupId,
-                'team_id' => $teamId,
-                'entry_round' => 1,
-            ], $teamIds);
+            $rows = [];
+            foreach (array_values($teamIds) as $index => $teamId) {
+                $rows[] = [
+                    'game_id' => $gameId,
+                    'competition_id' => $supercupId,
+                    'team_id' => $teamId,
+                    'entry_round' => 1,
+                    'seed' => $index + 1,
+                ];
+            }
 
             CompetitionEntry::insert($rows);
         }

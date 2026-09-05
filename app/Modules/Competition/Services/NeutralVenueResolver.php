@@ -8,11 +8,11 @@ use App\Models\Team;
  * Picks the neutral-venue stadium for matches that are not played at a
  * finalist's home ground.
  *
- * - Copa del Rey (ESPCUP) final is always at La Cartuja by real-world
- *   designation.
- * - The Spanish Supercup (ESPSUP) is a Final Four hosted abroad: *every*
- *   game (both semi-finals and the final) is played at the King Abdullah
- *   Sports City Stadium.
+ * - Domestic cups declare their neutral grounds in config/countries.php
+ *   (`domestic_cups.<cup>.neutral_venues`, keyed by round name, '*' for
+ *   every round): the Copa del Rey final at La Cartuja, every game of the
+ *   Spanish Supercup's final four in Saudi Arabia, FA Cup semi-finals and
+ *   final at Wembley.
  * - UEFA finals (UCL/UEL/UECL) and the UEFA Super Cup (UEFASUP) rotate
  *   across top-tier European grounds (>=50k), so we sample a random club
  *   stadium from the Team table, excluding the two finalists to guarantee
@@ -22,16 +22,6 @@ use App\Models\Team;
  */
 class NeutralVenueResolver
 {
-    private const ESPCUP_VENUE = [
-        'name' => 'La Cartuja',
-        'capacity' => 70000,
-    ];
-
-    private const ESPSUP_VENUE = [
-        'name' => 'King Abdullah Sports City Stadium',
-        'capacity' => 62345,
-    ];
-
     /**
      * Guaranteed neutral venue for UEFA finals when no eligible club
      * stadium can be sampled (e.g. minimal seed/test datasets).
@@ -45,25 +35,24 @@ class NeutralVenueResolver
     private const FINAL_ROUND = 'cup.final';
     private const MIN_CAPACITY = 50000;
 
+    public function __construct(
+        private readonly CountryConfig $countryConfig = new CountryConfig(),
+    ) {}
+
     /**
      * @return array{name: string, capacity: int}|null
      */
     public function resolve(string $competitionId, string $roundName, string $homeTeamId, string $awayTeamId): ?array
     {
-        // Spanish Supercup is a Final Four hosted abroad — semis and final
-        // alike are played at the same neutral venue.
-        if ($competitionId === 'ESPSUP') {
-            return self::ESPSUP_VENUE;
+        $declared = $this->countryConfig->neutralVenue($competitionId, $roundName);
+        if ($declared) {
+            return ['name' => $declared['name'], 'capacity' => (int) $declared['capacity']];
         }
 
-        // The remaining competitions only move to a neutral venue for the
+        // UEFA competitions only move to a neutral venue for the
         // single-legged final.
         if ($roundName !== self::FINAL_ROUND) {
             return null;
-        }
-
-        if ($competitionId === 'ESPCUP') {
-            return self::ESPCUP_VENUE;
         }
 
         if (in_array($competitionId, self::EUROPEAN_FINAL_COMPETITIONS, true)) {

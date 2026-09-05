@@ -26,7 +26,7 @@ Season transitions run two pipelines sequentially. Each processor implements `Se
 
 **Phase 2 — Squad management** (priority 8-20): Replenish AI squads to minimum roster sizes, apply player development changes, settle finances (actual vs projected), reset stats and transfer market.
 
-**Phase 3 — League simulation & structure** (priority 24-55): Simulate non-played leagues, determine Supercup qualifiers, rebuild domestic cup participants for the following season (Copa del Rey: all top-two-tier teams plus the top 5 of each Primera Federación group, never reserve teams), handle promotion/relegation, update team reputations based on final positions, develop and return academy loans.
+**Phase 3 — League simulation & structure** (priority 24-55): Simulate non-played leagues, determine supercup qualifiers (final four or champions v cup winners, per country), rebuild domestic cup participants for the following season from each country's qualification rules (Copa del Rey: all top-two-tier teams plus the top 5 of each Primera Federación group, each tier at its configured entry round; never reserve teams — see [Domestic Cups](domestic-cups.md)), handle promotion/relegation, update team reputations based on final positions, develop and return academy loans.
 
 **Phase 4 — Qualification** (priority 105): Determine UEFA competition qualifiers.
 
@@ -36,7 +36,7 @@ Season transitions run two pipelines sequentially. Each processor implements `Se
 
 **Phase 2 — Budget & academy** (priority 50-55): Generate budget projections, trigger academy evaluation.
 
-**Phase 3 — Competitions & new-season setup** (priority 106-110): Initialize continental/cup competitions, enforce squad cap, reset new-season setup flag.
+**Phase 3 — Competitions & new-season setup** (priority 106-110): Initialize continental competitions, settle cup entry rounds and draw the first cup rounds, enforce squad cap, reset new-season setup flag.
 
 ## Key Files
 

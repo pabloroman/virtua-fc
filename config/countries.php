@@ -52,14 +52,39 @@ return [
             ],
         ],
 
+        // Domestic cups. Each entry is the complete description of one cup —
+        // everything the engine needs beyond the participant list and round
+        // calendar in data/<season>/<cup>/. See docs/game-systems/domestic-cups.md
+        // for the full key reference; the short version:
+        //
+        // - handler / config_class / draw_pairing: how the cup runs and pays.
+        // - short_name / abbreviation: compact labels for tight layouts.
+        // - neutral_venues: round name => venue for ties played away from
+        //   the home ground. '*' applies to every round (final-four style).
         'domestic_cups' => [
             'ESPCUP' => [
                 'handler' => 'knockout_cup',
                 'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
                 'draw_pairing' => \App\Modules\Competition\Services\Draw\CrossCategoryPairing::class,
+                'short_name' => 'Copa del Rey',
+                'abbreviation' => 'Copa',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'La Cartuja', 'capacity' => 70000],
+                ],
             ],
             'ESPSUP' => [
                 'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Not drawn: the semi-finals follow from the qualifying
+                // seeds (cup winner v league runner-up, cup runner-up v
+                // league champion).
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supercopa',
+                'abbreviation' => 'Supercopa',
+                // Final four hosted abroad: semis and final alike.
+                'neutral_venues' => [
+                    '*' => ['name' => 'King Abdullah Sports City Stadium', 'capacity' => 62345],
+                ],
             ],
         ],
 
@@ -77,11 +102,20 @@ return [
             ],
         ],
 
+        // Supercup derivation. 'teams' picks the format: 4 = final four
+        // (both cup finalists + league top two, RFEF cascade rules), 2 =
+        // champion v cup winner (league runner-up steps in on a double) —
+        // the shape Germany, France and England play. The cup final is
+        // located from the cup's own schedule.json, so no round number
+        // needs repeating here. 'cup_entry_round' is the round the supercup
+        // field skips ahead to in the main cup (Spain's four supercup clubs
+        // join the Copa at the round of 32); omit it when the supercup has
+        // no bearing on cup entry.
         'supercup' => [
             'competition' => 'ESPSUP',
             'cup' => 'ESPCUP',
             'league' => 'ESP1',
-            'cup_final_round' => 7,
+            'teams' => 4,
             'cup_entry_round' => 3,
         ],
 
@@ -99,8 +133,12 @@ return [
         // the cup keeps its expected size even as reserves climb divisions.
         //
         // Teams in ESPCUP that are not registered in any playable tier (the
-        // lower-division teams seeded from the data/<season>/ESPCUP/ pool) are
-        // left untouched, so regional qualifiers keep their cup place.
+        // lower-division "ghost" teams seeded from the data/<season>/ESPCUP/
+        // pool) are left untouched, so regional qualifiers keep their cup
+        // place and the entry round their data file gave them.
+        //
+        // Whatever these rules produce, CupEntryRoundService balances the
+        // bracket at season setup so every round has an even field.
         'cup_qualification' => [
             'ESPCUP' => [
                 'auto_qualify_tiers' => [1, 2],

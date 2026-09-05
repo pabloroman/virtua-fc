@@ -13,6 +13,10 @@ use Illuminate\Support\Collection;
 
 class CompetitionViewService
 {
+    public function __construct(
+        private readonly CountryConfig $countryConfig,
+    ) {}
+
     public function getStandings(Game $game, Competition $competition): Collection
     {
         return GameStanding::with('team')
@@ -448,15 +452,17 @@ class CompetitionViewService
     }
 
     /**
-     * For Copa del Rey the final venue is fixed; for European competitions
-     * the venue is only known once the final tie has been drawn and its
-     * GameMatch carries a `neutral_venue_name`. Otherwise return null and
-     * let the view render "TBD".
+     * Domestic cups declare a fixed final venue in config (La Cartuja,
+     * Wembley); for European competitions the venue is only known once the
+     * final tie has been drawn and its GameMatch carries a
+     * `neutral_venue_name`. Otherwise return null and let the view render
+     * "TBD".
      */
     private function resolveFinalVenue(Competition $competition, Collection $tiesByRound, ?int $finalRound): ?string
     {
-        if ($competition->id === 'ESPCUP') {
-            return 'La Cartuja';
+        $declared = $this->countryConfig->neutralVenue($competition->id, 'cup.final');
+        if ($declared) {
+            return $declared['name'];
         }
 
         if ($finalRound === null) {

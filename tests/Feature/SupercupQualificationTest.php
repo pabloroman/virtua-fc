@@ -333,6 +333,27 @@ class SupercupQualificationTest extends TestCase
         ]);
     }
 
+    public function test_qualifiers_are_seeded_in_priority_order_for_the_draw(): void
+    {
+        // The supercup bracket is not drawn: SeededBracketPairing reads
+        // these seeds to produce cup winner v league runner-up and cup
+        // runner-up v league champion.
+        $this->setCupFinalists($this->league[5], $this->league[6]);
+
+        $this->runProcessor();
+
+        $seeds = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPSUP')
+            ->pluck('seed', 'team_id')
+            ->map(fn ($seed) => (int) $seed)
+            ->all();
+
+        $this->assertSame(1, $seeds[$this->league[5]->id], 'cup winner');
+        $this->assertSame(2, $seeds[$this->league[6]->id], 'cup runner-up');
+        $this->assertSame(3, $seeds[$this->league[1]->id], 'league champion');
+        $this->assertSame(4, $seeds[$this->league[2]->id], 'league runner-up');
+    }
+
     public function test_metadata_records_qualifiers_in_priority_order(): void
     {
         // Cup winner = league champion → league spot advances to 3rd.
@@ -351,10 +372,85 @@ class SupercupQualificationTest extends TestCase
         );
     }
 
+    // =========================================
+    // Two-club supercup (champions v cup winners)
+    // =========================================
+
+    public function test_two_club_supercup_seats_the_cup_winner_and_the_champion(): void
+    {
+        config(['countries.ES.supercup.teams' => 2]);
+        $this->setCupFinalists($this->league[5], $this->league[6]);
+
+        $this->runProcessor();
+
+        // The cup runner-up never qualifies for a two-club supercup.
+        $this->assertSupercupTeams([$this->league[5]->id, $this->league[1]->id]);
+    }
+
+    public function test_two_club_supercup_uses_the_league_runner_up_after_a_double(): void
+    {
+        config(['countries.ES.supercup.teams' => 2]);
+        $this->setCupFinalists($this->league[1], $this->league[5]);
+
+        $this->runProcessor();
+
+        $this->assertSupercupTeams([$this->league[1]->id, $this->league[2]->id]);
+    }
+
+    public function test_two_club_supercup_without_a_cup_run_falls_back_to_league_top_2(): void
+    {
+        config(['countries.ES.supercup.teams' => 2]);
+
+        $this->runProcessor();
+
+        $this->assertSupercupTeams([$this->league[1]->id, $this->league[2]->id]);
+    }
+
+    public function test_two_club_supercup_throws_when_short(): void
+    {
+        config(['countries.ES.supercup.teams' => 2]);
+        GameStanding::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESP1')
+            ->where('position', '>', 1)
+            ->delete();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/SupercupQualification.*expected 2 qualifiers.*got 1/i');
+
+        $this->runProcessor();
+    }
+
+    public function test_cup_final_round_is_read_from_the_cup_schedule(): void
+    {
+        // A "final" recorded at the wrong round is not a final: the
+        // processor locates the final from data/2025/ESPCUP/schedule.json
+        // (round 7) rather than from a number repeated in config.
+        CupTie::create([
+            'id' => (string) \Illuminate\Support\Str::uuid(),
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESPCUP',
+            'round_number' => 6,
+            'home_team_id' => $this->league[5]->id,
+            'away_team_id' => $this->league[6]->id,
+            'winner_id' => $this->league[5]->id,
+            'completed' => true,
+        ]);
+
+        $this->runProcessor();
+
+        $this->assertSupercupTeams([
+            $this->league[1]->id,
+            $this->league[2]->id,
+            $this->league[3]->id,
+            $this->league[4]->id,
+        ]);
+    }
+
     private function setCupFinalists(Team $winner, Team $runnerUp): void
     {
         // Mimic the structure SupercupQualificationProcessor reads: the
-        // single completed cup tie at round = cup_final_round (7 for ESP).
+        // single completed cup tie at the cup's final round — the last
+        // round of data/2025/ESPCUP/schedule.json, 7.
         CupTie::create([
             'id' => (string) \Illuminate\Support\Str::uuid(),
             'game_id' => $this->game->id,

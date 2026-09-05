@@ -17,7 +17,11 @@ interface CupDrawPairingStrategy
      *
      * @param  Collection<int, string>  $teams  Team IDs eligible for the round
      * @param  array<string, int>  $teamTierMap  Map of team ID → league tier
+     * @param  array<string, int>  $teamSeedMap  Map of team ID → seed, for the
+     *                                           competitions that seed their
+     *                                           bracket instead of drawing it.
+     *                                           Empty for everything else.
      * @return Collection<int, string>
      */
-    public function pairTeams(Collection $teams, array $teamTierMap): Collection;
+    public function pairTeams(Collection $teams, array $teamTierMap, array $teamSeedMap = []): Collection;
 }

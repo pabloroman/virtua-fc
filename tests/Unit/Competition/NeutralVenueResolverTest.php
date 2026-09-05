@@ -41,6 +41,29 @@ class NeutralVenueResolverTest extends TestCase
         $this->assertSame($expected, $this->resolver->resolve('ESPSUP', 'cup.final', 'home', 'away'));
     }
 
+    public function test_domestic_cup_venues_are_declared_in_country_config(): void
+    {
+        config(['countries.ES.domestic_cups.ESPCUP.neutral_venues' => [
+            'cup.semi_finals' => ['name' => 'Metropolitano', 'capacity' => 70460],
+        ]]);
+
+        $this->assertSame(
+            ['name' => 'Metropolitano', 'capacity' => 70460],
+            $this->resolver->resolve('ESPCUP', 'cup.semi_finals', 'home', 'away'),
+        );
+        $this->assertNull($this->resolver->resolve('ESPCUP', 'cup.final', 'home', 'away'), 'the final is no longer declared');
+    }
+
+    public function test_wildcard_venue_covers_every_round(): void
+    {
+        config(['countries.ES.domestic_cups.ESPCUP.neutral_venues' => [
+            '*' => ['name' => 'Anywhere Arena', 'capacity' => 40000],
+        ]]);
+
+        $this->assertSame('Anywhere Arena', $this->resolver->resolve('ESPCUP', 'cup.first_round', 'home', 'away')['name']);
+        $this->assertSame('Anywhere Arena', $this->resolver->resolve('ESPCUP', 'cup.final', 'home', 'away')['name']);
+    }
+
     public function test_uefa_final_uses_a_random_neutral_club_ground_over_50k(): void
     {
         $home = Team::factory()->create(['stadium_seats' => 80000]);
