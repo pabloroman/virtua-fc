@@ -172,14 +172,15 @@
                             $tabComps->splice($esp3Index !== false ? $esp3Index : $tabComps->count(), 0, [$synthetic]);
                         }
                     @endphp
-                    <div class="flex gap-2 overflow-x-auto scrollbar-hide mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4">
                         @foreach($tabComps as $competition)
                             <x-pill-button
+                                align="start"
                                 @click="openTab = '{{ $competition->id }}'"
                                 x-bind:class="openTab === '{{ $competition->id }}'
                                     ? 'bg-accent-red text-white'
                                     : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'"
-                                class="gap-2 shrink-0">
+                                class="w-full gap-2">
                                 <img class="w-5 h-4 rounded-sm shadow-sm" src="{{ Storage::disk('assets')->url('flags/' . $competition->flag . '.svg') }}" alt="">
                                 <span>{{ __($competition->name) }}</span>
                             </x-pill-button>
