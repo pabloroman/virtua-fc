@@ -507,15 +507,24 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        // Teams entered in any of this game's competitions. Read from
-        // competition_entries rather than game_players so squad-less cup
-        // entrants still count as present. An owner outside this set (foreign
-        // or excluded club) yields a null parent → the player becomes a free
-        // agent when the loan ends.
+        // Clubs present in this game, taken from both directions because
+        // neither table alone covers them. game_players misses a club entered
+        // solely in a cup: it fields no squad here, so its loans were stored
+        // parentless. competition_entries misses a club filtered out of the
+        // entries it would otherwise have had — a reserve team is dropped from
+        // domestic cups in copyCompetitionTeamsToGame — yet it still fields a
+        // squad. An owner in neither (foreign or excluded club) keeps a null
+        // parent → the player becomes a free agent when the loan ends.
         $participatingTeamIds = DB::table('competition_entries')
             ->where('game_id', $this->gameId)
             ->distinct()
             ->pluck('team_id')
+            ->merge(
+                DB::table('game_players')
+                    ->where('game_id', $this->gameId)
+                    ->distinct()
+                    ->pluck('team_id')
+            )
             ->flip()
             ->toArray();
 
