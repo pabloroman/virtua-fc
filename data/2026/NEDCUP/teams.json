@@ -1,0 +1,245 @@
+{
+  "id": "NEDCUP",
+  "name": "KNVB Beker",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "132",
+      "name": "NAC Breda"
+    },
+    {
+      "id": "133",
+      "name": "SC Cambuur Leeuwarden"
+    },
+    {
+      "id": "192",
+      "name": "Roda JC Kerkrade"
+    },
+    {
+      "id": "200",
+      "name": "FC Utrecht"
+    },
+    {
+      "id": "202",
+      "name": "FC Groningen"
+    },
+    {
+      "id": "235",
+      "name": "RKC Waalwijk"
+    },
+    {
+      "id": "306",
+      "name": "SC Heerenveen"
+    },
+    {
+      "id": "384",
+      "name": "MVV Maastricht"
+    },
+    {
+      "id": "385",
+      "name": "Fortuna Sittard"
+    },
+    {
+      "id": "403",
+      "name": "Willem II Tilburg"
+    },
+    {
+      "id": "404",
+      "name": "FC Den Bosch"
+    },
+    {
+      "id": "468",
+      "name": "Sparta Rotterdam"
+    },
+    {
+      "id": "499",
+      "name": "Vitesse Arnhem"
+    },
+    {
+      "id": "500",
+      "name": "Helmond Sport"
+    },
+    {
+      "id": "642",
+      "name": "De Graafschap Doetinchem"
+    },
+    {
+      "id": "723",
+      "name": "Almere City FC"
+    },
+    {
+      "id": "724",
+      "name": "FC Volendam"
+    },
+    {
+      "id": "798",
+      "name": "Excelsior Rotterdam"
+    },
+    {
+      "id": "817",
+      "name": "VV Achilles Veen"
+    },
+    {
+      "id": "1227",
+      "name": "RBC Roosendaal"
+    },
+    {
+      "id": "1228",
+      "name": "TOP Oss"
+    },
+    {
+      "id": "1268",
+      "name": "ADO Den Haag"
+    },
+    {
+      "id": "1269",
+      "name": "PEC Zwolle"
+    },
+    {
+      "id": "1283",
+      "name": "FC Emmen"
+    },
+    {
+      "id": "1304",
+      "name": "Heracles Almelo"
+    },
+    {
+      "id": "1426",
+      "name": "VVV-Venlo"
+    },
+    {
+      "id": "1434",
+      "name": "SC Telstar"
+    },
+    {
+      "id": "1435",
+      "name": "Go Ahead Eagles"
+    },
+    {
+      "id": "1455",
+      "name": "FC Dordrecht"
+    },
+    {
+      "id": "1743",
+      "name": "USV Elinkwijk Utrecht"
+    },
+    {
+      "id": "2821",
+      "name": "FC Lisse"
+    },
+    {
+      "id": "2838",
+      "name": "AFC Amsterdam"
+    },
+    {
+      "id": "2879",
+      "name": "GSV Be Quick 1887 Haren"
+    },
+    {
+      "id": "2951",
+      "name": "SVZW Wierden"
+    },
+    {
+      "id": "2958",
+      "name": "ACV Assen"
+    },
+    {
+      "id": "3410",
+      "name": "Excelsior Maassluis"
+    },
+    {
+      "id": "3569",
+      "name": "DVS '33 Ermelo"
+    },
+    {
+      "id": "3892",
+      "name": "FC Eindhoven"
+    },
+    {
+      "id": "3943",
+      "name": "HSV Hoek"
+    },
+    {
+      "id": "6160",
+      "name": "De Treffers"
+    },
+    {
+      "id": "7116",
+      "name": "VV IJsselmeervogels"
+    },
+    {
+      "id": "7408",
+      "name": "VV Harkemase Boys"
+    },
+    {
+      "id": "7474",
+      "name": "VV Noordwijk"
+    },
+    {
+      "id": "9545",
+      "name": "Rijnsburgse Boys"
+    },
+    {
+      "id": "9933",
+      "name": "VV Katwijk"
+    },
+    {
+      "id": "10804",
+      "name": "VV Sparta Nijkerk"
+    },
+    {
+      "id": "11312",
+      "name": "HHC Hardenberg"
+    },
+    {
+      "id": "12285",
+      "name": "Kozakken Boys Werkendam"
+    },
+    {
+      "id": "12652",
+      "name": "SV TEC Tiel"
+    },
+    {
+      "id": "16866",
+      "name": "SC Genemuiden"
+    },
+    {
+      "id": "17605",
+      "name": "RKAV Volendam"
+    },
+    {
+      "id": "28378",
+      "name": "Koninklijke HFC Haarlem"
+    },
+    {
+      "id": "234",
+      "name": "Feyenoord Rotterdam",
+      "entryRound": 2
+    },
+    {
+      "id": "317",
+      "name": "FC Twente Enschede",
+      "entryRound": 2
+    },
+    {
+      "id": "383",
+      "name": "PSV Eindhoven",
+      "entryRound": 2
+    },
+    {
+      "id": "467",
+      "name": "NEC Nijmegen",
+      "entryRound": 2
+    },
+    {
+      "id": "610",
+      "name": "Ajax Amsterdam",
+      "entryRound": 2
+    },
+    {
+      "id": "1090",
+      "name": "AZ Alkmaar",
+      "entryRound": 2
+    }
+  ]
+}

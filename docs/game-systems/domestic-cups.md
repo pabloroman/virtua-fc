@@ -59,7 +59,8 @@ The engine keeps the field even against simulation drift the other way: `cup_qua
 
 ## Adding a Cup to a Country
 
-Spain, England, Germany, France, Italy and Portugal have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
+Spain, England, Germany, France, Italy, Portugal and the Netherlands have cups
+declared. To bring another country to the same point, nothing beyond config and data should be needed:
 
 1. Declare the cups, supercup, qualification rules and cup-winner slot in `config/countries.php`, following the Spanish block.
 2. Add a prize config per cup under `app/Modules/Competition/Configs/`.
@@ -120,10 +121,11 @@ Four things worth knowing before adding a cup to a third country:
   make a top-flight tie impossible, so England declares none and gets the open
   draw `RandomPairing` provides.
 
-## Germany, France, Portugal and Italy: the two ends of the trade-off
+## The two ends of the trade-off
 
-Germany, France and Portugal take England's approach and Italy takes Spain's,
-which is the clearest illustration of what `entryRound` buys.
+Germany, France and Portugal take England's approach; Italy and the Netherlands
+take Spain's. Between them they are the clearest illustration of what
+`entryRound` buys.
 
 | Cup | Field | Rounds |
 |-----|-------|--------|
@@ -133,6 +135,8 @@ which is the clearest illustration of what `entryRound` buys.
 | `FRASUP` (Trophée des Champions) | 2 — champion v Coupe de France winner | one round; no neutral venue, because the Trophée moves every year and is often played abroad |
 | `PORCUP` (Taça de Portugal) | 64 — 18 Primeira Liga clubs + 46 ghosts (Liga Portugal 2 and below) | third round to the final, semi-finals over two legs, final at the Estádio Nacional |
 | `PORSUP` (Supertaça) | 2 — champion v Taça winner | one round, at Aveiro |
+| `NEDCUP` (KNVB Beker) | 58 — 18 Eredivisie clubs + 40 ghosts (Eerste Divisie and the amateur qualifiers) | first round to the final; the six clubs playing in Europe enter in the second round |
+| `NEDSUP` (Johan Cruijff Schaal) | 2 — champion v Beker winner | one round, at the Johan Cruijff ArenA |
 | `ITACUP` (Coppa Italia) | 44 — 20 Serie A + 20 Serie B + 4 Serie C | preliminary round to the final, semi-finals over two legs; the previous season's top eight enter at the round of 16 |
 | `ITASUP` (Supercoppa Italiana) | 2 — champion v Coppa Italia winner | one round, in Riyadh |
 
@@ -149,6 +153,14 @@ Portugal is the Coupe's case again, with one difference worth naming: its 2026
 Supertaça is Porto against Torreense, a Taça winner from the division below, so
 the competition opens with a ghost in it. That is allowed — a ghost can play and
 win a cup, it is only refused the European place the win would pay.
+
+The KNVB Beker is the second cup that keeps its real shape, and it shows what
+the `entry_rounds` rule is really for. Its bye belongs to the clubs playing
+European football, which no league table states outright, so the rule takes the
+top six instead — five league places plus, most seasons, a cup winner from among
+them. The approximation is deliberate: parity needs the count to be exactly six,
+since 26 first-round winners have to meet an even field, and a rule chasing the
+exact clubs would sometimes return five or seven and stop the cup.
 
 The Coppa Italia keeps its real shape instead, because its shape *is* the
 competition: 44 clubs, a preliminary round of eight, and the top eight of last

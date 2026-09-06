@@ -48,6 +48,8 @@
     { code: 'FRASUP',  tmId: 'FRSC',    name: 'Trophée des Champions',           kind: 'cup',         batch: false, expectedClubs: 2 },
     { code: 'ITACUP',  tmId: 'CIT',     name: 'Coppa Italia',                    kind: 'cup',         batch: false, expectedClubs: 44 },
     { code: 'ITASUP',  tmId: 'ITSC',    name: 'Supercoppa Italiana',             kind: 'cup',         batch: false, expectedClubs: 2 },
+    { code: 'NEDCUP',  tmId: 'NLP',     name: 'KNVB Beker',                      kind: 'cup',         batch: false, expectedClubs: 58 },
+    { code: 'NEDSUP',  tmId: 'NLSC',    name: 'Johan Cruijff Schaal',            kind: 'cup',         batch: false, expectedClubs: 2 },
     { code: 'PORCUP',  tmId: 'POPO',    name: 'Taça de Portugal',                kind: 'cup',         batch: false, expectedClubs: 64 },
     { code: 'PORSUP',  tmId: 'POSU',    name: 'Supertaça Cândido de Oliveira',   kind: 'cup',         batch: false, expectedClubs: 2 },
     { code: 'UCL',     tmId: 'CL',      name: 'UEFA Champions League',           kind: 'continental', batch: false, expectedClubs: 36 },

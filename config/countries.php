@@ -924,18 +924,89 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
-        'promotions' => [],
-
-        'continental_slots' => [
-            'NED1' => [
-                'UCL' => [1, 2],
-                'UEL' => [3, 4],
-                'UECL' => [5, 6],
+        // KNVB Beker and Johan Cruijff Schaal. The Beker keeps its real
+        // shape: the six Eredivisie clubs playing in Europe sit out the
+        // first round, which is what makes a 58-club field halve — 52 in
+        // round one, then 26 winners plus the six for a round of 32.
+        'domestic_cups' => [
+            'NEDCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Beker's open draw is the point of
+                // it, and CrossCategoryPairing would make an Eredivisie tie
+                // impossible with every playable club at tier 1 and every
+                // ghost at 99.
+                'short_name' => 'KNVB Beker',
+                'abbreviation' => 'Beker',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'De Kuip', 'capacity' => 47000],
+                ],
+            ],
+            'NEDSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Johan Cruijff Schaal',
+                'abbreviation' => 'Schaal',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Johan Cruijff ArenA', 'capacity' => 55000],
+                ],
             ],
         ],
 
-        'cup_winner_slot' => [],
+        // Champion v KNVB Beker winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'NEDSUP',
+            'cup' => 'NEDCUP',
+            'league' => 'NED1',
+            'teams' => 2,
+        ],
+
+        // Only the Eredivisie is playable, so tier 1 auto-qualifies and
+        // every other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'NEDCUP' => [
+                'auto_qualify_tiers' => [1],
+                // The real bye belongs to the clubs playing European
+                // football, which the league table can only approximate:
+                // the top six covers the five league places below plus a
+                // cup winner from among them most seasons. Six is what
+                // parity needs — 26 first-round winners have to meet an
+                // even field — so the rule fixes the count rather than
+                // chasing the exact clubs.
+                'entry_rounds' => [
+                    'league' => 'NED1',
+                    'default' => 1,
+                    'byes' => ['positions' => [1, 2, 3, 4, 5, 6], 'round' => 2],
+                ],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still six places: the Beker winner takes the Europa League place
+        // that used to go to fourth, and the two Conference League places
+        // move up with it.
+        'continental_slots' => [
+            'NED1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3],
+                'UECL' => [4, 5],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'NEDCUP',
+                'competition' => 'UEL',
+                'league' => 'NED1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
