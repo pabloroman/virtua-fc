@@ -3,6 +3,7 @@
 namespace App\Modules\Match\Listeners;
 
 use App\Modules\Competition\Exceptions\OddCupDrawPoolException;
+use App\Modules\Competition\Services\CupDrawRevealService;
 use App\Modules\Competition\Services\CupDrawService;
 use App\Modules\Match\Events\CupTieResolved;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,7 @@ class ConductNextCupRoundDraw
 {
     public function __construct(
         private readonly CupDrawService $cupDrawService,
+        private readonly CupDrawRevealService $drawReveal,
     ) {}
 
     public function handle(CupTieResolved $event): void
@@ -38,6 +40,10 @@ class ConductNextCupRoundDraw
                 $event->match->competition_id,
                 $nextRound,
             );
+
+            // Inside the try on purpose: an abandoned draw must not queue a
+            // ceremony for a bracket that was never completed.
+            $this->drawReveal->record($event->game, $event->match->competition_id, $nextRound);
         } catch (OddCupDrawPoolException $e) {
             // Legacy games whose brackets were corrupted by the pre-fix
             // truncation (see commit b644bc961) can hit this on every

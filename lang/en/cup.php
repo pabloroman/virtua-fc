@@ -26,6 +26,8 @@ return [
 
     // Draw
     'draw_pending' => 'Draw pending',
+    'draw_title' => 'The draw',
+    'draw_your_tie' => 'Your tie',
 
     // Resolution types
     'pens' => 'Pens:',

@@ -27,6 +27,7 @@ use App\Http\Views\AdminPlayerTemplateSquad;
 use App\Http\Views\AdminUsers;
 use App\Http\Views\AdminWaitlist;
 use App\Http\Actions\DeleteGame;
+use App\Http\Actions\DismissCupDraw;
 use App\Http\Actions\CompleteNewSeason;
 use App\Http\Actions\CompleteWelcome;
 use App\Http\Actions\AcceptLoanOffer;
@@ -47,6 +48,7 @@ use App\Http\Actions\SaveClubInvestment;
 use App\Http\Actions\StageInvestmentDowngrade;
 use App\Http\Actions\SaveSeasonTicketPricing;
 use App\Http\Views\ShowClubInvestment;
+use App\Http\Views\ShowCupDraw;
 use App\Http\Actions\FinalizeMatch;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\ProcessExtraTime;
@@ -323,6 +325,10 @@ Route::middleware('auth')->group(function () {
         // New Season (season budget allocation)
         Route::get('/game/{gameId}/new-season', ShowNewSeason::class)->name('game.new-season');
         Route::post('/game/{gameId}/new-season', CompleteNewSeason::class)->name('game.new-season.complete');
+
+        // Cup draw ceremony (shown once, right after a draw the user is in)
+        Route::get('/game/{gameId}/cup-draw', ShowCupDraw::class)->name('game.cup-draw');
+        Route::post('/game/{gameId}/cup-draw/dismiss', DismissCupDraw::class)->name('game.cup-draw.dismiss');
 
         // Pre-Season opponent selection (mandatory at season start)
         Route::get('/game/{gameId}/preseason-setup', ShowPreseasonSetup::class)->name('game.preseason-setup');

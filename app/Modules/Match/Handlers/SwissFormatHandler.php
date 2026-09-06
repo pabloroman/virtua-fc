@@ -3,6 +3,7 @@
 namespace App\Modules\Match\Handlers;
 
 use App\Models\Competition;
+use App\Modules\Competition\Services\CupDrawRevealService;
 use App\Modules\Competition\Services\NeutralVenueResolver;
 use App\Modules\Competition\Services\SwissKnockoutGenerator;
 use App\Modules\Match\Events\LeaguePhaseCompleted;
@@ -33,6 +34,7 @@ class SwissFormatHandler extends CupCompetitionHandler
         EligibilityService $eligibilityService,
         NeutralVenueResolver $neutralVenueResolver,
         private readonly SwissKnockoutGenerator $knockoutGenerator,
+        private readonly CupDrawRevealService $drawReveal,
     ) {
         parent::__construct($tieResolver, $eligibilityService, $neutralVenueResolver);
     }
@@ -160,6 +162,11 @@ class SwissFormatHandler extends CupCompetitionHandler
         foreach ($matchups as [$homeTeamId, $awayTeamId, $bracketPosition]) {
             $this->createTie($game, $competitionId, $homeTeamId, $awayTeamId, $config, $bracketPosition);
         }
+
+        // Every Swiss round — playoff, R16, QF, SF, final — funnels through here,
+        // so this one call covers them all. The reveal drops the final itself,
+        // whose pairing follows from the semi-finals rather than a draw.
+        $this->drawReveal->record($game, $competitionId, $round);
     }
 
     private function isLeaguePhaseComplete(string $gameId, string $competitionId): bool

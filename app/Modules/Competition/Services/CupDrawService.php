@@ -27,6 +27,14 @@ class CupDrawService
     /**
      * Conduct a draw for a specific cup round.
      *
+     * ponytail: the tie-building below (tie -> first leg -> link back -> neutral
+     * venue -> optional second leg with the `_return` suffix) duplicates
+     * CupCompetitionHandler::createTie(), which the Swiss, group-stage and
+     * league-playoff handlers already share. Unify behind one Competition-module
+     * builder if it starts costing something — but it has to keep a bulk mode,
+     * since a Copa del Rey round 1 is ~56 ties and Eloquent-per-tie would be a
+     * real regression on this path.
+     *
      * @return Collection<CupTie>
      */
     public function conductDraw(string $gameId, string $competitionId, int $roundNumber): Collection
