@@ -112,6 +112,7 @@ class Competition extends Model
         'ESP3PO'    => 'el',
         'ENGSUP'    => 'el',
         'FRASUP'    => 'el',
+        'DEUSUP'    => 'el',
     ];
 
     protected $fillable = [

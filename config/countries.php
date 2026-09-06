@@ -438,18 +438,79 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
-        'promotions' => [],
-
-        'continental_slots' => [
-            'DEU1' => [
-                'UCL' => [1, 2, 3, 4],
-                'UEL' => [5, 6],
-                'UECL' => [7],
+        // DFB-Pokal and Supercup. The Pokal starts at its first round, where
+        // all 64 clubs join at once: 18 Bundesliga sides and 46 ghosts from
+        // the divisions below plus the regional cup winners. Only the top
+        // flight is playable, so every club enters at round 1, the field
+        // halves cleanly six times and no entryRound is needed anywhere.
+        'domestic_cups' => [
+            'DEUCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing. The real Pokal splits its first two rounds
+                // into a professional and an amateur pot, but the engine uses
+                // one pairing strategy for every round, so CrossCategoryPairing
+                // would also forbid a Bayern v Dortmund final — every playable
+                // club is tier 1 and every ghost tier 99.
+                'short_name' => 'DFB-Pokal',
+                'abbreviation' => 'Pokal',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Olympiastadion Berlin', 'capacity' => 74000],
+                ],
+            ],
+            'DEUSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supercup',
+                'abbreviation' => 'Supercup',
+                // No neutral_venues: the Supercup is hosted by the Pokal
+                // winner, or by the league runner-up when one club did the
+                // double.
             ],
         ],
 
-        'cup_winner_slot' => [],
+        // Champion v DFB-Pokal winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'DEUSUP',
+            'cup' => 'DEUCUP',
+            'league' => 'DEU1',
+            'teams' => 2,
+        ],
+
+        // Only the Bundesliga is playable, so tier 1 auto-qualifies and every
+        // other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'DEUCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still seven places, which is Germany's real allocation: the Pokal
+        // winner takes the Europa League place that used to go to sixth, and
+        // the Conference League place moves up with it.
+        'continental_slots' => [
+            'DEU1' => [
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5],
+                'UECL' => [6],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'DEUCUP',
+                'competition' => 'UEL',
+                'league' => 'DEU1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [

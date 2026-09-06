@@ -42,6 +42,8 @@
     { code: 'ENGCUP',  tmId: 'FAC',     name: 'FA Cup',                          kind: 'cup',         batch: false, expectedClubs: 64 },
     { code: 'ENGLC',   tmId: 'CGB',     name: 'EFL Cup',                         kind: 'cup',         batch: false, expectedClubs: 32 },
     { code: 'ENGSUP',  tmId: 'GBCS',    name: 'Community Shield',                kind: 'cup',         batch: false, expectedClubs: 2 },
+    { code: 'DEUCUP',  tmId: 'DFB',     name: 'DFB-Pokal',                       kind: 'cup',         batch: false, expectedClubs: 64 },
+    { code: 'DEUSUP',  tmId: 'DFL',     name: 'Franz-Beckenbauer-Supercup',      kind: 'cup',         batch: false, expectedClubs: 2 },
     { code: 'FRACUP',  tmId: 'CDF',     name: 'Coupe de France',                 kind: 'cup',         batch: false, expectedClubs: 64 },
     { code: 'FRASUP',  tmId: 'FRSC',    name: 'Trophée des Champions',           kind: 'cup',         batch: false, expectedClubs: 2 },
     { code: 'ITACUP',  tmId: 'CIT',     name: 'Coppa Italia',                    kind: 'cup',         batch: false, expectedClubs: 44 },

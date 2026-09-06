@@ -59,7 +59,7 @@ The engine keeps the field even against simulation drift the other way: `cup_qua
 
 ## Adding a Cup to a Country
 
-Spain, England, France and Italy have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
+Spain, England, Germany, France and Italy have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
 
 1. Declare the cups, supercup, qualification rules and cup-winner slot in `config/countries.php`, following the Spanish block.
 2. Add a prize config per cup under `app/Modules/Competition/Configs/`.
@@ -120,18 +120,22 @@ Four things worth knowing before adding a cup to a third country:
   make a top-flight tie impossible, so England declares none and gets the open
   draw `RandomPairing` provides.
 
-## France and Italy: the two ends of the trade-off
+## Germany, France and Italy: the two ends of the trade-off
 
-France takes England's approach and Italy takes Spain's, which is the clearest
-illustration of what `entryRound` buys.
+Germany and France take England's approach and Italy takes Spain's, which is the
+clearest illustration of what `entryRound` buys.
 
 | Cup | Field | Rounds |
 |-----|-------|--------|
+| `DEUCUP` (DFB-Pokal) | 64 — 18 Bundesliga clubs + 46 ghosts (2. Bundesliga, 3. Liga, regional cup winners) | first round to the final, all single-leg, final at the Olympiastadion |
+| `DEUSUP` (Supercup) | 2 — champion v DFB-Pokal winner | one round; no neutral venue, because the Pokal winner hosts it |
 | `FRACUP` (Coupe de France) | 64 — 18 Ligue 1 clubs + 46 ghosts (Ligue 2, National, National 2) | round of 64 to the final, all single-leg, final at the Stade de France |
 | `FRASUP` (Trophée des Champions) | 2 — champion v Coupe de France winner | one round; no neutral venue, because the Trophée moves every year and is often played abroad |
 | `ITACUP` (Coppa Italia) | 44 — 20 Serie A + 20 Serie B + 4 Serie C | preliminary round to the final, semi-finals over two legs; the previous season's top eight enter at the round of 16 |
 | `ITASUP` (Supercoppa Italiana) | 2 — champion v Coppa Italia winner | one round, in Riyadh |
 
+The DFB-Pokal needs no trimming at all: its 64-club first round is already the
+round the Bundesliga joins at, so the real field is the field the game plays.
 The Coupe de France is trimmed the way the FA Cup is: Ligue 1 joins at the round
 of 64 and everything below it is regional, so 64 clubs enter at round 1 and no
 `entryRound` appears anywhere. Its ghosts are the real Ligue 2 and National
