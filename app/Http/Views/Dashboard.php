@@ -25,6 +25,11 @@ class Dashboard
             'user' => $request->user(),
             'games' => $games,
             'canCreateGame' => $games->count() < $maxGames,
+            // Only users who already have a career from an older data season
+            // need telling that saves keep the squads they started with.
+            'hasLegacySaves' => $games->contains(
+                fn (Game $game) => ! $game->isTournamentMode() && $game->isFromPastBaseSeason()
+            ),
             'gameCount' => $games->count(),
             'maxGames' => $maxGames,
         ]);
