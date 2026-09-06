@@ -137,8 +137,10 @@ return [
         // pool) are left untouched, so regional qualifiers keep their cup
         // place and the entry round their data file gave them.
         //
-        // Whatever these rules produce, CupEntryRoundService balances the
-        // bracket at season setup so every round has an even field.
+        // Nothing balances the bracket afterwards: every round is even
+        // because target_size below leaves exactly as many clubs in round
+        // one as the supercup field takes out of it, and CupEntryRoundService
+        // only applies declared rounds and that skip-ahead.
         'cup_qualification' => [
             'ESPCUP' => [
                 'auto_qualify_tiers' => [1, 2],
