@@ -7,7 +7,7 @@ final class LaLiga2 implements TeamColorProvider
     public static function teams(): array
     {
         return [
-            'Deportivo de A Coruña' => [
+            'Deportivo A Coruña' => [
                 'pattern' => 'stripes',
                 'primary' => 'blue-600',
                 'secondary' => 'white',

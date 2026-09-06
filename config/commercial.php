@@ -275,7 +275,7 @@ return [
         940  => ['sponsor' => 'Abanca',            'clean_name' => 'Balaídos'],            // RC Celta
 
         // ── Spain — Segunda ──────────────────────────────────────────────
-        897  => ['sponsor' => 'Abanca',            'clean_name' => 'Riazor'],              // Deportivo de A Coruña
+        897  => ['sponsor' => 'Abanca',            'clean_name' => 'Riazor'],              // Deportivo A Coruña
         142  => ['sponsor' => 'Ibercaja',          'clean_name' => 'La Romareda'],         // Real Zaragoza
         993  => ['sponsor' => 'Bahrain Victorious', 'clean_name' => 'Nuevo Arcángel'],     // Córdoba CF
         2502 => ['sponsor' => 'SkyFi',             'clean_name' => 'Castalia'],            // CD Castellón

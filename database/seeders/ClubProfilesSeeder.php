@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ClubProfile;
 use App\Models\Team;
+use App\Support\ClubNames;
 use Illuminate\Database\Seeder;
 
 class ClubProfilesSeeder extends Seeder
@@ -12,7 +13,9 @@ class ClubProfilesSeeder extends Seeder
      * Club profiles with reputation level.
      * Commercial revenue is now calculated algorithmically from stadium_seats × config rate.
      *
-     * Names must match the database exactly (seeded from Transfermarkt JSON data).
+     * Names must match the database exactly (seeded from Transfermarkt JSON
+     * data). When a club is re-spelled upstream, keep the canonical name here
+     * and register the variant in App\Support\ClubNames.
      */
     private const CLUB_DATA = [
         // =============================================
@@ -52,7 +55,7 @@ class ClubProfilesSeeder extends Seeder
         // =============================================
 
         // Established (historic clubs) - Objetivo: Playoff ascenso
-        'Deportivo de A Coruña' => ClubProfile::REPUTATION_ESTABLISHED,
+        'Deportivo A Coruña' => ClubProfile::REPUTATION_ESTABLISHED,
         'Málaga CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'Sporting Gijón' => ClubProfile::REPUTATION_ESTABLISHED,
         'UD Las Palmas' => ClubProfile::REPUTATION_ESTABLISHED,
@@ -863,7 +866,7 @@ class ClubProfilesSeeder extends Seeder
      */
     public static function profiledClubNames(): array
     {
-        return array_keys(self::CLUB_DATA);
+        return array_merge(array_keys(self::CLUB_DATA), ClubNames::aliases());
     }
 
     public function run(): void
