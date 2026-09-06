@@ -30,6 +30,8 @@ return [
 
     // Status labels
     'on_loan' => 'On Loan',
+    'loaned_from' => 'On loan from',
+    'loaned_to' => 'Loaned to',
     'leaving_free' => 'Leaving (Free)',
     'renewed' => 'Renewed',
     'sale_agreed' => 'Sale Agreed',
