@@ -5,14 +5,10 @@
             <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('app.new_game') }}</h2>
         </div>
 
-        @php
-            $allCompetitions = collect($countries)->flatMap(fn ($c) => collect($c['tiers']))->values();
-            $firstId = $allCompetitions->first()?->id;
-        @endphp
-
         <div x-data="{
                 mode: @js($hasCareerAccess ? 'career' : ($hasTournamentMode ? 'tournament' : 'career')),
-                openTab: '{{ $firstId }}',
+                leagues: @js($leagues),
+                openTab: @js($leagues[0]['value'] ?? null),
                 loading: false,
             }">
             <form method="post" action="{{ route('init-game') }}" @submit="loading = true" class="space-y-6">
@@ -155,37 +151,9 @@
 
                 {{-- ===================== CLUB MANAGER MODE: Club teams ===================== --}}
                 <div x-show="mode === 'career'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                    {{-- Competition tabs. ESP3A/ESP3B collapse into a single virtual "Primera Federación" tab keyed 'ESP3'. --}}
-                    @php
-                        $allComps = collect($countries)->flatMap(fn ($c) => collect($c['tiers']))->values();
-                        $primeraRfefComps = $allComps->whereIn('id', ['ESP3A', 'ESP3B'])->values();
-                        $tabComps = $allComps->reject(fn ($c) => in_array($c->id, ['ESP3A', 'ESP3B'], true))->values();
-                        if ($primeraRfefComps->isNotEmpty()) {
-                            $first = $primeraRfefComps->first();
-                            $esp3Index = $allComps->search(fn ($c) => $c->id === 'ESP3A');
-                            $synthetic = (object) [
-                                'id' => 'ESP3',
-                                'name' => 'game.primera_federacion',
-                                'flag' => $first->flag,
-                                'country' => $first->country,
-                            ];
-                            $tabComps->splice($esp3Index !== false ? $esp3Index : $tabComps->count(), 0, [$synthetic]);
-                        }
-                    @endphp
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                        @foreach($tabComps as $competition)
-                            <x-pill-button
-                                align="start"
-                                @click="openTab = '{{ $competition->id }}'"
-                                x-bind:class="openTab === '{{ $competition->id }}'
-                                    ? 'bg-accent-red text-white'
-                                    : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'"
-                                class="w-full gap-2">
-                                <img class="w-5 h-4 rounded-sm shadow-sm" src="{{ Storage::disk('assets')->url('flags/' . $competition->flag . '.svg') }}" alt="">
-                                <span>{{ __($competition->name) }}</span>
-                            </x-pill-button>
-                        @endforeach
-                    </div>
+                    {{-- League picker. ESP3A/ESP3B share one 'ESP3' entry, built in
+                         App\Http\Views\SelectTeam so its labels can be translated in PHP. --}}
+                    <x-league-select model="openTab" options="leagues" :label="__('game.league')" />
 
                     {{-- Team grids per competition. ESP3A/ESP3B share the 'ESP3' tab and render as group sections. --}}
                     @foreach($countries as $countryCode => $country)
