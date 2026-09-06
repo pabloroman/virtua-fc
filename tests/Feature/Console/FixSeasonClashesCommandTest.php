@@ -3,15 +3,12 @@
 namespace Tests\Feature\Console;
 
 use Illuminate\Support\Facades\File;
+use Tests\Support\ThrowawaySeasons;
 use Tests\TestCase;
 
 class FixSeasonClashesCommandTest extends TestCase
 {
-    // A throwaway season disjoint from the years ValidateSeasonCommandTest
-    // (2096) and ScaffoldSeasonCommandTest (2098/2099) use: all three write to
-    // the shared base_path('data') tree, so under `test --parallel` they would
-    // otherwise race, one tearDown deleting another's freshly written files.
-    private string $season = '2097';
+    private string $season = ThrowawaySeasons::FIX_CLASHES;
 
     protected function tearDown(): void
     {

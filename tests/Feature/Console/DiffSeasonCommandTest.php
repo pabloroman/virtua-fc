@@ -4,6 +4,7 @@ namespace Tests\Feature\Console;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Tests\Support\ThrowawaySeasons;
 use Tests\TestCase;
 
 class DiffSeasonCommandTest extends TestCase
@@ -12,8 +13,8 @@ class DiffSeasonCommandTest extends TestCase
     // write to the shared base_path('data') tree (Scaffold 2098/2099, Normalize
     // 2097, Validate 2096): under `test --parallel` they run in separate
     // processes but share the same data/ folder, so overlapping years race.
-    private string $from = '2094';
-    private string $season = '2095';
+    private string $from = ThrowawaySeasons::DIFF_FROM;
+    private string $season = ThrowawaySeasons::DIFF_TO;
 
     protected function tearDown(): void
     {
