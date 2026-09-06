@@ -124,13 +124,20 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        // Skip when this country isn't part of the game (no entries in any
-        // playable tier). The target_size invariant below catches partial-
-        // data shortfalls — wholly absent data is a different signal.
-        $hasAnyTierEntries = CompetitionEntry::where('game_id', $game->id)
-            ->whereIn('competition_id', $playableTierCompetitions)
+        // Skip when the game holds no field for this cup: either the country
+        // isn't part of the game at all, or the save was started before the
+        // cup's data existed. A save is never given a competition added after
+        // it began — it keeps the game it started, and its schedules come
+        // from its own base_season, which has no rounds for the cup anyway.
+        // Rebuilding the field from the playable tiers alone would be worse
+        // than leaving it empty: 18 or 20 clubs is an odd pool a round in,
+        // which ConductNextCupRoundDraw swallows and the cup silently stops.
+        // The target_size invariant below catches partial-data shortfalls;
+        // wholly absent data is a different signal.
+        $hasCupEntries = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $cupId)
             ->exists();
-        if (!$hasAnyTierEntries) {
+        if (!$hasCupEntries) {
             return;
         }
 

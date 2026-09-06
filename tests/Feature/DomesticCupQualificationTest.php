@@ -60,6 +60,18 @@ class DomesticCupQualificationTest extends TestCase
         $this->createLeague('ESP2', 22);
         $this->createLeague('ESP3A', 20);
         $this->createLeague('ESP3B', 20);
+
+        // Every save the processor rebuilds already holds a cup field,
+        // copied from its season's data when the game was created; a save
+        // with none predates the cup and is deliberately left alone. Seed
+        // the champion's entry so these rule-level tests describe a live
+        // cup — it qualifies through tier 1 anyway, so no count moves.
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESPCUP',
+            'team_id' => $this->teamsByCompetition['ESP1'][0]->id,
+            'entry_round' => 1,
+        ]);
     }
 
     public function test_base_case_qualifies_all_tier_1_and_2_plus_top_5_per_primera_rfef_group(): void

@@ -89,13 +89,17 @@ class SupercupQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        // Skip when this country isn't part of the game (no top-league
-        // entries). The 4-qualifier guard below catches partial-data bugs
-        // — wholly absent data is a different signal and shouldn't trip it.
-        $hasLeague = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', $leagueId)
+        // Skip when the game holds no supercup field: either the country
+        // isn't part of the game, or the save was started before the
+        // supercup's data existed. A save is never given a competition added
+        // after it began. The field is replaced wholesale below every season,
+        // so on a live save this is always non-empty. The 4-qualifier guard
+        // further down catches partial-data bugs — wholly absent data is a
+        // different signal and shouldn't trip it.
+        $hasSupercupEntries = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $supercupId)
             ->exists();
-        if (!$hasLeague) {
+        if (!$hasSupercupEntries) {
             return;
         }
 

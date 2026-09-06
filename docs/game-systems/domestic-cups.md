@@ -98,7 +98,7 @@ every club enters at round 1, England needs no `entryRound` anywhere — the fie
 halves cleanly on its own. A country that wants its full pyramid still can:
 `entryRound` is what makes that work, and Spain's Copa is the model.
 
-Three things worth knowing before adding a cup to a third country:
+Four things worth knowing before adding a cup to a third country:
 
 - **A ghost can win a cup.** It is then refused the European place its cup pays
   (`UefaQualificationProcessor` treats a winner with no squad as no winner) and
@@ -108,6 +108,12 @@ Three things worth knowing before adding a cup to a third country:
   more clubs from `top_per_group`. A country whose only playable tier is the top
   flight has no such group, so declaring it could only turn a shortfall into a
   thrown season transition. England omits it.
+- **A new cup reaches new saves only.** Both qualification processors skip a cup
+  the game holds no field for, so a save started before the cup's data existed
+  never acquires it — and nothing backfills one. That save reads its schedules
+  from its own `base_season`, which has no rounds for the cup, and a field
+  rebuilt from the playable tiers alone would be an odd 18- or 20-club pool that
+  stops the cup a round in. A save keeps the competitions it started with.
 - **A draw pairing is a choice, not a default.** `CrossCategoryPairing` keeps the
   big clubs apart, which suits a Copa del Rey field spanning four divisions. In a
   country where every playable club is tier 1 and every ghost tier 99 it would

@@ -81,6 +81,16 @@ class SupercupQualificationTest extends TestCase
                 'points' => max(0, (25 - $position) * 3 + 5),
             ]);
         }
+
+        // As on a real save: the supercup field exists from game setup and
+        // is replaced wholesale every season. A save holding no field
+        // predates the competition and is skipped, so seed one club.
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESPSUP',
+            'team_id' => $this->league[1]->id,
+            'entry_round' => 1,
+        ]);
     }
 
     public function test_no_overlap_qualifies_both_cup_finalists_plus_league_top_2(): void
