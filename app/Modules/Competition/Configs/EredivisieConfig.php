@@ -50,18 +50,23 @@ class EredivisieConfig implements CompetitionConfig, HasSeasonGoals
     private const SEASON_GOALS = [
         Game::GOAL_TITLE => ['targetPosition' => 1, 'label' => 'game.goal_title'],
         Game::GOAL_EUROPA_LEAGUE => ['targetPosition' => 4, 'label' => 'game.goal_europa_league'],
-        Game::GOAL_TOP_HALF => ['targetPosition' => 9, 'label' => 'game.goal_top_half'],
+        Game::GOAL_TOP_HALF => ['targetPosition' => 11, 'label' => 'game.goal_top_half'],
         Game::GOAL_SURVIVAL => ['targetPosition' => 15, 'label' => 'game.goal_survival'],
     ];
 
     /**
      * Map reputation to season goal.
+     *
+     * Reputation is a Europe-wide scale and this league has no elite club, so
+     * the map is shifted one rung relative to the big-five leagues: the
+     * continental sides here are the domestic giants and are expected to win
+     * the title, not merely to qualify for Europe.
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
-        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_EUROPA_LEAGUE,
-        ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
-        ClubProfile::REPUTATION_MODEST => Game::GOAL_SURVIVAL,
+        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_TITLE,
+        ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_EUROPA_LEAGUE,
+        ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 

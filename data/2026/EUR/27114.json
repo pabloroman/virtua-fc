@@ -1,0 +1,430 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/27114.png",
+  "name": "KF Egnatia",
+  "country": "AL",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 26, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "259218",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Eneo Bitri",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 28, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "271646",
+      "injured": false,
+      "marketValue": "€375k",
+      "name": "Karim Loukili",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 5, 1994",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "295343",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Edison Ndreca",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "16",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 10, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "324845",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Albano Aleksi",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 6, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "331508",
+      "injured": true,
+      "marketValue": "€300k",
+      "name": "Guillem Jaime",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 23, 1998",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "342476",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Mario Dajsinani",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "98",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 20, 2000",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "403050",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Bruno Puja",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 12, 2000",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "407347",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Alessandro Albanese",
+      "nationality": [
+        "Belgium",
+        "Italy"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 10, 1996",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "411661",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Fernando Medeiros",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 24, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "486872",
+      "injured": false,
+      "marketValue": "€375k",
+      "name": "Eljon Sota",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 13, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "541011",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Ildi Gruda",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 5, 2001",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "547721",
+      "injured": false,
+      "marketValue": "€325k",
+      "name": "Zamiq Aliyev",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 13, 2000",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "549758",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Jurguens Montenegro",
+      "nationality": [
+        "Costa Rica"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 29, 1997",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "631280",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Andrey Yago",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 3, 2002",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "637117",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Altin Kryeziu",
+      "nationality": [
+        "Kosovo",
+        "Slovenia"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 13, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "646197",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Alessandro Kacbufi",
+      "nationality": [
+        "Albania",
+        "Italy"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 18, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "647530",
+      "injured": true,
+      "marketValue": "€250k",
+      "name": "Ledio Beqja",
+      "nationality": [
+        "Albania",
+        "Italy"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 26, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "734581",
+      "injured": true,
+      "marketValue": "€300k",
+      "name": "Soumaila Bakayoko",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 27, 2003",
+      "height": "1,91m",
+      "id": "816490",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Levan Tandilashvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "900386",
+      "injured": false,
+      "marketValue": "€325k",
+      "name": "Geralb Smajli",
+      "nationality": [
+        "Albania",
+        "Belgium"
+      ],
+      "number": "55",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 18, 2006",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1072848",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Numan Ajetovikj",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 16, 2007",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1120216",
+      "injured": false,
+      "name": "Reis Bakalli",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 14, 2007",
+      "id": "1136305",
+      "injured": false,
+      "name": "Bjorni Duka",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 16, 2004",
+      "id": "1145002",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Ibrahim Diabaté",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 3, 2005",
+      "height": "1,87m",
+      "id": "1172585",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Daniel Afful",
+      "nationality": [
+        "Ghana"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 20, 2007",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1178065",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "6418",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/6418.png",
+          "name": "Panetolikos"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€50k",
+      "name": "Deivid Hoxha",
+      "nationality": [
+        "Albania",
+        "Greece"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 8, 2002",
+      "height": "1,86m",
+      "id": "1501499",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Daniel Adjessa",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "2",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 5, 2008",
+      "id": "1587440",
+      "injured": false,
+      "name": "Zyber Cullhaj",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Arena Egnatia",
+  "stadiumSeats": "6000",
+  "transfermarktId": "27114"
+}

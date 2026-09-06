@@ -1,0 +1,500 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/36.png",
+  "name": "Fenerbahce",
+  "country": "TR",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 1, 1989",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "51894",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Mert Günok",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 13, 1993",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "96341",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Romelu Lukaku",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 18, 1995",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "177476",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Nathan Aké",
+      "nationality": [
+        "Netherlands",
+        "Cote d'Ivoire"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 11, 1995",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "204069",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Milan Škriniar",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 15, 1995",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "216603",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "İrfan Can Kahveci",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 29, 1991",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "225083",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "N'Golo Kanté",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "91",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 16, 1993",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "231572",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Nélson Semedo",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 17, 1993",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "238223",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Ederson",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 24, 1994",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "256267",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Vedat Muriqi",
+      "nationality": [
+        "Kosovo",
+        "Albania"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 1, 1994",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "258626",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Talisca",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "94",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 8, 1997",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "286170",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Tarık Çetin",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 21, 1996",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "296622",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Marco Asensio",
+      "nationality": [
+        "Spain",
+        "Netherlands"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 19, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "306462",
+      "injured": false,
+      "name": "Mert Hakan Yandaş",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 23, 1996",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "320141",
+      "injured": true,
+      "marketValue": "€3.50m",
+      "name": "Çağlar Söyüncü",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 3, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "353922",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Mert Müldür",
+      "nationality": [
+        "Türkiye",
+        "Austria"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 21, 1998",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "382528",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Kerem Aktürkoğlu",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 10, 2000",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "388820",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Levent Mercan",
+      "nationality": [
+        "Türkiye",
+        "Germany"
+      ],
+      "number": "22",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "410158",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Rodrigo Becão",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "50",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 14, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "465830",
+      "injured": false,
+      "marketValue": "€27.00m",
+      "name": "Mattéo Guendouzi",
+      "nationality": [
+        "France",
+        "Morocco"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 1, 2001",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "532826",
+      "injured": false,
+      "marketValue": "€55.00m",
+      "name": "Mason Greenwood",
+      "nationality": [
+        "England",
+        "Jamaica"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 27, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "563749",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Oğuz Aydın",
+      "nationality": [
+        "Türkiye",
+        "Netherlands"
+      ],
+      "number": "70",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 28, 2002",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "581329",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Archie Brown",
+      "nationality": [
+        "England",
+        "Jamaica"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 26, 2001",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "591361",
+      "injured": true,
+      "marketValue": "€20.00m",
+      "name": "Jayden Oosterwolde",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "613725",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "İsmail Yüksek",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 19, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "655895",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Bartuğ Elmaz",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "28",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 23, 2002",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "671591",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Dorgeles Nene",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "45",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 17, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "851551",
+      "injured": false,
+      "marketValue": "€2.70m",
+      "name": "Ognjen Mimović",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "77",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 2, 2004",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "889136",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Yiğit Efe Demir",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 4, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1113451",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Kojo Peprah Oppong",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 20, 2007",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1133732",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Abdou Aziz Fall",
+      "nationality": [
+        "Senegal"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jun 7, 2008",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1133736",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Amara Diouf",
+      "nationality": [
+        "Senegal"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jan 13, 2007",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1457931",
+      "injured": false,
+      "name": "Adem Yeşilyurt",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "35",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Chobani Stadyumu FB Şükrü Saracoğlu Spor Kompleksi",
+  "stadiumSeats": "47430",
+  "transfermarktId": "36"
+}

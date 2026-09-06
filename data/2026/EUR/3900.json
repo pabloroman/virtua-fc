@@ -1,0 +1,495 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3900.png",
+  "name": "FK Borac Banja Luka",
+  "country": "BA",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 11, 1986",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "46346",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Stojan Vranjes",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "23",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 9, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "120192",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Stefan Savic",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "77",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Sep 19, 1992",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "123158",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Srdjan Grahovac",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "15",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1993",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "131735",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Petar Kunic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "93",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 19, 1992",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "160285",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Milos Jojic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 11, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "186489",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Nemanja Jaksic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 18, 1995",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "193217",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Damjan Siskovski",
+      "nationality": [
+        "North Macedonia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 11, 1996",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "226090",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Ante Roguljic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "44",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 24, 1994",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "245027",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Anderson Esiti",
+      "nationality": [
+        "Nigeria",
+        "Belgium"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 24, 1995",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "258290",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Sinisa Sanicanin",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 23, 1995",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "271451",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Dani Romera",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jun 5, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "320858",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Sandi Ogrinec",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "98",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 10, 1996",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "328119",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Amer Hiros",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "12",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "338031",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Jurich Carolina",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jan 10, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "342719",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Bart Meijers",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Nov 25, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "350759",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Luka Juricic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 23, 1995",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "384027",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Sebastián Herrera",
+      "nationality": [
+        "North Macedonia",
+        "Colombia"
+      ],
+      "number": "16",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 24, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "447938",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Abel Pascual",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 28, 2000",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "466121",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Nikola Terzic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "36",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 24, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "519782",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Branimir Cipetic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 2, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "522263",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Omar Sijaric",
+      "nationality": [
+        "Montenegro",
+        "Germany"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 6, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "569080",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Nikola Cetkovic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Dec 12, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "615600",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Viktor Rogan",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "19",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Dec 21, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "687426",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "David Vukovic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 13, 2001",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "693480",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Damir Hrelja",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Feb 14, 2001",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "697091",
+      "injured": true,
+      "marketValue": "€150k",
+      "name": "Karlo Peric",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jan 5, 2027",
+      "dateOfBirth": "Aug 3, 2006",
+      "foot": "right",
+      "id": "933832",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Pavle Djajic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 7, 2007",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "952692",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Mladen Jurkas",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "72",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 2, 2004",
+      "foot": "right",
+      "id": "982836",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Ivan Kukavica",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 25, 2006",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "989321",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Amar Milak",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "47",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 24, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1024189",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Erik Ridjan",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 1, 2009",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1141857",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Matej Deket",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "89",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Gradski-Stadion Banja Luka",
+  "stadiumSeats": "10442",
+  "transfermarktId": "3900"
+}

@@ -1,0 +1,417 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/48325.png",
+  "name": "Riga FC",
+  "country": "LV",
+  "players": [
+    {
+      "contract": "Nov 13, 2026",
+      "dateOfBirth": "Dec 9, 1996",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "230631",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Raivis Jurkovskis",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 26, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "271099",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Antonijs Cernomordijs",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "34",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 5, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "350398",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Abdulrahman Taiwo",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "25",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 27, 1998",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "369384",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Mohamed Badamosi",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 25, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "444605",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Krisjanis Zviedris",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 12, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "464591",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Maksims Tonisevs",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 11, 2000",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "549756",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Orlando Galo",
+      "nationality": [
+        "Costa Rica",
+        "Nicaragua"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 20, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "559330",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Salah Oulad",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 28, 2000",
+      "foot": "right",
+      "height": "2,04m",
+      "id": "589588",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Frenks Orols",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "91",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 20, 2002",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "617077",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Brian Peña",
+      "nationality": [
+        "Spain"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 14, 2002",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "627229",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Paulo Eduardo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 6, 2003",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "669477",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Athanasios Papadoudis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 5, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "669921",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Ahmed Ankrah",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "40",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 24, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "685806",
+      "injured": false,
+      "name": "Samuel Pedro",
+      "nationality": [
+        "Portugal",
+        "Angola"
+      ],
+      "number": "15",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 15, 2002",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "820633",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Coli Saco",
+      "nationality": [
+        "Mali",
+        "France"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 14, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "831697",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Iago Siqueira",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 2, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "880102",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Meïssa Diop",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "22",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 3, 1999",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "892010",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Baba Musah",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "Apr 25, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "901037",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Reginaldo Ramires",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 15, 2003",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "911065",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Andrés Salazar",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 10, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1010016",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Juan Christian",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "70",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 11, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1010647",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Raki Aouani",
+      "nationality": [
+        "Tunisia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1086632",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "10492",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/10492.png",
+          "name": "Esporte Clube Juventude"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.00m",
+      "name": "Abner",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Dec 15, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1122898",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Caio",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "99",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 21, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1242053",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "8606",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/8606.png",
+          "name": "FK Auda"
+        },
+        "until": "Dec 31, 2026"
+      },
+      "marketValue": "€200k",
+      "name": "Karl Gameni Wassom",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 28, 2007",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1290246",
+      "injured": false,
+      "name": "Marcis Kazainis",
+      "nationality": [
+        "Latvia"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    }
+  ],
+  "stadiumName": "Skonto",
+  "stadiumSeats": "7000",
+  "transfermarktId": "48325"
+}

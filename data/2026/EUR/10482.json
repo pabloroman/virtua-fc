@@ -1,0 +1,395 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/10482.png",
+  "name": "Kairat Almaty",
+  "country": "KZ",
+  "players": [
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 26, 1987",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "59352",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Aleksandr Martynovich",
+      "nationality": [
+        "Belarus",
+        "Russia"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 6, 1997",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "258002",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Luís Mata",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 3, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "276816",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Erkin Tapalov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 13, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "376486",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Marc Gual",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "28",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Nov 7, 2000",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "433893",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Jaakko Oksanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 9, 1997",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "590291",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Jorginho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 5, 1995",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "597087",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Lucas Áfrico",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 11, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "637788",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Gustavo Mendonça",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 2, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "661114",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Aleksandr Shirobokov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 6, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "661116",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Lev Kurgin",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 21, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "674212",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Oiva Jukkola",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Oct 14, 2003",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "724942",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Temirlan Anarbekov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 29, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "764944",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Damir Kasabulat",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Jul 15, 2004",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "858389",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Aleksandr Mrynskiy",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "24",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 26, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "881434",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Adilet Sadybekov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 1997",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "902747",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Edmilson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 11, 2005",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "939183",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Olzhas Baybek",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 26, 2007",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "1141841",
+      "injured": false,
+      "name": "Adlan Nurgaliev",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 4, 2007",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1141842",
+      "injured": false,
+      "name": "Mansur Birkurmanov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "15",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Jun 15, 2007",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1179141",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Sherkhan Kalmurza",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "82",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 21, 2007",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1179142",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Daniyar Tashpulatov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "59",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 17, 2001",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1229026",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Sebastián Zeballos",
+      "nationality": [
+        "Argentina"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 10, 2008",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1235708",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Ismail Bekbolat",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "81",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 13, 2007",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1271721",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Azamat Tuyakbaev",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 22, 2007",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1292415",
+      "injured": false,
+      "name": "Mukhamedali Abish",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 20, 2008",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1327495",
+      "injured": false,
+      "name": "Danila Buch",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    }
+  ],
+  "stadiumName": "Almaty Ortalyk Stadion",
+  "stadiumSeats": "23804",
+  "transfermarktId": "10482"
+}

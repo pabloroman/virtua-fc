@@ -1,0 +1,263 @@
+{
+  "id": "PORCUP",
+  "name": "Taça de Portugal",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "294",
+      "name": "SL Benfica"
+    },
+    {
+      "id": "336",
+      "name": "Sporting CP"
+    },
+    {
+      "id": "720",
+      "name": "FC Porto"
+    },
+    {
+      "id": "979",
+      "name": "Moreirense FC"
+    },
+    {
+      "id": "982",
+      "name": "CD Nacional"
+    },
+    {
+      "id": "1075",
+      "name": "SC Braga"
+    },
+    {
+      "id": "1301",
+      "name": "CS Marítimo"
+    },
+    {
+      "id": "1436",
+      "name": "SC Beira-Mar"
+    },
+    {
+      "id": "1465",
+      "name": "GD Estoril Praia"
+    },
+    {
+      "id": "1701",
+      "name": "FC Felgueiras 1932"
+    },
+    {
+      "id": "1992",
+      "name": "SU Sintrense"
+    },
+    {
+      "id": "2420",
+      "name": "Vitória Guimarães SC"
+    },
+    {
+      "id": "2423",
+      "name": "CD Santa Clara"
+    },
+    {
+      "id": "2424",
+      "name": "Gil Vicente FC"
+    },
+    {
+      "id": "2425",
+      "name": "Rio Ave FC"
+    },
+    {
+      "id": "2431",
+      "name": "CF Estrela Amadora"
+    },
+    {
+      "id": "2432",
+      "name": "SC União Torreense"
+    },
+    {
+      "id": "2521",
+      "name": "FC Alverca"
+    },
+    {
+      "id": "2639",
+      "name": "UD Leiria"
+    },
+    {
+      "id": "2829",
+      "name": "AD Marco 09"
+    },
+    {
+      "id": "2990",
+      "name": "Académica Coimbra"
+    },
+    {
+      "id": "2995",
+      "name": "FC Paços de Ferreira"
+    },
+    {
+      "id": "3264",
+      "name": "AD Machico"
+    },
+    {
+      "id": "3267",
+      "name": "Leça FC"
+    },
+    {
+      "id": "3268",
+      "name": "Casa Pia AC"
+    },
+    {
+      "id": "3274",
+      "name": "AD Ovarense"
+    },
+    {
+      "id": "3275",
+      "name": "Lusitano GC"
+    },
+    {
+      "id": "3325",
+      "name": "GD Chaves"
+    },
+    {
+      "id": "3326",
+      "name": "AD Fafe"
+    },
+    {
+      "id": "3327",
+      "name": "FC Penafiel"
+    },
+    {
+      "id": "3329",
+      "name": "FC Famalicão"
+    },
+    {
+      "id": "3345",
+      "name": "Leixões SC"
+    },
+    {
+      "id": "3348",
+      "name": "CD Trofense"
+    },
+    {
+      "id": "3349",
+      "name": "CD Feirense"
+    },
+    {
+      "id": "4275",
+      "name": "Caldas SC"
+    },
+    {
+      "id": "4294",
+      "name": "SC Farense"
+    },
+    {
+      "id": "4297",
+      "name": "Varzim SC"
+    },
+    {
+      "id": "5222",
+      "name": "USC Paredes"
+    },
+    {
+      "id": "5227",
+      "name": "Atlético CP"
+    },
+    {
+      "id": "6910",
+      "name": "O Elvas CAD"
+    },
+    {
+      "id": "6912",
+      "name": "FC Vizela"
+    },
+    {
+      "id": "7056",
+      "name": "CD Mafra"
+    },
+    {
+      "id": "7179",
+      "name": "CD Tondela"
+    },
+    {
+      "id": "7378",
+      "name": "Portimonense SAD"
+    },
+    {
+      "id": "7788",
+      "name": "Académico Viseu FC"
+    },
+    {
+      "id": "7789",
+      "name": "Amarante FC"
+    },
+    {
+      "id": "8024",
+      "name": "FC Arouca"
+    },
+    {
+      "id": "8026",
+      "name": "CF Os Marialvas"
+    },
+    {
+      "id": "8065",
+      "name": "SG Sacavenense"
+    },
+    {
+      "id": "8189",
+      "name": "Lusitânia FC Lourosa"
+    },
+    {
+      "id": "8827",
+      "name": "UD Oliveirense"
+    },
+    {
+      "id": "12815",
+      "name": "GD Alcochetense"
+    },
+    {
+      "id": "15268",
+      "name": "SC São João de Ver"
+    },
+    {
+      "id": "22216",
+      "name": "União Nogueirense FC"
+    },
+    {
+      "id": "25836",
+      "name": "Estrela Calheta FC"
+    },
+    {
+      "id": "27745",
+      "name": "AC Malveira"
+    },
+    {
+      "id": "41539",
+      "name": "GD Vitória Sernache"
+    },
+    {
+      "id": "47794",
+      "name": "FC Maia Lidador"
+    },
+    {
+      "id": "68608",
+      "name": "CF Os Belenenses"
+    },
+    {
+      "id": "74155",
+      "name": "UD Santarém"
+    },
+    {
+      "id": "90259",
+      "name": "CD Paços de Brandão"
+    },
+    {
+      "id": "92265",
+      "name": "CD Celoricense"
+    },
+    {
+      "id": "102624",
+      "name": "Guarda FC"
+    },
+    {
+      "id": "110302",
+      "name": "Avs Futebol"
+    }
+  ]
+}

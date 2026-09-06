@@ -213,6 +213,7 @@ return [
             8519 => 368,   // Sevilla Atlético → Sevilla FC
             3679 => 13,    // Atlético Madrileño → Atlético de Madrid
             2865 => 150,   // Betis Deportivo Balompié → Real Betis Balompié
+            11603 => 897,  // RC Deportivo Fabril → Deportivo A Coruña
         ],
 
         'continental_slots' => [
@@ -267,7 +268,10 @@ return [
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
-                // EUR club pool — individual team files, includes NLD/POR teams
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
+                // EUR club pool — individual team files, for European clubs
+                // outside the modelled leagues
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 // INT club pool — non-European clubs (South America, MLS, etc.)
                 // for transfer market only; never participates in fixtures
@@ -297,18 +301,100 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // FA Cup, EFL Cup and Community Shield. Each cup starts at the round
+        // the Premier League joins, because only the top flight is playable:
+        // the qualifying rounds contain nobody the user can be. That also
+        // means every club enters at round 1, with each round's field
+        // halving cleanly and no entryRound needed anywhere.
+        'domestic_cups' => [
+            'ENGCUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — an open draw is what the FA Cup does.
+                // CrossCategoryPairing would make a Premier League tie
+                // impossible in the third round, since every playable club
+                // is tier 1 and every ghost tier 99.
+                'short_name' => 'FA Cup',
+                'abbreviation' => 'FA',
+                'neutral_venues' => [
+                    'cup.semi_finals' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                    'cup.final' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+            'ENGLC' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                // Its own table, not the shared one: the EFL Cup pays half
+                // the FA Cup at every stage, and its shorter bracket would
+                // otherwise start it partway up the generic scale.
+                'config_class' => \App\Modules\Competition\Configs\EflCupConfig::class,
+                'short_name' => 'EFL Cup',
+                'abbreviation' => 'EFL',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+            'ENGSUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Community Shield',
+                'abbreviation' => 'Shield',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Wembley Stadium', 'capacity' => 90000],
+                ],
+            ],
+        ],
+
+        // Champion v FA Cup winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'ENGSUP',
+            'cup' => 'ENGCUP',
+            'league' => 'ENG1',
+            'teams' => 2,
+        ],
+
+        // Only the top flight is playable, so tier 1 auto-qualifies and every
+        // other entrant is a ghost preserved from the data file. No
+        // target_size: with no second tier there is nothing to backfill from,
+        // so it could only turn a shortfall into a thrown season transition
+        // — a stuck save — rather than repair anything.
+        'cup_qualification' => [
+            'ENGCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+            'ENGLC' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
         'promotions' => [],
 
+        // No UECL positions: England's Conference League place belongs to the
+        // EFL Cup winner, declared below, not to the league table.
         'continental_slots' => [
             'ENG1' => [
                 'UCL' => [1, 2, 3, 4, 5],
                 'UEL' => [6],
-                'UECL' => [7],
             ],
         ],
 
-        'cup_winner_slot' => [],
+        'cup_winner_slot' => [
+            [
+                'cup' => 'ENGCUP',
+                'competition' => 'UEL',
+                'league' => 'ENG1',
+            ],
+            [
+                'cup' => 'ENGLC',
+                'competition' => 'UECL',
+                'league' => 'ENG1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -331,6 +417,8 @@ return [
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -355,18 +443,81 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
-        'promotions' => [],
-
-        'continental_slots' => [
-            'DEU1' => [
-                'UCL' => [1, 2, 3, 4],
-                'UEL' => [5, 6],
-                'UECL' => [7],
+        // DFB-Pokal and Supercup. The Pokal starts at its first round, where
+        // all 64 clubs join at once: 18 Bundesliga sides and 46 ghosts from
+        // the divisions below plus the regional cup winners. Only the top
+        // flight is playable, so every club enters at round 1, the field
+        // halves cleanly six times and no entryRound is needed anywhere.
+        'domestic_cups' => [
+            'DEUCUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing. The real Pokal splits its first two rounds
+                // into a professional and an amateur pot, but the engine uses
+                // one pairing strategy for every round, so CrossCategoryPairing
+                // would also forbid a Bayern v Dortmund final — every playable
+                // club is tier 1 and every ghost tier 99.
+                'short_name' => 'DFB-Pokal',
+                'abbreviation' => 'Pokal',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Olympiastadion Berlin', 'capacity' => 74000],
+                ],
+            ],
+            'DEUSUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supercup',
+                'abbreviation' => 'Supercup',
+                // No neutral_venues: the Supercup is hosted by the Pokal
+                // winner, or by the league runner-up when one club did the
+                // double.
             ],
         ],
 
-        'cup_winner_slot' => [],
+        // Champion v DFB-Pokal winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'DEUSUP',
+            'cup' => 'DEUCUP',
+            'league' => 'DEU1',
+            'teams' => 2,
+        ],
+
+        // Only the Bundesliga is playable, so tier 1 auto-qualifies and every
+        // other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'DEUCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still seven places, which is Germany's real allocation: the Pokal
+        // winner takes the Europa League place that used to go to sixth, and
+        // the Conference League place moves up with it.
+        'continental_slots' => [
+            'DEU1' => [
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5],
+                'UECL' => [6],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'DEUCUP',
+                'competition' => 'UEL',
+                'league' => 'DEU1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -389,6 +540,8 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -413,18 +566,90 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // Coppa Italia and Supercoppa. Unlike England's cups, the Coppa keeps
+        // its real shape: Serie B and Serie C sides play the early rounds and
+        // the previous season's top eight Serie A clubs skip to the round of
+        // 16. That bye is what makes a 44-club field halve cleanly, so it is
+        // declared as a qualification rule rather than baked into the data.
+        'domestic_cups' => [
+            'ITACUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Coppa draws its bracket openly, and
+                // CrossCategoryPairing would forbid a Serie A v Serie A tie
+                // since every playable club is tier 1 and every ghost tier 99.
+                'short_name' => 'Coppa Italia',
+                'abbreviation' => 'Coppa',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Stadio Olimpico', 'capacity' => 70000],
+                ],
+            ],
+            'ITASUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supercoppa',
+                'abbreviation' => 'Supercoppa',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Al-Awwal Park', 'capacity' => 25000],
+                ],
+            ],
+        ],
+
+        // Champion v Coppa Italia winner, the two-club shape. The four-team
+        // final four ran from 2023 to 2025-26 only.
+        'supercup' => [
+            'competition' => 'ITASUP',
+            'cup' => 'ITACUP',
+            'league' => 'ITA1',
+            'teams' => 2,
+        ],
+
+        // Only Serie A is playable, so tier 1 auto-qualifies and every other
+        // entrant is a ghost preserved from the data file. No target_size:
+        // with no second playable tier there is nothing to backfill from, so
+        // it could only turn a shortfall into a thrown season transition.
+        'cup_qualification' => [
+            'ITACUP' => [
+                'auto_qualify_tiers' => [1],
+                // Serie A joins at the first round proper and the eight best
+                // of last season skip on to the round of 16. Both halves are
+                // needed: without the rule the byes would hold only for the
+                // imported season, and without `default` the other twelve
+                // would drop to the preliminary round and the field would
+                // stop halving.
+                'entry_rounds' => [
+                    'league' => 'ITA1',
+                    'default' => 2,
+                    'byes' => [
+                        'positions' => [1, 2, 3, 4, 5, 6, 7, 8],
+                        'round' => 4,
+                    ],
+                ],
+            ],
+        ],
+
         'promotions' => [],
 
         'continental_slots' => [
             'ITA1' => [
-                'UCL' => [1, 2, 3, 4, 5],
-                'UEL' => [6],
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5, 6],
                 'UECL' => [7],
             ],
         ],
 
-        'cup_winner_slot' => [],
+        'cup_winner_slot' => [
+            [
+                'cup' => 'ITACUP',
+                'competition' => 'UEL',
+                'league' => 'ITA1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -447,6 +672,8 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],
@@ -471,7 +698,57 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // Coupe de France and Trophée des Champions. France has no league cup
+        // — the Coupe de la Ligue was abolished in 2020. The Coupe starts at
+        // the round of 64, where Ligue 1 joins: everything below it is
+        // regional and amateur, so it contains nobody the user can be. Every
+        // club therefore enters at round 1 and no entryRound is needed.
+        'domestic_cups' => [
+            'FRACUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Coupe's open draw is the point of it,
+                // and CrossCategoryPairing would make a Ligue 1 tie impossible
+                // with every playable club at tier 1 and every ghost at 99.
+                'short_name' => 'Coupe de France',
+                'abbreviation' => 'CdF',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Stade de France', 'capacity' => 80000],
+                ],
+            ],
+            'FRASUP' => [
+                'from_season' => '2026',
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Trophée des Champions',
+                'abbreviation' => 'TdC',
+                // No neutral_venues: the Trophée moves every year, often
+                // abroad and sometimes to a finalist's own ground.
+            ],
+        ],
+
+        // Champion v Coupe de France winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'FRASUP',
+            'cup' => 'FRACUP',
+            'league' => 'FRA1',
+            'teams' => 2,
+        ],
+
+        // Only Ligue 1 is playable, so tier 1 auto-qualifies and every other
+        // entrant is a ghost preserved from the data file. No target_size:
+        // with no second playable tier there is nothing to backfill from, so
+        // it could only turn a shortfall into a thrown season transition.
+        'cup_qualification' => [
+            'FRACUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
         'promotions' => [],
 
         'continental_slots' => [
@@ -482,7 +759,13 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => [],
+        'cup_winner_slot' => [
+            [
+                'cup' => 'FRACUP',
+                'competition' => 'UEL',
+                'league' => 'FRA1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -505,6 +788,268 @@ return [
                 'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
                 'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
                 'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+                'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'PT' => [
+        'name' => 'Portugal',
+        // Playable from 2026 only: data/2025 has no folder for any of
+        // its competitions, and the seeder and validator demand one for
+        // every competition they find here.
+        'from_season' => '2026',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'POR1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\PrimeiraLigaConfig::class,
+            ],
+        ],
+
+        // Taça de Portugal and Supertaça. Portugal has no league cup any
+        // more — the Taça da Liga was scrapped after 2024-25 — so it gets
+        // two competitions. The Taça is trimmed to its third round, where
+        // the Primeira Liga joins: 64 clubs, everything below regional or
+        // amateur, so every club enters at round 1 and no entryRound is
+        // needed.
+        'domestic_cups' => [
+            'PORCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Taça's open draw is the point of it,
+                // and CrossCategoryPairing would make a Primeira Liga tie
+                // impossible with every playable club at tier 1 and every
+                // ghost at 99.
+                'short_name' => 'Taça de Portugal',
+                'abbreviation' => 'Taça',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Estádio Nacional', 'capacity' => 37000],
+                ],
+            ],
+            'PORSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supertaça',
+                'abbreviation' => 'Supertaça',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Estádio Municipal de Aveiro', 'capacity' => 30000],
+                ],
+            ],
+        ],
+
+        // Champion v Taça de Portugal winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'PORSUP',
+            'cup' => 'PORCUP',
+            'league' => 'POR1',
+            'teams' => 2,
+        ],
+
+        // Only the Primeira Liga is playable, so tier 1 auto-qualifies and
+        // every other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'PORCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still five places: the Taça winner takes the Europa League place
+        // that used to go to fourth, and the Conference League place moves
+        // up with it.
+        'continental_slots' => [
+            'POR1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3],
+                'UECL' => [4],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'PORCUP',
+                'competition' => 'UEL',
+                'league' => 'POR1',
+            ],
+        ],
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'NED1' => ['role' => 'league', 'handler' => 'league', 'country' => 'NL', 'from_season' => '2026'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+                'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UECL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEFASUP' => ['handler' => 'knockout_cup', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'NL' => [
+        'name' => 'Países Bajos',
+        // Playable from 2026 only: data/2025 has no folder for any of
+        // its competitions, and the seeder and validator demand one for
+        // every competition they find here.
+        'from_season' => '2026',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'NED1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\EredivisieConfig::class,
+            ],
+        ],
+
+        // KNVB Beker and Johan Cruijff Schaal. The Beker keeps its real
+        // shape: the six Eredivisie clubs playing in Europe sit out the
+        // first round, which is what makes a 58-club field halve — 52 in
+        // round one, then 26 winners plus the six for a round of 32.
+        'domestic_cups' => [
+            'NEDCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Beker's open draw is the point of
+                // it, and CrossCategoryPairing would make an Eredivisie tie
+                // impossible with every playable club at tier 1 and every
+                // ghost at 99.
+                'short_name' => 'KNVB Beker',
+                'abbreviation' => 'Beker',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'De Kuip', 'capacity' => 47000],
+                ],
+            ],
+            'NEDSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Johan Cruijff Schaal',
+                'abbreviation' => 'Schaal',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Johan Cruijff ArenA', 'capacity' => 55000],
+                ],
+            ],
+        ],
+
+        // Champion v KNVB Beker winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'NEDSUP',
+            'cup' => 'NEDCUP',
+            'league' => 'NED1',
+            'teams' => 2,
+        ],
+
+        // Only the Eredivisie is playable, so tier 1 auto-qualifies and
+        // every other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'NEDCUP' => [
+                'auto_qualify_tiers' => [1],
+                // The real bye belongs to the clubs playing European
+                // football, which the league table can only approximate:
+                // the top six covers the five league places below plus a
+                // cup winner from among them most seasons. Six is what
+                // parity needs — 26 first-round winners have to meet an
+                // even field — so the rule fixes the count rather than
+                // chasing the exact clubs.
+                'entry_rounds' => [
+                    'league' => 'NED1',
+                    'default' => 1,
+                    'byes' => ['positions' => [1, 2, 3, 4, 5, 6], 'round' => 2],
+                ],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still six places: the Beker winner takes the Europa League place
+        // that used to go to fourth, and the two Conference League places
+        // move up with it.
+        'continental_slots' => [
+            'NED1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3],
+                'UECL' => [4, 5],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'NEDCUP',
+                'competition' => 'UEL',
+                'league' => 'NED1',
+            ],
+        ],
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+            'UEFASUP' => [
+                'config_class' => \App\Modules\Competition\Configs\UefaSuperCupConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'POR1' => ['role' => 'league', 'handler' => 'league', 'country' => 'PT', 'from_season' => '2026'],
                 'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
                 'INT'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'XX'],
             ],

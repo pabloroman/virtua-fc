@@ -1,0 +1,15 @@
+{
+  "id": "NEDSUP",
+  "name": "Johan Cruijff Schaal",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "383",
+      "name": "PSV Eindhoven"
+    },
+    {
+      "id": "1090",
+      "name": "AZ Alkmaar"
+    }
+  ]
+}

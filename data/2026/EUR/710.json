@@ -1,0 +1,494 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/710.png",
+  "name": "NK Celje",
+  "country": "SI",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 12, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "166173",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Mario Kvesic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 15, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "168152",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Rudi Pozeg Vancas",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "94",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 28, 1995",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "183843",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Damjan Vuklisevic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 23, 1995",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "187530",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Leonardo Koutris",
+      "nationality": [
+        "Greece",
+        "Brazil"
+      ],
+      "number": "33",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 27, 1993",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "188180",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Benjamin Verbic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 17, 1993",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "188201",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Simon Sluga",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1992",
+      "foot": "right",
+      "id": "235360",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Matej Poplatnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "322288",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Blaz Kramer",
+      "nationality": [
+        "Slovenia"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 11, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "351791",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Matija Kavcic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 4, 1995",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "382007",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Andrej Kotnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 6, 1998",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "383774",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Ziga Frelih",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 1, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "427821",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Pijus Širvys",
+      "nationality": [
+        "Lithuania"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 23, 2001",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "491032",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Nino Vukasovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 20, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "543836",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Darko Hrka",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 10, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "554175",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Alpha Diounkou",
+      "nationality": [
+        "Senegal",
+        "Spain"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 11, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "554969",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Łukasz Bejger",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 27, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "577785",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Mark Zabukovnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "19",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 9, 2002",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "603368",
+      "injured": false,
+      "marketValue": "€2.20m",
+      "name": "Svit Seslar",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 15, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "605757",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Zan-Luk Leban",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 29, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "636752",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Veton Tusha",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "25",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 28, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "636756",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Milot Avdyli",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 12, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "641060",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Ivan Calusic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 8, 2003",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "647701",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Artemijus Tutyškinas",
+      "nationality": [
+        "Lithuania"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 17, 2003",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "652487",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Yaya Dukuly",
+      "nationality": [
+        "Australia",
+        "Guinea"
+      ],
+      "number": "91",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 27, 2003",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "668433",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Armandas Kučys",
+      "nationality": [
+        "Lithuania"
+      ],
+      "number": "47",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 10, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "728517",
+      "injured": true,
+      "marketValue": "€300k",
+      "name": "Jost Pisek",
+      "nationality": [
+        "Slovenia"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 30, 2003",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "842336",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Gasper Vodeb",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 1, 2002",
+      "foot": "left",
+      "id": "860297",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Papa Daniel",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 9, 2005",
+      "foot": "right",
+      "id": "981082",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Luka Kolar",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 26, 2004",
+      "foot": "right",
+      "id": "1020863",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Matic Ivansek",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 16, 2007",
+      "id": "1135662",
+      "injured": false,
+      "name": "Dejan Suhovrsnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "31",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 7, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1256306",
+      "injured": false,
+      "name": "Lukas Ceh",
+      "nationality": [
+        "Slovenia"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 17, 2007",
+      "foot": "right",
+      "id": "1263818",
+      "injured": false,
+      "name": "Zan Luka Sega",
+      "nationality": [
+        "Slovenia"
+      ],
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Stadion Z'dežele",
+  "stadiumSeats": "13059",
+  "transfermarktId": "710"
+}

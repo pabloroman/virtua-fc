@@ -1,0 +1,364 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/353.png",
+  "name": "Lillestrøm SK",
+  "country": "NO",
+  "players": [
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jun 29, 1991",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "103598",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Thomas Lehne Olsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 10, 1992",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "107662",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Ruben Gabrielsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Sep 10, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "110708",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Fredrik Gulbrandsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 24, 1995",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "230845",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Ylldren Ibrahimaj",
+      "nationality": [
+        "Kosovo",
+        "Norway"
+      ],
+      "number": "29",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 31, 1994",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "269010",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Espen Garnås",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 6, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "298678",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Stefan Hagerup",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 21, 1999",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "365544",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Pontus Dahlberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 2, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "367232",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Eric Kitolano",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 18, 1999",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "412597",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "John Kitolano",
+      "nationality": [
+        "Norway"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "418563",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Kevin Krygård",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 31, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "440972",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Sander Moen Foss",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 28, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "458011",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Gustav Nordh",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "15",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 24, 1998",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "497799",
+      "injured": false,
+      "marketValue": "€550k",
+      "name": "Felix Vá",
+      "nationality": [
+        "Angola"
+      ],
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 6, 1999",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "519291",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Stian Kristiansen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "47",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 19, 1999",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "525731",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Yaw Paintsil",
+      "nationality": [
+        "Norway",
+        "Ghana"
+      ],
+      "number": "26",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 12, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "545648",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Lars Ranger",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Dec 8, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "578926",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Frederik Elkær",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "11",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 25, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "666526",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Sturla Ottesen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Mar 29, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "901766",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Henrik Melland",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 13, 2006",
+      "height": "1,85m",
+      "id": "923527",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Gustav Nyheim",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 1, 2008",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1213680",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Harald Woxen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 13, 2009",
+      "id": "1262206",
+      "injured": false,
+      "name": "Lazar Babic",
+      "nationality": [
+        "Norway",
+        "Serbia"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 15, 2005",
+      "height": "1,76m",
+      "id": "1338121",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Linus Alperud",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jul 31, 2030",
+      "dateOfBirth": "Jun 12, 2008",
+      "foot": "right",
+      "id": "1578107",
+      "injured": false,
+      "name": "Seun Akanji",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "25",
+      "position": "Left Winger"
+    }
+  ],
+  "stadiumName": "Åråsen stadion",
+  "stadiumSeats": "11637",
+  "transfermarktId": "353"
+}

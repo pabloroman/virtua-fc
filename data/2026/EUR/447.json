@@ -1,0 +1,525 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/447.png",
+  "name": "HNK Hajduk Split",
+  "country": "HR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 30, 1991",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "86635",
+      "injured": false,
+      "name": "Dante Stipica",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 26, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "95438",
+      "injured": false,
+      "marketValue": "€2.80m",
+      "name": "Marko Livaja",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 1, 1995",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "160482",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Ivica Ivusic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 31, 1992",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "238500",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Dario Melnjak",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 29, 1999",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "307807",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Dario Maresic",
+      "nationality": [
+        "Austria",
+        "Croatia"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 9, 1998",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "322065",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Dennis Hadzikadunic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Sweden"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 5, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "371012",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Michele Sego",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 30, 1998",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "405892",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Alec Van Hoorenbeeck",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 11, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "434557",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Mihael Zaper",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "45",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 16, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "626301",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Adrion Pajaziti",
+      "nationality": [
+        "Albania",
+        "Kosovo"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 20, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "635347",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Alberto del Moral",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 6, 2000",
+      "height": "1,72m",
+      "id": "644900",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "993",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/993.png",
+          "name": "Córdoba CF"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€600k",
+      "name": "Dalisson de Almeida",
+      "nationality": [
+        "Spain",
+        "Brazil"
+      ],
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 8, 1999",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "693906",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Abdoulie Sanyang",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 3, 2005",
+      "height": "1,76m",
+      "id": "724273",
+      "injured": true,
+      "marketValue": "€1.00m",
+      "name": "Roko Brajkovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "28",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 9, 2004",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "782630",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Khalil Fayad",
+      "nationality": [
+        "Morocco",
+        "France"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 4, 2004",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "815036",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Etnik Brruti",
+      "nationality": [
+        "Albania",
+        "Kosovo"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 18, 2002",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "815041",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Ron Raci",
+      "nationality": [
+        "Kosovo"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 7, 2004",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "833313",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Toni Silic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 10, 2006",
+      "foot": "right",
+      "id": "892168",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Luka Hodak",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "38",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 5, 2006",
+      "foot": "right",
+      "id": "892179",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Dominik Babic",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 20, 2004",
+      "id": "921553",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Simun Hrgovic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 14, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "944355",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Mathieu Acapandié",
+      "nationality": [
+        "Madagascar",
+        "France"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 18, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "945345",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "26",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/26.png",
+          "name": "FC Basel 1893"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.50m",
+      "name": "Marin Soticek",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "23",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 24, 2005",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "955285",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Davyd Fesyuk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1048583",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Marino Skelin",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "36",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 1, 2007",
+      "foot": "right",
+      "id": "1133053",
+      "injured": false,
+      "name": "Andjelo Sutalo",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "16",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 20, 2007",
+      "id": "1137942",
+      "injured": false,
+      "name": "Duje Milisic",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 20, 2007",
+      "id": "1172614",
+      "injured": false,
+      "name": "Ivano Ora",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Midfielder"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 22, 2007",
+      "id": "1301010",
+      "injured": false,
+      "name": "Sebastijan Kajtazi",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Midfielder"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 12, 2007",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "1305641",
+      "injured": false,
+      "name": "Duje Pranic",
+      "nationality": [
+        "Croatia"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 2007",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1329649",
+      "injured": false,
+      "name": "Luka Banovic",
+      "nationality": [
+        "Canada",
+        "Croatia"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 13, 2009",
+      "id": "1375377",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Adam Guram",
+      "nationality": [
+        "Ukraine",
+        "Morocco"
+      ],
+      "number": "26",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 21, 2007",
+      "id": "1411272",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Roko Gabric",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 21, 2006",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1506539",
+      "injured": false,
+      "name": "Peter Nnaemeka Ugwuodo",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "42",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 5, 2006",
+      "id": "1587317",
+      "injured": false,
+      "name": "Raymond Anthony",
+      "nationality": [
+        "Nigeria"
+      ],
+      "position": "Right-Back"
+    }
+  ],
+  "stadiumName": "Poljud",
+  "stadiumSeats": "34183",
+  "transfermarktId": "447"
+}

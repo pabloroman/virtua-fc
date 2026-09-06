@@ -1,0 +1,23 @@
+{
+  "id": "ESPSUP",
+  "name": "Supercopa de España",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "13",
+      "name": "Atlético de Madrid"
+    },
+    {
+      "id": "131",
+      "name": "FC Barcelona"
+    },
+    {
+      "id": "418",
+      "name": "Real Madrid"
+    },
+    {
+      "id": "681",
+      "name": "Real Sociedad"
+    }
+  ]
+}

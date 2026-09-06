@@ -166,11 +166,12 @@ class UefaQualificationTest extends TestCase
             ->where('competition_id', 'UEL')
             ->count();
 
-        // ES=2, EN=1, DE=2, IT=1, FR=1 = 7 qualified teams (no fillers).
-        // Spain fields one more club than its league positions alone would
-        // give: no Copa was played here, so its unclaimed cup place cascades
-        // down the table instead of going unused.
-        $this->assertEquals(7, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
+        // ES=2, EN=2, DE=2, IT=3, FR=2 = 11 qualified teams (no fillers).
+        // Every country with a cup fields one more club than its league
+        // positions alone would give: no cup was played here, so the
+        // unclaimed cup place cascades down the table. Italy's three are
+        // its two league places plus the cascaded Coppa Italia one.
+        $this->assertEquals(11, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
     }
 
     public function test_uel_winner_qualifies_for_ucl(): void
@@ -704,14 +705,99 @@ class UefaQualificationTest extends TestCase
         );
     }
 
-    public function test_a_squadless_ghost_winning_a_cup_does_not_enter_europe(): void
+    // =========================================
+    // Two cups feeding two different European competitions (England)
+    // =========================================
+
+    public function test_efl_cup_winner_already_in_uel_cascades_the_uecl_place(): void
     {
-        // A lower-division cup entrant: a team row with no players, the way
-        // SeedReferenceData creates one. It can win the Copa outright — most
-        // of its 116-club field is squad-less — but it has no side to put in
-        // a 36-team Swiss league phase.
+        $this->setUpEnglishCups();
+
+        // Position 10 wins the FA Cup and takes its Europa League place.
+        $faCupWinner = $this->teamsByCountry['EN'][9];
+        $this->createCupFinal('ENGCUP', $faCupWinner->id, 6);
+
+        // Position 6 already holds the league's Europa League place and then
+        // wins the EFL Cup. Its Conference League place has to cascade: it
+        // cannot be demoted into a competition it has already bettered.
+        $eflCupWinner = $this->teamsByCountry['EN'][5];
+        $this->createCupFinal('ENGLC', $eflCupWinner->id, 5);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $this->makeTransitionData());
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $faCupWinner->id)
+                ->exists(),
+            'FA Cup winner outside the European places should take the UEL place'
+        );
+
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $eflCupWinner->id)
+                ->exists(),
+            'EFL Cup winner already in the UEL should not be moved down to the UECL'
+        );
+
+        // Position 7 is the next team without a place: England no longer
+        // gives the Conference League a league position, so it is free.
+        $nextTeam = $this->teamsByCountry['EN'][6];
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'The EFL Cup UECL place should cascade to position 7, not vanish'
+        );
+    }
+
+    public function test_one_club_winning_both_cups_claims_only_the_better_place(): void
+    {
+        $this->setUpEnglishCups();
+
+        // Position 10 does the cup double.
+        $doubleWinner = $this->teamsByCountry['EN'][9];
+        $this->createCupFinal('ENGCUP', $doubleWinner->id, 6);
+        $this->createCupFinal('ENGLC', $doubleWinner->id, 5);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $this->makeTransitionData());
+
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $doubleWinner->id)
+                ->exists(),
+            'The double winner keeps the better of the two places'
+        );
+
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $doubleWinner->id)
+                ->exists(),
+            'The double winner must not also occupy the UECL place'
+        );
+
+        $nextTeam = $this->teamsByCountry['EN'][6];
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UECL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            'The unclaimed UECL place should cascade to position 7'
+        );
+    }
+
+    public function test_a_squadless_ghost_winning_the_copa_does_not_enter_europe(): void
+    {
+        // Most of the Copa's 116-club field is squad-less, so this is the
+        // shape the guard was written for.
         $ghost = Team::factory()->create(['country' => 'ES']);
-        $this->createCupFinal('ESPCUP', $ghost->id);
+        $this->createCupFinal('ESPCUP', $ghost->id, 7);
 
         $processor = app(UefaQualificationProcessor::class);
         $processor->process($this->game, $this->makeTransitionData());
@@ -724,14 +810,44 @@ class UefaQualificationTest extends TestCase
             'A squad-less cup winner must not take a European place'
         );
 
-        // The place still belongs to Spain and falls to the table.
-        $nextTeam = $this->teamsByCountry['ES'][7];
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $this->teamsByCountry['ES'][7]->id)
+                ->exists(),
+            "The ghost's UEL place should cascade to the next team in the table"
+        );
+    }
+
+    public function test_a_squadless_ghost_winning_a_cup_does_not_enter_europe(): void
+    {
+        $this->setUpEnglishCups();
+
+        // A lower-division cup entrant: a team row with no players, the way
+        // SeedReferenceData creates one. It can win a cup outright, but it
+        // has no squad to field in a European league phase.
+        $ghost = Team::factory()->create(['country' => 'EN']);
+        $this->createCupFinal('ENGCUP', $ghost->id, 6);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $this->makeTransitionData());
+
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $ghost->id)
+                ->exists(),
+            'A squad-less cup winner must not take a European place'
+        );
+
+        // The place still belongs to England and falls to the table.
+        $nextTeam = $this->teamsByCountry['EN'][6];
         $this->assertTrue(
             CompetitionEntry::where('game_id', $this->game->id)
                 ->where('competition_id', 'UEL')
                 ->where('team_id', $nextTeam->id)
                 ->exists(),
-            "The ghost's UEL place should cascade to the next team in the table"
+            'The ghost\'s UEL place should cascade to position 7'
         );
     }
 
@@ -769,9 +885,9 @@ class UefaQualificationTest extends TestCase
         $this->assertNotNull($qualifications, 'UEFA qualifications metadata should be set');
         $this->assertArrayHasKey('ES', $qualifications);
 
-        // Positions 1-7 from the table, plus position 8 taking the Copa
-        // place: no final was played here, so the cup's slot cascades down
-        // the table rather than going unused.
+        // Positions 1-7 via the league, plus position 8 taking the Copa
+        // winner's Europa League place: no final was played here, and an
+        // unclaimed cup place cascades to the table rather than going unused.
         $esQualifications = $qualifications['ES'];
         $this->assertCount(8, $esQualifications);
     }
@@ -815,18 +931,38 @@ class UefaQualificationTest extends TestCase
         );
     }
 
-    private function createCupFinal(string $cupId, string $winnerId): void
+    private function createCupFinal(string $cupId, string $winnerId, int $round = 7): void
     {
         $loser = $this->eurPoolTeams[0]; // arbitrary opponent
         CupTie::create([
             'game_id' => $this->game->id,
             'competition_id' => $cupId,
-            'round_number' => 7, // cup_final_round from config
+            'round_number' => $round, // last round of the cup's schedule.json
             'home_team_id' => $winnerId,
             'away_team_id' => $loser->id,
             'winner_id' => $winnerId,
             'completed' => true,
         ]);
+    }
+
+    /**
+     * England's two cups, and a game whose base season has their data, so
+     * LeagueFixtureGenerator can locate each final.
+     */
+    private function setUpEnglishCups(): void
+    {
+        foreach (['ENGCUP' => 'FA Cup', 'ENGLC' => 'EFL Cup'] as $id => $name) {
+            Competition::factory()->create([
+                'id' => $id,
+                'name' => $name,
+                'country' => 'EN',
+                'type' => 'cup',
+                'role' => Competition::ROLE_DOMESTIC_CUP,
+                'handler_type' => 'knockout_cup',
+            ]);
+        }
+
+        $this->game->update(['base_season' => '2026']);
     }
 
     private function createCountryTeamsWithStandings(string $country, string $competitionId, int $count, ?Team $firstTeam = null): void

@@ -1,0 +1,418 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2282.png",
+  "name": "Club Brugge KV",
+  "country": "BE",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 17, 1988",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "42205",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Yann Sommer",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 24, 1992",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "137576",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Hans Vanaken",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 28, 1993",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "236168",
+      "injured": false,
+      "marketValue": "€2.80m",
+      "name": "Brandon Mechele",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 5, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "250543",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Nordin Jackers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 29, 2000",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "499758",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Hugo Vetlesen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 9, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "578680",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Hugo Siquet",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "41",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 13, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "623095",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Lynnt Audoor",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "62",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 9, 2004",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "654918",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Matteo Dams",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "32",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "659518",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Félix Lemaréchal",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "80",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 12, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "698164",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Freddie Potts",
+      "nationality": [
+        "England"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 17, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "706963",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Han-beom Lee",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 24, 2004",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "708454",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Romeo Vermant",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 20, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "717329",
+      "injured": false,
+      "marketValue": "€25.00m",
+      "name": "Nicolò Tresoldi",
+      "nationality": [
+        "Germany",
+        "Italy"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 19, 2004",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "742451",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Carlos Forbs",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "9",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "743122",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Kyriani Sabbe",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "64",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 21, 2005",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "743381",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Jorne Spileers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "58",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 9, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "794749",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Cheveyo Tsawa",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 21, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "893661",
+      "injured": true,
+      "marketValue": "€33.00m",
+      "name": "Joel Ordóñez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 28, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "981196",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Joaquin Seys",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "65",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 22, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1054839",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Mamadou Diakhon",
+      "nationality": [
+        "Senegal",
+        "France"
+      ],
+      "number": "67",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 24, 2006",
+      "foot": "left",
+      "id": "1073654",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Axl De Corte",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 24, 2008",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1084539",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Wisdom Mike",
+      "nationality": [
+        "Germany",
+        "Nigeria"
+      ],
+      "number": "27",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 22, 2007",
+      "id": "1122795",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Argus Vanden Driessche",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "81",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 14, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1129950",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Andrej Vasovic",
+      "nationality": [
+        "Switzerland",
+        "Serbia"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 31, 2009",
+      "foot": "right",
+      "id": "1191293",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Tian Nai Koren",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "85",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 26, 2006",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1301775",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Jan Virgili",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 24, 2009",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1334900",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Gianluca Okon-Engstler",
+      "nationality": [
+        "Italy",
+        "Australia"
+      ],
+      "number": "86",
+      "position": "Defensive Midfield"
+    }
+  ],
+  "stadiumName": "Jan Breydelstadion",
+  "stadiumSeats": "29062",
+  "transfermarktId": "2282"
+}

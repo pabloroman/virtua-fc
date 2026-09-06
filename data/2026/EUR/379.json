@@ -1,0 +1,469 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/379.png",
+  "name": "West Ham United",
+  "country": "EN",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 15, 1992",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "111195",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Joël Veltman",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "34",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 27, 1993",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "120629",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Alphonse Areola",
+      "nationality": [
+        "France",
+        "Philippines"
+      ],
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 27, 1996",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "234781",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Maxwel Cornet",
+      "nationality": [
+        "Cote d'Ivoire",
+        "France"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 27, 1995",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "283628",
+      "injured": true,
+      "marketValue": "€10.00m",
+      "name": "Tomáš Souček",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "28",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 20, 1996",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "314875",
+      "injured": false,
+      "marketValue": "€30.00m",
+      "name": "Jarrod Bowen",
+      "nationality": [
+        "England"
+      ],
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 13, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "341051",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Kyle Walker-Peters",
+      "nationality": [
+        "England",
+        "Antigua and Barbuda"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 2, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "369962",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "399",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/399.png",
+          "name": "Leeds United"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€10.00m",
+      "name": "Joël Piroe",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 24, 1999",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "396638",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Manor Solomon",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 11, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "400536",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Mads Hermansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 24, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "401356",
+      "injured": false,
+      "marketValue": "€15.00m",
+      "name": "Edson Álvarez",
+      "nationality": [
+        "Mexico"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 11, 1997",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "415912",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Konstantinos Mavropanos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 3, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "522784",
+      "injured": false,
+      "marketValue": "€28.00m",
+      "name": "Taty Castellanos",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "May 23, 1997",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "525247",
+      "injured": false,
+      "marketValue": "€13.00m",
+      "name": "Maximilian Kilman",
+      "nationality": [
+        "England",
+        "Ukraine"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Sep 8, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "565435",
+      "injured": false,
+      "marketValue": "€20.00m",
+      "name": "Arne Engels",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 30, 2001",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "673492",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "703",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/703.png",
+          "name": "Nottingham Forest"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€14.00m",
+      "name": "Morato",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 22, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "710671",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "621",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/621.png",
+          "name": "Athletic Bilbao"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€2.50m",
+      "name": "Adama Boiro",
+      "nationality": [
+        "Spain",
+        "Senegal"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Oct 8, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "745181",
+      "injured": false,
+      "marketValue": "€17.00m",
+      "name": "Soungoutou Magassa",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 2, 2004",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "817665",
+      "injured": false,
+      "marketValue": "€18.00m",
+      "name": "Pablo",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 18, 2006",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "845809",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Lewis Orford",
+      "nationality": [
+        "England"
+      ],
+      "number": "61",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 18, 2006",
+      "height": "1,87m",
+      "id": "848439",
+      "injured": false,
+      "name": "Finlay Herrick",
+      "nationality": [
+        "England"
+      ],
+      "number": "49",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 12, 2005",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "922563",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Oliver Scarles",
+      "nationality": [
+        "England"
+      ],
+      "number": "30",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 1, 2005",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "980787",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Edvin Austbø",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "35",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 18, 2003",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1004203",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Keiber Lamadrid",
+      "nationality": [
+        "Venezuela",
+        "Colombia"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Aug 22, 2007",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1047280",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "9265",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/9265.png",
+          "name": "Manchester City U21"
+        },
+        "until": "May 31, 2027"
+      },
+      "marketValue": "€5.00m",
+      "name": "Divine Mukasa",
+      "nationality": [
+        "England",
+        "Lithuania"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Sep 20, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1081995",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Mohamadou Kanté",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 16, 2007",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "1107726",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Ezra Mayers",
+      "nationality": [
+        "England",
+        "Germany"
+      ],
+      "number": "63",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 4, 2007",
+      "id": "1108668",
+      "injured": false,
+      "name": "Airidas Golambeckis",
+      "nationality": [
+        "England",
+        "Lithuania"
+      ],
+      "number": "58",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 13, 2006",
+      "foot": "right",
+      "id": "1138200",
+      "injured": false,
+      "name": "Joshua Ajala",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "66",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "London Stadium",
+  "stadiumSeats": "62500",
+  "transfermarktId": "379"
+}

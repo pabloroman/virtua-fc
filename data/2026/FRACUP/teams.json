@@ -1,0 +1,263 @@
+{
+  "id": "FRACUP",
+  "name": "Coupe de France",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "162",
+      "name": "AS Monaco"
+    },
+    {
+      "id": "244",
+      "name": "Olympique Marseille"
+    },
+    {
+      "id": "273",
+      "name": "Stade Rennais FC"
+    },
+    {
+      "id": "290",
+      "name": "AJ Auxerre"
+    },
+    {
+      "id": "347",
+      "name": "FC Metz"
+    },
+    {
+      "id": "415",
+      "name": "FC Toulouse"
+    },
+    {
+      "id": "417",
+      "name": "OGC Nice"
+    },
+    {
+      "id": "583",
+      "name": "Paris Saint-Germain"
+    },
+    {
+      "id": "595",
+      "name": "SC Bastia"
+    },
+    {
+      "id": "618",
+      "name": "AS Saint-Étienne"
+    },
+    {
+      "id": "667",
+      "name": "RC Strasbourg Alsace"
+    },
+    {
+      "id": "738",
+      "name": "Le Havre AC"
+    },
+    {
+      "id": "750",
+      "name": "FC Sochaux-Montbéliard"
+    },
+    {
+      "id": "826",
+      "name": "RC Lens"
+    },
+    {
+      "id": "855",
+      "name": "EA Guingamp"
+    },
+    {
+      "id": "895",
+      "name": "AS Cannes"
+    },
+    {
+      "id": "969",
+      "name": "Montpellier HSC"
+    },
+    {
+      "id": "995",
+      "name": "FC Nantes"
+    },
+    {
+      "id": "1041",
+      "name": "Olympique Lyon"
+    },
+    {
+      "id": "1080",
+      "name": "Stade Lavallois"
+    },
+    {
+      "id": "1082",
+      "name": "LOSC Lille"
+    },
+    {
+      "id": "1095",
+      "name": "ESTAC Troyes"
+    },
+    {
+      "id": "1154",
+      "name": "Red Star FC"
+    },
+    {
+      "id": "1158",
+      "name": "FC Lorient"
+    },
+    {
+      "id": "1159",
+      "name": "AS Nancy-Lorraine"
+    },
+    {
+      "id": "1162",
+      "name": "SM Caen"
+    },
+    {
+      "id": "1164",
+      "name": "Le Mans FC"
+    },
+    {
+      "id": "1170",
+      "name": "FC Dieppe"
+    },
+    {
+      "id": "1290",
+      "name": "Grenoble Foot 38"
+    },
+    {
+      "id": "1416",
+      "name": "Amiens SC"
+    },
+    {
+      "id": "1420",
+      "name": "Angers SCO"
+    },
+    {
+      "id": "1421",
+      "name": "Stade Reims"
+    },
+    {
+      "id": "1423",
+      "name": "Valenciennes FC"
+    },
+    {
+      "id": "1564",
+      "name": "FC Rouen 1899"
+    },
+    {
+      "id": "2067",
+      "name": "US Créteil Football"
+    },
+    {
+      "id": "2969",
+      "name": "Dijon FCO"
+    },
+    {
+      "id": "2972",
+      "name": "Football Bourg-en-Bresse Péronnas 01"
+    },
+    {
+      "id": "2978",
+      "name": "US Lusitanos Saint-Maur"
+    },
+    {
+      "id": "3166",
+      "name": "Pau FC"
+    },
+    {
+      "id": "3318",
+      "name": "Racing Club de France"
+    },
+    {
+      "id": "3524",
+      "name": "Clermont Foot 63"
+    },
+    {
+      "id": "3541",
+      "name": "Vendée Foot Club La Roche-sur-Yon"
+    },
+    {
+      "id": "3911",
+      "name": "Stade Brestois 29"
+    },
+    {
+      "id": "5407",
+      "name": "SR Colmar"
+    },
+    {
+      "id": "7042",
+      "name": "US Boulogne"
+    },
+    {
+      "id": "7124",
+      "name": "Quevilly - Rouen Métropole"
+    },
+    {
+      "id": "8235",
+      "name": "FR Haguenau"
+    },
+    {
+      "id": "9202",
+      "name": "USL Dunkerque"
+    },
+    {
+      "id": "10004",
+      "name": "Paris FC"
+    },
+    {
+      "id": "10838",
+      "name": "SAS Épinal"
+    },
+    {
+      "id": "10868",
+      "name": "US Orléans"
+    },
+    {
+      "id": "11273",
+      "name": "Rodez AF"
+    },
+    {
+      "id": "13466",
+      "name": "FC Versailles 78"
+    },
+    {
+      "id": "17442",
+      "name": "FC Fleury 91"
+    },
+    {
+      "id": "18633",
+      "name": "FC Villefranche-Beaujolais"
+    },
+    {
+      "id": "21688",
+      "name": "US Concarneau"
+    },
+    {
+      "id": "26863",
+      "name": "Le Puy-en-Velay FC"
+    },
+    {
+      "id": "30204",
+      "name": "FC Annecy"
+    },
+    {
+      "id": "35012",
+      "name": "FC Chambly Oise"
+    },
+    {
+      "id": "38655",
+      "name": "AS Furiani-Agliani"
+    },
+    {
+      "id": "42609",
+      "name": "SC Aubagne Air Bel"
+    },
+    {
+      "id": "61431",
+      "name": "FC Borgo"
+    },
+    {
+      "id": "62382",
+      "name": "Paris 13 Atletico"
+    },
+    {
+      "id": "94385",
+      "name": "US Thionville Lusitanos"
+    }
+  ]
+}

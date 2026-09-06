@@ -1,0 +1,394 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/208.png",
+  "name": "CSKA Sofia",
+  "country": "BG",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 25, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "182894",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Jean-Philippe Gbamin",
+      "nationality": [
+        "Cote d'Ivoire",
+        "France"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 7, 1993",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "198418",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Dimitar Evtimov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 5, 1995",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "216179",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Stefano Sensi",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 10, 1996",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "380191",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Ioannis Pittas",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "28",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "415646",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Bruno Jordão",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 6, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "417238",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Andrey Yordanov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "19",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 26, 1999",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "457940",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Joël Zwarts",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 26, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "464306",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Cătălin Itu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "67",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 5, 1998",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "471641",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Ángelo Martino",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 26, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "533783",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Maks Ebong",
+      "nationality": [
+        "Belarus",
+        "Cameroon"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 16, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "569373",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Isaac Solet",
+      "nationality": [
+        "Central African Republic",
+        "France"
+      ],
+      "number": "94",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 26, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "663491",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "288",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/288.png",
+          "name": "Club Estudiantes de La Plata"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€900k",
+      "name": "Facundo Rodríguez",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "32",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 29, 2000",
+      "foot": "both",
+      "height": "1,72m",
+      "id": "726472",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Léo Pereira",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "38",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 20, 2000",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "740498",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Pastor",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 19, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "789018",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "James Eto'o",
+      "nationality": [
+        "Cameroon",
+        "Bulgaria"
+      ],
+      "number": "99",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 4, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "818088",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Leandro Godoy",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 17, 1998",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "820381",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Mohamed Brahimi",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 3, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "853948",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Alejandro Piedrahita",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 20, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "898127",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Fedor Lapoukhov",
+      "nationality": [
+        "Belarus"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 13, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "927269",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Teodor Ivanov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 28, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "978808",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Georgi Chorbadzhiyski",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "80",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 3, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1046660",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "26462",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/26462.png",
+          "name": "Botev Vratsa"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€450k",
+      "name": "Tamimou Ouorou",
+      "nationality": [
+        "Benin"
+      ],
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 1, 2007",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "1100752",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Vasil Kaymakanov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "34",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 20, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1268640",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Petko Panayotov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Vasil Levski",
+  "stadiumSeats": "43630",
+  "transfermarktId": "208"
+}

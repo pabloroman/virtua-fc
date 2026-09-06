@@ -1,0 +1,478 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/58.png",
+  "name": "RSC Anderlecht",
+  "country": "BE",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 3, 1992",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "154351",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Colin Coosemans",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "26",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 21, 1994",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "170646",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Ludwig Augustinsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 10, 1997",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "360140",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Majeed Ashimeru",
+      "nationality": [
+        "Ghana"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 13, 2000",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "364896",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Adriano Bertaccini",
+      "nationality": [
+        "Belgium",
+        "Italy"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 15, 1997",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "412829",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Léo Pétrot",
+      "nationality": [
+        "France"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 12, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "412945",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Enric Llansana",
+      "nationality": [
+        "Netherlands",
+        "Spain"
+      ],
+      "number": "24",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 16, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "417228",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Danylo Sikan",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 27, 2000",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "453770",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Justin Heekeren",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "32",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 2, 2002",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "454336",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Killian Sardella",
+      "nationality": [
+        "Belgium",
+        "Cameroon"
+      ],
+      "number": "54",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 16, 1998",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "461512",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Oleg Reabciuk",
+      "nationality": [
+        "Moldova",
+        "Portugal"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 8, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "486051",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Marco Kana",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "55",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 15, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "527896",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Oliver Antman",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 31, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "536507",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Giulian Biancone",
+      "nationality": [
+        "France"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 18, 2003",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "570781",
+      "injured": true,
+      "marketValue": "€3.50m",
+      "name": "Ilay Camara",
+      "nationality": [
+        "Senegal",
+        "Belgium"
+      ],
+      "number": "7",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 31, 2002",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "574569",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Marten Winkler",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 29, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "588866",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Mario Stroeykens",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 14, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "667995",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Tawfik Bentayeb",
+      "nationality": [
+        "Morocco"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 5, 2004",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "671548",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Lukas Ambros",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 13, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "728924",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Lucas Hey",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 10, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "897510",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Mihajlo Cvetkovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2005",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "903513",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Tristan Degreef",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "83",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 23, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "920585",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Ali Maamar",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "79",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 8, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "937072",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Kaïs Barry",
+      "nationality": [
+        "Belgium",
+        "Guinea"
+      ],
+      "number": "50",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 16, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "984479",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Zoumana Keita",
+      "nationality": [
+        "Germany",
+        "Mali"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 23, 2006",
+      "id": "1061159",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Michiel Haentjens",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "66",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 20, 2006",
+      "foot": "right",
+      "id": "1194331",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Basile Vroninks",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "62",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2009",
+      "height": "1,93m",
+      "id": "1231931",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Mattis Seghers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 13, 2009",
+      "foot": "right",
+      "id": "1232103",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Joshua Nga Kana",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "61",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 8, 2009",
+      "foot": "right",
+      "id": "1232106",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Jayden Onia Seke",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "49",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 10, 2009",
+      "foot": "left",
+      "id": "1293975",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Noa Ojea",
+      "nationality": [
+        "Belgium",
+        "Spain"
+      ],
+      "number": "53",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 22, 2009",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1397296",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Noah Kalonji",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "68",
+      "position": "Defensive Midfield"
+    }
+  ],
+  "stadiumName": "Lotto Park",
+  "stadiumSeats": "21900",
+  "transfermarktId": "58"
+}

@@ -1,0 +1,496 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/43.png",
+  "name": "Heart of Midlothian FC",
+  "country": "GB-SCT",
+  "players": [
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jun 26, 1992",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "98067",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Zander Clark",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "28",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Sep 14, 1995",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "165334",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Stuart Findlay",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jul 23, 1994",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "184398",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Stephen Kingsley",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 23, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "193861",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Ryan Fulton",
+      "nationality": [
+        "Scotland",
+        "England"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Jan 9, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "244261",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Calvin Miller",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "7",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Dec 19, 1995",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "251587",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Blair Spittal",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 29, 1995",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "253817",
+      "injured": true,
+      "marketValue": "€500k",
+      "name": "Craig Halkett",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Jun 20, 1997",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "290801",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Jamie McCart",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Dec 14, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "332340",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Yan Dhanda",
+      "nationality": [
+        "England",
+        "India"
+      ],
+      "number": "31",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 11, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "367244",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Christian Borchgrevink",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jan 1, 2027",
+      "dateOfBirth": "Apr 1, 1999",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "369523",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Kieran Wright",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Feb 8, 1998",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "396847",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Elton Kabangu",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 29, 1996",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "411267",
+      "injured": false,
+      "marketValue": "€550k",
+      "name": "Harry Milne",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Aug 31, 2001",
+      "foot": "right",
+      "id": "424014",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Josh McPake",
+      "nationality": [
+        "Scotland",
+        "Ireland"
+      ],
+      "number": "15",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 30, 2001",
+      "foot": "left",
+      "height": "1,98m",
+      "id": "515386",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Beau Reus",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 5, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "541448",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Oisin McEntee",
+      "nationality": [
+        "Ireland",
+        "United States"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 11, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "554173",
+      "injured": false,
+      "name": "Malachi Fagan-Walcott",
+      "nationality": [
+        "England",
+        "Barbados"
+      ],
+      "number": "64",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 14, 2002",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "599628",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Tómas Bent Magnússon",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Dec 4, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "607173",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Jordi Altena",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 4, 1998",
+      "height": "1,93m",
+      "id": "644786",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "JJ Williams",
+      "nationality": [
+        "United States"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jul 5, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "649453",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Pierre Landry Kaboré",
+      "nationality": [
+        "Burkina Faso"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2030",
+      "dateOfBirth": "Nov 19, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "695643",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Tom Renaud",
+      "nationality": [
+        "France"
+      ],
+      "number": "12",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Oct 28, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "740596",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Cláudio Braga",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Feb 9, 2000",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "796894",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Sabri Guendouz",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jun 27, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "887137",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Finlay Pollock",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "33",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Jun 8, 2001",
+      "foot": "both",
+      "height": "1,91m",
+      "id": "889618",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Amadou Ba-Sy",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Oct 10, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "973449",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Rogers Mato",
+      "nationality": [
+        "Uganda"
+      ],
+      "number": "74",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Feb 20, 2002",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "978150",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Ageu",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 14, 2001",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "1032804",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Sabah Kerjota",
+      "nationality": [
+        "Albania"
+      ],
+      "number": "29",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Mar 6, 2007",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1041600",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "James Wilson",
+      "nationality": [
+        "Scotland",
+        "Northern Ireland"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2030",
+      "dateOfBirth": "Feb 14, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1091673",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "MJ Kamson-Kamara",
+      "nationality": [
+        "England"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Mar 26, 1997",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1150286",
+      "injured": false,
+      "name": "Laurent Mendy",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "78",
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Tynecastle Park",
+  "stadiumSeats": "19852",
+  "transfermarktId": "43"
+}

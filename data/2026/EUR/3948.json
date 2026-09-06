@@ -1,0 +1,429 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3948.png",
+  "name": "Union Saint-Gilloise",
+  "country": "BE",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 16, 1995",
+      "foot": "right",
+      "height": "2,00m",
+      "id": "129684",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Nikki Havenaar",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 23, 1994",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "157396",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Rob Schoofs",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 3, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "395800",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Darius Olaru",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "28",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 16, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "415383",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "826",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/826.png",
+          "name": "RC Lens"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€6.00m",
+      "name": "Hervé Koffi",
+      "nationality": [
+        "Burkina Faso",
+        "Cote d'Ivoire"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Nov 7, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "428920",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Kevin Mac Allister",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 10, 2001",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "449444",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Raul Florucz",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 26, 1999",
+      "foot": "right",
+      "height": "2,00m",
+      "id": "450958",
+      "injured": true,
+      "marketValue": "€4.50m",
+      "name": "Ross Sykes",
+      "nationality": [
+        "England"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 20, 2002",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "486039",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Anouar Ait El Hadj",
+      "nationality": [
+        "Belgium",
+        "Morocco"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 7, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "502247",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Louis Patris",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 2001",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "509463",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Ousseynou Niang",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "22",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 10, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "565429",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Vic Chambaere",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 6, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "592403",
+      "injured": false,
+      "marketValue": "€12.00m",
+      "name": "Adem Zorgane",
+      "nationality": [
+        "Algeria"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 12, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "655021",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Kamiel Van de Perre",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 27, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "659317",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Marc Giger",
+      "nationality": [
+        "Switzerland",
+        "Cameroon"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Aug 10, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "666131",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Denzel De Roeve",
+      "nationality": [
+        "Belgium"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 4, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "684159",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Kevin Rodríguez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "13",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 21, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "715653",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Besfort Zeneli",
+      "nationality": [
+        "Sweden",
+        "Kosovo"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 10, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "719383",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Ivan Pavlic",
+      "nationality": [
+        "Belgium",
+        "Netherlands"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 21, 2003",
+      "height": "1,89m",
+      "id": "797461",
+      "injured": false,
+      "name": "Keo Boets",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 24, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "810285",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Mateo Biondic",
+      "nationality": [
+        "Germany",
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 9, 2004",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "839551",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Ondrej Kricfalusi",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "80",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 11, 2003",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "949337",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Guilherme Smith",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 6, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1035533",
+      "injured": true,
+      "marketValue": "€400k",
+      "name": "Nohim Chibani",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 23, 2004",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1125037",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Relebohile Mofokeng",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "38",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 24, 2007",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "1193791",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Giorgi Kavlashvili",
+      "nationality": [
+        "Georgia",
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 7, 2005",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "1256870",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Massiré Sylla",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "29",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 25, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1310356",
+      "injured": true,
+      "marketValue": "€500k",
+      "name": "Ilan Hurtevent",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "21",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Stade Joseph Mariën",
+  "stadiumSeats": "9512",
+  "transfermarktId": "3948"
+}

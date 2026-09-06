@@ -1,0 +1,40 @@
+{
+    "knockout": [
+        {
+            "round": 1,
+            "name": "cup.first_round",
+            "date": "2026-11-04"
+        },
+        {
+            "round": 2,
+            "name": "cup.second_round",
+            "date": "2026-12-09"
+        },
+        {
+            "round": 3,
+            "name": "cup.round_of_32",
+            "date": "2026-12-23"
+        },
+        {
+            "round": 4,
+            "name": "cup.round_of_16",
+            "date": "2027-01-20"
+        },
+        {
+            "round": 5,
+            "name": "cup.quarter_finals",
+            "date": "2027-02-10"
+        },
+        {
+            "round": 6,
+            "name": "cup.semi_finals",
+            "first_leg_date": "2027-02-16",
+            "second_leg_date": "2027-03-09"
+        },
+        {
+            "round": 7,
+            "name": "cup.final",
+            "date": "2027-05-01"
+        }
+    ]
+}

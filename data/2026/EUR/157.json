@@ -1,0 +1,524 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/157.png",
+  "name": "KAA Gent",
+  "country": "BE",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 6, 1994",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "140808",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Davy Roef",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 17, 1995",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "183383",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Pieter Gerkens",
+      "nationality": [
+        "Belgium"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 9, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "243188",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "László Bénes",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 7, 1991",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "244221",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Christian Burgess",
+      "nationality": [
+        "England",
+        "Belgium"
+      ],
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 30, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "348756",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Leonardo Lopes",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 17, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "387990",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Tom Vandenberghe",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 30, 1998",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "400131",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Siebe Van der Heyden",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 27, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "481628",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Tiago Araújo",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 19, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "488298",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Maksim Paskotsi",
+      "nationality": [
+        "Estonia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 10, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "502239",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "371",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/371.png",
+          "name": "Celtic FC"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€3.00m",
+      "name": "Michel-Ange Balikwisha",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 22, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "568373",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Aimé Omgba",
+      "nationality": [
+        "Netherlands",
+        "Cameroon"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 24, 2000",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "592400",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Abdelkahar Kadri",
+      "nationality": [
+        "Algeria"
+      ],
+      "number": "37",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 21, 2004",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "654919",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Kjell Peersman",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 21, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "705991",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Matisse Samoise",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 31, 2004",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "723487",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Mathias Delorge",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 30, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "775403",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Hugo Gambor",
+      "nationality": [
+        "Central African Republic",
+        "France"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 12, 2002",
+      "foot": "right",
+      "id": "781812",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Matties Volckaert",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "57",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 21, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "805889",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Max Dean",
+      "nationality": [
+        "England"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 1, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "906428",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Kyrell Wilson",
+      "nationality": [
+        "England"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "May 12, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "922792",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Mouhamed Ngom",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 31, 2005",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "929876",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "Momodou Sonko",
+      "nationality": [
+        "Sweden",
+        "The Gambia"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 20, 2005",
+      "foot": "left",
+      "id": "931525",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Wout Asselman",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "62",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 17, 2006",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1005835",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Gilles De Meyer",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "35",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 5, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1019173",
+      "injured": true,
+      "marketValue": "€3.00m",
+      "name": "Tibe De Vlieger",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 8, 2006",
+      "height": "1,86m",
+      "id": "1053009",
+      "injured": false,
+      "name": "Victor De Coninck",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 15, 2003",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1064973",
+      "injured": false,
+      "name": "Lars Cooman",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2008",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1105542",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Mohammed El Âdfaoui",
+      "nationality": [
+        "Belgium",
+        "Morocco"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 21, 2007",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "1133729",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Mamadou Diallo",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "56",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 27, 2006",
+      "foot": "left",
+      "id": "1133955",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Abubakar Abdullahi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "61",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 2, 2008",
+      "height": "1,96m",
+      "id": "1231353",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Bas Evers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 24, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1285174",
+      "injured": true,
+      "marketValue": "€4.00m",
+      "name": "Hyllarion Goore",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "45",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 25, 2007",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "1291709",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Josué Vergara",
+      "nationality": [
+        "Panama"
+      ],
+      "number": "47",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 14, 2007",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1365842",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "El Hadji Seck",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "59",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 24, 2007",
+      "height": "1,96m",
+      "id": "1473866",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Ibrahima Cissé",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "75",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Planet Group arena",
+  "stadiumSeats": "20185",
+  "transfermarktId": "157"
+}
