@@ -79,6 +79,14 @@ final class PrimeraFederacionA implements TeamColorProvider
                 'secondary' => 'white',
                 'number' => 'white',
             ],
+            // A separate club from Ourense CF above (tm 60225 vs 55398);
+            // both played the 2025 Copa del Rey.
+            'UD Ourense' => [
+                'pattern' => 'solid',
+                'primary' => 'blue-600',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
             'Real Avilés Industrial' => [
                 'pattern' => 'stripes',
                 'primary' => 'white',
@@ -125,6 +133,36 @@ final class PrimeraFederacionA implements TeamColorProvider
                 'pattern' => 'solid',
                 'primary' => 'sky-400',
                 'secondary' => 'sky-400',
+                'number' => 'white',
+            ],
+            'CD Coria' => [
+                'pattern' => 'stripes',
+                'primary' => 'sky-500',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'RC Deportivo Fabril' => [
+                'pattern' => 'stripes',
+                'primary' => 'blue-600',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'Real Unión Club' => [
+                'pattern' => 'stripes',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'UD Logroñés' => [
+                'pattern' => 'sash',
+                'primary' => 'white',
+                'secondary' => 'red-500',
+                'number' => 'black',
+            ],
+            'CD Extremadura 1924' => [
+                'pattern' => 'solid',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
                 'number' => 'white',
             ],
         ];

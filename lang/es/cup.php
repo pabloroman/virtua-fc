@@ -52,8 +52,12 @@ return [
     'group_stage_eliminated' => 'Eliminado en la fase de grupos (Grupo :group)',
 
     // Knockout round names
+    'preliminary_round' => 'Ronda preliminar',
     'first_round' => 'Primera ronda',
     'second_round' => 'Segunda ronda',
+    'third_round' => 'Tercera ronda',
+    'fourth_round' => 'Cuarta ronda',
+    'fifth_round' => 'Quinta ronda',
     'round_of_32' => 'Dieciseisavos de final',
     'round_of_16' => 'Octavos de final',
     'quarter_finals' => 'Cuartos de final',

@@ -314,6 +314,16 @@
 &lt;/x-pill-button&gt;</code></pre>
         </div>
 
+        <p class="text-sm text-text-secondary mb-4">When a group grows past what one scrollable row can show, lay the pills out in a grid instead and pass <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">align="start"</code> with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">w-full</code>, so leading icons line up down each column.</p>
+
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
+            <div x-data="{ league: 'a' }" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                <x-pill-button align="start" class="w-full gap-2" @click="league = 'a'" x-bind:class="league === 'a' ? 'bg-accent-red text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'">First option</x-pill-button>
+                <x-pill-button align="start" class="w-full gap-2" @click="league = 'b'" x-bind:class="league === 'b' ? 'bg-accent-red text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'">A longer option</x-pill-button>
+                <x-pill-button align="start" class="w-full gap-2" @click="league = 'c'" x-bind:class="league === 'c' ? 'bg-accent-red text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'">Third</x-pill-button>
+            </div>
+        </div>
+
         {{-- Props table --}}
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -331,6 +341,12 @@
                         <td class="py-2 pr-4">string</td>
                         <td class="py-2 pr-4"><code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">'default'</code></td>
                         <td class="py-2">default | xs | sm</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 pr-4"><code class="text-[10px] text-accent-blue">align</code></td>
+                        <td class="py-2 pr-4">string</td>
+                        <td class="py-2 pr-4"><code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">'center'</code></td>
+                        <td class="py-2">center | start</td>
                     </tr>
                 </tbody>
             </table>

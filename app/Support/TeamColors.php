@@ -3,10 +3,12 @@
 namespace App\Support;
 
 use App\Support\TeamColors\Bundesliga;
+use App\Support\TeamColors\Eredivisie;
 use App\Support\TeamColors\EuropeanTransferPool;
 use App\Support\TeamColors\LaLiga;
 use App\Support\TeamColors\Ligue1;
 use App\Support\TeamColors\PremierLeague;
+use App\Support\TeamColors\PrimeiraLiga;
 use App\Support\TeamColors\PrimeraFederacionA;
 use App\Support\TeamColors\PrimeraFederacionB;
 use App\Support\TeamColors\LaLiga2;
@@ -77,6 +79,8 @@ class TeamColors
                 Bundesliga::teams(),
                 Ligue1::teams(),
                 SerieA::teams(),
+                PrimeiraLiga::teams(),
+                Eredivisie::teams(),
                 EuropeanTransferPool::teams(),
                 WorldCup::teams(),
             );
@@ -108,6 +112,8 @@ class TeamColors
             'Bundesliga' => Bundesliga::teams(),
             'Ligue 1' => Ligue1::teams(),
             'Serie A' => SerieA::teams(),
+            'Liga Portugal' => PrimeiraLiga::teams(),
+            'Eredivisie' => Eredivisie::teams(),
             'European Transfer Pool' => EuropeanTransferPool::teams(),
             'World Cup' => WorldCup::teams(),
         ];
