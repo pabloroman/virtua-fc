@@ -313,6 +313,38 @@ class ValidateSeasonCommandTest extends TestCase
             ->assertFailed();
     }
 
+    public function test_detects_duplicate_squad_numbers_within_a_club(): void
+    {
+        $clubs = $this->validClubs(20);
+        $clubs[0]['players'] = [
+            ['id' => '1', 'name' => 'Keeper', 'number' => '1'],
+            ['id' => '2', 'name' => 'Left Back', 'number' => '17'],
+            ['id' => '3', 'name' => 'Winger', 'number' => '17'],
+        ];
+        $this->writeEsp1($clubs, $this->season);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('2 players on shirt #17: Left Back (2), Winger (3)')
+            ->assertFailed();
+    }
+
+    public function test_accepts_a_club_whose_squad_numbers_are_unique_or_absent(): void
+    {
+        $clubs = $this->validClubs(20);
+        $clubs[0]['players'] = [
+            ['id' => '1', 'name' => 'Keeper', 'number' => '1'],
+            ['id' => '2', 'name' => 'Left Back', 'number' => '17'],
+            // Unregistered players carry no shirt, and any number of them may
+            // share that state.
+            ['id' => '3', 'name' => 'Trialist'],
+            ['id' => '4', 'name' => 'Youth Call-Up', 'number' => null],
+        ];
+        $this->writeEsp1($clubs, $this->season);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->doesntExpectOutputToContain('shirt #');
+    }
+
     public function test_warns_when_a_swiss_club_has_no_country_anywhere(): void
     {
         $clubs = $this->seedableSwissField();
