@@ -271,6 +271,56 @@ validator confirms the *shape*; a human has to confirm the *content*.
 10. **716 new secondary-position entries**, and the kit colours, crests and
     naming-rights brands for clubs new to the dataset.
 
+## As built
+
+Seven branches, each stacked on the previous, so every pull request's diff is
+only its own slice. Merge in order.
+
+| Branch | Files | What it is |
+|---|---|---|
+| `claude/season-2026-d1-refresh-tooling` | 13 | D1 + the `SeasonData` shirt/position maps the new commands read |
+| `claude/season-2026-d2-validator-hardening` | 2 | D2 |
+| `claude/season-2026-d3-data-integrity` | 8 | D3, as two commits — shirt numbers, then club names |
+| `claude/season-2026-d4-dormant-additions` | 103 | D4, as two commits — reference data, then the selector UI |
+| `claude/season-2026-d5-transition-engine` | 10 | D5 |
+| `claude/season-2026-d55-season-gate` | 10 | D5.5 |
+| `claude/season-2026-d6-flip` | 139 | D6 |
+
+Three things came out differently from the plan above:
+
+- **`SeasonData::readCompetitionClubs` moved from D2 to D1.**
+  `app:list-missing-positions` reads `$club['positions']`, so the shared
+  primitive has to precede the tooling that consumes it.
+- **The branch's tests had to be partitioned along the same seam as the code.**
+  Six of them assert D6's config — England's two cups, a single-tier country's
+  cup rebuild, the EFL Cup's prize table — and fail against D5's. They ship with
+  D6. D5 keeps the mechanism tests and gains a ghost-winner test written against
+  the Copa, which is where the guard actually earns its place: most of a
+  116-club field has no squad. Two of D6's tests now set
+  `season.current` to 2026 explicitly, because the gate hides England's cups
+  from any earlier season — the test suite documenting the gate is the point.
+- **The gate is data-layer only.** `playableCountryCodes()`, `domesticCupIds()`,
+  `supercup()` and the new `transferPool()` take an optional season defaulting
+  to `config('season.current')`; `SeedReferenceData`, `RefreshPlayerTemplates`,
+  `ValidateSeason`, `NormalizeSeason`, `DiffSeason` and `ScaffoldSeason` pass
+  theirs explicitly. Runtime callers were left alone: a save is never handed a
+  competition added after it began, because D5's processors skip a cup with no
+  `competitions` row and one the game holds no field for.
+
+Verified on the full stack: `./vendor/bin/phpstan analyse` clean, 1304 tests
+pass, `npm test` passes, and — the point of D5.5 — **`app:validate-season` passes
+for both 2025 and 2026 with the whole thing merged**. Before it, season 2025
+failed with 15 missing-folder errors.
+
+One thing the gate does *not* cover, by design: `continental_slots` and
+`cup_winner_slot` are read per-game at season transition and are not
+season-versioned, so England's, Germany's and Italy's re-allocations reach
+existing 2025 saves as soon as D6 merges. Versioning them would mean carrying
+two shapes of every country's slot table in config for one season's benefit.
+The cascade means no country loses a place before its cups exist — England
+gains one, to the eight it really has — but which foreign clubs appear in the
+Swiss draws does move.
+
 ## Sequencing and mechanics
 
 ```
