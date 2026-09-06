@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerTemplate;
@@ -19,6 +20,9 @@ use Tests\TestCase;
  * turns a template's loan_from_transfermarkt_id into a per-game loan that
  * returns the player to the owning club at season end — or, when that club
  * isn't part of the game, leaves no parent so the player is freed.
+ *
+ * A club counts as part of the game if it fields a squad OR is entered in one
+ * of its competitions; the two are independent, so both are covered here.
  */
 class LoanImportTest extends TestCase
 {
@@ -30,7 +34,8 @@ class LoanImportTest extends TestCase
     private Team $userTeam;       // the manager's club
     private Team $borrowingTeam;  // where loaned players currently play
     private Team $ownerInGame;    // an owning club that fields a squad in the game
-    private Team $ownerOutOfGame; // an owning club with no squad in the game
+    private Team $ownerCupOnly;   // an owning club entered in a cup, with no squad
+    private Team $ownerOutOfGame; // an owning club in neither
     private Game $game;
     private int $nextSquadNumber = 7; // keep squad numbers unique per borrowing team
 
@@ -42,8 +47,10 @@ class LoanImportTest extends TestCase
         $this->userTeam = Team::factory()->create(['name' => 'User Team']);
         $this->borrowingTeam = Team::factory()->create(['name' => 'Borrowing Team']);
         $this->ownerInGame = Team::factory()->create(['name' => 'Owner In Game']);
+        $this->ownerCupOnly = Team::factory()->create(['name' => 'Owner Cup Only']);
         $this->ownerOutOfGame = Team::factory()->create(['name' => 'Owner Out Of Game']);
         Competition::factory()->league()->create(['id' => 'ESP1']);
+        Competition::factory()->knockoutCup()->create(['id' => 'ESPCUP']);
 
         $this->game = Game::factory()->create([
             'user_id' => $this->user->id,
@@ -53,8 +60,18 @@ class LoanImportTest extends TestCase
             'current_date' => '2024-08-15',
         ]);
 
-        // The owning club only counts as "in the game" if it fields a squad.
+        // One owner is present by fielding a squad...
         GamePlayer::factory()->forGame($this->game)->forTeam($this->ownerInGame)->create();
+
+        // ...and one only by being entered in a cup. A club can enter a
+        // domestic cup without being playable, so it has no squad in this game
+        // and appears nowhere in game_players.
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESPCUP',
+            'team_id' => $this->ownerCupOnly->id,
+            'entry_round' => 1,
+        ]);
     }
 
     public function test_setup_materialises_loans_with_correct_parents(): void
@@ -70,6 +87,10 @@ class LoanImportTest extends TestCase
         // Player C: a normal squad member, no loan info.
         $playerC = $this->createGamePlayerOnBorrowingTeam();
         $this->createTemplate($playerC->player_id, loanFrom: null);
+
+        // Player D: owner is entered in a cup only, so it fields no squad here.
+        $playerD = $this->createGamePlayerOnBorrowingTeam();
+        $this->createTemplate($playerD->player_id, loanFrom: $this->ownerCupOnly->transfermarkt_id);
 
         $this->invokeLoanInit();
 
@@ -93,6 +114,13 @@ class LoanImportTest extends TestCase
         // C → never on loan, so no loan record.
         $this->assertFalse(Loan::where('game_player_id', $playerC->id)->exists(),
             'Players with no loan info must not get a loan record');
+
+        // D → a cup entry is enough to be an owner, even with no squad in the
+        // game. Without this the player would be freed instead of going home.
+        $loanD = Loan::where('game_player_id', $playerD->id)->first();
+        $this->assertNotNull($loanD, 'A loan should be created for a cup-only owner');
+        $this->assertSame($this->ownerCupOnly->id, $loanD->parent_team_id,
+            'A club entered only in a cup still owns its loaned-out players');
     }
 
     public function test_initialize_loans_is_idempotent(): void

@@ -233,7 +233,9 @@
                                                 <div class="font-medium text-sm text-text-primary truncate">{{ $loan->gamePlayer->name }}</div>
                                                 <div class="text-xs text-text-muted">
                                                     {{ $loan->gamePlayer->position_name }} &middot; {{ $loan->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
+                                                    @if($loan->parentTeam)
                                                     &middot; {{ __('transfers.loaned_from', ['team_de' => $loan->parentTeam->nameWithDe()]) }}
+                                                    @endif
                                                 </div>
                                                 <div class="text-xs text-text-secondary mt-0.5">
                                                     {{ __('transfers.returns') }}: {{ $loan->return_at->format('M j, Y') }}

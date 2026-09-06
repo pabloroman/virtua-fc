@@ -41,6 +41,23 @@
     if ($isListed) {
         $statusChips[] = ['text' => __('squad.listed'), 'class' => 'bg-accent-blue/10 text-accent-blue'];
     }
+
+    // Loan spell with an outside club. A reserve call-up is also a loan
+    // internally (parent = the user's own B team), so exclude any loan whose
+    // parent is one of the user's teams — that is squad management, not a
+    // cession, and is already surfaced by the origin/call-up controls.
+    $loan = $gamePlayer->activeLoan;
+    $loanOtherClub = null;
+    if ($loan && !in_array($loan->parent_team_id, $game->userTeamIds(), true)) {
+        $loanOtherClub = $loan->parentTeam;
+        $loanLabel = __('squad.loaned_from');
+    } elseif ($loan && $loan->loan_team_id !== $game->team_id) {
+        $loanOtherClub = $loan->loanTeam;
+        $loanLabel = __('squad.loaned_to');
+    }
+    if ($loanOtherClub) {
+        $statusChips[] = ['text' => __('squad.on_loan'), 'class' => 'bg-accent-blue/10 text-accent-blue'];
+    }
 @endphp
 
 {{-- Header --}}
@@ -143,6 +160,21 @@
                         <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('transfers.release_clause') }}</span>
                         <span class="text-xs font-semibold text-text-primary">{{ $gamePlayer->formatted_release_clause }}</span>
                     </div>
+                @endif
+                @if($loanOtherClub)
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ $loanLabel }}</span>
+                        <span class="flex items-center gap-1.5 text-xs font-semibold text-text-primary">
+                            <x-team-crest :team="$loanOtherClub" class="w-4 h-4 shrink-0" />
+                            {{ $loanOtherClub->name }}
+                        </span>
+                    </div>
+                    @if($loan->return_at)
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] text-text-muted uppercase tracking-wide">{{ __('transfers.returns') }}</span>
+                            <span class="text-xs font-semibold text-text-primary">{{ $loan->return_at->translatedFormat('M Y') }}</span>
+                        </div>
+                    @endif
                 @endif
                 @if($gamePlayer->careerRecord)
                     @php
