@@ -45,3 +45,7 @@ frankenphp-worker.php
 # Raw Transfermarkt→external-id crosswalk source (large). The slim, committed
 # data/{season}/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
 data/*/raw/*
+
+# Generated per refresh by app:list-missing-positions; the durable record is
+# the scrape ledger (esp-player-ids.csv), which is committed.
+/scripts/transfermarkt-scraper/player-ids-todo.csv

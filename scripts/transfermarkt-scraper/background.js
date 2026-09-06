@@ -17,6 +17,91 @@ function sleep(ms) {
 }
 
 /**
+ * Pacing for the player-positions batch.
+ *
+ * The batch walks a couple of thousand profile pages in one sitting, which is
+ * exactly the shape of traffic Transfermarkt rate-limits. A fixed interval is
+ * the easiest pattern to spot, so every wait is randomised, and the run takes a
+ * longer breather every so often rather than hammering steadily.
+ */
+const BATCH_PACING = {
+  minDelayMs: 2500,        // shortest gap between two profile pages
+  maxDelayMs: 6000,        // longest
+  restEveryMin: 40,        // take a long break somewhere in this range...
+  restEveryMax: 70,        // ...of players
+  restMinMs: 25000,        // how long that break lasts
+  restMaxMs: 60000,
+  retryBackoffMs: 45000,   // wait this long before retrying a failed player
+  maxConsecutiveFailures: 4, // give up after this many in a row (likely blocked)
+
+  // Escalating cooldowns for an outright block (HTTP 403/429/503). Each entry
+  // is tried in turn on the same player; the run only gives up once the last
+  // one has failed too, so a short throttle costs seconds and a real ban is
+  // still eventually detected rather than being retried forever.
+  blockCooldownsMs: [10000, 30000, 90000, 300000],
+  blockJitterMs: 5000
+};
+
+/** HTTP statuses that mean "stop asking", not "this page is broken". */
+const BLOCKED_STATUS_CODES = [403, 429, 503];
+
+/** Thrown by navigateAndWait when the page came back with a blocked status. */
+class BlockedError extends Error {
+  constructor(status) {
+    super(`HTTP ${status}`);
+    this.name = 'BlockedError';
+    this.status = status;
+  }
+}
+
+/** Random integer in [min, max]. */
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/**
+ * An MV3 service worker is torn down after ~30s with no extension API activity,
+ * and a bare setTimeout does not count as activity. Any wait longer than that
+ * therefore kills the batch mid-run: the worker dies, the loop never resumes,
+ * and the popup's Stop/Start stop working because there is nothing listening.
+ *
+ * So long waits are served in slices, each shorter than the idle timeout and
+ * each ending in a real API call to reset it. Slicing also makes Stop responsive
+ * — batchAborted is checked every slice instead of once at the end of a
+ * five-minute sleep.
+ *
+ * Returns false if the run was stopped while waiting.
+ */
+const KEEPALIVE_SLICE_MS = 20000;
+
+async function pacedSleep(totalMs, onRemaining) {
+  const deadline = Date.now() + totalMs;
+
+  while (Date.now() < deadline) {
+    if (batchAborted) {
+      return false;
+    }
+
+    const remaining = deadline - Date.now();
+    if (onRemaining) {
+      await onRemaining(remaining);
+    }
+
+    await sleep(Math.min(KEEPALIVE_SLICE_MS, remaining));
+
+    // Touching an extension API is what actually resets the idle timer.
+    await chrome.storage.local.get('batchPositions');
+  }
+
+  return !batchAborted;
+}
+
+/** Jittered pause between two profile fetches. */
+function batchDelay() {
+  return pacedSleep(randomBetween(BATCH_PACING.minDelayMs, BATCH_PACING.maxDelayMs));
+}
+
+/**
  * Extract season ID from URL or default to current year
  */
 function getSeasonId(url) {
@@ -28,10 +113,34 @@ function getSeasonId(url) {
 }
 
 /**
- * Navigate to a URL and wait for it to load
+ * Last main-frame HTTP status seen per tab.
+ *
+ * chrome.tabs fires `complete` for a 403 exactly as it does for a real page —
+ * the tab loaded something, it just wasn't the player. webRequest is the only
+ * place the status code is visible, so we stash it here and let
+ * navigateAndWait read it back.
+ */
+const lastMainFrameStatus = {};
+
+chrome.webRequest.onCompleted.addListener(
+  details => {
+    if (details.tabId >= 0) {
+      lastMainFrameStatus[details.tabId] = details.statusCode;
+    }
+  },
+  { urls: ['https://www.transfermarkt.com/*'], types: ['main_frame'] }
+);
+
+/**
+ * Navigate to a URL and wait for it to load.
+ *
+ * Throws BlockedError when the response carried a blocked status, so callers
+ * can tell "Transfermarkt is refusing us" apart from "that page is slow".
  */
 async function navigateAndWait(tabId, url) {
   console.log('[TM Scraper] Navigating to:', url);
+
+  delete lastMainFrameStatus[tabId];
 
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -45,6 +154,15 @@ async function navigateAndWait(tabId, url) {
         chrome.tabs.onUpdated.removeListener(listener);
         clearTimeout(timeout);
         console.log('[TM Scraper] Page loaded:', url);
+
+        const status = lastMainFrameStatus[tabId];
+        if (BLOCKED_STATUS_CODES.includes(status)) {
+          console.warn(`[TM Scraper] Blocked (HTTP ${status}):`, url);
+          reject(new BlockedError(status));
+
+          return;
+        }
+
         // Extra delay for page to fully render
         setTimeout(() => resolve(), 1500);
       }
@@ -305,6 +423,9 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
     pageType: 'batch-positions'
   });
 
+  let consecutiveFailures = 0;
+  let playersUntilRest = randomBetween(BATCH_PACING.restEveryMin, BATCH_PACING.restEveryMax);
+
   for (let i = 0; i < remaining.length; i++) {
     if (batchAborted) {
       console.log('[TM Scraper] Batch aborted by user');
@@ -330,25 +451,102 @@ async function scrapeBatchPlayerPositions(tabId, playerIds) {
       pageType: 'batch-positions'
     });
 
-    try {
-      const profileUrl = `https://www.transfermarkt.com/player/profil/spieler/${playerId}`;
-      await navigateAndWait(tabId, profileUrl);
-      const result = await scrapePlayerPositionsFromTab(tabId);
+    const profileUrl = `https://www.transfermarkt.com/player/profil/spieler/${playerId}`;
+    let result = null;
+    let failed = false;
 
-      completedMap[playerId] = result?.positions || [];
+    // Attempt 0 is the real one; the rest are retries after a wait. A blocked
+    // status walks the cooldown ladder, an ordinary error gets the flat backoff.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await navigateAndWait(tabId, profileUrl);
+        result = await scrapePlayerPositionsFromTab(tabId);
+        break;
+      } catch (err) {
+        const blocked = err instanceof BlockedError;
+        const cooldowns = BATCH_PACING.blockCooldownsMs;
 
-      console.log(`[TM Scraper] ${doneCount + 1}/${total} — Player ${playerId}: ${(result?.positions || []).join(', ') || 'no positions found'}`);
-    } catch (err) {
-      console.error(`[TM Scraper] Error on player ${playerId}:`, err);
-      completedMap[playerId] = [];
+        if (blocked && attempt >= cooldowns.length) {
+          console.error(`[TM Scraper] Player ${playerId} still blocked after ${attempt} cooldowns.`);
+          failed = true;
+          break;
+        }
+
+        if (!blocked && attempt >= 1) {
+          console.error(`[TM Scraper] Player ${playerId} failed twice:`, err);
+          failed = true;
+          break;
+        }
+
+        const waitMs = blocked
+          ? cooldowns[attempt] + randomBetween(0, BATCH_PACING.blockJitterMs)
+          : BATCH_PACING.retryBackoffMs;
+        const reason = blocked ? `blocked (HTTP ${err.status})` : 'failed';
+
+        console.warn(`[TM Scraper] Player ${playerId} ${reason}; waiting ${Math.round(waitMs / 1000)}s`);
+
+        const label = blocked ? `Blocked (HTTP ${err.status})` : 'Failed';
+        const completed = await pacedSleep(waitMs, async remaining => {
+          await updateProgress({
+            status: 'working',
+            message: `${label} on ${playerId} — retrying in ${Math.ceil(remaining / 1000)}s`,
+            current: doneCount + 1,
+            total,
+            pageType: 'batch-positions'
+          });
+        });
+
+        if (!completed) {
+          failed = true;
+          break;
+        }
+      }
     }
 
-    // Persist after every player
-    await chrome.storage.local.set({ batchPositions: completedMap });
+    if (failed) {
+      // Deliberately not recorded: an unrecorded player is retried on the next
+      // Resume, whereas storing [] would bake a rate-limited page in as
+      // "no secondary position" and quietly lose him.
+      consecutiveFailures++;
 
-    // Throttle
+      if (consecutiveFailures >= BATCH_PACING.maxConsecutiveFailures) {
+        const doneSoFar = Object.keys(completedMap).length;
+        console.error('[TM Scraper] Too many consecutive failures — stopping.');
+        await updateProgress({
+          status: 'paused',
+          message: `Stopped after ${consecutiveFailures} failures in a row — likely rate-limited. Resume later.`,
+          current: doneSoFar,
+          total,
+          pageType: 'batch-positions'
+        });
+        return;
+      }
+    } else {
+      consecutiveFailures = 0;
+      completedMap[playerId] = result?.positions || [];
+      console.log(`[TM Scraper] ${doneCount + 1}/${total} — Player ${playerId}: ${(result?.positions || []).join(', ') || 'no positions found'}`);
+
+      // Persist after every player
+      await chrome.storage.local.set({ batchPositions: completedMap });
+    }
+
     if (i < remaining.length - 1) {
-      await sleep(1200);
+      if (--playersUntilRest <= 0) {
+        const restMs = randomBetween(BATCH_PACING.restMinMs, BATCH_PACING.restMaxMs);
+        console.log(`[TM Scraper] Resting ${Math.round(restMs / 1000)}s`);
+        await pacedSleep(restMs, async remaining => {
+          await updateProgress({
+            status: 'working',
+            message: `Resting ${Math.ceil(remaining / 1000)}s — ${doneCount + 1}/${total}`,
+            current: doneCount + 1,
+            total,
+            pageType: 'batch-positions'
+          });
+        });
+        playersUntilRest = randomBetween(BATCH_PACING.restEveryMin, BATCH_PACING.restEveryMax);
+      } else {
+        await batchDelay();
+      }
     }
   }
 
@@ -877,6 +1075,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'stopBatch') {
     batchAborted = true;
+
+    // The loop writes its own 'paused' when it notices, but if the worker was
+    // restarted there is no loop to notice — write it here so the popup is
+    // never left showing a run that is not happening.
+    chrome.storage.local.get('batchPositions', data => {
+      const done = Object.keys(data.batchPositions || {}).length;
+      updateProgress({
+        status: 'paused',
+        message: `Paused — ${done} done`,
+        current: done,
+        pageType: 'batch-positions'
+      });
+    });
+
     sendResponse({ stopped: true });
     return true;
   }
