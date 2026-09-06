@@ -20,14 +20,46 @@ class CountryConfig
     /**
      * Get all playable country codes (countries with tiers, excluding test).
      *
+     * A country or a cup added for a future season declares `from_season`, and
+     * is invisible until that season. Without it, declaring one here would make
+     * every earlier season invalid the moment the config landed: the seeder and
+     * app:validate-season enumerate competitions from this file and demand a
+     * `data/{season}/{CODE}/` folder for each, so a season that predates the
+     * addition could no longer be seeded or validated — and the release could
+     * only be undone by reverting the merge, rather than by moving GAME_SEASON
+     * back.
+     *
+     * Defaults to the season the game is currently seeded for. Runtime callers
+     * do not need to pass one: a competition absent from a save is skipped on
+     * its missing `competitions` row or its empty field, not on this.
+     *
      * @return string[]
      */
-    public function playableCountryCodes(): array
+    public function playableCountryCodes(?string $season = null): array
     {
         return collect($this->allCountries())
-            ->filter(fn (array $config) => !empty($config['tiers']) && empty($config['tournament']))
+            ->filter(fn (array $config) => !empty($config['tiers'])
+                && empty($config['tournament'])
+                && $this->availableIn($config, $season))
             ->keys()
             ->all();
+    }
+
+    /**
+     * Whether a config block — a country, a domestic cup — exists yet in the
+     * given season. A block with no `from_season` has always existed.
+     *
+     * @param  array<string, mixed>  $config
+     */
+    private function availableIn(array $config, ?string $season = null): bool
+    {
+        $fromSeason = $config['from_season'] ?? null;
+
+        if ($fromSeason === null) {
+            return true;
+        }
+
+        return (string) ($season ?? config('season.current')) >= (string) $fromSeason;
     }
 
     /**
@@ -267,13 +299,23 @@ class CountryConfig
     }
 
     /**
-     * Get supercup config for a country.
+     * Get supercup config for a country. Null while the cup it is contested
+     * between has not arrived yet — a supercup is drawn from its country's main
+     * cup and its league, so it cannot exist before the cup does.
      *
      * @return array{competition: string, cup: string, league: string, teams?: int, cup_entry_round?: int}|null
      */
-    public function supercup(string $countryCode): ?array
+    public function supercup(string $countryCode, ?string $season = null): ?array
     {
-        return $this->get($countryCode)['supercup'] ?? null;
+        $supercup = $this->get($countryCode)['supercup'] ?? null;
+
+        if ($supercup === null) {
+            return null;
+        }
+
+        return in_array($supercup['competition'], $this->domesticCupIds($countryCode, $season), true)
+            ? $supercup
+            : null;
     }
 
     /**
@@ -281,19 +323,25 @@ class CountryConfig
      * finalists plus the league's top two), 2 for a champions-v-cup-winner
      * one-off. Defaults to the final four, the shape ESPSUP always had.
      */
-    public function supercupSize(string $countryCode): int
+    public function supercupSize(string $countryCode, ?string $season = null): int
     {
-        return (int) ($this->supercup($countryCode)['teams'] ?? 4);
+        return (int) ($this->supercup($countryCode, $season)['teams'] ?? 4);
     }
 
     /**
-     * Get domestic cup IDs for a country.
+     * Get domestic cup IDs for a country, excluding any not yet introduced in
+     * the given season. See playableCountryCodes() for why `from_season` exists.
      *
      * @return string[]
      */
-    public function domesticCupIds(string $countryCode): array
+    public function domesticCupIds(string $countryCode, ?string $season = null): array
     {
-        return array_keys($this->get($countryCode)['domestic_cups'] ?? []);
+        $cups = $this->get($countryCode)['domestic_cups'] ?? [];
+
+        return array_keys(array_filter(
+            $cups,
+            fn (array $cup) => $this->availableIn($cup, $season),
+        ));
     }
 
     /**
@@ -432,13 +480,28 @@ class CountryConfig
     }
 
     /**
+     * A country's transfer-pool competitions, excluding any not yet introduced
+     * in the given season. See playableCountryCodes() for why `from_season`
+     * exists.
+     *
+     * @return array<string, array{role?: string, handler?: string, country?: string, from_season?: string}>
+     */
+    public function transferPool(string $countryCode, ?string $season = null): array
+    {
+        return array_filter(
+            $this->support($countryCode)['transfer_pool'] ?? [],
+            fn (array $pool) => $this->availableIn($pool, $season),
+        );
+    }
+
+    /**
      * Get transfer pool competition IDs for a country.
      *
      * @return string[]
      */
-    public function transferPoolIds(string $countryCode): array
+    public function transferPoolIds(string $countryCode, ?string $season = null): array
     {
-        return array_keys($this->support($countryCode)['transfer_pool'] ?? []);
+        return array_keys($this->transferPool($countryCode, $season));
     }
 
     /**

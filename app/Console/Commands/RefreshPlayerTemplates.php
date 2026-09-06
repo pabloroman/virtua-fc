@@ -20,7 +20,7 @@ class RefreshPlayerTemplates extends Command
         $season = $this->option('season') ?: config('season.current');
         $countryFilter = $this->option('country');
 
-        $countryCodes = $countryConfig->playableCountryCodes();
+        $countryCodes = $countryConfig->playableCountryCodes($season);
 
         if ($countryFilter) {
             $countryFilter = strtoupper($countryFilter);

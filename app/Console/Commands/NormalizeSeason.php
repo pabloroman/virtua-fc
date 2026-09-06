@@ -49,7 +49,7 @@ class NormalizeSeason extends Command
         $this->info(($check ? 'Checking' : 'Normalizing') . " data/{$season}...");
 
         $changed = [];
-        $competitions = SeasonData::competitions($countryConfig);
+        $competitions = SeasonData::competitions($countryConfig, $season);
         $countries = $this->buildCountryIndex($season, $competitions, $countryConfig);
 
         foreach ($competitions as ['code' => $code, 'type' => $type]) {

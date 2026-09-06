@@ -56,7 +56,7 @@ class SeedReferenceData extends Command
         }
 
         $countryConfig = app(CountryConfig::class);
-        $countryCodes = $countryConfig->playableCountryCodes();
+        $countryCodes = $countryConfig->playableCountryCodes($this->season);
 
         if ($countryFilter) {
             $countryFilter = strtoupper($countryFilter);
@@ -192,9 +192,9 @@ class SeedReferenceData extends Command
 
         // Step 2: Seed domestic cups — supercup first so main cup can look up
         // supercup teams for entry_round calculation
-        $cupIds = array_keys($config['domestic_cups'] ?? []);
+        $cupIds = $countryConfig->domesticCupIds($countryCode, $this->season);
         $this->line("  Step 2/4: Seeding " . count($cupIds) . " domestic cup(s)...");
-        $supercupConfig = $countryConfig->supercup($countryCode);
+        $supercupConfig = $countryConfig->supercup($countryCode, $this->season);
         if ($supercupConfig) {
             $supercupId = $supercupConfig['competition'];
             $cupIds = array_values(array_diff($cupIds, [$supercupId]));
@@ -217,7 +217,7 @@ class SeedReferenceData extends Command
 
         // Step 3: Seed transfer pool (foreign leagues + EUR pool)
         $support = $countryConfig->support($countryCode);
-        $transferPool = $support['transfer_pool'] ?? [];
+        $transferPool = $countryConfig->transferPool($countryCode, $this->season);
         $this->line("  Step 3/4: Seeding " . count($transferPool) . " transfer pool competition(s)...");
         foreach ($transferPool as $code => $poolConfig) {
             $poolCountry = $poolConfig['country'] ?? 'EU';

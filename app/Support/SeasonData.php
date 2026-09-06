@@ -85,9 +85,13 @@ class SeasonData
      * Order and de-duplication match the seeder's traversal so every consumer
      * sees the same competition set.
      *
+     * Competitions a country or a cup declares `from_season` for are excluded
+     * until that season, so an earlier season folder stays valid after a new
+     * country's config lands.
+     *
      * @return array<int, array{code: string, type: string}>
      */
-    public static function competitions(CountryConfig $countryConfig): array
+    public static function competitions(CountryConfig $countryConfig, ?string $season = null): array
     {
         $out = [];
         $seen = [];
@@ -100,17 +104,20 @@ class SeasonData
             $out[] = ['code' => $code, 'type' => $type];
         };
 
-        foreach ($countryConfig->playableCountryCodes() as $country) {
+        foreach ($countryConfig->playableCountryCodes($season) as $country) {
             foreach ($countryConfig->flattenedTiers($country) as $tier) {
                 $add($tier['competition'], 'league');
             }
             foreach ($countryConfig->promotionPlayoffIds($country) as $playoffId) {
                 $add($playoffId, 'none');
             }
-            foreach ($countryConfig->domesticCupIds($country) as $cupId) {
+            foreach ($countryConfig->domesticCupIds($country, $season) as $cupId) {
                 $add($cupId, 'cup');
             }
-            $transferPool = $countryConfig->support($country)['transfer_pool'] ?? [];
+            // A transfer-pool league can also postdate the season being read:
+            // every country lists every other country's top flight, so a new
+            // one appears in eight blocks at once and each needs the same gate.
+            $transferPool = $countryConfig->transferPool($country, $season);
             foreach ($transferPool as $code => $poolConfig) {
                 $add($code, ($poolConfig['role'] ?? 'league') === 'team_pool' ? 'pool' : 'league');
             }
@@ -133,11 +140,11 @@ class SeasonData
      *
      * @return array<string, string>
      */
-    public static function continentalHandlers(CountryConfig $countryConfig): array
+    public static function continentalHandlers(CountryConfig $countryConfig, ?string $season = null): array
     {
         $handlers = [];
 
-        foreach ($countryConfig->playableCountryCodes() as $country) {
+        foreach ($countryConfig->playableCountryCodes($season) as $country) {
             foreach ($countryConfig->support($country)['continental'] ?? [] as $code => $config) {
                 $handlers[$code] ??= (string) ($config['handler'] ?? '');
             }
