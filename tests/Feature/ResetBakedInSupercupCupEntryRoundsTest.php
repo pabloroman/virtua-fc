@@ -72,7 +72,7 @@ class ResetBakedInSupercupCupEntryRoundsTest extends TestCase
 
         $this->migration()->up();
 
-        $this->assertSame(3, $this->countAtRound('ESPCUP', 3, '2025'));
+        $this->assertSame(3, $this->roundOf('ESPCUP', $club[0], '2025'));
     }
 
     private function migration(): Migration
@@ -108,6 +108,15 @@ class ResetBakedInSupercupCupEntryRoundsTest extends TestCase
             'season' => $season,
             'entry_round' => $entryRound,
         ], $teams));
+    }
+
+    private function roundOf(string $competitionId, Team $team, string $season = '2025'): int
+    {
+        return (int) DB::table('competition_teams')
+            ->where('competition_id', $competitionId)
+            ->where('team_id', $team->id)
+            ->where('season', $season)
+            ->value('entry_round');
     }
 
     private function countAtRound(string $competitionId, int $entryRound, string $season = '2025'): int
