@@ -514,7 +514,12 @@ class GamePlayerTemplateService
             'loan_from_transfermarkt_id' => isset($playerData['loan']['from']['id'])
                 ? (string) $playerData['loan']['from']['id']
                 : null,
-            'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
+            // A squad file states an unknown shirt as "" (or omits it). That has
+            // to land as NULL, not 0: the partial unique index on
+            // (season, team_id, number) covers every non-null value, so casting
+            // blanks to 0 makes two shirtless team-mates collide and
+            // insertOrIgnore silently drops one. Mirrors SeasonData's guard.
+            'number' => ($playerData['number'] ?? '') === '' ? null : (int) $playerData['number'],
             'position' => $position ?? 'Unknown',
             'secondary_positions' => json_encode($secondaryPositions),
             'market_value' => $playerData['marketValue'] ?? null,
