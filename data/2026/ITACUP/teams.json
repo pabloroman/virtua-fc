@@ -4,124 +4,19 @@
   "seasonID": "2026",
   "clubs": [
     {
-      "id": "1627",
-      "name": "Catania FC",
-      "entryRound": 1
+      "id": "5",
+      "name": "AC Milan",
+      "entryRound": 4
     },
     {
-      "id": "132806",
-      "name": "Union Brescia",
-      "entryRound": 1
+      "id": "12",
+      "name": "AS Roma",
+      "entryRound": 4
     },
     {
-      "id": "1105",
-      "name": "Ravenna FC",
-      "entryRound": 1
-    },
-    {
-      "id": "7197",
-      "name": "Potenza Calcio",
-      "entryRound": 1
-    },
-    {
-      "id": "20519",
-      "name": "Virtus Entella",
-      "entryRound": 1
-    },
-    {
-      "id": "4255",
-      "name": "SS Arezzo",
-      "entryRound": 1
-    },
-    {
-      "id": "408",
-      "name": "Ascoli Calcio",
-      "entryRound": 1
-    },
-    {
-      "id": "2655",
-      "name": "LR Vicenza",
-      "entryRound": 1
-    },
-    {
-      "id": "4172",
-      "name": "Pisa Sporting Club",
-      "entryRound": 2
-    },
-    {
-      "id": "458",
-      "name": "Palermo FC",
-      "entryRound": 2
-    },
-    {
-      "id": "2239",
-      "name": "US Cremonese",
-      "entryRound": 2
-    },
-    {
-      "id": "276",
-      "name": "Hellas Verona",
-      "entryRound": 2
-    },
-    {
-      "id": "1038",
-      "name": "UC Sampdoria",
-      "entryRound": 2
-    },
-    {
-      "id": "2331",
-      "name": "US Avellino 1912",
-      "entryRound": 2
-    },
-    {
-      "id": "2581",
-      "name": "Mantova 1911",
-      "entryRound": 2
-    },
-    {
-      "id": "1429",
-      "name": "Cesena FC",
-      "entryRound": 2
-    },
-    {
-      "id": "1385",
-      "name": "Modena FC",
-      "entryRound": 2
-    },
-    {
-      "id": "3037",
-      "name": "Calcio Padova",
-      "entryRound": 2
-    },
-    {
-      "id": "4554",
-      "name": "FC Südtirol",
-      "entryRound": 2
-    },
-    {
-      "id": "4159",
-      "name": "Carrarese Calcio 1908",
-      "entryRound": 2
-    },
-    {
-      "id": "4097",
-      "name": "US Catanzaro",
-      "entryRound": 2
-    },
-    {
-      "id": "749",
-      "name": "FC Empoli",
-      "entryRound": 2
-    },
-    {
-      "id": "4171",
-      "name": "Benevento Calcio",
-      "entryRound": 2
-    },
-    {
-      "id": "5587",
-      "name": "SS Juve Stabia",
-      "entryRound": 2
+      "id": "46",
+      "name": "Inter Milan",
+      "entryRound": 4
     },
     {
       "id": "130",
@@ -134,9 +29,19 @@
       "entryRound": 2
     },
     {
+      "id": "276",
+      "name": "Hellas Verona",
+      "entryRound": 2
+    },
+    {
       "id": "398",
       "name": "SS Lazio",
       "entryRound": 2
+    },
+    {
+      "id": "408",
+      "name": "Ascoli Calcio",
+      "entryRound": 1
     },
     {
       "id": "410",
@@ -154,13 +59,58 @@
       "entryRound": 2
     },
     {
+      "id": "458",
+      "name": "Palermo FC",
+      "entryRound": 2
+    },
+    {
+      "id": "506",
+      "name": "Juventus FC",
+      "entryRound": 4
+    },
+    {
       "id": "607",
       "name": "Venezia FC",
       "entryRound": 2
     },
     {
+      "id": "749",
+      "name": "FC Empoli",
+      "entryRound": 2
+    },
+    {
+      "id": "800",
+      "name": "Atalanta BC",
+      "entryRound": 4
+    },
+    {
       "id": "1005",
       "name": "US Lecce",
+      "entryRound": 2
+    },
+    {
+      "id": "1025",
+      "name": "Bologna FC 1909",
+      "entryRound": 4
+    },
+    {
+      "id": "1038",
+      "name": "UC Sampdoria",
+      "entryRound": 2
+    },
+    {
+      "id": "1047",
+      "name": "Como 1907",
+      "entryRound": 4
+    },
+    {
+      "id": "1105",
+      "name": "Ravenna FC",
+      "entryRound": 1
+    },
+    {
+      "id": "1385",
+      "name": "Modena FC",
       "entryRound": 2
     },
     {
@@ -169,24 +119,79 @@
       "entryRound": 2
     },
     {
+      "id": "1429",
+      "name": "Cesena FC",
+      "entryRound": 2
+    },
+    {
+      "id": "1627",
+      "name": "Catania FC",
+      "entryRound": 1
+    },
+    {
+      "id": "2239",
+      "name": "US Cremonese",
+      "entryRound": 2
+    },
+    {
+      "id": "2331",
+      "name": "US Avellino 1912",
+      "entryRound": 2
+    },
+    {
+      "id": "2581",
+      "name": "Mantova 1911",
+      "entryRound": 2
+    },
+    {
+      "id": "2655",
+      "name": "LR Vicenza",
+      "entryRound": 1
+    },
+    {
       "id": "2919",
       "name": "AC Monza",
       "entryRound": 2
     },
     {
-      "id": "6574",
-      "name": "US Sassuolo",
+      "id": "3037",
+      "name": "Calcio Padova",
       "entryRound": 2
     },
     {
-      "id": "8970",
-      "name": "Frosinone Calcio",
+      "id": "4097",
+      "name": "US Catanzaro",
       "entryRound": 2
     },
     {
-      "id": "46",
-      "name": "Inter Milan",
-      "entryRound": 4
+      "id": "4159",
+      "name": "Carrarese Calcio 1908",
+      "entryRound": 2
+    },
+    {
+      "id": "4171",
+      "name": "Benevento Calcio",
+      "entryRound": 2
+    },
+    {
+      "id": "4172",
+      "name": "Pisa Sporting Club",
+      "entryRound": 2
+    },
+    {
+      "id": "4255",
+      "name": "SS Arezzo",
+      "entryRound": 1
+    },
+    {
+      "id": "4554",
+      "name": "FC Südtirol",
+      "entryRound": 2
+    },
+    {
+      "id": "5587",
+      "name": "SS Juve Stabia",
+      "entryRound": 2
     },
     {
       "id": "6195",
@@ -194,34 +199,29 @@
       "entryRound": 4
     },
     {
-      "id": "12",
-      "name": "AS Roma",
-      "entryRound": 4
+      "id": "6574",
+      "name": "US Sassuolo",
+      "entryRound": 2
     },
     {
-      "id": "1047",
-      "name": "Como 1907",
-      "entryRound": 4
+      "id": "7197",
+      "name": "Potenza Calcio",
+      "entryRound": 1
     },
     {
-      "id": "5",
-      "name": "AC Milan",
-      "entryRound": 4
+      "id": "8970",
+      "name": "Frosinone Calcio",
+      "entryRound": 2
     },
     {
-      "id": "506",
-      "name": "Juventus FC",
-      "entryRound": 4
+      "id": "20519",
+      "name": "Virtus Entella",
+      "entryRound": 1
     },
     {
-      "id": "800",
-      "name": "Atalanta BC",
-      "entryRound": 4
-    },
-    {
-      "id": "1025",
-      "name": "Bologna FC 1909",
-      "entryRound": 4
+      "id": "132806",
+      "name": "Union Brescia",
+      "entryRound": 1
     }
   ]
 }

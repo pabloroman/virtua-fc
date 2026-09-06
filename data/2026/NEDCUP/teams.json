@@ -24,12 +24,27 @@
       "name": "FC Groningen"
     },
     {
+      "id": "234",
+      "name": "Feyenoord Rotterdam",
+      "entryRound": 2
+    },
+    {
       "id": "235",
       "name": "RKC Waalwijk"
     },
     {
       "id": "306",
       "name": "SC Heerenveen"
+    },
+    {
+      "id": "317",
+      "name": "FC Twente Enschede",
+      "entryRound": 2
+    },
+    {
+      "id": "383",
+      "name": "PSV Eindhoven",
+      "entryRound": 2
     },
     {
       "id": "384",
@@ -48,6 +63,11 @@
       "name": "FC Den Bosch"
     },
     {
+      "id": "467",
+      "name": "NEC Nijmegen",
+      "entryRound": 2
+    },
+    {
       "id": "468",
       "name": "Sparta Rotterdam"
     },
@@ -58,6 +78,11 @@
     {
       "id": "500",
       "name": "Helmond Sport"
+    },
+    {
+      "id": "610",
+      "name": "Ajax Amsterdam",
+      "entryRound": 2
     },
     {
       "id": "642",
@@ -78,6 +103,11 @@
     {
       "id": "817",
       "name": "VV Achilles Veen"
+    },
+    {
+      "id": "1090",
+      "name": "AZ Alkmaar",
+      "entryRound": 2
     },
     {
       "id": "1227",
@@ -210,36 +240,6 @@
     {
       "id": "28378",
       "name": "Koninklijke HFC Haarlem"
-    },
-    {
-      "id": "234",
-      "name": "Feyenoord Rotterdam",
-      "entryRound": 2
-    },
-    {
-      "id": "317",
-      "name": "FC Twente Enschede",
-      "entryRound": 2
-    },
-    {
-      "id": "383",
-      "name": "PSV Eindhoven",
-      "entryRound": 2
-    },
-    {
-      "id": "467",
-      "name": "NEC Nijmegen",
-      "entryRound": 2
-    },
-    {
-      "id": "610",
-      "name": "Ajax Amsterdam",
-      "entryRound": 2
-    },
-    {
-      "id": "1090",
-      "name": "AZ Alkmaar",
-      "entryRound": 2
     }
   ]
 }

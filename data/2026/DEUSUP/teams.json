@@ -4,12 +4,12 @@
   "seasonID": "2026",
   "clubs": [
     {
-      "id": "27",
-      "name": "Bayern Munich"
-    },
-    {
       "id": "16",
       "name": "Borussia Dortmund"
+    },
+    {
+      "id": "27",
+      "name": "Bayern Munich"
     }
   ]
 }
