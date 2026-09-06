@@ -115,6 +115,18 @@ final class Ligue1 implements TeamColorProvider
                 'secondary' => 'black',
                 'number' => 'black',
             ],
+            'ESTAC Troyes' => [
+                'pattern' => 'halves',
+                'primary' => 'blue-700',
+                'secondary' => 'white',
+                'number' => 'white',
+            ],
+            'Le Mans FC' => [
+                'pattern' => 'solid',
+                'primary' => 'red-600',
+                'secondary' => 'yellow-400',
+                'number' => 'white',
+            ],
         ];
     }
 }
