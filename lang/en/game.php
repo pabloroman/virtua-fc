@@ -243,6 +243,7 @@ return [
     'reputation_help' => 'Reputation reflects your club\'s standing in the football world. It evolves based on sustained league performance and affects budget, transfer attractiveness, and board expectations.',
     'your_competitions' => 'Your Competitions',
     'other_leagues' => 'Other Leagues',
+    'league' => 'League',
     'leagues' => 'Leagues',
     'your_leagues' => 'Your Leagues',
     'competition_role_league' => 'League',
