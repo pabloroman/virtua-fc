@@ -4,6 +4,7 @@ namespace Tests\Feature\Console;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Tests\Support\ThrowawaySeasons;
 use Tests\TestCase;
 
 class ScaffoldSeasonCommandTest extends TestCase
@@ -13,9 +14,9 @@ class ScaffoldSeasonCommandTest extends TestCase
     // Diff 2094/2095, Validate 2096): every class writes to the shared
     // base_path('data') tree, so under `test --parallel` they must stay on
     // disjoint years or they race on the same folder.
-    private string $from = '2098';
+    private string $from = ThrowawaySeasons::SCAFFOLD_FROM;
 
-    private string $to = '2099';
+    private string $to = ThrowawaySeasons::SCAFFOLD_TO;
 
     protected function tearDown(): void
     {

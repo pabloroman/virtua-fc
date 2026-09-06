@@ -112,6 +112,41 @@ At season close, `FinalizeOtherLeaguesProcessor` (priority 74, in `SeasonClosing
 
 Cup competitions (`knockout_cup`), Swiss-format competitions (`swiss_format`, `group_stage_cup`), and the World Cup are not handled by the resolver — they keep their existing path.
 
+## Squad-less cup entrants
+
+A cup fields the whole pyramid by seeding lower-division clubs as teams with no
+players. There is no XI to average, so their strength comes from
+`GhostStrength`, keyed by the reputation every team already carries from
+`ClubProfilesSeeder` — curated where the club is notable, local by default. A
+second-tier side in the FA Cup is a harder night than a non-league one, without
+any new data.
+
+They were previously charged twice for having no squad: once through the rating
+gap, then again through the missing-goalkeeper penalty, which doubled the
+opponent's xG on top of it. A top-flight side faced 8.87 xG and won these ties
+about 6-0. The penalty now applies only to a side that picked an outfielder in
+goal, which is what it was for.
+
+A ghost can score, which it could not before. It has nobody to credit a goal to,
+so its goals are **unattributed**: ordinary `goal` events for its own team whose
+`game_player_id` is `MatchEvent::UNATTRIBUTED_PLAYER_ID`, a constant that
+references no player row. That sentinel is why `match_events` carries no foreign
+key on `game_player_id`; the column stays `NOT NULL`, so a genuinely missing
+scorer still fails loudly and exactly one known value is exempt. Wherever a
+scorer's name would appear — the match summary, the live feed, a tournament
+report — the club's name appears instead.
+
+The event has to exist at all because the score is recomputed from events: a goal
+without one disappears when a half-time change re-simulates the match, and takes
+a cup tie's extra-time trigger with it. That constraint is what the old
+zero-forcing guard was protecting. `AIMatchResolver` resolves these goals the
+same way; it used to count them in the scoreline and then drop them, having no
+player to attach them to.
+
+Upsets land in the low single digits of percent, rising with the ghost's
+standing. Tune them through `config/match_simulation.php`'s `ghost_strength`
+band: raising a tier narrows the gap and makes upsets more common.
+
 ## Key Files
 
 | File | Purpose |

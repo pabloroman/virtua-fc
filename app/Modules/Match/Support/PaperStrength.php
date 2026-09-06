@@ -24,8 +24,6 @@ class PaperStrength
     /** Fallback when a lineup is too thin to be a real XI (partial/empty lineups). */
     private const MIN_LINEUP_SIZE = 7;
 
-    private const THIN_LINEUP_STRENGTH = 0.30;
-
     /**
      * Paper strength in the 0..1 rating band for a selected XI.
      *
@@ -33,14 +31,24 @@ class PaperStrength
      * selection (low-fitness players are penalized when the XI is picked), not
      * via the paper-strength average.
      *
+     * A squad-less cup entrant has no XI to average, so it falls back to
+     * {@see GhostStrength}, which reads its standing from the club profile
+     * every team carries. Pass `$reputationLevel` when the caller knows whose
+     * lineup this is; without it a ghost gets the flat amateur rating, which
+     * is the same answer for the overwhelming majority of them.
+     *
      * @param  iterable<object>  $lineupPlayers  players exposing `overall_score` and `morale`
      */
-    public static function estimate(iterable $lineupPlayers): float
+    public static function estimate(iterable $lineupPlayers, ?string $reputationLevel = null): float
     {
         $players = is_array($lineupPlayers) ? $lineupPlayers : iterator_to_array($lineupPlayers);
 
+        if ($players === []) {
+            return GhostStrength::forReputation($reputationLevel);
+        }
+
         if (count($players) < self::MIN_LINEUP_SIZE) {
-            return self::THIN_LINEUP_STRENGTH;
+            return GhostStrength::thinLineup();
         }
 
         $wOverall = config('match_simulation.strength_weight_overall', 0.95);

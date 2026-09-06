@@ -2,6 +2,8 @@
 
 namespace App\Modules\Match\DTOs;
 
+use App\Models\MatchEvent;
+
 /**
  * Data transfer object for a single match event.
  */
@@ -21,6 +23,15 @@ readonly class MatchEventData
     public static function goal(string $teamId, string $gamePlayerId, int $minute): self
     {
         return new self($teamId, $gamePlayerId, $minute, 'goal');
+    }
+
+    /**
+     * Create a goal nobody can be credited with — a squad-less cup entrant's
+     * goal. It is an ordinary goal for `$teamId`; only the scorer is missing.
+     */
+    public static function unattributedGoal(string $teamId, int $minute): self
+    {
+        return new self($teamId, MatchEvent::UNATTRIBUTED_PLAYER_ID, $minute, 'goal');
     }
 
     /**

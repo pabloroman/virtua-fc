@@ -127,6 +127,9 @@ class CompetitionViewService
         // cumulative tally rather than splitting into one row per former club.
         $scorerRows = MatchEvent::where('match_events.game_id', $gameId)
             ->where('match_events.event_type', MatchEvent::TYPE_GOAL)
+            // A squad-less cup entrant's goals share one sentinel scorer, so
+            // they would aggregate into a phantom leader and eat a top-ten slot.
+            ->where('match_events.game_player_id', '!=', MatchEvent::UNATTRIBUTED_PLAYER_ID)
             ->join('game_matches', 'game_matches.id', '=', 'match_events.game_match_id')
             ->where('game_matches.competition_id', $competitionId)
             ->selectRaw('match_events.game_player_id, COUNT(*) as goals')

@@ -78,7 +78,9 @@ function countTrailingStreak(formArray, predicate) {
 function detectHatTrick(allEvents) {
     const tally = {};
     for (const e of allEvents) {
-        if (e.type === 'goal' && e.playerName) {
+        // A goal with no player id was scored by a squad-less side and carries
+        // the club's name, not a player's — nobody scored a hat-trick there.
+        if (e.type === 'goal' && e.playerName && e.gamePlayerId) {
             if (!tally[e.playerName]) {
                 tally[e.playerName] = { count: 0, teamId: e.teamId };
             }

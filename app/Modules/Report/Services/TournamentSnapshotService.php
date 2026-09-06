@@ -171,8 +171,12 @@ class TournamentSnapshotService
             ];
         }
 
-        $finalGoalEvents = $data['finalGoalEvents']->map(function ($event) {
-            $playerName = $event->gamePlayer?->name ?? '?';
+        $finalGoalEvents = $data['finalGoalEvents']->map(function ($event) use ($teams) {
+            // A squad-less cup entrant's goal has no scorer, so it reads as the
+            // club that scored it.
+            $playerName = $event->isUnattributed()
+                ? ($teams[$event->team_id]['name'] ?? '?')
+                : ($event->gamePlayer?->name ?? '?');
             $isOwnGoal = $event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL;
 
             return [

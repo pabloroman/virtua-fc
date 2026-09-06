@@ -11,7 +11,7 @@ Only the top flight of most countries is playable, but a real cup runs through t
 A **ghost team** is a `Team` row with a name, a country, an optional crest and stadium, and no players. It only ever appears in cup competitions:
 
 - Ghosts are created by the reference-data seeder from a cup's `teams.json`, keyed by Transfermarkt `id` like every other club: the id supplies the crest, links the club to its league row when it has one, and keeps a ghost the same club across seasons. The seeder refuses an id that resolves to a club of another country, which is how a mistyped id would otherwise drag a foreign club into the cup.
-- Matches involving a ghost are resolved from a default strength. In AI-only ties a ghost can win; in the user's own match a ghost cannot score, so an upset only ever comes on penalties.
+- Matches involving a ghost are resolved from a stand-in strength, read from the reputation on its club profile, so a second-tier side is a harder night than a village one. It has no XI to credit a goal to, so its goals are unattributed: ordinary goal events for its own team whose scorer is `MatchEvent::UNATTRIBUTED_PLAYER_ID`, listed under the club's name. An upset is rare but it no longer has to come on penalties. See `match-simulation.md`.
 - Ghosts are excluded from the transfer market, job offers, pre-season friendlies and every other flow that needs a squad, because they are only registered in cup competitions (`Team::scopeTransferMarketEligible`).
 
 Spain's Copa del Rey already used this shape for its regional entrants; a country whose only playable tier is the top flight extends it to whole divisions.

@@ -154,6 +154,33 @@ return [
     | Probabilities for various match events.
     |
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Ghost teams (squad-less cup entrants)
+    |--------------------------------------------------------------------------
+    |
+    | A cup fields the whole pyramid by seeding lower-division clubs as teams
+    | with no players, so their matches are resolved from the strength below
+    | rather than from an XI. Keyed by ClubProfile reputation, which every team
+    | already has — curated where the club is notable, local by default — so a
+    | Championship side in the FA Cup is a harder night than a non-league one.
+    |
+    | `default` also serves a real club too depleted to field seven players: it
+    | is a genuine XI that fell apart, not a club of this standing.
+    |
+    | Raising these narrows the gap and makes upsets more common. A professional
+    | side should still win the overwhelming majority of these ties.
+    |
+    */
+    'ghost_strength' => [
+        'default' => 0.30,
+        'local' => 0.30,
+        'modest' => 0.34,
+        'established' => 0.38,
+        'continental' => 0.42,
+        'elite' => 0.46,
+    ],
+
     'own_goal_chance' => 1.0,           // % chance per goal is an own goal
     'assist_chance' => 60.0,            // % chance a goal has an assist
     'yellow_cards_per_team' => 1.6,     // Average yellow cards per team per match

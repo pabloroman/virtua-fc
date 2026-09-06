@@ -793,6 +793,16 @@ class MatchResimulationService
             return;
         }
 
+        // A squad-less side's goals share one sentinel scorer with no record.
+        $playerIds = array_values(array_filter(
+            $playerIds,
+            fn ($id) => $id !== MatchEvent::UNATTRIBUTED_PLAYER_ID,
+        ));
+
+        if (empty($playerIds)) {
+            return;
+        }
+
         // Count each stat type per player from all remaining events
         $statCounts = MatchEvent::where('game_id', $gameId)
             ->whereIn('game_player_id', $playerIds)
@@ -909,6 +919,11 @@ class MatchResimulationService
         foreach ($events as $event) {
             $playerId = $event->gamePlayerId;
             $type = $event->type;
+
+            // A squad-less side's goal has no scorer whose record to touch.
+            if ($playerId === MatchEvent::UNATTRIBUTED_PLAYER_ID) {
+                continue;
+            }
 
             if (! isset($statIncrements[$playerId])) {
                 $statIncrements[$playerId] = [];
@@ -1068,9 +1083,22 @@ class MatchResimulationService
             $stoppage,
         );
 
+        // A squad-less cup entrant's goal has no scorer, so it reads as the club
+        // that scored it — the same substitution the live-match JS makes for a
+        // goal it has to synthesise. Team names are resolved only when such an
+        // event is present, so an ordinary match costs no extra query.
+        $clubNames = $events->contains(fn ($e) => $e->isUnattributed())
+            ? $firstEvent->gameMatch->loadMissing(['homeTeam', 'awayTeam'])
+            : null;
+        $clubName = fn ($e) => $clubNames === null ? '' : ($e->team_id === $clubNames->home_team_id
+            ? $clubNames->homeTeam->name
+            : $clubNames->awayTeam->name);
+
         $formatted = $events
             ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(function ($e) use ($playerInNames, $absoluteMinute) {
+            ->map(function ($e) use ($playerInNames, $absoluteMinute, $clubName) {
+                $isUnattributed = $e->isUnattributed();
+
                 $data = [
                     'minute' => $absoluteMinute($e),
                     'baseMinute' => $e->minute,
@@ -1078,9 +1106,11 @@ class MatchResimulationService
                     'phase' => $e->phase->value,
                     'displayMinute' => $e->displayMinute(),
                     'type' => $e->event_type,
-                    'playerName' => $e->gamePlayer->name ?? '',
+                    'playerName' => $isUnattributed ? $clubName($e) : ($e->gamePlayer->name ?? ''),
                     'teamId' => $e->team_id,
-                    'gamePlayerId' => $e->game_player_id,
+                    // Null, not the sentinel: the frontend already treats a goal
+                    // without a player id as one nobody scored.
+                    'gamePlayerId' => $isUnattributed ? null : $e->game_player_id,
                     'metadata' => $e->metadata,
                 ];
 

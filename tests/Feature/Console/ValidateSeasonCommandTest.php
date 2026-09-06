@@ -3,16 +3,12 @@
 namespace Tests\Feature\Console;
 
 use Illuminate\Support\Facades\File;
+use Tests\Support\ThrowawaySeasons;
 use Tests\TestCase;
 
 class ValidateSeasonCommandTest extends TestCase
 {
-    // Throwaway season kept clear of any real data/{season} folder AND of the
-    // years ScaffoldSeasonCommandTest uses (2098/2099): both classes write to
-    // the shared base_path('data') tree, so under `test --parallel` they must
-    // not touch the same folder or they race (one's tearDown deletes the
-    // other's freshly-written files). Disjoint years keep them isolated.
-    private string $season = '2096';
+    private string $season = ThrowawaySeasons::VALIDATE;
 
     protected function tearDown(): void
     {

@@ -81,8 +81,14 @@ class MatchSummaryPresenter
             return $event->team_id;
         };
 
+        // A squad-less cup entrant's goal has no scorer, so it is listed under
+        // the club that scored it.
+        $scorerName = fn (MatchEvent $e) => $e->isUnattributed()
+            ? ($e->team_id === $match->home_team_id ? $match->homeTeam->name : $match->awayTeam->name)
+            : ($e->gamePlayer?->name ?? '—');
+
         $format = fn ($events) => $events
-            ->groupBy(fn (MatchEvent $e) => $e->gamePlayer?->name ?? '—')
+            ->groupBy($scorerName)
             ->map(function ($playerEvents, $name) {
                 $minutes = $playerEvents
                     ->map(function (MatchEvent $e) {

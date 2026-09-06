@@ -13,6 +13,7 @@ use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\SubstitutionService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\MatchEvent;
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -20,6 +21,7 @@ use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Match\Services\EnergyCalculator;
+use App\Modules\Match\Support\GhostStrength;
 use App\Modules\Match\Support\MatchOutcomeModel;
 use App\Modules\Match\Support\StoppageDurations;
 
@@ -1128,6 +1130,14 @@ class MatchSimulator
                 return $event;
             }
 
+            // An unattributed goal has no scorer to be unavailable. Falling
+            // through would hand it to a player on the wrong side, or drop it
+            // when no candidate is found — and a dropped goal is the failure
+            // this whole path exists to avoid.
+            if ($event->gamePlayerId === MatchEvent::UNATTRIBUTED_PLAYER_ID) {
+                return $event;
+            }
+
             $needsReassignment = false;
             $playerId = $event->gamePlayerId;
 
@@ -1311,11 +1321,18 @@ class MatchSimulator
      * @param  int  $fromMinute  Start of the simulation period (for energy averaging)
      * @param  array<string, int>  $playerEntryMinutes  Map of player ID to minute they entered the match
      */
-    private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = [], float $tacticalDrainMultiplier = 1.0, ?Carbon $currentDate = null, array $playerSlotMap = []): float
+    private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = [], float $tacticalDrainMultiplier = 1.0, ?Carbon $currentDate = null, array $playerSlotMap = [], ?Team $team = null): float
     {
+        if ($lineup->isEmpty()) {
+            // A squad-less cup entrant. Its standing stands in for an XI, so a
+            // second-tier club is a harder night than a non-league one.
+            return GhostStrength::forTeam($team);
+        }
+
         if ($lineup->count() < 7) {
-            // Fallback for severely depleted lineup - reflects amateur/semi-pro level
-            return 0.30;
+            // A real club that could not field a side, which is a different
+            // thing: it keeps the flat amateur rating.
+            return GhostStrength::thinLineup();
         }
 
         // Calculate effective attributes with match performance modifier
@@ -1381,6 +1398,14 @@ class MatchSimulator
      */
     private function calculateGoalkeeperModifier(Collection $lineup): float
     {
+        // A squad-less side is not a team that picked a centre-back in goal —
+        // it has no XI at all, and its whole standard is already priced into
+        // the strength gap. Charging it again doubled the opponent's xG on top
+        // of a 30-point rating advantage, which is what made these ties 6-0.
+        if ($lineup->isEmpty()) {
+            return 1.0;
+        }
+
         $hasNaturalGK = $lineup->contains(fn ($player) => $player->position === 'Goalkeeper');
 
         if ($hasNaturalGK) {
@@ -2078,8 +2103,8 @@ class MatchSimulator
         $currentDate = $game?->current_date ?? now();
 
         // Preliminary strength calculation (used for card bias and as final strength if no injury sub)
-        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap, $homeTeam);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap, $awayTeam);
 
         [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
             $homeStrength, $awayStrength,
@@ -2119,17 +2144,6 @@ class MatchSimulator
         $awayExpectedGoals *= $this->possessionXGModifier($possession['away']);
 
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
-
-        // A team with no players cannot score — force their goals to 0.
-        // This prevents phantom goals that have no events, which would be
-        // lost during resimulation (subs/tactical changes) and cause
-        // incorrect extra time triggers in cup matches.
-        if ($homePlayers->isEmpty()) {
-            $homeScore = 0;
-        }
-        if ($awayPlayers->isEmpty()) {
-            $awayScore = 0;
-        }
 
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
             // Generate cards first using the initial Poisson score for goal-difference bias
@@ -2191,8 +2205,8 @@ class MatchSimulator
 
             // Recalculate strength and goals with updated lineup if an injury sub occurred
             if ($lineupChanged) {
-                $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
-                $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
+                $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap, $homeTeam);
+                $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap, $awayTeam);
 
                 [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
                     $homeStrength, $awayStrength,
@@ -2269,15 +2283,14 @@ class MatchSimulator
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
-        } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
-            // One team has no players (e.g. lower-division cup opponent).
-            // Generate goal events only for the team with players so that
-            // goals are backed by events and survive resimulation.
-            [$homeScore, $awayScore, $goalEvents] = $this->generateSingleTeamGoalEvents(
+        } else {
+            // At least one side has no players (a lower-division cup opponent).
+            // Both scorelines still get events — a squad-less side's without a
+            // scorer — so nothing is lost to a resimulation.
+            $events = $events->merge($this->generateGoalEventsWithoutBothSquads(
                 $homeTeam, $awayTeam, $homePlayers, $awayPlayers,
                 $homeScore, $awayScore, $fromMinute + 1, $toMinute,
-            );
-            $events = $events->merge($goalEvents)->sortBy('minute')->values();
+            ))->sortBy('minute')->values();
         }
 
         $possession = $this->calculatePossession(
@@ -2410,8 +2423,8 @@ class MatchSimulator
         $fraction2 = max(0, $toMinute - $splitMinute) / 93;
         $effectiveMinute2 = $splitMinute + ($toMinute - $splitMinute) / 2;
 
-        $homeStrength2 = $this->calculateTeamStrength($homePlayers2, $splitMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
-        $awayStrength2 = $this->calculateTeamStrength($awayPlayers2, $splitMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
+        $homeStrength2 = $this->calculateTeamStrength($homePlayers2, $splitMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap, $homeTeam);
+        $awayStrength2 = $this->calculateTeamStrength($awayPlayers2, $splitMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap, $awayTeam);
 
         [$homeXG2, $awayXG2] = $this->calculateBaseExpectedGoals(
             $homeStrength2, $awayStrength2,
@@ -2553,11 +2566,22 @@ class MatchSimulator
     }
 
     /**
-     * Generate goal events when only one team has players (the other squad is empty).
+     * Goal events for a tie where at least one side has no squad.
      *
-     * @return array{0: int, 1: int, 2: Collection<MatchEventData>} [homeScore, awayScore, goalEvents]
+     * A side with players scores through them as usual. A squad-less one — a
+     * cup ghost — has nobody to credit, so its goals are unattributed: an
+     * ordinary goal for its own team whose scorer is
+     * {@see MatchEvent::UNATTRIBUTED_PLAYER_ID}.
+     *
+     * They have to be events like any other. The score is recomputed from
+     * events, so a goal without one disappears when a half-time change
+     * re-simulates the match, and takes a cup tie's extra-time trigger with it.
+     *
+     * @param  Collection<GamePlayer>  $homePlayers
+     * @param  Collection<GamePlayer>  $awayPlayers
+     * @return Collection<MatchEventData>
      */
-    private function generateSingleTeamGoalEvents(
+    private function generateGoalEventsWithoutBothSquads(
         Team $homeTeam,
         Team $awayTeam,
         Collection $homePlayers,
@@ -2566,19 +2590,41 @@ class MatchSimulator
         int $awayScore,
         int $minMinute,
         int $maxMinute,
-    ): array {
-        $homeHasPlayers = $homePlayers->isNotEmpty();
-        $scoringPlayers = $homeHasPlayers ? $homePlayers : $awayPlayers;
-        $scoringTeamId = $homeHasPlayers ? $homeTeam->id : $awayTeam->id;
-        $concedingTeamId = $homeHasPlayers ? $awayTeam->id : $homeTeam->id;
-        $goalCount = $homeHasPlayers ? $homeScore : $awayScore;
+    ): Collection {
+        $side = fn (int $goalCount, string $teamId, string $opponentTeamId, Collection $players, Collection $opponents) => $players->isEmpty()
+            ? $this->generateUnattributedGoalEvents($goalCount, $teamId, $minMinute, $maxMinute)
+            : $this->generateGoalEventsInRange(
+                $goalCount, $teamId, $opponentTeamId, $players, $opponents, $minMinute, $maxMinute,
+            );
 
-        $events = $this->generateGoalEventsInRange(
-            $goalCount, $scoringTeamId, $concedingTeamId,
-            $scoringPlayers, collect(), $minMinute, $maxMinute,
-        );
+        return $side($homeScore, $homeTeam->id, $awayTeam->id, $homePlayers, $awayPlayers)
+            ->merge($side($awayScore, $awayTeam->id, $homeTeam->id, $awayPlayers, $homePlayers))
+            ->sortBy('minute')
+            ->values();
+    }
 
-        return [$homeScore, $awayScore, $events];
+    /**
+     * A squad-less side's goals — real events for its own team, with no scorer.
+     *
+     * @return Collection<MatchEventData>
+     */
+    private function generateUnattributedGoalEvents(
+        int $goalCount,
+        string $teamId,
+        int $minMinute,
+        int $maxMinute,
+    ): Collection {
+        $events = collect();
+        $usedMinutes = [];
+
+        for ($i = 0; $i < $goalCount; $i++) {
+            $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+            $usedMinutes[] = $minute;
+
+            $events->push(MatchEventData::unattributedGoal($teamId, $minute));
+        }
+
+        return $events;
     }
 
     /**
@@ -2923,8 +2969,8 @@ class MatchSimulator
         $currentDate = $homePlayers->first()?->game?->current_date ?? now();
 
         // Ratio-based xG — energy already accounts for fatigue
-        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap);
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain, $currentDate, $this->homePlayerSlotMap, $homeTeam);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain, $currentDate, $this->awayPlayerSlotMap, $awayTeam);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
 
@@ -2968,14 +3014,6 @@ class MatchSimulator
 
         [$homeScore, $awayScore] = $this->dixonColesRandom($homeExpectedGoals, $awayExpectedGoals);
 
-        // A team with no players cannot score — force their goals to 0.
-        if ($homePlayers->isEmpty()) {
-            $homeScore = 0;
-        }
-        if ($awayPlayers->isEmpty()) {
-            $awayScore = 0;
-        }
-
         // Generate goal events in range [fromMinute+1, extraTimeEnd].
         // extraTimeEnd = 120 + regulation stoppage + ET headroom, so events
         // can land anywhere from the start of ET first half through ET
@@ -3008,13 +3046,12 @@ class MatchSimulator
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers, $homeTeam->id, $awayTeam->id
             );
-        } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
-            // One team has no players — generate events only for the team with players.
-            [$homeScore, $awayScore, $goalEvents] = $this->generateSingleTeamGoalEvents(
+        } else {
+            // At least one side has no players — see simulateRemainder().
+            $events = $events->merge($this->generateGoalEventsWithoutBothSquads(
                 $homeTeam, $awayTeam, $homePlayers, $awayPlayers,
                 $homeScore, $awayScore, $minMinute, $maxMinute,
-            );
-            $events = $events->merge($goalEvents)->sortBy('minute')->values();
+            ))->sortBy('minute')->values();
         }
 
         $possession = $this->calculatePossession(

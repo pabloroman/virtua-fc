@@ -322,8 +322,8 @@ class UefaQualificationProcessor implements SeasonProcessor
 
     /**
      * Whether a team has any players in this game. A ghost has none, which is
-     * the same test MatchSimulator uses when it forbids a squad-less side
-     * from scoring.
+     * the same test MatchSimulator uses to decide that a side has no XI to
+     * resolve a match through.
      */
     private function hasSquad(string $gameId, string $teamId): bool
     {

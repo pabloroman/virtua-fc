@@ -36,7 +36,10 @@ $homeGoals = collect();
 $awayGoals = collect();
 if ($finalMatch && $finalGoalEvents->isNotEmpty()) {
     foreach ($finalGoalEvents as $event) {
-        $playerName = $event->gamePlayer?->name ?? '?';
+        // A squad-less cup entrant's goal has no scorer, so it reads as the club.
+        $playerName = $event->isUnattributed()
+            ? ($event->team_id === $finalMatch->home_team_id ? $finalMatch->homeTeam->name : $finalMatch->awayTeam->name)
+            : ($event->gamePlayer?->name ?? '?');
         $isOwnGoal = $event->event_type === \App\Models\MatchEvent::TYPE_OWN_GOAL;
 
         // For own goals, the scoring team is the OPPOSITE of the event's team
