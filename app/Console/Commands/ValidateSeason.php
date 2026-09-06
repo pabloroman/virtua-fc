@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Competition\Services\SwissDrawService;
+use App\Support\FixtureCalendar;
 use App\Support\SeasonData;
 use Database\Seeders\ClubProfilesSeeder;
 use Illuminate\Console\Command;
@@ -95,6 +96,7 @@ class ValidateSeason extends Command
         }
 
         $this->validateSquadNumbers($season, $competitions);
+        $this->validateNoFixtureClashes($season, $countryConfig);
         $this->warnUnprofiledClubs();
 
         foreach ($this->warnings as $warning) {
@@ -588,6 +590,47 @@ class ValidateSeason extends Command
 
         $this->warnings[] = count($missing) . ' club(s) have no ClubProfilesSeeder entry and will be seeded '
             . "as local-reputation clubs: {$detail}.";
+    }
+
+    /**
+     * No club may be booked for two matches on one date.
+     *
+     * Nothing catches this at runtime: MatchdayService collects every unplayed
+     * match on the earliest date and the orchestrator takes the first as the
+     * user's, so the second is simulated in the same batch, same legs, same
+     * fitness, silently. It is the bug `177c77d` fixed by hand after it
+     * reached production.
+     *
+     * Errors only where both fields are known from the files — a league round
+     * books its whole division, a Swiss matchday all 36, a cup's opening round
+     * whoever declares that entry round. Everything downstream of a draw is a
+     * superset, so it warns instead. See App\Support\FixtureCalendar for what
+     * is deliberately not modelled.
+     */
+    private function validateNoFixtureClashes(string $season, CountryConfig $countryConfig): void
+    {
+        foreach (FixtureCalendar::collisions($season, $countryConfig) as $collision) {
+            $rounds = implode(' and ', array_map(
+                fn (array $r): string => $r['competition'] . ' round ' . $r['round']
+                    . ($r['leg'] === 'second_leg_date' ? ' (2nd leg)' : ''),
+                $collision['rounds'],
+            ));
+
+            $clubs = $this->summarize($collision['clubs']);
+            $count = count($collision['clubs']);
+
+            if ($collision['certain']) {
+                $this->errors[] = "{$collision['date']}: {$rounds} are both on this date, so "
+                    . "{$count} club(s) are booked twice — {$clubs}.";
+
+                continue;
+            }
+
+            $reachable = min($collision['slots'], $count);
+            $this->warnings[] = "{$collision['date']}: {$rounds} share this date. Up to {$reachable} "
+                . "of the {$count} club(s) in both could be booked twice — {$clubs}. Which of them "
+                . 'reach the round depends on the draw.';
+        }
     }
 
     /**
