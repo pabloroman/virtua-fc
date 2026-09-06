@@ -2,6 +2,7 @@
 
 namespace App\Modules\Match\Services;
 
+use App\Models\MatchEvent;
 use Illuminate\Support\Collection;
 
 /**
@@ -182,7 +183,8 @@ class MvpCalculator
                 $matchLength = 120;
             }
 
-            if (! $playerId) {
+            // A squad-less side's goal names no player to rate.
+            if (! $playerId || $playerId === MatchEvent::UNATTRIBUTED_PLAYER_ID) {
                 continue;
             }
 

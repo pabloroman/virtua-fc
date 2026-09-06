@@ -388,6 +388,11 @@ class MatchResultProcessor
                 $playerId = $eventData['game_player_id'];
                 $type = $eventData['event_type'];
 
+                // A squad-less side's goal has no scorer whose record to touch.
+                if ($playerId === MatchEvent::UNATTRIBUTED_PLAYER_ID) {
+                    continue;
+                }
+
                 if (! isset($statIncrements[$playerId])) {
                     $statIncrements[$playerId] = [];
                 }

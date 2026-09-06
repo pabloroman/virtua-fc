@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @property string $id
@@ -124,6 +125,15 @@ class MatchEvent extends Model
     public const TYPE_PENALTY_MISSED = 'penalty_missed';
     public const TYPE_SUBSTITUTION = 'substitution';
 
+    /**
+     * The scorer of a goal by a side with no squad — a cup ghost. Nobody on the
+     * pitch can be credited, but the event still has to exist: the score is
+     * recomputed from events, so a goal without one vanishes the moment the
+     * match is re-simulated. This id references no `game_players` row, which is
+     * why `match_events` carries no foreign key on `game_player_id`.
+     */
+    public const UNATTRIBUTED_PLAYER_ID = Uuid::NIL;
+
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);
@@ -153,6 +163,14 @@ class MatchEvent extends Model
     }
 
     /**
+     * Whether this event has no scorer — a goal by a squad-less cup entrant.
+     */
+    public function isUnattributed(): bool
+    {
+        return $this->game_player_id === self::UNATTRIBUTED_PLAYER_ID;
+    }
+
+    /**
      * Check if this event is a card.
      */
     public function isCard(): bool
@@ -161,11 +179,16 @@ class MatchEvent extends Model
     }
 
     /**
-     * Get the player name via relationship.
+     * Get the player name via relationship. An unattributed goal reads as the
+     * club that scored it, since there is no player to name.
      */
     public function getPlayerNameAttribute(): string
     {
-        return $this->gamePlayer->name;
+        if ($this->isUnattributed()) {
+            return $this->team->name;
+        }
+
+        return $this->gamePlayer?->name ?? '';
     }
 
     /**

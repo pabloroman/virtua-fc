@@ -3,6 +3,8 @@
 namespace App\Modules\Match\Services;
 
 use App\Models\GameMatch;
+use App\Models\MatchEvent;
+use App\Models\Team;
 use App\Models\GamePlayer;
 use App\Models\Game;
 use App\Modules\Match\DTOs\MatchEventData;
@@ -130,8 +132,8 @@ class AIMatchResolver
         }
 
         // Calculate team strengths from the selected XI
-        $homeStrength = $this->calculateTeamStrength($homeXI);
-        $awayStrength = $this->calculateTeamStrength($awayXI);
+        $homeStrength = $this->calculateTeamStrength($homeXI, $match->homeTeam);
+        $awayStrength = $this->calculateTeamStrength($awayXI, $match->awayTeam);
 
         // Generate scoreline — same difference-based xG formula and Dixon-Coles
         // distribution the full MatchSimulator uses, via the shared MatchOutcomeModel.
@@ -248,9 +250,9 @@ class AIMatchResolver
      * the outcome model. Delegates to the shared {@see PaperStrength} estimator
      * (no energy/form/position noise; fitness enters via lineup selection).
      */
-    private function calculateTeamStrength(Collection $lineup): float
+    private function calculateTeamStrength(Collection $lineup, ?Team $team = null): float
     {
-        return PaperStrength::estimate($lineup);
+        return PaperStrength::estimate($lineup, $team?->clubProfile?->reputation_level);
     }
 
     /**
@@ -288,6 +290,16 @@ class AIMatchResolver
         $ownGoalChance = (float) config('match_simulation.own_goal_chance', 1.0);
         $assistChance = (float) config('match_simulation.assist_chance', 60.0);
         $goalCounts = [];
+
+        // A squad-less cup entrant has nobody to credit a goal to, so its goals
+        // are unattributed — the same treatment MatchSimulator gives them. They
+        // still have to be events: this resolver used to keep the scoreline and
+        // drop the goals, leaving a score no event could account for.
+        if ($lineup->isEmpty()) {
+            $this->generateUnattributedGoalEvents($events, $teamId, $goals);
+
+            return;
+        }
 
         for ($i = 0; $i < $goals; $i++) {
             // Extend slightly past 90 so AI matches can have stoppage-time
@@ -332,6 +344,22 @@ class AIMatchResolver
                     ];
                 }
             }
+        }
+    }
+
+    /**
+     * A squad-less side's goals — real events for its own team, with no scorer.
+     */
+    private function generateUnattributedGoalEvents(array &$events, string $teamId, int $goals): void
+    {
+        for ($i = 0; $i < $goals; $i++) {
+            $events[] = [
+                'team_id' => $teamId,
+                'game_player_id' => MatchEvent::UNATTRIBUTED_PLAYER_ID,
+                'minute' => mt_rand(1, 95),
+                'event_type' => 'goal',
+                'metadata' => null,
+            ];
         }
     }
 
