@@ -1,5 +1,8 @@
 @props(['team'])
 
+{{-- A loan parent can be null (loaned in from a club outside the game), so
+     every caller would otherwise need its own guard. --}}
+@if($team)
 @php
     $isNational = ($team->type ?? 'club') === 'national';
 @endphp
@@ -18,4 +21,5 @@
 <img
     src="{{ $team->image }}"
     {{ $attributes->merge(['alt' => $team->name]) }}>
+@endif
 @endif

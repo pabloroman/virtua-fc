@@ -507,10 +507,12 @@ class SetupNewGame implements ShouldQueue, ShouldBeUnique
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        // Teams that actually field a squad in this game. An owner outside this
-        // set (foreign/unknown club, or one excluded from the game) yields a
-        // null parent → the player becomes a free agent when the loan ends.
-        $participatingTeamIds = DB::table('game_players')
+        // Teams entered in any of this game's competitions. Read from
+        // competition_entries rather than game_players so squad-less cup
+        // entrants still count as present. An owner outside this set (foreign
+        // or excluded club) yields a null parent → the player becomes a free
+        // agent when the loan ends.
+        $participatingTeamIds = DB::table('competition_entries')
             ->where('game_id', $this->gameId)
             ->distinct()
             ->pluck('team_id')
