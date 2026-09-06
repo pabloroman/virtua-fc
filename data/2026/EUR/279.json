@@ -1,0 +1,560 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/279.png",
+  "name": "Ferencvárosi TC",
+  "country": "HU",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 25, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "148810",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Endre Botka",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "21",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 16, 1990",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "162695",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Dénes Dibusz",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "90",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 7, 1989",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "162875",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Gergő Szécsi",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 6, 1995",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "204047",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Matus Bero",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 10, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "216902",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Attila Osváth",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "14",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 23, 1995",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "255679",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Callum O'Dowda",
+      "nationality": [
+        "Ireland",
+        "England"
+      ],
+      "number": "47",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 27, 1994",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "261020",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Kristoffer Zachariassen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "16",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 1, 1996",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "293944",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "Habib Maïga",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "80",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 10, 1995",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "302215",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Naby Keïta",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 20, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "340791",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Philippe Rommens",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "88",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 12, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "342973",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Ádám Varga",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 17, 1995",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "368559",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Ádám Nagy",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 23, 1996",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "383880",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Jonathan Levi",
+      "nationality": [
+        "Sweden",
+        "Italy"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 4, 1999",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "399997",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Daniel Arzani",
+      "nationality": [
+        "Australia",
+        "Iran"
+      ],
+      "number": "15",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 5, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "419648",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Veljko Birmancevic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 8, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "425916",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Franko Kovacevic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 13, 1998",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "443831",
+      "injured": true,
+      "marketValue": "€1.00m",
+      "name": "Bence Ötvös",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 5, 1999",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "545409",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Mariano Gómez",
+      "nationality": [
+        "Argentina",
+        "Hungary"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 5, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "570511",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Barnabás Nagy",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "77",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 17, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "656096",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Nathan Zohoré",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 9, 2000",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "712086",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Toon Raemaekers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 7, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "731431",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Marius Corbu",
+      "nationality": [
+        "Romania",
+        "Hungary"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 22, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "744063",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Bamidele Yusuf",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 8, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "748908",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Cadu",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "815359",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Lenny Joseph",
+      "nationality": [
+        "Haiti",
+        "France"
+      ],
+      "number": "75",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 29, 2003",
+      "height": "1,90m",
+      "id": "831781",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Levente Őri",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 12, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "854030",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Olivér Nagy",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "54",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 6, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "933217",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "24",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/24.png",
+          "name": "Eintracht Frankfurt"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.50m",
+      "name": "Krisztián Lisztes",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "76",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 15, 2006",
+      "foot": "right",
+      "id": "952648",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Ádám Bagi",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 19, 2006",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "956608",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Zétény Varga",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "68",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 1, 2006",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "956677",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Dániel Radnóti",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "63",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 20, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1021818",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Isaac Pappoe",
+      "nationality": [
+        "Ghana"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 1, 2006",
+      "id": "1113253",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Szilárd Szabó",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "74",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 16, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1123215",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Ádám Madarász",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "72",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 19, 2008",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1194052",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Benjámin Gólik",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 29, 2006",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "1363885",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Csongor Lakatos",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "71",
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Groupama Aréna",
+  "stadiumSeats": "23698",
+  "transfermarktId": "279"
+}

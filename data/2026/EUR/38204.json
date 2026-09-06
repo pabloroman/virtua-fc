@@ -1,0 +1,404 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/38204.png",
+  "name": "Lincoln Red Imps FC",
+  "country": "GI",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 27, 1984",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "58018",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Nano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "21",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 1, 1989",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "69789",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Mandi",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 7, 1991",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "171979",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Toni García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 23, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "242295",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Álex Mula",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 6, 1991",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "270611",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Joe",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 8, 1994",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "294334",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Nauzet García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 29, 1981",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "299116",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Lee Casciaro",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 29, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "299132",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Ethan Jolley",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 30, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "340906",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Ethan Britto",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 30, 1993",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "344827",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Bernardo Lopes",
+      "nationality": [
+        "Gibraltar",
+        "Portugal"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 3, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "399011",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Graeme Torrilla",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 17, 2000",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "405559",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Jaylan Hankins",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 12, 1996",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "437893",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Álvaro Romero",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 8, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "453985",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Aly Coulibaly",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Aug 31, 2027",
+      "dateOfBirth": "May 4, 1994",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "454542",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Kike Gómez",
+      "nationality": [
+        "Spain",
+        "Philippines"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 5, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "462809",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Christian Rutjens",
+      "nationality": [
+        "Spain",
+        "Netherlands"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 7, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "538450",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Ayman El Ghobashy",
+      "nationality": [
+        "Egypt"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 27, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "593822",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Julliani Eersteling",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "66",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 5, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "715818",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Manu Toledano",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "44",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 27, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "785290",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Gabri Cardozo",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 5, 2002",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "939834",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Mark Hamm",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "27",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 16, 2007",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1004914",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "Leon Mason",
+      "nationality": [
+        "Gibraltar",
+        "Spain"
+      ],
+      "number": "16",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 11, 1993",
+      "foot": "left",
+      "id": "1008475",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Facundo Álvarez",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "32",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 9, 2007",
+      "id": "1024353",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Jay Coombes",
+      "nationality": [
+        "Gibraltar"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 13, 2000",
+      "foot": "left",
+      "id": "1155231",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Yussef Flalhi Idrissi",
+      "nationality": [
+        "Spain",
+        "Morocco"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 10, 2002",
+      "foot": "right",
+      "id": "1448877",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Nico Clara Pinto",
+      "nationality": [
+        "Netherlands",
+        "Angola"
+      ],
+      "number": "4",
+      "position": "Attacking Midfield"
+    }
+  ],
+  "stadiumName": "Victoria Stadium",
+  "stadiumSeats": "5000",
+  "transfermarktId": "38204"
+}

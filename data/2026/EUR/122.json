@@ -1,0 +1,424 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/122.png",
+  "name": "SK Sturm Graz",
+  "country": "AT",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 14, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "245034",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Jon Gorenc Stankovic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 2, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "261935",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Albert Vallci",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 4, 1997",
+      "height": "1,76m",
+      "id": "271223",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Jürgen Heil",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 13, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "307598",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Ammar Helac",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 26, 1996",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "352596",
+      "injured": true,
+      "marketValue": "€5.50m",
+      "name": "Otar Kiteishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 11, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "394008",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Niklas Geyrhofer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 22, 2002",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "523895",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Paul Koller",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 5, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "554282",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Szymon Wlodarczyk",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 4, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "620496",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Simon Seidl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 18, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "661206",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Seedy Jatta",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 4, 2003",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "671806",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Valmir Matoshi",
+      "nationality": [
+        "Kosovo",
+        "Switzerland"
+      ],
+      "number": "78",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 9, 2004",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "693092",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Belmin Beganovic",
+      "nationality": [
+        "Austria",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 9, 2004",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "718756",
+      "injured": true,
+      "marketValue": "€1.80m",
+      "name": "Daniil Khudyakov",
+      "nationality": [
+        "Russia"
+      ],
+      "number": "53",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 15, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "724965",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Gizo Mamageishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 26, 2004",
+      "foot": "both",
+      "height": "1,96m",
+      "id": "790918",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "180",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/180.png",
+          "name": "Southampton FC"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€4.00m",
+      "name": "Joshua Quarshie",
+      "nationality": [
+        "Germany",
+        "Ghana"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 17, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "796213",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "39",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/39.png",
+          "name": "1.FSV Mainz 05"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€7.00m",
+      "name": "Nelson Weiper",
+      "nationality": [
+        "Germany",
+        "Albania"
+      ],
+      "number": "44",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 28, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "805534",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Arjan Malic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Slovenia"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 22, 2006",
+      "foot": "both",
+      "height": "1,89m",
+      "id": "822601",
+      "injured": true,
+      "marketValue": "€2.50m",
+      "name": "Leon Grgic",
+      "nationality": [
+        "Croatia",
+        "Austria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 11, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "913495",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Emran Soglo",
+      "nationality": [
+        "England",
+        "France"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 25, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "922788",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Axel Kayombo",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 13, 2005",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "942034",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "Petar Petrovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 27, 2006",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "948135",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Elias Lorenz",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 31, 2007",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "960463",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Jacob Peter Hödl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "43",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "974365",
+      "injured": true,
+      "marketValue": "€2.80m",
+      "name": "Filip Rózga",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 28, 2006",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1012731",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Luis Balbo",
+      "nationality": [
+        "Venezuela",
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 11, 2009",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1169411",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Luca Weinhandl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "39",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Stadion Graz-Liebenau",
+  "stadiumSeats": "16364",
+  "transfermarktId": "122"
+}

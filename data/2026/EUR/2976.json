@@ -1,0 +1,462 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2976.png",
+  "name": "Hapoel Beer Sheva",
+  "country": "IL",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 30, 1989",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "57814",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Miguel Vítor",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 7, 1989",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "112008",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Ofir Marciano",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 5, 1991",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "140570",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Ofir Davidzada",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 14, 1999",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "211845",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Yonas Malede",
+      "nationality": [
+        "Israel",
+        "Ethiopia"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 1, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "325726",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Adrián Ugarriza",
+      "nationality": [
+        "Peru"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 10, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "343965",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Igor Zlatanovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "66",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 20, 1995",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "355395",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Matan Baltaxa",
+      "nationality": [
+        "Israel",
+        "Poland"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 8, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "396641",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Eylon Almog",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 20, 1995",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "399361",
+      "injured": true,
+      "marketValue": "€2.00m",
+      "name": "Dan Biton",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 17, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "408422",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Idan Nachmias",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 18, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "444018",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "Eliel Peretz",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 14, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "467149",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Hamode Kanaan",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 13, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "468548",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Roy Levy",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 19, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "520994",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Lucas Ventura",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "25",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 14, 1996",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "555831",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Marco Wolff",
+      "nationality": [
+        "Argentina",
+        "Israel"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 22, 1995",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "563479",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Javon East",
+      "nationality": [
+        "Jamaica"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 18, 1998",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "564544",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Pedro Amador",
+      "nationality": [
+        "Portugal"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 6, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "568733",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Djibril Diop",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 12, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "701300",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Zahi Ahmed",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 30, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "704071",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Guy Mizrahi",
+      "nationality": [
+        "Israel",
+        "Spain"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 16, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "713007",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Itay Rotman",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "12",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 27, 2004",
+      "foot": "both",
+      "height": "1,67m",
+      "id": "842370",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "João Victor",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "70",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 22, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "848641",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Yoan Stoyanov",
+      "nationality": [
+        "Bulgaria",
+        "Israel"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jan 28, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "926457",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Niv Yehoshua",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 9, 2004",
+      "foot": "right",
+      "height": "1,65m",
+      "id": "966005",
+      "injured": false,
+      "marketValue": "€1.60m",
+      "name": "Amir Ganah",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 23, 2004",
+      "foot": "both",
+      "height": "1,84m",
+      "id": "1078063",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Muhammad Abu Rumi",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "45",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 20, 2006",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "1140586",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Itay Hazut",
+      "nationality": [
+        "Israel",
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 16, 2006",
+      "foot": "right",
+      "id": "1159590",
+      "injured": false,
+      "name": "Yonatan Shani",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "36",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 2, 2004",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "1231372",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Noam Shahar",
+      "nationality": [
+        "Israel",
+        "Romania"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 13, 2006",
+      "id": "1536479",
+      "injured": false,
+      "name": "Amit Ohana",
+      "nationality": [
+        "Israel"
+      ],
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Toto Jacob Turner Stadium",
+  "stadiumSeats": "16126",
+  "transfermarktId": "2976"
+}

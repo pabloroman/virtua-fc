@@ -1,0 +1,16 @@
+{
+    "knockout": [
+        {
+            "round": 1,
+            "name": "cup.playoff_semi_finals",
+            "first_leg_date": "2027-06-06",
+            "second_leg_date": "2027-06-13"
+        },
+        {
+            "round": 2,
+            "name": "cup.playoff_final",
+            "first_leg_date": "2027-06-20",
+            "second_leg_date": "2027-06-27"
+        }
+    ]
+}

@@ -1,0 +1,273 @@
+{
+  "image": "https://assets.virtuafc.com/crests/41916.png",
+  "name": "Inter Club d'Escaldes",
+  "country": "AD",
+  "players": [
+    {
+      "dateOfBirth": "Feb 13, 1994",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "162039",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Juan Cámara",
+      "position": "Attacking Midfield"
+    },
+    {
+      "dateOfBirth": "May 27, 1992",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "170504",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Robin Lafarge",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Aug 22, 1991",
+      "height": "1,93m",
+      "id": "200612",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Pol Freixanet",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Dec 23, 1994",
+      "height": "1,83m",
+      "id": "263343",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Víctor Alonso",
+      "position": "Attacking Midfield"
+    },
+    {
+      "dateOfBirth": "May 18, 1994",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "274556",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Jilmar Torres",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Aug 2, 1998",
+      "foot": "right",
+      "height": "1,64m",
+      "id": "323868",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Klebinho",
+      "position": "Right-Back"
+    },
+    {
+      "dateOfBirth": "May 6, 1995",
+      "height": "1,80m",
+      "id": "339122",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Domi Berlanga",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "Mar 7, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "374082",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Antonio Otegui",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "May 15, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "396107",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Javi Díaz",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 21, 1994",
+      "height": "1,83m",
+      "id": "510999",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Kaxe",
+      "position": "Centre-Forward"
+    },
+    {
+      "dateOfBirth": "Mar 30, 2001",
+      "foot": "right",
+      "id": "537366",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Maurizio Pochettino",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "May 16, 2001",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "547255",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Dacu",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Dec 29, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "566875",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Rafinha",
+      "position": "Second Striker"
+    },
+    {
+      "dateOfBirth": "Jan 7, 2000",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "632370",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Faysal Chouaib",
+      "position": "Centre-Forward"
+    },
+    {
+      "dateOfBirth": "Jan 2, 1998",
+      "id": "686069",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Jaouad Erraji",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Jan 19, 1992",
+      "height": "1,91m",
+      "id": "689563",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Álex Sánchez",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Jul 8, 1996",
+      "foot": "right",
+      "id": "711963",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "David López",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Oct 30, 2002",
+      "id": "720519",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Pablo Molina",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "May 17, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "845626",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Marc Vargas",
+      "position": "Right-Back"
+    },
+    {
+      "dateOfBirth": "Apr 2, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "883283",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Soule Sidibe",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "Jun 21, 2005",
+      "id": "943867",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Marc Rodríguez",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Oct 5, 2004",
+      "foot": "left",
+      "id": "1060824",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Arnau Sans",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "May 16, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1061614",
+      "injured": false,
+      "name": "Marc Jurado",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Mar 17, 1995",
+      "height": "1,86m",
+      "id": "1131071",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Anwar Hernández",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Jan 7, 2007",
+      "id": "1194242",
+      "injured": false,
+      "name": "Adria Figueiredo",
+      "position": "Striker"
+    },
+    {
+      "dateOfBirth": "May 17, 2005",
+      "id": "1319364",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Juanda Terrádez",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Sep 23, 2004",
+      "foot": "both",
+      "height": "1,90m",
+      "id": "1427905",
+      "injured": false,
+      "name": "Lamine Diaby",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Aug 25, 2007",
+      "id": "1461224",
+      "injured": false,
+      "name": "Pol Cabanes",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Jun 7, 2000",
+      "id": "1474254",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Borja Arellano",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "41916"
+}

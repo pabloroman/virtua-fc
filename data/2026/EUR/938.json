@@ -1,0 +1,487 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/938.png",
+  "name": "FC Thun",
+  "country": "CH",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 10, 1993",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "172192",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Marco Bürki",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 7, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "203895",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Nicolas Bürgy",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 29, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "205227",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Mattias Käit",
+      "nationality": [
+        "Estonia"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 9, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "289875",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Jan Bamert",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 1, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "342227",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Brighton Labeau",
+      "nationality": [
+        "Martinique",
+        "France"
+      ],
+      "number": "96",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 2, 2000",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "346904",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Nico Maier",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "30",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 1, 2001",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "357251",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Fabio Saiz",
+      "nationality": [
+        "Switzerland",
+        "Spain"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 29, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "365134",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Justin Roth",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 22, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "449353",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Lucien Dähler",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "37",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 23, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "478426",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Genís Montolio",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 19, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "496237",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Niklas Steffen",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 15, 2000",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "500099",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Fabio Fehr",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "47",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 11, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "501454",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Noah Christoffersson",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 22, 2002",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "507412",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Nils Reichmuth",
+      "nationality": [
+        "Chile",
+        "Switzerland"
+      ],
+      "number": "70",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 8, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "507454",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Ashvin Balaruban",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Aug 31, 2029",
+      "dateOfBirth": "Apr 29, 2002",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "527343",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Tom Strannegård",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "18",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 3, 2002",
+      "height": "1,80m",
+      "id": "580801",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Layton Stewart",
+      "nationality": [
+        "England"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 13, 2004",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "604817",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Tim Spycher",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 30, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "628618",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Nassim Zoukit",
+      "nationality": [
+        "Switzerland",
+        "Morocco"
+      ],
+      "number": "13",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 4, 2003",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "660514",
+      "injured": true,
+      "marketValue": "€250k",
+      "name": "Marc Gutbub",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "33",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 14, 2005",
+      "height": "1,90m",
+      "id": "803045",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Furkan Dursun",
+      "nationality": [
+        "Austria",
+        "Türkiye"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 4, 2005",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "902987",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Mats Seiler",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 24, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "934514",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Riccardo Braschi",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 12, 2007",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "978438",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "438",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/438.png",
+          "name": "1.FC Köln II"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€175k",
+      "name": "Patrik Kristal",
+      "nationality": [
+        "Estonia"
+      ],
+      "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 25, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "995817",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Dorian Derbaci",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 23, 2006",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1046529",
+      "injured": false,
+      "name": "Dario Wälti",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 20, 2007",
+      "height": "1,90m",
+      "id": "1054511",
+      "injured": false,
+      "name": "Leo Stucki",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 6, 2006",
+      "height": "1,88m",
+      "id": "1060904",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Louis Passavant",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "54",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 4, 2006",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1061056",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Simon Lengen",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "80",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 3, 2008",
+      "height": "1,83m",
+      "id": "1138248",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Adam Ilic",
+      "nationality": [
+        "Switzerland",
+        "Serbia"
+      ],
+      "number": "52",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 5, 2008",
+      "height": "1,87m",
+      "id": "1138260",
+      "injured": true,
+      "loan": {
+        "from": {
+          "id": "452",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/452.png",
+          "name": "BSC Young Boys"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.00m",
+      "name": "Olivier Mambwa",
+      "nationality": [
+        "Switzerland"
+      ],
+      "position": "Left-Back"
+    }
+  ],
+  "stadiumName": "Visana Stadion",
+  "stadiumSeats": "10014",
+  "transfermarktId": "938"
+}

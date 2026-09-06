@@ -1,0 +1,378 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/239.png",
+  "name": "Viking FK",
+  "country": "NO",
+  "players": [
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 19, 1991",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "73327",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Arild Østbø",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 2, 1992",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "195274",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Zlatko Tripic",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 21, 1994",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "225823",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Kristoffer Haugen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "28",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 7, 1994",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "240012",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Viljar Vevatne",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 30, 1994",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "338939",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Sondre Bjørshol",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 27, 1999",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "345700",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Joe Bell",
+      "nationality": [
+        "New Zealand",
+        "England"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jan 31, 2027",
+      "dateOfBirth": "Jan 6, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "418553",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "603",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/603.png",
+          "name": "Cardiff City"
+        },
+        "until": "Jan 31, 2027"
+      },
+      "marketValue": "€2.50m",
+      "name": "Jesper Daland",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jun 25, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "510272",
+      "injured": false,
+      "name": "Erlend Jacobsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Feb 7, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "513330",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Romano Postema",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Dec 2, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "542462",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Peter Christiansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 4, 2002",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "546819",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Lubomir Belko",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 9, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "574495",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Kristoffer Askildsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 7, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "627472",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Gianni Stensness",
+      "nationality": [
+        "Australia",
+        "New Zealand"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 25, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "674288",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Herman Haugen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 8, 2003",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "743088",
+      "injured": true,
+      "marketValue": "€4.00m",
+      "name": "Henrik Falchener",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 22, 2001",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "790245",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Henrik Heggheim",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 28, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "797945",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Ruben Alte",
+      "nationality": [
+        "Norway"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 26, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "893547",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Simen Kvia-Egeskog",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 1, 2005",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "980787",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Edvin Austbø",
+      "nationality": [
+        "Norway"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 3, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "990983",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Tobias Moi",
+      "nationality": [
+        "Norway",
+        "Senegal"
+      ],
+      "number": "29",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 16, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1027708",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Jakob Segadal Hansen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "33",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 22, 2005",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1120134",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Vetle Auklend",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 30, 2005",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1204043",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Ola Visted",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 20, 2006",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1253757",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Niklas Fuglestad",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "23",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Lyse Arena",
+  "stadiumSeats": "15900",
+  "transfermarktId": "239"
+}

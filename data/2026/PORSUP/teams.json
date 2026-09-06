@@ -1,0 +1,15 @@
+{
+  "id": "PORSUP",
+  "name": "Supertaça Cândido de Oliveira",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "720",
+      "name": "FC Porto"
+    },
+    {
+      "id": "2432",
+      "name": "SC União Torreense"
+    }
+  ]
+}

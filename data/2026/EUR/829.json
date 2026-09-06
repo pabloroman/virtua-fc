@@ -1,0 +1,518 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/829.png",
+  "name": "Omonia Nicosia",
+  "country": "CY",
+  "players": [
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Feb 29, 1988",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "52848",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Fabiano",
+      "nationality": [
+        "Cyprus",
+        "Brazil"
+      ],
+      "number": "40",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 23, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "77757",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "358",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/358.png",
+          "name": "Charlton Athletic"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.00m",
+      "name": "Thomas Kaminski",
+      "nationality": [
+        "Belgium",
+        "Poland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 15, 1991",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "122840",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Loïc Nego",
+      "nationality": [
+        "Hungary",
+        "France"
+      ],
+      "number": "77",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Dec 20, 1992",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "126552",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Loïs Diony",
+      "nationality": [
+        "France",
+        "Martinique"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jul 28, 1993",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "163738",
+      "injured": true,
+      "marketValue": "€325k",
+      "name": "Moses Odubajo",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Dec 2, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "168408",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Lubomir Satka",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Sep 9, 1994",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "181410",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Jure Balkovec",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Feb 22, 1995",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "198513",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Muamer Tankovic",
+      "nationality": [
+        "Sweden",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 20, 1995",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "198613",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Stefan Simic",
+      "nationality": [
+        "Czech Republic",
+        "Croatia"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Mar 15, 1996",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "288499",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Ewandro Costa",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Jun 14, 1996",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "302525",
+      "injured": false,
+      "marketValue": "€375k",
+      "name": "Ioannis Kousoulos",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "31",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Dec 30, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "314329",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Florin Tănase",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Feb 11, 1998",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "315128",
+      "injured": true,
+      "marketValue": "€1.30m",
+      "name": "Carel Eiting",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jul 12, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "344864",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Jean-Kévin Duverne",
+      "nationality": [
+        "Haiti",
+        "France"
+      ],
+      "number": "93",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 25, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "346095",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Mihlali Mayambela",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "21",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 3, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "369552",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Luuk Brouwers",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 31, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "402887",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Anastasios Chatzigiovanis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Mar 18, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "455494",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Mateo Maric",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "May 3, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "511883",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Andronikos Kakoullis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 16, 2003",
+      "foot": "both",
+      "height": "1,75m",
+      "id": "570469",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Mateusz Musiałowski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "33",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2030",
+      "dateOfBirth": "Aug 9, 2002",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "595943",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Jaden Montnor",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Sep 4, 1994",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "596240",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Senou Coulibaly",
+      "nationality": [
+        "Mali",
+        "France"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Mar 31, 2003",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "669531",
+      "injured": true,
+      "marketValue": "€500k",
+      "name": "Fotis Kitsos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2030",
+      "dateOfBirth": "Oct 27, 2005",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "833379",
+      "injured": false,
+      "name": "Pantelis Michail",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "78",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "May 23, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "950111",
+      "injured": false,
+      "marketValue": "€325k",
+      "name": "Angelos Neofytou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "85",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 5, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "950123",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Andreas Christou",
+      "nationality": [
+        "Cyprus",
+        "England"
+      ],
+      "number": "82",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Apr 29, 2006",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "995234",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Panagiotis Andreou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "74",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 4, 2006",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "995235",
+      "injured": false,
+      "name": "Evripidis Pepis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Nov 3, 2007",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "1110135",
+      "injured": false,
+      "name": "Chrysis Evangelou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "88",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Apr 23, 2007",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "1112115",
+      "injured": false,
+      "name": "Konstantinos Panagi",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "91",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 21, 2008",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1197113",
+      "injured": false,
+      "name": "Vladimiros Savva",
+      "nationality": [
+        "Cyprus",
+        "Ukraine"
+      ],
+      "number": "87",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 24, 2008",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1197124",
+      "injured": false,
+      "name": "Christos Konstantinidis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "90",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 14, 2008",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1526458",
+      "injured": false,
+      "name": "Panagiotis Christoforou",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "92",
+      "position": "Right-Back"
+    }
+  ],
+  "stadiumName": "GSP Stadium",
+  "stadiumSeats": "22859",
+  "transfermarktId": "829"
+}

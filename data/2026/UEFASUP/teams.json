@@ -1,0 +1,17 @@
+{
+  "id": "USC",
+  "name": "UEFA Super Cup",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "405",
+      "name": "Aston Villa",
+      "country": "EN"
+    },
+    {
+      "id": "583",
+      "name": "Paris Saint-Germain",
+      "country": "FR"
+    }
+  ]
+}

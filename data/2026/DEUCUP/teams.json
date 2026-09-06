@@ -1,0 +1,263 @@
+{
+  "id": "DEUCUP",
+  "name": "DFB-Pokal",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "1",
+      "name": "1.FC Saarbrücken"
+    },
+    {
+      "id": "2",
+      "name": "1.FC Kaiserslautern"
+    },
+    {
+      "id": "3",
+      "name": "1.FC Köln"
+    },
+    {
+      "id": "4",
+      "name": "1.FC Nuremberg"
+    },
+    {
+      "id": "10",
+      "name": "Arminia Bielefeld"
+    },
+    {
+      "id": "15",
+      "name": "Bayer 04 Leverkusen"
+    },
+    {
+      "id": "16",
+      "name": "Borussia Dortmund"
+    },
+    {
+      "id": "18",
+      "name": "Borussia Mönchengladbach"
+    },
+    {
+      "id": "23",
+      "name": "Eintracht Braunschweig"
+    },
+    {
+      "id": "24",
+      "name": "Eintracht Frankfurt"
+    },
+    {
+      "id": "25",
+      "name": "FC Energie Cottbus"
+    },
+    {
+      "id": "27",
+      "name": "Bayern Munich"
+    },
+    {
+      "id": "30",
+      "name": "FC Hansa Rostock"
+    },
+    {
+      "id": "33",
+      "name": "FC Schalke 04"
+    },
+    {
+      "id": "35",
+      "name": "FC St. Pauli"
+    },
+    {
+      "id": "38",
+      "name": "Fortuna Düsseldorf"
+    },
+    {
+      "id": "39",
+      "name": "1.FSV Mainz 05"
+    },
+    {
+      "id": "41",
+      "name": "Hamburger SV"
+    },
+    {
+      "id": "42",
+      "name": "Hannover 96"
+    },
+    {
+      "id": "44",
+      "name": "Hertha BSC"
+    },
+    {
+      "id": "48",
+      "name": "Karlsruher SC"
+    },
+    {
+      "id": "52",
+      "name": "MSV Duisburg"
+    },
+    {
+      "id": "56",
+      "name": "Rot-Weiss Essen"
+    },
+    {
+      "id": "60",
+      "name": "SC Freiburg"
+    },
+    {
+      "id": "64",
+      "name": "SV 07 Elversberg"
+    },
+    {
+      "id": "65",
+      "name": "SpVgg Greuther Fürth"
+    },
+    {
+      "id": "72",
+      "name": "TSV 1860 Munich"
+    },
+    {
+      "id": "79",
+      "name": "VfB Stuttgart"
+    },
+    {
+      "id": "80",
+      "name": "VfL Bochum"
+    },
+    {
+      "id": "81",
+      "name": "VfL Osnabrück"
+    },
+    {
+      "id": "82",
+      "name": "VfL Wolfsburg"
+    },
+    {
+      "id": "85",
+      "name": "SV Waldhof Mannheim"
+    },
+    {
+      "id": "86",
+      "name": "SV Werder Bremen"
+    },
+    {
+      "id": "89",
+      "name": "1.FC Union Berlin"
+    },
+    {
+      "id": "91",
+      "name": "Preußen Münster"
+    },
+    {
+      "id": "93",
+      "name": "SC Verl"
+    },
+    {
+      "id": "94",
+      "name": "FC Erzgebirge Aue"
+    },
+    {
+      "id": "104",
+      "name": "SV Eintracht Trier 05"
+    },
+    {
+      "id": "105",
+      "name": "SV Darmstadt 98"
+    },
+    {
+      "id": "108",
+      "name": "SV Wehen Wiesbaden"
+    },
+    {
+      "id": "113",
+      "name": "FC Carl Zeiss Jena"
+    },
+    {
+      "id": "127",
+      "name": "SC Paderborn 07"
+    },
+    {
+      "id": "129",
+      "name": "SG Dynamo Dresden"
+    },
+    {
+      "id": "167",
+      "name": "FC Augsburg"
+    },
+    {
+      "id": "187",
+      "name": "1.FC Magdeburg"
+    },
+    {
+      "id": "269",
+      "name": "Holstein Kiel"
+    },
+    {
+      "id": "440",
+      "name": "Hallescher FC"
+    },
+    {
+      "id": "533",
+      "name": "TSG 1899 Hoffenheim"
+    },
+    {
+      "id": "1193",
+      "name": "Bahlinger SC"
+    },
+    {
+      "id": "1478",
+      "name": "HEBC Hamburg"
+    },
+    {
+      "id": "1557",
+      "name": "Würzburger Kickers"
+    },
+    {
+      "id": "1622",
+      "name": "FC Viktoria Köln"
+    },
+    {
+      "id": "2036",
+      "name": "1.FC Heidenheim 1846"
+    },
+    {
+      "id": "2589",
+      "name": "SG Sonnenhof Großaspach"
+    },
+    {
+      "id": "2773",
+      "name": "1.FC Phönix Lübeck"
+    },
+    {
+      "id": "4855",
+      "name": "SV Westfalia Rhynern"
+    },
+    {
+      "id": "6776",
+      "name": "SSV Jeddeloh II"
+    },
+    {
+      "id": "9695",
+      "name": "TSV Schott Mainz"
+    },
+    {
+      "id": "17847",
+      "name": "VSG Altglienicke"
+    },
+    {
+      "id": "18324",
+      "name": "Lüneburger SK Hansa"
+    },
+    {
+      "id": "20685",
+      "name": "VfB 1921 Krieschow"
+    },
+    {
+      "id": "23826",
+      "name": "RB Leipzig"
+    },
+    {
+      "id": "26444",
+      "name": "SV Hemelingen"
+    },
+    {
+      "id": "42635",
+      "name": "SC St. Tönis 1911/20"
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/865.png",
+  "name": "FC Midtjylland",
+  "country": "DK",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 30, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "264423",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Mikael Uhre",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 11, 1996",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "320411",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Philip Billing",
+      "nationality": [
+        "Denmark",
+        "Nigeria"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 24, 1998",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "357003",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Martin Erlić",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Jul 11, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "369684",
+      "injured": false,
+      "marketValue": "€10.00m",
+      "name": "Rasmus Nissen Kristensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 7, 1999",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "372240",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Mads Bech Sørensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 27, 1996",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "448471",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Magnus Jensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 11, 2000",
+      "foot": "right",
+      "height": "2,01m",
+      "id": "464373",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Elías Ólafsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 17, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "490309",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Edward Chilufya",
+      "nationality": [
+        "Zambia"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 15, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "524590",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Júnior Brumado",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "74",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 31, 1997",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "534015",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Nordin Bakker",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 23, 2003",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "586987",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Ovie Ejeheri",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 3, 2003",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "623772",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Victor Bak",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "55",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 25, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "652537",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Gue-sung Cho",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Nov 26, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "742518",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Pedro Bravo",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Feb 16, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "884810",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Kjell Wätjen",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "29",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 28, 2004",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "929090",
+      "injured": false,
+      "marketValue": "€22.00m",
+      "name": "Franculino",
+      "nationality": [
+        "Guinea-Bissau",
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 21, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "929600",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Friday Etim",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 27, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "937680",
+      "injured": true,
+      "marketValue": "€3.00m",
+      "name": "Mikel Gogorza",
+      "nationality": [
+        "Denmark",
+        "France"
+      ],
+      "number": "41",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Mar 24, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "941418",
+      "injured": false,
+      "marketValue": "€7.00m",
+      "name": "Denil Castillo",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Feb 7, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "988222",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "David Martínez",
+      "nationality": [
+        "Venezuela"
+      ],
+      "number": "98",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 3, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1003546",
+      "injured": false,
+      "name": "Mark Ugboh",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "60",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 4, 2007",
+      "id": "1017247",
+      "injured": false,
+      "marketValue": "€550k",
+      "name": "Sofus Johannesen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 8, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1099668",
+      "injured": true,
+      "marketValue": "€8.00m",
+      "name": "Ousmane Diao",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 28, 2006",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1171600",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Alamara Djabi",
+      "nationality": [
+        "Guinea-Bissau"
+      ],
+      "number": "33",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "May 18, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1171602",
+      "injured": false,
+      "name": "Stanley Iheanacho",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "18",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "May 13, 2005",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1187887",
+      "injured": false,
+      "name": "Béni Junior",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 2, 2007",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1261825",
+      "injured": false,
+      "name": "Julius Emefile",
+      "nationality": [
+        "Denmark",
+        "Nigeria"
+      ],
+      "number": "38",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2031",
+      "dateOfBirth": "Nov 18, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1283409",
+      "injured": false,
+      "name": "Abdou Aziz Ndiaye",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "34",
+      "position": "Right-Back"
+    }
+  ],
+  "stadiumName": "MCH Arena",
+  "stadiumSeats": "12055",
+  "transfermarktId": "865"
+}

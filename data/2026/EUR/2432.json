@@ -1,0 +1,568 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2432.png",
+  "name": "SC União Torreense",
+  "country": "PT",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 20, 1988",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "80486",
+      "injured": false,
+      "marketValue": "€50k",
+      "name": "Stopira",
+      "nationality": [
+        "Cape Verde",
+        "Hungary"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 14, 1992",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "126964",
+      "injured": false,
+      "marketValue": "€75k",
+      "name": "David Bruno",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 25, 1992",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "236886",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Costinha",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 4, 1992",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "306668",
+      "injured": false,
+      "marketValue": "€235k",
+      "name": "Amine Oudrhiri",
+      "nationality": [
+        "Morocco",
+        "France"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 7, 1997",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "407841",
+      "injured": false,
+      "marketValue": "€1.30m",
+      "name": "Lucas Paes",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 24, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "461866",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Javi Vázquez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 19, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "524929",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Kévin Zohi",
+      "nationality": [
+        "Mali",
+        "Cote d'Ivoire"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 22, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "625016",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Unai Pérez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 28, 2002",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "628835",
+      "injured": false,
+      "marketValue": "€1.40m",
+      "name": "Dany Jean",
+      "nationality": [
+        "Haiti"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 5, 2001",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "628923",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Juan María Alcedo",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 5, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "629385",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Jorge Aguirre",
+      "nationality": [
+        "Cuba",
+        "Spain"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 12, 2001",
+      "foot": "left",
+      "height": "1,68m",
+      "id": "635881",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Manu Pozo",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 10, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "682794",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Malik Abubakari",
+      "nationality": [
+        "Ghana"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 16, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "718027",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Hugo Pérez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 14, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "719384",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Brian Agbor",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "46",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 15, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "720488",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Alejandro Alfaro",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 27, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "721952",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Jonathan Mutombo",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "number": "45",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 2004",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "742864",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Luis Quintero",
+      "nationality": [
+        "Colombia",
+        "Spain"
+      ],
+      "number": "29",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 14, 2001",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "808445",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Adriel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 21, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "810789",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Lisandru Olmeta",
+      "nationality": [
+        "France"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 15, 2000",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "813229",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Volnei",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 26, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "882708",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Musa Drammeh",
+      "nationality": [
+        "Spain",
+        "The Gambia"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 13, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "891971",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "1075",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/1075.png",
+          "name": "SC Braga"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.50m",
+      "name": "João Marques",
+      "nationality": [
+        "Portugal"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 5, 2003",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "894324",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Bob Murphy Omoregbe",
+      "nationality": [
+        "Italy",
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 17, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "914629",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "André Simões",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 15, 2006",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "974561",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Nuha Jatta",
+      "nationality": [
+        "Germany",
+        "The Gambia"
+      ],
+      "number": "21",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 3, 2006",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "982557",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Karem Zoabi",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 1, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1004291",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Jérémy Mounsesse",
+      "nationality": [
+        "Congo",
+        "France"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 10, 2004",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1061281",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Carlos Reina",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 22, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "1069037",
+      "injured": false,
+      "marketValue": "€1.60m",
+      "name": "Mohamed Ali Diadié",
+      "nationality": [
+        "Mauritania",
+        "France"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 6, 2004",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1091893",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "2125",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/2125.png",
+          "name": "Esporte Clube Vitória"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "name": "Zé Breno",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "55",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 10, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1093703",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Danilo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "57",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 10, 2007",
+      "foot": "right",
+      "id": "1131160",
+      "injured": false,
+      "marketValue": "€100k",
+      "name": "Adama Baradji",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "47",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 3, 2006",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1175184",
+      "injured": false,
+      "marketValue": "€25k",
+      "name": "Carraro Injai",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "24",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 9, 2006",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1343067",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "2352",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/2352.png",
+          "name": "CD América de Cali"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€500k",
+      "name": "Joel Romero",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "77",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Estádio Manuel Marques",
+  "stadiumSeats": "2431",
+  "transfermarktId": "2432"
+}

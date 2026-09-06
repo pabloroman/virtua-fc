@@ -1,0 +1,402 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/53453.png",
+  "name": "FC Ararat-Armenia",
+  "country": "AM",
+  "players": [
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 27, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "71830",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Bruno Wilson",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 5, 1992",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "155425",
+      "injured": true,
+      "marketValue": "€300k",
+      "name": "Kamo Hovhannisyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 11, 1994",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "155893",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Armen Ambartsumyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 1, 1992",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "241118",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Karen Muradyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "19",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Oct 28, 1990",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "284739",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Sandro Lima",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 25, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "340001",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Edgar Grigoryan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "16",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 27, 1998",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "371564",
+      "injured": false,
+      "marketValue": "€275k",
+      "name": "Bruno Pereira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 3, 1997",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "393962",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Balanta Jr.",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 15, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "408963",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Zidane Banjaqui",
+      "nationality": [
+        "Guinea-Bissau",
+        "Portugal"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 18, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "411315",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Alwyn Tera",
+      "nationality": [
+        "Kenya"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 10, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "431746",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Zhirayr Shaghoyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 4, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "440755",
+      "injured": false,
+      "name": "Benny",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "70",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 19, 1997",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "448919",
+      "injured": false,
+      "marketValue": "€225k",
+      "name": "Alexandros Malis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "47",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 15, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "512754",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Maxence Carlier",
+      "nationality": [
+        "France"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 21, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "513295",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Alioune Ndour",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "25",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 16, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "601666",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Paul Ayongo",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 3, 1996",
+      "height": "1,90m",
+      "id": "610253",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Junior Julio",
+      "nationality": [
+        "Armenia",
+        "Colombia"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 19, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "621489",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Arman Nersesyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 2, 2003",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "623120",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Artur Serobyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 9, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "635466",
+      "injured": false,
+      "marketValue": "€400k",
+      "name": "Carlos França",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "95",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 3, 1998",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "700168",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "João Bravim",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "98",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 17, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "700680",
+      "injured": false,
+      "marketValue": "€275k",
+      "name": "Luis Felipe",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 10, 2002",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "735822",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Hugo Oliveira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 16, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "868809",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Arayik Eloyan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 27, 2005",
+      "id": "876065",
+      "injured": false,
+      "marketValue": "€10k",
+      "name": "Hayk Khachatryan",
+      "nationality": [
+        "Armenia"
+      ],
+      "number": "66",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 21, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "876103",
+      "injured": false,
+      "marketValue": "€150k",
+      "name": "Michel Ayvazyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    }
+  ],
+  "stadiumName": "Avan Academy Stadium",
+  "stadiumSeats": "1500",
+  "transfermarktId": "53453"
+}

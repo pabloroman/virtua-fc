@@ -1,0 +1,455 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2441.png",
+  "name": "AEK Athens",
+  "country": "GR",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 29, 1989",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "46083",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Domagoj Vida",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 31, 1991",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "128011",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Petros Mantalos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 22, 1993",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "136514",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Charalabos Lykogiannis",
+      "nationality": [
+        "Greece"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 19, 1991",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "146799",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Alberto Brignoli",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "91",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 8, 1995",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "215864",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Mijat Gacinovic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 19, 1995",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "222209",
+      "injured": false,
+      "marketValue": "€3.00m",
+      "name": "Thomas Strakosha",
+      "nationality": [
+        "Albania",
+        "Greece"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 6, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "237669",
+      "injured": false,
+      "marketValue": "€3.50m",
+      "name": "Dereck Kutesa",
+      "nationality": [
+        "Switzerland",
+        "Angola"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 23, 1997",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "257462",
+      "injured": false,
+      "marketValue": "€9.00m",
+      "name": "Luka Jović",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 27, 1997",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "272636",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Harold Moukoudi",
+      "nationality": [
+        "Cameroon",
+        "France"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 3, 1996",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "289075",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Oleksandr Zubkov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 23, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "295183",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Răzvan Marin",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 22, 1998",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "322989",
+      "injured": false,
+      "marketValue": "€6.00m",
+      "name": "Kaan Kairinen",
+      "nationality": [
+        "Finland",
+        "Türkiye"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 25, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "328573",
+      "injured": false,
+      "marketValue": "€4.00m",
+      "name": "Barnabás Varga",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 17, 1998",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "387106",
+      "injured": false,
+      "marketValue": "€8.00m",
+      "name": "Lovro Majer",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 20, 1998",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "422377",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Aboubakary Koita",
+      "nationality": [
+        "Mauritania",
+        "Belgium"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 23, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "483916",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Lazaros Rota",
+      "nationality": [
+        "Greece",
+        "Albania"
+      ],
+      "number": "12",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 29, 1995",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "492955",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Frantzdy Pierrot",
+      "nationality": [
+        "Haiti",
+        "United States"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 5, 1998",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "526050",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Kervin Arriaga",
+      "nationality": [
+        "Honduras"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 20, 1999",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "567497",
+      "injured": false,
+      "marketValue": "€4.50m",
+      "name": "Filipe Relvas",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 10, 2000",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "572879",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Stavro Pilo",
+      "nationality": [
+        "Albania",
+        "Greece"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 28, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "640994",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Milán Vitális",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 3, 2002",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "718115",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Zini",
+      "nationality": [
+        "Angola"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 24, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "877118",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Martin Georgiev",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 1, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "895905",
+      "injured": false,
+      "marketValue": "€1.80m",
+      "name": "Dimitrios Kaloskamis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 30, 2005",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "898812",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "41119",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/41119.png",
+          "name": "Inter U23"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.20m",
+      "name": "Christos Alexiou",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 6, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "990258",
+      "injured": false,
+      "name": "Marios Balamotis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 16, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "990731",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Hakim Sahabo",
+      "nationality": [
+        "Rwanda",
+        "Belgium"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 18, 2007",
+      "id": "1173952",
+      "injured": false,
+      "name": "Zois Karargyris",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 21, 2006",
+      "id": "1177734",
+      "injured": false,
+      "name": "Spyros Christakopoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "57",
+      "position": "Right-Back"
+    }
+  ],
+  "stadiumName": "Allwyn Arena",
+  "stadiumSeats": "32500",
+  "transfermarktId": "2441"
+}

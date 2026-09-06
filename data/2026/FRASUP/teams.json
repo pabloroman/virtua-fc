@@ -1,0 +1,15 @@
+{
+  "id": "FRASUP",
+  "name": "Trophée des Champions",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "583",
+      "name": "Paris Saint-Germain"
+    },
+    {
+      "id": "826",
+      "name": "RC Lens"
+    }
+  ]
+}

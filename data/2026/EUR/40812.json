@@ -1,0 +1,388 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/40812.png",
+  "name": "Universitatea Craiova",
+  "country": "RO",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 1992",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "213195",
+      "injured": false,
+      "marketValue": "€900k",
+      "name": "Nicușor Bancu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "11",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 24, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "216661",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Alexandru Crețu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 18, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "271289",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Laurențiu Popescu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 8, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "295810",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Alexandru Cicâldău",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 13, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "418219",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Vladimir Screciu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 18, 1996",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "421927",
+      "injured": true,
+      "marketValue": "€1.20m",
+      "name": "Adrian Rus",
+      "nationality": [
+        "Romania",
+        "Hungary"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 13, 1998",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "425733",
+      "injured": false,
+      "marketValue": "€850k",
+      "name": "Nikola Stevanovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 27, 1999",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "433976",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "Tudor Băluță",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 19, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "445517",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Heri Tavares",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 4, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "505999",
+      "injured": false,
+      "marketValue": "€700k",
+      "name": "Monday Etim",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "12",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 27, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "518451",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Assad Al-Hamlawi",
+      "nationality": [
+        "Palestine",
+        "Sweden"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 16, 1999",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "553772",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Oleksandr Romanchuk",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 21, 2002",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "568617",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Răzvan Sava",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "90",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 28, 1997",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "597165",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Samuel Teles",
+      "nationality": [
+        "Portugal",
+        "Brazil"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 31, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "686232",
+      "injured": false,
+      "marketValue": "€5.00m",
+      "name": "Ștefan Baiaram",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 21, 2003",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "726033",
+      "injured": true,
+      "marketValue": "€1.20m",
+      "name": "Pavlo Isenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "77",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 18, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "740789",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Carlos Mora",
+      "nationality": [
+        "Costa Rica"
+      ],
+      "number": "17",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 22, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "804661",
+      "injured": false,
+      "marketValue": "€1.50m",
+      "name": "Simon Elisor",
+      "nationality": [
+        "France",
+        "Guadeloupe"
+      ],
+      "number": "22",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 31, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "830113",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Steven Nsimba",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 4, 2001",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "882003",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Ronaldo Webster",
+      "nationality": [
+        "Jamaica"
+      ],
+      "number": "31",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 17, 2006",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "937066",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Luca Băsceanu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "29",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 23, 2007",
+      "foot": "right",
+      "height": "2,02m",
+      "id": "970199",
+      "injured": false,
+      "marketValue": "€250k",
+      "name": "Alexandru Maxim",
+      "nationality": [
+        "Romania"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 14, 1999",
+      "foot": "right",
+      "id": "972439",
+      "injured": true,
+      "marketValue": "€100k",
+      "name": "Alexandru Iamandache",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 17, 2005",
+      "foot": "left",
+      "height": "1,68m",
+      "id": "1017320",
+      "injured": false,
+      "marketValue": "€650k",
+      "name": "Mihnea Rădulescu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "18",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 19, 2006",
+      "foot": "left",
+      "id": "1112690",
+      "injured": false,
+      "marketValue": "€1.70m",
+      "name": "David Matei",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "30",
+      "position": "Right Winger"
+    }
+  ],
+  "stadiumName": "Ion Oblemenco (2017)",
+  "stadiumSeats": "30983",
+  "transfermarktId": "40812"
+}

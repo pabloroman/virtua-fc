@@ -1,0 +1,420 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/63993.png",
+  "name": "Sabah FK",
+  "country": "AZ",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 29, 1994",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "152634",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Joy-Lance Mickels",
+      "nationality": [
+        "Rwanda",
+        "Germany"
+      ],
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 17, 1995",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "190268",
+      "injured": false,
+      "marketValue": "€750k",
+      "name": "Veljko Simic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 8, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "240178",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Stas Pokatilov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "92",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 30, 1995",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "327863",
+      "injured": false,
+      "marketValue": "€800k",
+      "name": "Akim Zedadka",
+      "nationality": [
+        "Algeria",
+        "France"
+      ],
+      "number": "80",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 9, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "332242",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Aleksey Isayev",
+      "nationality": [
+        "Azerbaijan",
+        "Russia"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 23, 1999",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "361575",
+      "injured": false,
+      "marketValue": "€2.50m",
+      "name": "Tymoteusz Puchacz",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 8, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "393249",
+      "injured": false,
+      "marketValue": "€200k",
+      "name": "Tellur Mütallimov",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 20, 1999",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "481981",
+      "injured": false,
+      "marketValue": "€500k",
+      "name": "Rahman Dashdamirov",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 23, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "489212",
+      "injured": false,
+      "marketValue": "€175k",
+      "name": "Rodrigo Fernandes",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "88",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 9, 1999",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "494851",
+      "injured": false,
+      "marketValue": "€2.00m",
+      "name": "Ivan Lepinjica",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "13",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 6, 2000",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "530414",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Kaheem Parris",
+      "nationality": [
+        "Jamaica"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 14, 2000",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "650104",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Zinédine Ould Khaled",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 19, 2001",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "654118",
+      "injured": false,
+      "marketValue": "€450k",
+      "name": "Abdulakh Khaybulayev",
+      "nationality": [
+        "Azerbaijan",
+        "Russia"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "669155",
+      "injured": false,
+      "marketValue": "€125k",
+      "name": "Amin Ramazanov",
+      "nationality": [
+        "Azerbaijan",
+        "Russia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 1, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "711727",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Rauf Rüstamli",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 2, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "744641",
+      "injured": false,
+      "marketValue": "€350k",
+      "name": "Orphé Mbina",
+      "nationality": [
+        "Gabon"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 12, 2001",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "778540",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Xander Severina",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "34",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 20, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "780990",
+      "injured": false,
+      "marketValue": "€1.00m",
+      "name": "Steve Solvet",
+      "nationality": [
+        "Guadeloupe",
+        "France"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 15, 2000",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "796739",
+      "injured": false,
+      "marketValue": "€300k",
+      "name": "Júnior Almeida",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 18, 2003",
+      "height": "1,70m",
+      "id": "837432",
+      "injured": false,
+      "marketValue": "€1.20m",
+      "name": "Umarali Rakhmonaliev",
+      "nationality": [
+        "Uzbekistan"
+      ],
+      "number": "7",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 18, 2004",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "895891",
+      "injured": true,
+      "marketValue": "€800k",
+      "name": "Khayal Aliyev",
+      "nationality": [
+        "Azerbaijan"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 7, 2000",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "906774",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "964",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/964.png",
+          "name": "Zenit St. Petersburg"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "marketValue": "€1.50m",
+      "name": "Du Queiroz",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 4, 2003",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "965990",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Aden McCarthy",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 6, 2005",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1035659",
+      "injured": false,
+      "loan": {
+        "from": {
+          "id": "12765",
+          "image": "https://tmssl.akamaized.net/images/wappen/big/12765.png",
+          "name": "LOSC Lille B"
+        },
+        "until": "Jun 30, 2027"
+      },
+      "name": "Younes Lachaab",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "23",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 27, 2005",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "1239794",
+      "injured": false,
+      "marketValue": "€600k",
+      "name": "Christian Nwachukwu",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 12, 2006",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1286069",
+      "injured": false,
+      "name": "Godfred Boakye",
+      "nationality": [
+        "Belgium"
+      ],
+      "position": "Centre-Back"
+    }
+  ],
+  "stadiumName": "Bank Respublika Arena",
+  "stadiumSeats": "13000",
+  "transfermarktId": "63993"
+}
