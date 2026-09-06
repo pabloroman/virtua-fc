@@ -1,0 +1,15 @@
+{
+  "id": "ITASUP",
+  "name": "Supercoppa Italiana",
+  "seasonID": "2026",
+  "clubs": [
+    {
+      "id": "46",
+      "name": "Inter Milan"
+    },
+    {
+      "id": "398",
+      "name": "SS Lazio"
+    }
+  ]
+}

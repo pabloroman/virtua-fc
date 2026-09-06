@@ -111,6 +111,7 @@ class Competition extends Model
         'PRESEASON' => 'el',
         'ESP3PO'    => 'el',
         'ENGSUP'    => 'el',
+        'FRASUP'    => 'el',
     ];
 
     protected $fillable = [

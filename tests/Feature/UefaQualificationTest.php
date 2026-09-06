@@ -166,10 +166,12 @@ class UefaQualificationTest extends TestCase
             ->where('competition_id', 'UEL')
             ->count();
 
-        // ES=2, EN=2, DE=2, IT=1, FR=1 = 8 qualified teams (no fillers).
-        // Spain and England each field an extra club: no cup was played
-        // here, so their unclaimed cup places cascade down the table.
-        $this->assertEquals(8, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
+        // ES=2, EN=2, DE=2, IT=3, FR=2 = 11 qualified teams (no fillers).
+        // Every country with a cup fields one more club than its league
+        // positions alone would give: no cup was played here, so the
+        // unclaimed cup place cascades down the table. Italy's three are
+        // its two league places plus the cascaded Coppa Italia one.
+        $this->assertEquals(11, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
     }
 
     public function test_uel_winner_qualifies_for_ucl(): void

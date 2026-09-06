@@ -498,18 +498,88 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // Coppa Italia and Supercoppa. Unlike England's cups, the Coppa keeps
+        // its real shape: Serie B and Serie C sides play the early rounds and
+        // the previous season's top eight Serie A clubs skip to the round of
+        // 16. That bye is what makes a 44-club field halve cleanly, so it is
+        // declared as a qualification rule rather than baked into the data.
+        'domestic_cups' => [
+            'ITACUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Coppa draws its bracket openly, and
+                // CrossCategoryPairing would forbid a Serie A v Serie A tie
+                // since every playable club is tier 1 and every ghost tier 99.
+                'short_name' => 'Coppa Italia',
+                'abbreviation' => 'Coppa',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Stadio Olimpico', 'capacity' => 70000],
+                ],
+            ],
+            'ITASUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supercoppa',
+                'abbreviation' => 'Supercoppa',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Al-Awwal Park', 'capacity' => 25000],
+                ],
+            ],
+        ],
+
+        // Champion v Coppa Italia winner, the two-club shape. The four-team
+        // final four ran from 2023 to 2025-26 only.
+        'supercup' => [
+            'competition' => 'ITASUP',
+            'cup' => 'ITACUP',
+            'league' => 'ITA1',
+            'teams' => 2,
+        ],
+
+        // Only Serie A is playable, so tier 1 auto-qualifies and every other
+        // entrant is a ghost preserved from the data file. No target_size:
+        // with no second playable tier there is nothing to backfill from, so
+        // it could only turn a shortfall into a thrown season transition.
+        'cup_qualification' => [
+            'ITACUP' => [
+                'auto_qualify_tiers' => [1],
+                // Serie A joins at the first round proper and the eight best
+                // of last season skip on to the round of 16. Both halves are
+                // needed: without the rule the byes would hold only for the
+                // imported season, and without `default` the other twelve
+                // would drop to the preliminary round and the field would
+                // stop halving.
+                'entry_rounds' => [
+                    'league' => 'ITA1',
+                    'default' => 2,
+                    'byes' => [
+                        'positions' => [1, 2, 3, 4, 5, 6, 7, 8],
+                        'round' => 4,
+                    ],
+                ],
+            ],
+        ],
+
         'promotions' => [],
 
         'continental_slots' => [
             'ITA1' => [
-                'UCL' => [1, 2, 3, 4, 5],
-                'UEL' => [6],
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5, 6],
                 'UECL' => [7],
             ],
         ],
 
-        'cup_winner_slot' => [],
+        'cup_winner_slot' => [
+            [
+                'cup' => 'ITACUP',
+                'competition' => 'UEL',
+                'league' => 'ITA1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [
@@ -558,7 +628,55 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
+        // Coupe de France and Trophée des Champions. France has no league cup
+        // — the Coupe de la Ligue was abolished in 2020. The Coupe starts at
+        // the round of 64, where Ligue 1 joins: everything below it is
+        // regional and amateur, so it contains nobody the user can be. Every
+        // club therefore enters at round 1 and no entryRound is needed.
+        'domestic_cups' => [
+            'FRACUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Coupe's open draw is the point of it,
+                // and CrossCategoryPairing would make a Ligue 1 tie impossible
+                // with every playable club at tier 1 and every ghost at 99.
+                'short_name' => 'Coupe de France',
+                'abbreviation' => 'CdF',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Stade de France', 'capacity' => 80000],
+                ],
+            ],
+            'FRASUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Trophée des Champions',
+                'abbreviation' => 'TdC',
+                // No neutral_venues: the Trophée moves every year, often
+                // abroad and sometimes to a finalist's own ground.
+            ],
+        ],
+
+        // Champion v Coupe de France winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'FRASUP',
+            'cup' => 'FRACUP',
+            'league' => 'FRA1',
+            'teams' => 2,
+        ],
+
+        // Only Ligue 1 is playable, so tier 1 auto-qualifies and every other
+        // entrant is a ghost preserved from the data file. No target_size:
+        // with no second playable tier there is nothing to backfill from, so
+        // it could only turn a shortfall into a thrown season transition.
+        'cup_qualification' => [
+            'FRACUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
         'promotions' => [],
 
         'continental_slots' => [
@@ -569,7 +687,13 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => [],
+        'cup_winner_slot' => [
+            [
+                'cup' => 'FRACUP',
+                'competition' => 'UEL',
+                'league' => 'FRA1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [

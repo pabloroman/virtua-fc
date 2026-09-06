@@ -485,6 +485,53 @@ class DomesticCupQualificationTest extends TestCase
         );
     }
 
+    /**
+     * A cup can place a whole league at one round and hand its best
+     * finishers a bye to a later one — Serie A joins the Coppa at the first
+     * round proper, its top eight at the round of 16. It has to be settled
+     * here, at the close, because by the time entry rounds are assigned at
+     * setup the table this reads has already rolled over.
+     */
+    public function test_an_entry_rounds_rule_places_a_league_and_its_bye_holders(): void
+    {
+        config(['countries.ES.cup_qualification.ESPCUP.entry_rounds' => [
+            'league' => 'ESP1',
+            'default' => 2,
+            'byes' => ['positions' => [1, 2, 3], 'round' => 3],
+        ]]);
+
+        $this->runProcessor();
+
+        $rounds = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPCUP')
+            ->pluck('entry_round', 'team_id')
+            ->all();
+
+        foreach (array_slice($this->teamsByCompetition['ESP1'], 0, 3) as $team) {
+            $this->assertSame(3, (int) $rounds[$team->id], "ESP1 top-3 team {$team->id} should get the bye");
+        }
+        foreach (array_slice($this->teamsByCompetition['ESP1'], 3) as $team) {
+            $this->assertSame(2, (int) $rounds[$team->id], "ESP1 team {$team->id} outside the top 3 takes the league's default round");
+        }
+        foreach ($this->teamsByCompetition['ESP2'] as $team) {
+            $this->assertSame(1, (int) $rounds[$team->id], 'a league the rule does not name is unaffected');
+        }
+    }
+
+    public function test_without_an_entry_rounds_rule_every_qualifier_enters_at_round_one(): void
+    {
+        $this->runProcessor();
+
+        $this->assertSame(
+            [1],
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESPCUP')
+                ->distinct()
+                ->pluck('entry_round')
+                ->all(),
+        );
+    }
+
     private function runProcessor(): void
     {
         app(DomesticCupQualificationProcessor::class)->process(

@@ -52,6 +52,7 @@ return [
     'group_stage_eliminated' => 'Eliminado en la fase de grupos (Grupo :group)',
 
     // Knockout round names
+    'preliminary_round' => 'Ronda preliminar',
     'first_round' => 'Primera ronda',
     'second_round' => 'Segunda ronda',
     'third_round' => 'Tercera ronda',

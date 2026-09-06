@@ -42,7 +42,10 @@ use Illuminate\Support\Facades\Log;
  *     after the supercup bump), and silent shortfalls are what produced
  *     the 93 broken Copa del Rey draws in production.
  *
- * Qualifiers from a playable tier are written at round 1. The supercup
+ * Qualifiers from a playable tier are written at round 1, unless the cup
+ * declares an `entry_rounds` rule — Serie A joins the Coppa at the first
+ * round proper and its top eight skip to the round of 16, and that has to be
+ * decided here, while this season's final table is still intact. The supercup
  * skip-ahead and bracket parity are applied later, at season setup, by
  * CupEntryRoundService.
  *
@@ -97,7 +100,7 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
      * throw — the cup is the parity invariant and silent shortfalls are
      * what produced the 93 broken Copa del Rey draws in production.
      *
-     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int}  $rule
+     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int, entry_rounds?: array{league: string, default: int, byes?: array{positions: int[], round: int}}}  $rule
      * @param  string[]  $reserveTeamIdsForCountry
      */
     private function rebuildCupEntries(
@@ -258,6 +261,8 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
                 ->delete();
         }
 
+        $leagueRounds = $this->leagueEntryRounds($game, $rule);
+
         $rows = [];
         foreach (array_keys($qualifiers) as $teamId) {
             if (isset($preservedRegional[$teamId])) {
@@ -267,7 +272,7 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
                 'game_id' => $game->id,
                 'competition_id' => $cupId,
                 'team_id' => $teamId,
-                'entry_round' => 1,
+                'entry_round' => $leagueRounds[$teamId] ?? 1,
             ];
         }
 
@@ -282,6 +287,45 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
         );
 
         Log::info("[DomesticCupQualification] {$cupId}: " . count($qualifiers) . ' qualifiers');
+    }
+
+    /**
+     * Where a cup's `entry_rounds` rule puts each club of a playable league:
+     * a round they all join at, and a later one for the finishing positions
+     * that earn a bye. The Coppa Italia's twelve non-seeded Serie A clubs
+     * enter at the first round proper and its top eight skip to the round of
+     * 16 — both halves are needed, since sending only the byes forward would
+     * drop the other twelve to round 1 and leave the field unable to halve.
+     *
+     * It has to run here, at the close, while the final table is still
+     * readable: by the time CupEntryRoundService assigns rounds at setup,
+     * the standings have rolled over.
+     *
+     * @param  array{entry_rounds?: array{league: string, default: int, byes?: array{positions: int[], round: int}}}  $rule
+     * @return array<string, int>
+     */
+    private function leagueEntryRounds(Game $game, array $rule): array
+    {
+        $entryRounds = $rule['entry_rounds'] ?? null;
+        if (!$entryRounds) {
+            return [];
+        }
+
+        $ranked = $this->rankedTeams($game, $entryRounds['league']);
+
+        $rounds = [];
+        foreach ($ranked as $teamId) {
+            $rounds[$teamId] = $entryRounds['default'];
+        }
+
+        foreach ($entryRounds['byes']['positions'] ?? [] as $position) {
+            $teamId = $ranked[$position - 1] ?? null;
+            if ($teamId !== null) {
+                $rounds[$teamId] = $entryRounds['byes']['round'];
+            }
+        }
+
+        return $rounds;
     }
 
     /**
