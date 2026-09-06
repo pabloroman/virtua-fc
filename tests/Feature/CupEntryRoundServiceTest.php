@@ -124,6 +124,44 @@ class CupEntryRoundServiceTest extends TestCase
         $this->assertSame(20, $this->countAtRound('ESPCUP', 3));
     }
 
+    /**
+     * The Coppa Italia's eight byes belong to the previous season's top
+     * eight, so they are decided at the close and written onto the cup
+     * entry. Resetting them to the data file — which only ever described
+     * the imported season — would pin them on the wrong clubs forever.
+     */
+    public function test_a_cup_with_an_entry_rounds_rule_keeps_the_round_this_seasons_field_assigned(): void
+    {
+        config(['countries.ES.supercup' => null]);
+        config(['countries.ES.cup_qualification.ESPCUP.entry_rounds' => [
+            'league' => 'ESP1',
+            'default' => 1,
+            'byes' => ['positions' => [1, 2], 'round' => 3],
+        ]]);
+
+        $topFlight = $this->teamsIn('ESP1', 4);
+        $this->enter('ESPCUP', $topFlight);
+        // The data file gave the byes to the last two clubs; this season's
+        // table gave them to the first two.
+        $this->seedRounds('ESPCUP', array_slice($topFlight, 0, 2), 1);
+        $this->seedRounds('ESPCUP', array_slice($topFlight, 2), 3);
+        CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPCUP')
+            ->whereIn('team_id', [$topFlight[0]->id, $topFlight[1]->id])
+            ->update(['entry_round' => 3]);
+
+        $this->service()->assignEntryRounds($this->game->id, 'ES');
+
+        $rounds = $this->rounds('ESPCUP');
+        $this->assertSame(3, $rounds[$topFlight[0]->id]);
+        $this->assertSame(3, $rounds[$topFlight[1]->id]);
+        // The regression this guards: honouring the file as well as the
+        // field would leave six clubs with a bye meant for four.
+        $this->assertSame(1, $rounds[$topFlight[2]->id], 'a club the file seeded at round 3 loses the bye it no longer holds');
+        $this->assertSame(1, $rounds[$topFlight[3]->id]);
+        $this->assertSame(2, $this->countAtRound('ESPCUP', 3));
+    }
+
     public function test_a_declared_round_beyond_the_final_is_clamped_to_it(): void
     {
         config(['countries.ES.supercup' => null]);

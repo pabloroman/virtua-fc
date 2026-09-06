@@ -20,7 +20,11 @@ use App\Models\Team;
  *     competition_teams row — round one when it declared none. This is the
  *     single source for a cup's shape: the FA Cup's 80 lower-league clubs
  *     in round one and its 44 league clubs in round three are a property of
- *     the data, not of engine code.
+ *     the data, not of engine code. The exception is a cup declaring an
+ *     `entry_rounds` rule: there the round on the game's own entry wins,
+ *     because DomesticCupQualificationProcessor wrote the Coppa Italia's
+ *     byes from the final table and the seed file only ever describes the
+ *     imported season.
  *  2. Supercup. When the country's supercup declares `cup_entry_round`, its
  *     field skips ahead to that round of the main cup (Spain's four Supercopa
  *     clubs join the Copa at the round of 32). A supercup club missing from
@@ -76,10 +80,22 @@ class CupEntryRoundService
         $teamIds = array_keys($current);
         $seededRound = $this->seededEntryRounds($cupId, $teamIds);
 
+        // A cup with an `entry_rounds` rule takes its rounds from this
+        // season's own field instead: DomesticCupQualificationProcessor
+        // resolved the Coppa Italia's from the final table at the close, and
+        // the data file only ever described the imported season — reading it
+        // here would pin the byes on the clubs that held them at import, on
+        // top of the clubs that hold them now. The first season is unaffected
+        // either way, since SetupNewGame copies the file's entry rounds onto
+        // the game before this runs.
+        $rule = $this->countryConfig->cupQualification($countryCode, $cupId) ?? [];
+        $fieldDecidesRounds = isset($rule['entry_rounds']);
+
         // 1. Baseline: the round the cup's data file gave each club.
         $assigned = [];
         foreach ($teamIds as $teamId) {
-            $assigned[$teamId] = min($roundCount, max(1, $seededRound[$teamId] ?? 1));
+            $declared = $fieldDecidesRounds ? $current[$teamId] : ($seededRound[$teamId] ?? 1);
+            $assigned[$teamId] = min($roundCount, max(1, $declared));
         }
 
         // 2. Supercup field skips ahead.

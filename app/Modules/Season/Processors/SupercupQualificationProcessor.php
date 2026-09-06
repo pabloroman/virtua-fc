@@ -8,6 +8,7 @@ use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
@@ -81,13 +82,24 @@ class SupercupQualificationProcessor implements SeasonProcessor
         $size = $this->countryConfig->supercupSize($countryCode);
         $cupFinalRound = LeagueFixtureGenerator::finalKnockoutRound($cupId, $game->base_season);
 
-        // Skip when this country isn't part of the game (no top-league
-        // entries). The 4-qualifier guard below catches partial-data bugs
-        // — wholly absent data is a different signal and shouldn't trip it.
-        $hasLeague = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', $leagueId)
+        // A supercup declared in config but not yet seeded has no
+        // competitions row, and competition_entries.competition_id is a
+        // foreign key — inserting its field would fail outright.
+        if (!Competition::whereKey($supercupId)->exists()) {
+            return;
+        }
+
+        // Skip when the game holds no supercup field: either the country
+        // isn't part of the game, or the save was started before the
+        // supercup's data existed. A save is never given a competition added
+        // after it began. The field is replaced wholesale below every season,
+        // so on a live save this is always non-empty. The 4-qualifier guard
+        // further down catches partial-data bugs — wholly absent data is a
+        // different signal and shouldn't trip it.
+        $hasSupercupEntries = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $supercupId)
             ->exists();
-        if (!$hasLeague) {
+        if (!$hasSupercupEntries) {
             return;
         }
 

@@ -12,6 +12,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
@@ -26,12 +27,21 @@ use Illuminate\Support\Facades\Log;
  * Qualification slots are defined in config/countries.php under
  * each country's 'continental_slots' and 'cup_winner_slot' keys.
  *
- * Cup winner cascade rules:
- * - If cup winner is NOT already qualified via league position, they get the UEL slot.
- * - If cup winner already qualifies for UCL or UEL via league, the UEL cup spot
- *   cascades to the next non-qualified team in standings.
- * - If cup winner qualifies for UECL via league, they get upgraded to UEL and
- *   the UECL spot cascades to the next non-qualified team.
+ * A country may declare more than one cup winner slot — England's FA Cup pays
+ * a Europa League place and its EFL Cup a Conference League one. They are
+ * applied in declaration order, best competition first, so a later cascade
+ * sees what an earlier one handed out.
+ *
+ * Cup winner cascade rules, per slot:
+ * - If the cup winner is NOT already qualified via league position, they take
+ *   the cup's slot.
+ * - If the cup winner already holds a place at least as good as the cup's, the
+ *   cup's slot cascades to the next non-qualified team in the standings.
+ * - If the cup winner holds a lesser place, they are upgraded to the cup's
+ *   competition and the place they vacate cascades in the same way.
+ * - If there is no cup winner at all — a country the user doesn't manage never
+ *   has its cups drawn — the slot cascades to the next non-qualified team, so
+ *   the country still sends its full contingent.
  *
  * European holder rules:
  * - The defending UCL winner auto-qualifies for next season's UCL.
@@ -123,19 +133,20 @@ class UefaQualificationProcessor implements SeasonProcessor
             }
         }
 
-        // Handle cup winner slot
-        $cupWinnerConfig = $this->countryConfig->cupWinnerSlot($countryCode);
-        if ($cupWinnerConfig && !empty($standings)) {
-            $this->applyCupWinnerCascade(
-                $game->id,
-                $countryCode,
-                $cupWinnerConfig,
-                $qualifications,
-                $standings,
-                $slots,
-                $data,
-                $userCountry,
-            );
+        // Handle cup winner slots, best competition first so a later cascade
+        // sees what an earlier one handed out.
+        if (!empty($standings)) {
+            foreach ($this->countryConfig->cupWinnerSlots($countryCode) as $cupWinnerConfig) {
+                $this->applyCupWinnerCascade(
+                    $game->id,
+                    $countryCode,
+                    $cupWinnerConfig,
+                    $qualifications,
+                    $standings,
+                    $data,
+                    $userCountry,
+                );
+            }
         }
 
         // Write all qualifications to competition_entries
@@ -153,7 +164,6 @@ class UefaQualificationProcessor implements SeasonProcessor
         array $cupWinnerConfig,
         array &$qualifications,
         array $standings,
-        array $slots,
         SeasonTransitionData $data,
         string $userCountry,
     ): void {
@@ -169,23 +179,32 @@ class UefaQualificationProcessor implements SeasonProcessor
             ]);
         }
 
+        $targetCompetition = $cupWinnerConfig['competition'];
+
+        // No winner to reward — the cup wasn't played out (a country the user
+        // doesn't manage never has its cups drawn), or it was abandoned. The
+        // slot still belongs to the country, so it falls to the next team in
+        // the table rather than going unused.
         if (!$cupWinnerId) {
+            $nextTeam = $this->getNextNonQualifiedTeam($standings, $qualifications);
+            if ($nextTeam) {
+                $qualifications[$nextTeam] = $targetCompetition;
+            }
+
             return;
         }
-
-        $targetCompetition = $cupWinnerConfig['competition']; // UEL
 
         $existingQualification = $qualifications[$cupWinnerId] ?? null;
 
         if (!$existingQualification) {
-            // Cup winner is NOT already qualified — give them the UEL spot
+            // Cup winner is NOT already qualified — give them the cup's spot
             $qualifications[$cupWinnerId] = $targetCompetition;
             if ($isUserCountry) {
                 $data->setMetadata('cupWinnerCascade', 'direct');
             }
-        } elseif ($existingQualification === 'UCL' || $existingQualification === $targetCompetition) {
-            // Cup winner already in UCL or UEL — cascade the cup's UEL spot
-            // to the next non-qualified team
+        } elseif ($this->europeanRank($existingQualification) >= $this->europeanRank($targetCompetition)) {
+            // Cup winner already holds a place at least as good as the cup's
+            // — the cup's spot cascades to the next non-qualified team.
             $nextTeam = $this->getNextNonQualifiedTeam($standings, $qualifications);
             if ($nextTeam) {
                 $qualifications[$nextTeam] = $targetCompetition;
@@ -193,19 +212,40 @@ class UefaQualificationProcessor implements SeasonProcessor
             if ($isUserCountry) {
                 $data->setMetadata('cupWinnerCascade', "cascade_from_{$existingQualification}");
             }
-        } elseif ($existingQualification === 'UECL') {
-            // Cup winner was in UECL via league — upgrade them to UEL
+        } else {
+            // Cup winner held a lesser place (UECL via the league, say, when
+            // the cup pays a UEL berth) — upgrade them, then cascade the spot
+            // they vacated. Assign first, so the vacated spot can't come
+            // straight back to them.
             $qualifications[$cupWinnerId] = $targetCompetition;
 
-            // Cascade the now-vacant UECL spot to the next non-qualified team
             $nextTeam = $this->getNextNonQualifiedTeam($standings, $qualifications);
             if ($nextTeam) {
-                $qualifications[$nextTeam] = 'UECL';
+                $qualifications[$nextTeam] = $existingQualification;
             }
             if ($isUserCountry) {
-                $data->setMetadata('cupWinnerCascade', 'uecl_upgrade');
+                $data->setMetadata(
+                    'cupWinnerCascade',
+                    $existingQualification === 'UECL' ? 'uecl_upgrade' : "upgrade_from_{$existingQualification}",
+                );
             }
         }
+    }
+
+    /**
+     * Ranks the European competitions so the cascade can compare a team's
+     * existing place against the one a cup is offering, whichever cup it is.
+     * England's EFL Cup pays a Conference League berth, so "already qualified
+     * for something better" is not the same test as "already in the UCL".
+     */
+    private function europeanRank(string $competitionId): int
+    {
+        return match ($competitionId) {
+            'UCL' => 3,
+            'UEL' => 2,
+            'UECL' => 1,
+            default => 0,
+        };
     }
 
     /**
@@ -249,6 +289,12 @@ class UefaQualificationProcessor implements SeasonProcessor
     /**
      * Find the domestic cup winner from the final cup tie. The final is the
      * last round of the cup's schedule.json for the game's base season.
+     *
+     * A ghost team — a lower-division cup entrant with no squad — can win a
+     * cup outright, and the deeper a country's ghost field the likelier it
+     * is (England's FA Cup is 44 ghosts in 64). It cannot then take a place
+     * in a 36-team Swiss league phase, so a winner registered in no playable
+     * league counts as no winner and its slot cascades to the league table.
      */
     private function getCupWinner(string $gameId, string $countryCode, string $cupId): ?string
     {
@@ -265,7 +311,25 @@ class UefaQualificationProcessor implements SeasonProcessor
             ->where('completed', true)
             ->first();
 
-        return $finalTie?->winner_id;
+        $winnerId = $finalTie?->winner_id;
+
+        if ($winnerId === null || !$this->hasSquad($gameId, $winnerId)) {
+            return null;
+        }
+
+        return $winnerId;
+    }
+
+    /**
+     * Whether a team has any players in this game. A ghost has none, which is
+     * the same test MatchSimulator uses when it forbids a squad-less side
+     * from scoring.
+     */
+    private function hasSquad(string $gameId, string $teamId): bool
+    {
+        return GamePlayer::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->exists();
     }
 
     /**

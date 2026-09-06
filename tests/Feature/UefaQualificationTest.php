@@ -166,8 +166,11 @@ class UefaQualificationTest extends TestCase
             ->where('competition_id', 'UEL')
             ->count();
 
-        // ES=1, EN=1, DE=2, IT=1, FR=1 = 6 qualified teams (no fillers)
-        $this->assertEquals(6, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
+        // ES=2, EN=1, DE=2, IT=1, FR=1 = 7 qualified teams (no fillers).
+        // Spain fields one more club than its league positions alone would
+        // give: no Copa was played here, so its unclaimed cup place cascades
+        // down the table instead of going unused.
+        $this->assertEquals(7, $uelCount, "UEL should only have qualified teams (no fillers), got {$uelCount}");
     }
 
     public function test_uel_winner_qualifies_for_ucl(): void
@@ -607,13 +610,30 @@ class UefaQualificationTest extends TestCase
                 $team = Team::find($teamId);
                 $slots = $this->countryConfig->continentalSlots($team->country);
                 $qualifyingTeamIds = [];
+                $allDeclaredPositions = [];
                 foreach ($slots as $leagueId => $allocations) {
                     foreach ($allocations as $continentalId => $positions) {
+                        $allDeclaredPositions = array_merge($allDeclaredPositions, $positions);
                         if ($continentalId === $competitionId) {
                             foreach ($positions as $pos) {
                                 $qualifyingTeamIds[] = $this->teamsByCountry[$team->country][$pos - 1]->id ?? null;
                             }
                         }
+                    }
+                }
+
+                // A cup place whose cup wasn't played cascades to the next
+                // teams in the table — a legitimate qualification, not a
+                // filler. One extra position is reachable per cup slot.
+                $cupSlots = $this->countryConfig->cupWinnerSlots($team->country);
+                $cupSlotsForThisCompetition = array_filter(
+                    $cupSlots,
+                    fn (array $slot) => $slot['competition'] === $competitionId,
+                );
+                if (!empty($cupSlotsForThisCompetition) && !empty($allDeclaredPositions)) {
+                    $deepest = max($allDeclaredPositions);
+                    for ($pos = $deepest + 1; $pos <= $deepest + count($cupSlots); $pos++) {
+                        $qualifyingTeamIds[] = $this->teamsByCountry[$team->country][$pos - 1]->id ?? null;
                     }
                 }
 
@@ -684,6 +704,37 @@ class UefaQualificationTest extends TestCase
         );
     }
 
+    public function test_a_squadless_ghost_winning_a_cup_does_not_enter_europe(): void
+    {
+        // A lower-division cup entrant: a team row with no players, the way
+        // SeedReferenceData creates one. It can win the Copa outright — most
+        // of its 116-club field is squad-less — but it has no side to put in
+        // a 36-team Swiss league phase.
+        $ghost = Team::factory()->create(['country' => 'ES']);
+        $this->createCupFinal('ESPCUP', $ghost->id);
+
+        $processor = app(UefaQualificationProcessor::class);
+        $processor->process($this->game, $this->makeTransitionData());
+
+        $this->assertFalse(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $ghost->id)
+                ->exists(),
+            'A squad-less cup winner must not take a European place'
+        );
+
+        // The place still belongs to Spain and falls to the table.
+        $nextTeam = $this->teamsByCountry['ES'][7];
+        $this->assertTrue(
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'UEL')
+                ->where('team_id', $nextTeam->id)
+                ->exists(),
+            "The ghost's UEL place should cascade to the next team in the table"
+        );
+    }
+
     // =========================================
     // Transition metadata logging
     // =========================================
@@ -718,9 +769,11 @@ class UefaQualificationTest extends TestCase
         $this->assertNotNull($qualifications, 'UEFA qualifications metadata should be set');
         $this->assertArrayHasKey('ES', $qualifications);
 
-        // Spain should have positions 1-7 qualified
+        // Positions 1-7 from the table, plus position 8 taking the Copa
+        // place: no final was played here, so the cup's slot cascades down
+        // the table rather than going unused.
         $esQualifications = $qualifications['ES'];
-        $this->assertCount(7, $esQualifications);
+        $this->assertCount(8, $esQualifications);
     }
 
     public function test_processor_logs_cascade_when_cup_winner_already_in_ucl(): void

@@ -223,10 +223,14 @@ return [
             ],
         ],
 
+        // Cup winner slots, applied in order, best competition first: a
+        // later cascade sees what an earlier one handed out.
         'cup_winner_slot' => [
-            'cup' => 'ESPCUP',
-            'competition' => 'UEL',
-            'league' => 'ESP1',
+            [
+                'cup' => 'ESPCUP',
+                'competition' => 'UEL',
+                'league' => 'ESP1',
+            ],
         ],
 
         'continental_competitions' => [
@@ -304,7 +308,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -362,7 +366,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -420,7 +424,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [
@@ -478,7 +482,7 @@ return [
             ],
         ],
 
-        'cup_winner_slot' => null,
+        'cup_winner_slot' => [],
 
         'continental_competitions' => [
             'UCL' => [

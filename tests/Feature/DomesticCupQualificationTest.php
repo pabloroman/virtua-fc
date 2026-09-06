@@ -60,6 +60,18 @@ class DomesticCupQualificationTest extends TestCase
         $this->createLeague('ESP2', 22);
         $this->createLeague('ESP3A', 20);
         $this->createLeague('ESP3B', 20);
+
+        // Every save the processor rebuilds already holds a cup field,
+        // copied from its season's data when the game was created; a save
+        // with none predates the cup and is deliberately left alone. Seed
+        // the champion's entry so these rule-level tests describe a live
+        // cup — it qualifies through tier 1 anyway, so no count moves.
+        CompetitionEntry::create([
+            'game_id' => $this->game->id,
+            'competition_id' => 'ESPCUP',
+            'team_id' => $this->teamsByCompetition['ESP1'][0]->id,
+            'entry_round' => 1,
+        ]);
     }
 
     public function test_base_case_qualifies_all_tier_1_and_2_plus_top_5_per_primera_rfef_group(): void
@@ -412,6 +424,77 @@ class DomesticCupQualificationTest extends TestCase
         }
         $this->assertSame(1, $rounds[$earlyGhost->id]);
         $this->assertSame(2, $rounds[$lateGhost->id], 'a ghost keeps its seeded entry round');
+    }
+
+    /**
+     * A cup can place a whole league at one round and hand its best
+     * finishers a bye to a later one — Serie A joins the Coppa at the first
+     * round proper, its top eight at the round of 16. It has to be settled
+     * here, at the close, because by the time entry rounds are assigned at
+     * setup the table this reads has already rolled over.
+     */
+    public function test_an_entry_rounds_rule_places_a_league_and_its_bye_holders(): void
+    {
+        config(['countries.ES.cup_qualification.ESPCUP.entry_rounds' => [
+            'league' => 'ESP1',
+            'default' => 2,
+            'byes' => ['positions' => [1, 2, 3], 'round' => 3],
+        ]]);
+
+        $this->runProcessor();
+
+        $rounds = CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPCUP')
+            ->pluck('entry_round', 'team_id')
+            ->all();
+
+        foreach (array_slice($this->teamsByCompetition['ESP1'], 0, 3) as $team) {
+            $this->assertSame(3, (int) $rounds[$team->id], "ESP1 top-3 team {$team->id} should get the bye");
+        }
+        foreach (array_slice($this->teamsByCompetition['ESP1'], 3) as $team) {
+            $this->assertSame(2, (int) $rounds[$team->id], "ESP1 team {$team->id} outside the top 3 takes the league's default round");
+        }
+        foreach ($this->teamsByCompetition['ESP2'] as $team) {
+            $this->assertSame(1, (int) $rounds[$team->id], 'a league the rule does not name is unaffected');
+        }
+    }
+
+    public function test_without_an_entry_rounds_rule_every_qualifier_enters_at_round_one(): void
+    {
+        $this->runProcessor();
+
+        $this->assertSame(
+            [1],
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESPCUP')
+                ->distinct()
+                ->pluck('entry_round')
+                ->all(),
+        );
+    }
+
+    /**
+     * A save started before a cup existed holds no field for it, and is never
+     * given one: its schedules come from its own base_season, which has no
+     * rounds for the cup. Rebuilding from the playable tiers would be worse
+     * than leaving it empty — 20 clubs is an odd pool a round in, which
+     * ConductNextCupRoundDraw swallows and the cup silently stops.
+     */
+    public function test_a_save_holding_no_cup_field_is_left_alone(): void
+    {
+        CompetitionEntry::where('game_id', $this->game->id)
+            ->where('competition_id', 'ESPCUP')
+            ->delete();
+
+        $this->runProcessor();
+
+        $this->assertSame(
+            0,
+            CompetitionEntry::where('game_id', $this->game->id)
+                ->where('competition_id', 'ESPCUP')
+                ->count(),
+            'a save that predates the cup must not be handed a field',
+        );
     }
 
     private function runProcessor(): void

@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -41,7 +42,10 @@ use Illuminate\Support\Facades\Log;
  *     after the supercup bump), and silent shortfalls are what produced
  *     the 93 broken Copa del Rey draws in production.
  *
- * Qualifiers from a playable tier are written at round 1. The supercup
+ * Qualifiers from a playable tier are written at round 1, unless the cup
+ * declares an `entry_rounds` rule — Serie A joins the Coppa at the first
+ * round proper and its top eight skip to the round of 16, and that has to be
+ * decided here, while this season's final table is still intact. The supercup
  * skip-ahead and bracket parity are applied later, at season setup, by
  * CupEntryRoundService.
  *
@@ -96,7 +100,7 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
      * throw — the cup is the parity invariant and silent shortfalls are
      * what produced the 93 broken Copa del Rey draws in production.
      *
-     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int}  $rule
+     * @param  array{auto_qualify_tiers?: int[], top_per_group?: array<int, int>, target_size?: int, entry_rounds?: array{league: string, default: int, byes?: array{positions: int[], round: int}}}  $rule
      * @param  string[]  $reserveTeamIdsForCountry
      */
     private function rebuildCupEntries(
@@ -111,13 +115,29 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
             return;
         }
 
-        // Skip when this country isn't part of the game (no entries in any
-        // playable tier). The target_size invariant below catches partial-
-        // data shortfalls — wholly absent data is a different signal.
-        $hasAnyTierEntries = CompetitionEntry::where('game_id', $game->id)
-            ->whereIn('competition_id', $playableTierCompetitions)
+        // A cup declared in config but not yet seeded has no competitions row,
+        // and competition_entries.competition_id is a foreign key. This loop
+        // runs for every country in every game, so without this guard a cup
+        // whose data hasn't landed yet would break season transitions in
+        // saves that have nothing to do with it.
+        if (!Competition::whereKey($cupId)->exists()) {
+            return;
+        }
+
+        // Skip when the game holds no field for this cup: either the country
+        // isn't part of the game at all, or the save was started before the
+        // cup's data existed. A save is never given a competition added after
+        // it began — it keeps the game it started, and its schedules come
+        // from its own base_season, which has no rounds for the cup anyway.
+        // Rebuilding the field from the playable tiers alone would be worse
+        // than leaving it empty: 18 or 20 clubs is an odd pool a round in,
+        // which ConductNextCupRoundDraw swallows and the cup silently stops.
+        // The target_size invariant below catches partial-data shortfalls;
+        // wholly absent data is a different signal.
+        $hasCupEntries = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $cupId)
             ->exists();
-        if (!$hasAnyTierEntries) {
+        if (!$hasCupEntries) {
             return;
         }
 
@@ -248,6 +268,8 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
                 ->delete();
         }
 
+        $leagueRounds = $this->leagueEntryRounds($game, $rule);
+
         $rows = [];
         foreach (array_keys($qualifiers) as $teamId) {
             if (isset($preservedRegional[$teamId])) {
@@ -257,7 +279,7 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
                 'game_id' => $game->id,
                 'competition_id' => $cupId,
                 'team_id' => $teamId,
-                'entry_round' => 1,
+                'entry_round' => $leagueRounds[$teamId] ?? 1,
             ];
         }
 
@@ -272,6 +294,45 @@ class DomesticCupQualificationProcessor implements SeasonProcessor
         );
 
         Log::info("[DomesticCupQualification] {$cupId}: " . count($qualifiers) . ' qualifiers');
+    }
+
+    /**
+     * Where a cup's `entry_rounds` rule puts each club of a playable league:
+     * a round they all join at, and a later one for the finishing positions
+     * that earn a bye. The Coppa Italia's twelve non-seeded Serie A clubs
+     * enter at the first round proper and its top eight skip to the round of
+     * 16 — both halves are needed, since sending only the byes forward would
+     * drop the other twelve to round 1 and leave the field unable to halve.
+     *
+     * It has to run here, at the close, while the final table is still
+     * readable: by the time CupEntryRoundService assigns rounds at setup,
+     * the standings have rolled over.
+     *
+     * @param  array{entry_rounds?: array{league: string, default: int, byes?: array{positions: int[], round: int}}}  $rule
+     * @return array<string, int>
+     */
+    private function leagueEntryRounds(Game $game, array $rule): array
+    {
+        $entryRounds = $rule['entry_rounds'] ?? null;
+        if (!$entryRounds) {
+            return [];
+        }
+
+        $ranked = $this->rankedTeams($game, $entryRounds['league']);
+
+        $rounds = [];
+        foreach ($ranked as $teamId) {
+            $rounds[$teamId] = $entryRounds['default'];
+        }
+
+        foreach ($entryRounds['byes']['positions'] ?? [] as $position) {
+            $teamId = $ranked[$position - 1] ?? null;
+            if ($teamId !== null) {
+                $rounds[$teamId] = $entryRounds['byes']['round'];
+            }
+        }
+
+        return $rounds;
     }
 
     /**
