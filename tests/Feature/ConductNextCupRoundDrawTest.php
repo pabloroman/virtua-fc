@@ -126,6 +126,13 @@ class ConductNextCupRoundDrawTest extends TestCase
         );
 
         Exceptions::assertReported(OddCupDrawPoolException::class);
+
+        // The reveal is recorded inside the same try, after conductDraw(), so an
+        // abandoned bracket must not queue a ceremony for a round that has no ties.
+        $this->assertNull(
+            $this->game->fresh()->pending_draw_reveal,
+            'A swallowed draw must not queue a ceremony'
+        );
     }
 
     public function test_does_not_report_when_no_next_round_is_due(): void

@@ -152,6 +152,18 @@ class ShowGame
         }
 
         $nextMatch = $this->loadNextMatch($game);
+
+        // Cup draw ceremony: a draw the user's team is in that they haven't
+        // watched. Deliberately below loadNextMatch(), because that call can
+        // conduct a Swiss draw itself (getNextPlayerMatch -> generatePendingMatches
+        // -> SwissFormatHandler::beforeMatches) — checking earlier would hold the
+        // reveal back by a page load. Also below the matchday-advance branch
+        // above, so a pending live match still wins: the marker survives and the
+        // ceremony plays once that match is finalized.
+        if ($game->pending_draw_reveal) {
+            return redirect()->route('game.cup-draw', $gameId);
+        }
+
         $hasRemainingMatches = !$nextMatch && $game->matches()->where('played', false)->exists();
 
         // Tournament mode: auto-redirect to simulate remaining matches

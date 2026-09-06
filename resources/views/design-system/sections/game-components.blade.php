@@ -503,6 +503,33 @@
         </div>
     </div>
 
+    {{-- Draw Reveal --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Draw Reveal</h3>
+        <p class="text-sm text-text-secondary mb-4">Staggered reveal used by the cup draw ceremony. Each slot renders a ghost and a real tie card as an <code class="text-xs font-mono text-accent-blue">x-show</code> pair driven by a counter. The two components share the same geometry on purpose, so a slot swapping from ghost to card does not shift the rows below it. The ghost hides instantly while the card runs the enter transition &mdash; never give the ghost a leave transition, or both are briefly visible and the row doubles in height.</p>
+
+        <div class="bg-surface-700/50 border border-border-default rounded-lg px-4 py-3 mb-4">
+            <div class="text-[10px] font-semibold text-text-muted uppercase tracking-wide mb-1">Components</div>
+            <code class="text-xs font-mono text-accent-blue">resources/views/components/cup-tie-card-ghost.blade.php</code><br>
+            <code class="text-xs font-mono text-accent-blue">resources/js/draw-ceremony.js</code>
+        </div>
+
+        <div x-data="{ copied: false }" class="relative">
+            <button @click="navigator.clipboard.writeText($refs.drawRevealCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="drawRevealCode">&lt;div x-show="revealed &lt;= $i"&gt;&lt;x-cup-tie-card-ghost /&gt;&lt;/div&gt;
+&lt;div x-show="revealed &gt; $i" x-cloak style="display: none"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 scale-95"
+     x-transition:enter-end="opacity-100 scale-100"&gt;
+    &lt;x-cup-tie-card :tie="$tie" :player-team-id="$game-&gt;team_id" /&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+    </div>
+
     {{-- Budget Allocation --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Budget Allocation</h3>

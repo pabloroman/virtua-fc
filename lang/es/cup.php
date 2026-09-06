@@ -26,6 +26,8 @@ return [
 
     // Draw
     'draw_pending' => 'Sorteo pendiente',
+    'draw_title' => 'El sorteo',
+    'draw_your_tie' => 'Tu eliminatoria',
 
     // Resolution types
     'pens' => 'Pen:',
