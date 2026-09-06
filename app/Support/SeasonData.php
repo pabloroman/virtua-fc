@@ -160,11 +160,12 @@ class SeasonData
      * absent. Bare playoffs ('none') always return null (no squads).
      *
      * Each club is `['id' => transfermarktId, 'name' => string,
+     * 'entryRound' => int,
      * 'players' => array<string id, string name>,
      * 'numbers' => array<string id, int shirt>,
      * 'positions' => array<string id, string position>]`.
      *
-     * @return array<int, array{id: string, name: string, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}>|null
+     * @return array<int, array{id: string, name: string, entryRound: int, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}>|null
      */
     public static function readCompetitionClubs(string $season, string $code, string $type): ?array
     {
@@ -203,14 +204,15 @@ class SeasonData
     }
 
     /**
-     * Normalize a single club entry to {id, name, players[id => name],
-     * numbers[id => shirt], positions[id => position]}. Shirt numbers and
-     * positions are kept in their own maps so a squad-file consumer can check
-     * them without every consumer having to care: a player missing either is
-     * simply absent from that map.
+     * Normalize a single club entry to {id, name, entryRound, players[id =>
+     * name], numbers[id => shirt], positions[id => position]}. Shirt numbers
+     * and positions are kept in their own maps so a squad-file consumer can
+     * check them without every consumer having to care: a player missing
+     * either is simply absent from that map. `entryRound` is the cup round the
+     * club joins at, defaulting to 1 the way CupEntryRoundService reads it.
      *
      * @param  array<string, mixed>  $club
-     * @return array{id: string, name: string, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}|null
+     * @return array{id: string, name: string, entryRound: int, players: array<string, string>, numbers: array<string, int>, positions: array<string, string>}|null
      */
     private static function club(array $club): ?array
     {
@@ -242,6 +244,7 @@ class SeasonData
         return [
             'id' => $id,
             'name' => (string) ($club['name'] ?? "({$id})"),
+            'entryRound' => max(1, (int) ($club['entryRound'] ?? 1)),
             'players' => $players,
             'numbers' => $numbers,
             'positions' => $positions,
