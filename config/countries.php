@@ -803,18 +803,79 @@ return [
             ],
         ],
 
-        'domestic_cups' => [],
-        'promotions' => [],
-
-        'continental_slots' => [
-            'POR1' => [
-                'UCL' => [1, 2],
-                'UEL' => [3, 4],
-                'UECL' => [5],
+        // Taça de Portugal and Supertaça. Portugal has no league cup any
+        // more — the Taça da Liga was scrapped after 2024-25 — so it gets
+        // two competitions. The Taça is trimmed to its third round, where
+        // the Primeira Liga joins: 64 clubs, everything below regional or
+        // amateur, so every club enters at round 1 and no entryRound is
+        // needed.
+        'domestic_cups' => [
+            'PORCUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
+                // No draw_pairing — the Taça's open draw is the point of it,
+                // and CrossCategoryPairing would make a Primeira Liga tie
+                // impossible with every playable club at tier 1 and every
+                // ghost at 99.
+                'short_name' => 'Taça de Portugal',
+                'abbreviation' => 'Taça',
+                'neutral_venues' => [
+                    'cup.final' => ['name' => 'Estádio Nacional', 'capacity' => 37000],
+                ],
+            ],
+            'PORSUP' => [
+                'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\SupercupConfig::class,
+                // Two clubs, so the pairing is never in doubt; seeding it
+                // just fixes which of them is listed first.
+                'draw_pairing' => \App\Modules\Competition\Services\Draw\SeededBracketPairing::class,
+                'short_name' => 'Supertaça',
+                'abbreviation' => 'Supertaça',
+                'neutral_venues' => [
+                    '*' => ['name' => 'Estádio Municipal de Aveiro', 'capacity' => 30000],
+                ],
             ],
         ],
 
-        'cup_winner_slot' => [],
+        // Champion v Taça de Portugal winner, the two-club shape.
+        'supercup' => [
+            'competition' => 'PORSUP',
+            'cup' => 'PORCUP',
+            'league' => 'POR1',
+            'teams' => 2,
+        ],
+
+        // Only the Primeira Liga is playable, so tier 1 auto-qualifies and
+        // every other entrant is a ghost preserved from the data file. No
+        // target_size: with no second playable tier there is nothing to
+        // backfill from, so it could only turn a shortfall into a thrown
+        // season transition.
+        'cup_qualification' => [
+            'PORCUP' => [
+                'auto_qualify_tiers' => [1],
+            ],
+        ],
+
+        'promotions' => [],
+
+        // Still five places: the Taça winner takes the Europa League place
+        // that used to go to fourth, and the Conference League place moves
+        // up with it.
+        'continental_slots' => [
+            'POR1' => [
+                'UCL' => [1, 2],
+                'UEL' => [3],
+                'UECL' => [4],
+            ],
+        ],
+
+        'cup_winner_slot' => [
+            [
+                'cup' => 'PORCUP',
+                'competition' => 'UEL',
+                'league' => 'POR1',
+            ],
+        ],
 
         'continental_competitions' => [
             'UCL' => [

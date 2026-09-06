@@ -59,7 +59,7 @@ The engine keeps the field even against simulation drift the other way: `cup_qua
 
 ## Adding a Cup to a Country
 
-Spain, England, Germany, France and Italy have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
+Spain, England, Germany, France, Italy and Portugal have cups declared. To bring another country to the same point, nothing beyond config and data should be needed:
 
 1. Declare the cups, supercup, qualification rules and cup-winner slot in `config/countries.php`, following the Spanish block.
 2. Add a prize config per cup under `app/Modules/Competition/Configs/`.
@@ -120,10 +120,10 @@ Four things worth knowing before adding a cup to a third country:
   make a top-flight tie impossible, so England declares none and gets the open
   draw `RandomPairing` provides.
 
-## Germany, France and Italy: the two ends of the trade-off
+## Germany, France, Portugal and Italy: the two ends of the trade-off
 
-Germany and France take England's approach and Italy takes Spain's, which is the
-clearest illustration of what `entryRound` buys.
+Germany, France and Portugal take England's approach and Italy takes Spain's,
+which is the clearest illustration of what `entryRound` buys.
 
 | Cup | Field | Rounds |
 |-----|-------|--------|
@@ -131,6 +131,8 @@ clearest illustration of what `entryRound` buys.
 | `DEUSUP` (Supercup) | 2 — champion v DFB-Pokal winner | one round; no neutral venue, because the Pokal winner hosts it |
 | `FRACUP` (Coupe de France) | 64 — 18 Ligue 1 clubs + 46 ghosts (Ligue 2, National, National 2) | round of 64 to the final, all single-leg, final at the Stade de France |
 | `FRASUP` (Trophée des Champions) | 2 — champion v Coupe de France winner | one round; no neutral venue, because the Trophée moves every year and is often played abroad |
+| `PORCUP` (Taça de Portugal) | 64 — 18 Primeira Liga clubs + 46 ghosts (Liga Portugal 2 and below) | third round to the final, semi-finals over two legs, final at the Estádio Nacional |
+| `PORSUP` (Supertaça) | 2 — champion v Taça winner | one round, at Aveiro |
 | `ITACUP` (Coppa Italia) | 44 — 20 Serie A + 20 Serie B + 4 Serie C | preliminary round to the final, semi-finals over two legs; the previous season's top eight enter at the round of 16 |
 | `ITASUP` (Supercoppa Italiana) | 2 — champion v Coppa Italia winner | one round, in Riyadh |
 
@@ -142,6 +144,11 @@ of 64 and everything below it is regional, so 64 clubs enter at round 1 and no
 sides rather than that season's actual qualifiers — the draw is redone in-game
 regardless, so what matters is that they are real French clubs of the right
 size, not which ones reached the round of 64 in reality.
+
+Portugal is the Coupe's case again, with one difference worth naming: its 2026
+Supertaça is Porto against Torreense, a Taça winner from the division below, so
+the competition opens with a ghost in it. That is allowed — a ghost can play and
+win a cup, it is only refused the European place the win would pay.
 
 The Coppa Italia keeps its real shape instead, because its shape *is* the
 competition: 44 clubs, a preliminary round of eight, and the top eight of last
