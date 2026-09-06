@@ -78,8 +78,8 @@ class ValidateSeason extends Command
         $this->info("Validating data/{$season}...");
         $this->newLine();
 
-        $competitions = SeasonData::competitions($countryConfig);
-        $handlers = SeasonData::continentalHandlers($countryConfig);
+        $competitions = SeasonData::competitions($countryConfig, $season);
+        $handlers = SeasonData::continentalHandlers($countryConfig, $season);
         $this->indexSquadSources($season, $competitions, $countryConfig);
 
         foreach ($competitions as ['code' => $code, 'type' => $type]) {

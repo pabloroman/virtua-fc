@@ -64,7 +64,7 @@ class ScaffoldSeason extends Command
         $missing = [];
         $shifted = 0;
 
-        foreach ($this->competitions($countryConfig) as $code => $needs) {
+        foreach ($this->competitions($countryConfig, $season) as $code => $needs) {
             $srcDir = "{$fromBase}/{$code}";
             $dstDir = base_path("data/{$season}/{$code}");
 
@@ -131,7 +131,7 @@ class ScaffoldSeason extends Command
      *
      * @return array<string, string>
      */
-    private function competitions(CountryConfig $countryConfig): array
+    private function competitions(CountryConfig $countryConfig, string $season): array
     {
         $needsByType = [
             'league' => 'teams',
@@ -142,7 +142,7 @@ class ScaffoldSeason extends Command
         ];
 
         $out = [];
-        foreach (SeasonData::competitions($countryConfig) as ['code' => $code, 'type' => $type]) {
+        foreach (SeasonData::competitions($countryConfig, $season) as ['code' => $code, 'type' => $type]) {
             $out[$code] = $needsByType[$type];
         }
 

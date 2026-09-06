@@ -228,6 +228,34 @@ existing save, whose competition membership is its own `competition_entries`.
 Verify afterwards by taking an existing save through a cup draw and a season
 transition, not just by loading its squad.
 
+## Introducing a country or a cup in a future season
+
+`config/countries.php` is enumerated by `app:seed-reference-data` and
+`app:validate-season`, both of which demand a `data/{season}/{CODE}/` folder for
+every competition they find. So adding one unconditionally invalidates every
+earlier season the moment the config lands: that season can no longer be seeded
+or validated, and the release can only be undone by reverting the merge.
+
+Declare `from_season` instead, on the country block, the `domestic_cups` entry
+or the `support.transfer_pool` entry:
+
+```php
+'PT' => [
+    'name' => 'Portugal',
+    'from_season' => '2026',
+    // ...
+],
+```
+
+The competition is then invisible to the seeder and the validator until that
+season, so 2025 keeps working while 2026's data sits on `main` unused, and
+`GAME_SEASON` stays a switch you can move in both directions.
+
+A supercup needs no key of its own — it is hidden while the cup it is contested
+between is. Runtime callers need none either: a save is never handed a
+competition added after it began, because the season processors skip a cup with
+no `competitions` row and one the game holds no field for.
+
 ## Notes & caveats
 
 - **Games are pinned to the season they were created in.** `games.base_season`

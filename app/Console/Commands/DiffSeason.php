@@ -50,7 +50,7 @@ class DiffSeason extends Command
         }
 
         $sections = [];
-        foreach (SeasonData::competitions($countryConfig) as ['code' => $code, 'type' => $type]) {
+        foreach (SeasonData::competitions($countryConfig, $season) as ['code' => $code, 'type' => $type]) {
             if ($type === 'none') {
                 continue;
             }
