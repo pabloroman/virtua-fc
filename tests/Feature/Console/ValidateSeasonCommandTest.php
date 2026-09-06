@@ -40,9 +40,43 @@ class ValidateSeasonCommandTest extends TestCase
         $rounds = $leagueRounds ?? 2 * (count($clubs) - 1);
         $league = [];
         for ($i = 1; $i <= $rounds; $i++) {
-            $league[] = ['round' => $i, 'date' => sprintf('%s-08-%02d', $this->season, min($i, 28))];
+            // One round a week, all distinct: rounds sharing a date would book
+            // every club twice and trip the fixture-clash check.
+            $league[] = ['round' => $i, 'date' => $this->weekOfSeason($i)];
         }
         File::put("{$dir}/schedule.json", json_encode(['league' => $league]));
+    }
+
+    /** A day offset from the start of the throwaway season, as YYYY-MM-DD. */
+    private function dayOfSeason(int $days): string
+    {
+        return date('Y-m-d', strtotime("{$this->season}-08-01 +{$days} days"));
+    }
+
+    /** The nth weekly matchday of the throwaway season, as YYYY-MM-DD. */
+    private function weekOfSeason(int $week): string
+    {
+        return date('Y-m-d', strtotime("{$this->season}-08-01 +" . ($week - 1) . ' weeks'));
+    }
+
+    /**
+     * Write a knockout competition: a participant list plus one round per
+     * supplied date.
+     *
+     * @param  array<int, array<string, mixed>>  $clubs
+     * @param  array<int, string>  $dates
+     */
+    private function writeCup(string $code, array $clubs, array $dates): void
+    {
+        $dir = base_path("data/{$this->season}/{$code}");
+        File::ensureDirectoryExists($dir);
+        File::put("{$dir}/teams.json", json_encode(['seasonID' => $this->season, 'clubs' => $clubs]));
+
+        $knockout = [];
+        foreach (array_values($dates) as $index => $date) {
+            $knockout[] = ['round' => $index + 1, 'name' => 'cup.first_round', 'date' => $date];
+        }
+        File::put("{$dir}/schedule.json", json_encode(['knockout' => $knockout]));
     }
 
     /** @return array<int, array<string, string>> */
@@ -311,6 +345,82 @@ class ValidateSeasonCommandTest extends TestCase
         $this->artisan('app:validate-season', ['season' => $this->season])
             ->doesntExpectOutputToContain('swiss league phase needs exactly')
             ->assertFailed();
+    }
+
+    // =========================================
+    // Fixture clashes — a club booked twice on one date
+    // =========================================
+
+    public function test_errors_when_a_cups_opening_round_shares_a_date_with_a_league_round(): void
+    {
+        // Exactly the shape that reached production: a league round and a cup
+        // round the whole division enters, on one day.
+        $clubs = $this->validClubs(4);
+        $this->writeEsp1($clubs, $this->season);
+        $this->writeCup('ESPCUP', $clubs, [$this->weekOfSeason(2)]);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('are both on this date, so 4 club(s) are booked twice')
+            ->assertFailed();
+    }
+
+    public function test_a_later_cup_round_only_warns_because_the_draw_decides_it(): void
+    {
+        $clubs = $this->validClubs(20);
+        $this->writeEsp1($clubs, $this->season);
+        // Round 1 sits midweek, clear of every league date. Round 2 lands on
+        // one — but it is last round's winners, so the file cannot say who is
+        // actually there.
+        $this->writeCup('ESPCUP', $clubs, [$this->dayOfSeason(3), $this->weekOfSeason(5)]);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('could be booked twice')
+            ->doesntExpectOutputToContain('are booked twice');
+    }
+
+    public function test_a_round_whose_two_legs_share_a_date_is_reported(): void
+    {
+        $clubs = $this->validClubs(4);
+        $this->writeEsp1($clubs, $this->season);
+
+        $dir = base_path("data/{$this->season}/ESPCUP");
+        File::ensureDirectoryExists($dir);
+        File::put("{$dir}/teams.json", json_encode(['seasonID' => $this->season, 'clubs' => $clubs]));
+        File::put("{$dir}/schedule.json", json_encode(['knockout' => [[
+            'round' => 1,
+            'name' => 'cup.semi_finals',
+            'first_leg_date' => $this->weekOfSeason(20),
+            'second_leg_date' => $this->weekOfSeason(20),
+        ]]]));
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->expectsOutputToContain('booked twice')
+            ->assertFailed();
+    }
+
+    public function test_a_season_whose_dates_are_all_distinct_reports_no_clash(): void
+    {
+        $clubs = $this->validClubs(4);
+        $this->writeEsp1($clubs, $this->season);
+        $this->writeCup('ESPCUP', $clubs, [$this->weekOfSeason(20)]);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->doesntExpectOutputToContain('booked twice');
+    }
+
+    public function test_the_supercup_field_is_not_counted_in_the_cup_round_it_skips(): void
+    {
+        // Spain's four Supercopa clubs join the Copa at the round of 32, so a
+        // Copa opening round on a league date must not implicate them.
+        config(['countries.ES.supercup.cup_entry_round' => 2]);
+
+        $clubs = $this->validClubs(4);
+        $this->writeEsp1($clubs, $this->season);
+        $this->writeCup('ESPCUP', $clubs, [$this->weekOfSeason(2), $this->weekOfSeason(30)]);
+        $this->writeCup('ESPSUP', $clubs, [$this->weekOfSeason(40)]);
+
+        $this->artisan('app:validate-season', ['season' => $this->season])
+            ->doesntExpectOutputToContain('are booked twice');
     }
 
     public function test_detects_duplicate_squad_numbers_within_a_club(): void

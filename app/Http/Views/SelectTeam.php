@@ -9,9 +9,19 @@ use App\Models\Game;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 final class SelectTeam
 {
+    /**
+     * Primera Federación runs as two parallel groups. They share one entry in
+     * the league picker and one tab body below it, so the user picks a
+     * division rather than a group.
+     */
+    private const PRIMERA_RFEF_GROUPS = ['ESP3A', 'ESP3B'];
+
+    private const PRIMERA_RFEF_TAB = 'ESP3';
+
     public function __invoke(Request $request, CountryConfig $countryConfig, JobOfferService $jobOfferService)
     {
         if (Game::where('user_id', $request->user()->id)->whereNull('deleting_at')->count() >= 3) {
@@ -90,11 +100,61 @@ final class SelectTeam
 
         return view('select-team', [
             'countries' => $countries,
+            'leagues' => $this->leagueOptions($countries),
             'wcTeams' => $wcTeams,
             'wcFeaturedTeams' => $wcFeaturedTeams,
             'hasTournamentMode' => $hasTournamentMode,
             'hasCareerAccess' => $hasCareerAccess,
             'proManagerTeams' => $proManagerTeams,
         ]);
+    }
+
+    /**
+     * The league picker's options, in the order the countries were built.
+     *
+     * Shaped here rather than in the view because the labels need `__()`
+     * applied in PHP: a competition's name is a plain database string that
+     * passes straight through, but Primera Federación's combined entry is a
+     * translation key, so the two only agree on the server. Flags resolve to
+     * asset URLs for the same reason — the component renders whatever it is
+     * handed.
+     *
+     * Not cached: `$countries` is, but these labels are locale-dependent.
+     *
+     * @param  array<string, array{name: string, tiers: array<string, Competition>}>  $countries
+     * @return array<int, array{value: string, label: string, flag: string}>
+     */
+    private function leagueOptions(array $countries): array
+    {
+        $options = [];
+
+        foreach ($countries as $country) {
+            foreach ($country['tiers'] as $competition) {
+                if (in_array($competition->id, self::PRIMERA_RFEF_GROUPS, true)) {
+                    // Added when the first group is reached, which keeps the
+                    // combined entry in the position that group held.
+                    $options[self::PRIMERA_RFEF_TAB] ??= [
+                        'value' => self::PRIMERA_RFEF_TAB,
+                        'label' => __('game.primera_federacion'),
+                        'flag' => $this->flagUrl($competition->flag),
+                    ];
+
+                    continue;
+                }
+
+                $options[$competition->id] = [
+                    'value' => $competition->id,
+                    'label' => __($competition->name),
+                    'flag' => $this->flagUrl($competition->flag),
+                ];
+            }
+        }
+
+        return array_values($options);
+    }
+
+    private function flagUrl(?string $flag): string
+    {
+        return $flag ? Storage::disk('assets')->url("flags/{$flag}.svg") : '';
     }
 }

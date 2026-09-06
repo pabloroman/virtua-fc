@@ -256,6 +256,42 @@ between is. Runtime callers need none either: a save is never handed a
 competition added after it began, because the season processors skip a cup with
 no `competitions` row and one the game holds no field for.
 
+## Fixture clashes
+
+`app:validate-season` also checks that no club is booked for two matches on one
+date. It is a real failure mode, not a theoretical one: ESP1 and ENG1 once had a
+midweek round on the same day as Europa League matchday 1, and every Spanish or
+English club in that competition was scheduled twice. Nothing catches it at
+runtime — the matchday service collects every unplayed match on the earliest
+date and the orchestrator takes the first as the user's, so the second is
+simulated in the same batch, same legs, silently.
+
+The check errors only where both fields are known from the files: a league round
+books its whole division, a Swiss matchday all 36, a cup's opening round whoever
+declares that entry round. Anything downstream of a draw is a superset, so it
+warns instead and names how many of the overlapping clubs can actually reach
+that round — a cup final shares a date with two clubs, not with everyone who
+might have got there.
+
+To repair what it finds:
+
+```bash
+php artisan app:fix-season-clashes 2026            # propose moves
+php artisan app:fix-season-clashes 2026 --apply    # write them
+```
+
+It moves the certain clashes only, never touches a continental date (the UEFA
+calendar is real and shared by every country's data), prefers moving a knockout
+round over a league matchweek, keeps the round between its neighbours and on the
+competition's usual weekday, and re-checks the whole season after each move so a
+fix cannot create the next clash. Anything it cannot solve within a week either
+side is reported for you to move by hand.
+
+Deliberately not modelled, because a data gate cannot know them: a supercup from
+season 2 on (its field is last season's champion and cup winner), promotion
+playoffs, the Coppa Italia's byes once re-derived from a final table, and
+pre-season friendlies (the opponent is the user's choice).
+
 ## Notes & caveats
 
 - **Games are pinned to the season they were created in.** `games.base_season`

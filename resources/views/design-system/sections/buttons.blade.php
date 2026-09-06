@@ -314,7 +314,7 @@
 &lt;/x-pill-button&gt;</code></pre>
         </div>
 
-        <p class="text-sm text-text-secondary mb-4">When a group grows past what one scrollable row can show, lay the pills out in a grid instead and pass <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">align="start"</code> with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">w-full</code>, so leading icons line up down each column.</p>
+        <p class="text-sm text-text-secondary mb-4">A handful of pills can be laid out as a grid rather than one scrollable row — pass <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">align="start"</code> with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">w-full</code> so leading icons line up down each column. Past about six options a grid costs more vertical space than it is worth on a phone; reach for <a href="#league-select" class="text-accent-blue hover:underline">League Select</a> instead, which collapses the whole set into one control.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-4">
             <div x-data="{ league: 'a' }" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">

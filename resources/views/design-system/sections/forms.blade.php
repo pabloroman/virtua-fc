@@ -75,6 +75,62 @@
         </div>
     </div>
 
+    {{-- League Select --}}
+    <div class="mb-12" id="league-select">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">League Select</h3>
+        <p class="text-sm text-text-secondary mb-4">Use when the options need an icon a native <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;select&gt;</code> cannot render — a flag, a crest — or when there are too many to lay out as pills. Everything else should stay on <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-select-input</code>, which gets native keyboard and mobile pickers for free.</p>
+        <p class="text-sm text-text-secondary mb-4">Trigger is <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-700</code>, the floating panel <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">bg-surface-800</code> with a border. Options and trigger are both <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">min-h-[44px]</code>. Arrow keys move, Enter selects, Escape closes and returns focus to the trigger.</p>
+
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+            <div class="max-w-sm"
+                 x-data="{ picked: 'ESP1', demoLeagues: [
+                    { value: 'ESP1', label: 'LaLiga', flag: '' },
+                    { value: 'ENG1', label: 'Premier League', flag: '' },
+                    { value: 'ITA1', label: 'Serie A', flag: '' },
+                 ] }">
+                <x-league-select model="picked" options="demoLeagues" label="League" />
+            </div>
+        </div>
+
+        <div x-data="{ copied: false }" class="relative">
+            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() =&gt; copied = false, 1500)"
+                    class="absolute top-2 right-2 text-xs px-2 py-1 rounded-sm bg-surface-600 text-text-secondary hover:text-text-primary">
+                <span x-text="copied ? 'Copied!' : 'Copy'"></span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;x-league-select model="openTab" options="leagues" :label="__('game.league')" /&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr class="text-text-muted">
+                        <th class="py-2 pr-4 font-medium">Prop</th>
+                        <th class="py-2 pr-4 font-medium">Type</th>
+                        <th class="py-2 font-medium">Purpose</th>
+                    </tr>
+                </thead>
+                <tbody class="text-text-secondary">
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-text-body">model</td>
+                        <td class="py-2 pr-4 font-mono text-xs">Alpine expr</td>
+                        <td class="py-2">The variable holding the selected value. Read and written by the component.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-text-body">options</td>
+                        <td class="py-2 pr-4 font-mono text-xs">Alpine expr</td>
+                        <td class="py-2">An array of <code class="text-[10px]">{ value, label, flag }</code>. Build it server-side and pass it in through <code class="text-[10px]">@@js()</code> so labels are translated in PHP.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-body">label</td>
+                        <td class="py-2 pr-4 font-mono text-xs">string|null</td>
+                        <td class="py-2">Optional caption above the control.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     {{-- Checkbox --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Checkbox</h3>
