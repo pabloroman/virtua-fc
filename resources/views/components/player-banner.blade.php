@@ -6,6 +6,15 @@
     /** @var array<int, array{text: string, class: string}> $statusChips */
 
     $isCareerMode = $game->isCareerMode();
+    // The club only tells the reader something when the player sits outside
+    // their own clubs — on their own squad/reserve pages it is the page they
+    // are already on.
+    $showsClub = $isCareerMode
+        && $player->team
+        && !in_array($player->team_id, $game->userTeamIds(), true);
+    $positionNames = collect($player->positions)
+        ->map(fn ($pos) => \App\Support\PositionMapper::toDisplayName($pos))
+        ->implode(' · ');
     $nationalityFlag = $player->nationality_flag;
     $defaultPhoto = Storage::disk('assets')->url('img/default-player.jpg');
     $photo = $player->image_url ?? $defaultPhoto;
@@ -42,18 +51,14 @@
                         {{ __('countries.' . $nationalityFlag['name']) }}
                     </span>
                 @endif
-                @if($player->team && $isCareerMode)
+                @if($showsClub)
                     <span class="inline-flex items-center gap-1.5 min-w-0">
                         <x-team-crest :team="$player->team" class="w-4 h-4 shrink-0" />
                         <span class="truncate">{{ $player->team->name }}</span>
                     </span>
                 @endif
+                <span class="text-text-secondary">{{ $positionNames }}</span>
                 <span>{{ $player->age($game->current_date) }} {{ __('app.years') }}@if($player->height) · {{ $player->height }}@endif</span>
-            </div>
-            <div class="text-[11px] text-text-faint mt-1">
-                @foreach($player->positions as $pos)
-                    <span class="text-text-secondary">{{ \App\Support\PositionMapper::toDisplayName($pos) }}</span>@if(!$loop->last)<span class="text-text-faint/60"> · </span>@endif
-                @endforeach
             </div>
 
             {{-- Status badges (surface-specific, supplied by the caller) --}}

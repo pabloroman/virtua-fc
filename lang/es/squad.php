@@ -30,6 +30,8 @@ return [
 
     // Status labels
     'on_loan' => 'Cedido',
+    'loaned_from' => 'Cedido por',
+    'loaned_to' => 'Cedido a',
     'leaving_free' => 'Se va (Libre)',
     'renewed' => 'Renovado',
     'sale_agreed' => 'Venta Acordada',
