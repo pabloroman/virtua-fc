@@ -44,7 +44,7 @@ The textarea accepts either:
   **values** (the file is a `{transfermarkt_id: sofascore_id}` map, so the values are the
   Sofascore IDs).
 
-Where to get the IDs: `data/{season}/sofascore_ids.json` (built by
+Where to get the IDs: `data/sofascore_ids.json` (built by
 `php artisan app:build-sofascore-id-map`). The **values** of that map are what this tool
 wants. Don't paste all ~83k at once — filter to the players you actually need (e.g. a
 league or the season's new arrivals); use **Max per zip** to split large runs.

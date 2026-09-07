@@ -40,6 +40,13 @@ class ValidateSeason extends Command
 
     protected $description = 'Validate a season data folder for completeness and correctness before seeding';
 
+    /**
+     * Squad coverage below this in the player-photo crosswalk earns a warning.
+     * Some shortfall is normal — youth and fresh signings routinely predate the
+     * last people.csv export — so this sits well under 100%.
+     */
+    private const PHOTO_COVERAGE_WARN_PCT = 90.0;
+
     /** @var string[] */
     private array $errors = [];
 
@@ -96,6 +103,7 @@ class ValidateSeason extends Command
         }
 
         $this->validateSquadNumbers($season, $competitions);
+        $this->validatePhotoCrosswalk($season, $competitions);
         $this->validateNoFixtureClashes($season, $countryConfig);
         $this->warnUnprofiledClubs();
 
@@ -506,6 +514,73 @@ class ValidateSeason extends Command
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Warn when this season's squads are poorly covered by the player-photo
+     * crosswalk (data/sofascore_ids.json).
+     *
+     * Photos resolve transfermarkt_id → sofascore_id → a file on the assets CDN.
+     * A player the crosswalk doesn't cover silently falls back to the default
+     * avatar — there is no error anywhere, which is exactly how the 2026 refresh
+     * shipped with the file missing entirely and *every* player photo gone.
+     *
+     * Warn-only, and one line: a fresh season legitimately adds players the last
+     * people.csv export predates, and low coverage means "re-export people.csv
+     * and rerun app:build-sofascore-id-map", not "don't seed". Kept to a summary
+     * for the reason warnUnprofiledClubs() gives — a wall of warnings just trains
+     * people to ignore the validator.
+     *
+     * @param  array<int, array{code: string, type: string}>  $competitions
+     */
+    private function validatePhotoCrosswalk(string $season, array $competitions): void
+    {
+        $path = base_path('data/sofascore_ids.json');
+        if (!file_exists($path)) {
+            $this->warnings[] = 'data/sofascore_ids.json is missing — every player will fall back to the '
+                . 'default avatar. Build it with `php artisan app:build-sofascore-id-map`.';
+
+            return;
+        }
+
+        $map = json_decode((string) file_get_contents($path), true);
+        if (!is_array($map)) {
+            $this->warnings[] = 'data/sofascore_ids.json is not readable as JSON — every player will fall '
+                . 'back to the default avatar.';
+
+            return;
+        }
+
+        $seen = [];
+        foreach ($competitions as ['code' => $code, 'type' => $type]) {
+            if (!in_array($type, ['league', 'cup', 'pool'], true)) {
+                continue;
+            }
+
+            foreach (SeasonData::readCompetitionClubs($season, $code, $type) ?? [] as $club) {
+                foreach (array_keys($club['players'] ?? []) as $playerId) {
+                    $seen[(string) $playerId] = true;
+                }
+            }
+        }
+
+        if ($seen === []) {
+            return;
+        }
+
+        $missing = count(array_diff_key($seen, $map));
+        $total = count($seen);
+        $coverage = 100 * ($total - $missing) / $total;
+
+        if ($coverage < self::PHOTO_COVERAGE_WARN_PCT) {
+            $this->warnings[] = sprintf(
+                'Player-photo crosswalk covers only %.1f%% of squads (%d of %d players unmapped). '
+                . 'Re-export people.csv to data/raw/ and rerun `php artisan app:build-sofascore-id-map`.',
+                $coverage,
+                $missing,
+                $total,
+            );
         }
     }
 

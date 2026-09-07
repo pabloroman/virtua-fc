@@ -19,8 +19,8 @@ class GamePlayerTemplateService
     /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
     private ?array $secondaryPositionsMap = null;
 
-    /** @var array<string, array<string, string>> Season → (Transfermarkt ID → Sofascore ID) */
-    private array $sofascoreIdMaps = [];
+    /** @var array<string, string>|null Transfermarkt ID → Sofascore ID */
+    private ?array $sofascoreIdMap = null;
 
     /** @var array<string, array<string, string>> Season → (Transfermarkt ID → FC26 ID) */
     private array $fc26IdMaps = [];
@@ -500,7 +500,7 @@ class GamePlayerTemplateService
             // copies templates into game_players.
             'player_id' => self::playerIdFor((string) $playerData['id']),
             'transfermarkt_id' => (string) $playerData['id'],
-            'sofascore_id' => $this->getSofascoreId($season, (string) $playerData['id']),
+            'sofascore_id' => $this->getSofascoreId((string) $playerData['id']),
             'fc26_id' => $this->getFc26Id($season, (string) $playerData['id']),
             'name' => $playerData['name'] ?? null,
             'date_of_birth' => $dateOfBirth->toDateString(),
@@ -653,25 +653,30 @@ class GamePlayerTemplateService
      * Resolve a player's Sofascore ID from the Transfermarkt→Sofascore crosswalk.
      * Returns null when the player isn't covered by the crosswalk.
      */
-    private function getSofascoreId(string $season, string $transfermarktId): ?string
+    private function getSofascoreId(string $transfermarktId): ?string
     {
-        if (!isset($this->sofascoreIdMaps[$season])) {
-            $this->sofascoreIdMaps[$season] = $this->loadSofascoreIdMap($season);
-        }
+        $this->sofascoreIdMap ??= $this->loadSofascoreIdMap();
 
-        return $this->sofascoreIdMaps[$season][$transfermarktId] ?? null;
+        return $this->sofascoreIdMap[$transfermarktId] ?? null;
     }
 
     /**
-     * Load the Transfermarkt→Sofascore map for a season, keyed by Transfermarkt ID.
-     * The file is built by `app:build-sofascore-id-map` from people.csv; a missing
-     * file is non-fatal (all players keep a null sofascore_id).
+     * Load the Transfermarkt→Sofascore map, keyed by Transfermarkt ID. Both sides
+     * are permanent external identifiers, so the map is deliberately NOT scoped to
+     * a season — it lives at data/sofascore_ids.json and is shared by every one.
+     * A per-season copy is how the 2026 refresh silently lost every player photo:
+     * the folder shipped without the file and every player got a null sofascore_id.
+     *
+     * The file is built by `app:build-sofascore-id-map` from people.csv. A missing
+     * file is still non-fatal (players keep a null sofascore_id and fall back to the
+     * default avatar) but it is an operational error, not a routine case —
+     * `app:validate-season` warns when squad coverage drops.
      *
      * @return array<string, string>
      */
-    private function loadSofascoreIdMap(string $season): array
+    private function loadSofascoreIdMap(): array
     {
-        $path = base_path("data/{$season}/sofascore_ids.json");
+        $path = base_path('data/sofascore_ids.json');
         if (!file_exists($path)) {
             return [];
         }

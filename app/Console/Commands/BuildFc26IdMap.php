@@ -9,7 +9,9 @@ use Symfony\Component\Console\Command\Command as CommandAlias;
 /**
  * Build a Transfermarkt-id → EA Sports FC26-id map by fuzzy name + team
  * matching, into data/{season}/fc26_ids.json (consumed by
- * GamePlayerTemplateService, mirroring data/{season}/sofascore_ids.json).
+ * GamePlayerTemplateService). Unlike the Sofascore crosswalk at
+ * data/sofascore_ids.json this stays season-scoped: the fuzzy match reads each
+ * season's teams.json to disambiguate by club.
  *
  * The FC26 export (data/{season}/EAFC26-Men-selected-columns.csv) carries only
  * name + team — no Transfermarkt id — so there is no clean id crosswalk. We

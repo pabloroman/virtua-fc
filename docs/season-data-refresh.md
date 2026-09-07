@@ -69,6 +69,7 @@ add/remove line, not a reshuffled roster.
 | `app:validate-season {season}` | Read-only completeness/correctness gate (non-zero exit on any problem). Database-free, so CI can run it without Postgres. |
 | `app:diff-season {season} [--from=] [--format=md]` | Report signings, departures, and club movements vs a previous season. |
 | `app:seed-reference-data [--fresh] [--country=]` | Seed competitions, teams, fixtures, templates from `data/{season}/`. |
+| `app:build-sofascore-id-map` | Rebuild the player-photo crosswalk `data/sofascore_ids.json` from `data/raw/people.csv`. Season-independent — run it when players are missing photos, not every season. |
 
 ## Runbook (e.g. releasing 2026/27)
 
@@ -175,7 +176,36 @@ add/remove line, not a reshuffled roster.
      re-scrape overwrote hand-entered pots. With no pots the draw seeds itself
      by squad market value, exactly as it does from the second season onward.
 
-6. **Seed a fresh database** (wipes prior reference data and games, then seeds
+6. **Refresh the player-photo crosswalk** — only if step 5 warned about
+   coverage.
+
+   Photos resolve `transfermarkt_id → sofascore_id → {CDN}/players/{id}.webp`
+   (`GamePlayer::getImageUrlAttribute`). The map lives at
+   `data/sofascore_ids.json` and is **deliberately not season-scoped** — both
+   ids are permanent, and a per-season copy is exactly how the 2026 refresh
+   shipped with no map at all and lost every player photo silently.
+
+   So there is nothing to do here per season *unless* the validator says squad
+   coverage dropped, which means the new season added players the last export
+   predates:
+
+   ```bash
+   # people.csv is the untracked ~65 MB provider crosswalk
+   cp /path/to/people.csv data/raw/people.csv
+   php artisan app:build-sofascore-id-map
+   ```
+
+   Hand-mapped corrections live in `data/sofascore_ids_overrides.csv` (tracked,
+   layered on top) and survive every re-import.
+
+   Newly mapped players still need their image uploaded, or the CDN 404s and
+   they keep the default avatar. `scripts/sofascore-image-downloader/` produces
+   the files — it runs pasted into a DevTools console on a sofascore.com tab,
+   because the source CDN 403s every other origin. Feed it only the ids that are
+   missing, never the whole map, and extract the zip into `players/` on the
+   assets disk.
+
+7. **Seed a fresh database** (wipes prior reference data and games, then seeds
    2026 and auto-generates player templates for season 2026):
 
    ```bash
@@ -192,7 +222,7 @@ add/remove line, not a reshuffled roster.
 
 ## Releasing to a database with live saves
 
-Step 6 above (`--fresh`) is the fresh-database path. **On production, never use
+Step 7 above (`--fresh`) is the fresh-database path. **On production, never use
 `--fresh`**: it deletes `teams`, and the career tables that outlive a game hold
 RESTRICT foreign keys to it (`manager_stats`, `manager_trophies`,
 `manager_job_histories`, `manager_job_offers`, `manager_season_records`,

@@ -7,19 +7,16 @@ use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class BuildSofascoreIdMap extends Command
 {
-    protected $signature = 'app:build-sofascore-id-map
-                            {--season= : Season year (defaults to config season.current)}';
+    protected $signature = 'app:build-sofascore-id-map';
 
-    protected $description = 'Build data/{season}/sofascore_ids.json from data/{season}/people.csv, layering data/{season}/sofascore_ids_overrides.csv on top';
+    protected $description = 'Build data/sofascore_ids.json from data/raw/people.csv, layering data/sofascore_ids_overrides.csv on top';
 
     public function handle(): int
     {
-        $season = (string) ($this->option('season') ?: config('season.current'));
-
-        $sourcePath = $this->resolveCrosswalkPath($season);
+        $sourcePath = $this->resolveCrosswalkPath();
         if ($sourcePath === null) {
-            $this->error("Crosswalk not found for season {$season}.");
-            $this->line('people.csv is the untracked raw source — place it under data/{season}/ (or data/{season}/raw/) before running.');
+            $this->error('Crosswalk not found.');
+            $this->line('people.csv is the untracked raw source — place it at data/raw/people.csv before running.');
 
             return CommandAlias::FAILURE;
         }
@@ -79,12 +76,12 @@ class BuildSofascoreIdMap extends Command
         // Layer manual overrides on top. The overrides file is tracked in git and
         // is never touched by the people.csv provider import, so hand-mapped ids
         // (crosswalk blanks, or corrections to a wrong id) survive every re-import.
-        [$overridesApplied, $overrideConflicts, $overridesDisplayPath] = $this->applyOverrides($season, $map);
+        [$overridesApplied, $overrideConflicts, $overridesDisplayPath] = $this->applyOverrides($map);
 
         // Sort by Transfermarkt id for stable, reviewable diffs.
         ksort($map);
 
-        $outputPath = base_path("data/{$season}/sofascore_ids.json");
+        $outputPath = base_path('data/sofascore_ids.json');
         file_put_contents(
             $outputPath,
             json_encode($map, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n",
@@ -120,14 +117,14 @@ class BuildSofascoreIdMap extends Command
     }
 
     /**
-     * Locate the untracked crosswalk. Historically it lived at data/{season}/people.csv;
-     * the raw import now drops it under data/{season}/raw/. Accept either.
+     * Locate the untracked crosswalk. The raw import drops it under data/raw/;
+     * data/people.csv is accepted as a convenience for a hand-placed file.
      */
-    private function resolveCrosswalkPath(string $season): ?string
+    private function resolveCrosswalkPath(): ?string
     {
         foreach ([
-            base_path("data/{$season}/people.csv"),
-            base_path("data/{$season}/raw/people.csv"),
+            base_path('data/raw/people.csv'),
+            base_path('data/people.csv'),
         ] as $candidate) {
             if (file_exists($candidate)) {
                 return $candidate;
@@ -146,9 +143,9 @@ class BuildSofascoreIdMap extends Command
      * @param  array<string, string>  $map
      * @return array{0: int, 1: int, 2: ?string}  [applied, conflicts, displayPath]
      */
-    private function applyOverrides(string $season, array &$map): array
+    private function applyOverrides(array &$map): array
     {
-        $displayPath = "data/{$season}/sofascore_ids_overrides.csv";
+        $displayPath = 'data/sofascore_ids_overrides.csv';
         $path = base_path($displayPath);
         if (!file_exists($path)) {
             return [0, 0, null];
