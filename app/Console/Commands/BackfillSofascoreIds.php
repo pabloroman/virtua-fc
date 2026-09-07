@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -22,49 +24,57 @@ use Illuminate\Support\Facades\DB;
  *   2. game_players — from the templates, for the saves already in progress
  *      that copied the column at setup time and so baked in the null
  *
- * Both hops only ever fill NULLs, so this is safe to re-run — which matters,
- * because refreshing people.csv and rebuilding the map covers more players and
- * the same backfill then wants running again.
+ * Both hops only ever fill NULLs, so this is safe to re-run — which matters
+ * twice over: refreshing people.csv and rebuilding the map covers more players,
+ * and a chunk that loses a lock race against live gameplay is simply left for
+ * the next run.
  *
- * Runs outside a transaction, save by save: game_players is written to by live
- * gameplay, and a single table-wide UPDATE held row locks for nine minutes in a
- * lock order no app transaction shares — production deadlocked and rolled the
- * whole backfill back. Walking only the saves built from the broken reference
- * data, in chunks that commit as they go, takes the same locks briefly, and the
- * re-runnable NULL-only filter means a chunk that still loses a race can simply
- * be retried.
+ * Deliberately a command and not a migration: it competes for row locks with
+ * live gameplay, and as a migration a lost race failed `migrate --force` and so
+ * blocked the whole deploy. Nothing about the backfill needs to happen before
+ * the new code boots — until it runs, photos just keep falling back to the
+ * avatar they have been falling back to all along.
  *
  * Deliberately NOT done via app:refresh-player-templates: both foreign keys
  * onto game_player_templates are ON DELETE CASCADE, so a clear-and-regenerate
  * would take game_player_template_audits — the admin editor's trail, and the
  * manual template corrections behind it — with it.
  */
-return new class extends Migration
+class BackfillSofascoreIds extends Command
 {
+    protected $signature = 'app:backfill-sofascore-ids';
+
+    protected $description = 'Fill missing sofascore_id on player templates and in-progress saves (safe to re-run)';
+
     /** Rows per UPDATE statement. */
     private const CHUNK = 1000;
 
-    /** Attempts per chunk before a lock conflict is treated as fatal. */
+    /** Attempts per chunk before it is left for the next run. */
     private const ATTEMPTS = 5;
 
     /** First reference-data season whose templates shipped without the ids. */
     private const BROKEN_FROM_SEASON = '2026';
 
-    /** Each chunk commits on its own — see the note above. */
-    public $withinTransaction = false;
+    private int $skipped = 0;
 
-    public function up(): void
+    public function handle(): int
     {
         // Fail a blocked chunk fast rather than queue behind a long-running
         // gameplay transaction while holding locks of our own.
         DB::statement("SET lock_timeout = '5s'");
 
         try {
-            $this->backfillTemplates();
-            $this->backfillGamePlayers();
+            $this->info('Templates: '.$this->backfillTemplates().' filled');
+            $this->info('Saves: '.$this->backfillGamePlayers().' players filled');
         } finally {
             DB::statement('RESET lock_timeout');
         }
+
+        if ($this->skipped > 0) {
+            $this->warn("{$this->skipped} chunk(s) lost a lock race and were left behind — re-run to pick them up.");
+        }
+
+        return self::SUCCESS;
     }
 
     /**
@@ -73,16 +83,20 @@ return new class extends Migration
      * Only the templates actually missing an id are looked up, so the VALUES
      * list carries a few thousand pairs rather than the map's ~84k.
      */
-    private function backfillTemplates(): void
+    private function backfillTemplates(): int
     {
         $path = base_path('data/sofascore_ids.json');
         if (! file_exists($path)) {
-            return;
+            $this->warn("No crosswalk at {$path}; skipping templates.");
+
+            return 0;
         }
 
         $map = json_decode((string) file_get_contents($path), true);
         if (! is_array($map) || $map === []) {
-            return;
+            $this->warn('Crosswalk is empty; skipping templates.');
+
+            return 0;
         }
 
         $pending = DB::table('game_player_templates')
@@ -98,11 +112,13 @@ return new class extends Migration
             }
         }
 
+        $filled = 0;
+
         foreach (array_chunk($pairs, self::CHUNK) as $chunk) {
             $placeholders = implode(',', array_fill(0, count($chunk), '(?,?)'));
             $bindings = array_merge(...$chunk);
 
-            $this->retrying(fn () => DB::statement(
+            $filled += $this->retrying(fn () => DB::update(
                 "UPDATE game_player_templates t
                  SET sofascore_id = v.sofascore_id
                  FROM (VALUES {$placeholders}) AS v(transfermarkt_id, sofascore_id)
@@ -111,6 +127,8 @@ return new class extends Migration
                 $bindings,
             ));
         }
+
+        return $filled;
     }
 
     /**
@@ -120,8 +138,10 @@ return new class extends Migration
      * template rows a player can have across seasons all carry the same value
      * and which one the LIMIT 1 picks does not matter.
      */
-    private function backfillGamePlayers(): void
+    private function backfillGamePlayers(): int
     {
+        $filled = 0;
+
         foreach ($this->affectedGameIds() as $gameId) {
             // One save's rows reach through the game_id index and fit in memory
             // (a squad database is a few thousand players), which keeps this off
@@ -133,7 +153,7 @@ return new class extends Migration
                 ->pluck('id');
 
             foreach ($ids->chunk(self::CHUNK) as $chunk) {
-                $this->retrying(fn () => DB::table('game_players')
+                $filled += $this->retrying(fn () => DB::table('game_players')
                     ->whereIn('id', $chunk)
                     ->whereNull('sofascore_id')
                     ->update([
@@ -147,6 +167,8 @@ return new class extends Migration
                     ]));
             }
         }
+
+        return $filled;
     }
 
     /**
@@ -173,33 +195,33 @@ return new class extends Migration
     }
 
     /**
-     * Retry a chunk that lost a lock race with live gameplay.
+     * Run a chunk, retrying while it is losing a lock race with live gameplay.
      *
      * 40P01 deadlock, 40001 serialization failure, 55P03 lock_timeout — all
-     * transient, and the backfill only ever fills NULLs, so a replay is a no-op
-     * for whatever the failed attempt managed to commit.
+     * transient, and the backfill only ever fills NULLs, so both a replay and a
+     * whole re-run are no-ops for what earlier attempts committed. A chunk that
+     * keeps losing is therefore left behind rather than aborting the run.
+     *
+     * @param  callable():int  $chunk
      */
-    private function retrying(callable $chunk): void
+    private function retrying(callable $chunk): int
     {
         for ($attempt = 1; ; $attempt++) {
             try {
-                $chunk();
-
-                return;
+                return $chunk();
             } catch (QueryException $e) {
-                if ($attempt >= self::ATTEMPTS || ! in_array($e->getCode(), ['40P01', '40001', '55P03'], true)) {
+                if (! in_array($e->getCode(), ['40P01', '40001', '55P03'], true)) {
                     throw $e;
+                }
+
+                if ($attempt >= self::ATTEMPTS) {
+                    $this->skipped++;
+
+                    return 0;
                 }
 
                 usleep(250_000 * $attempt);
             }
         }
     }
-
-    public function down(): void
-    {
-        // Intentionally left empty — nulling these back out would not restore a
-        // prior state, it would re-break the photos for every player this fixed
-        // and for the 2025-vintage saves that never lost them.
-    }
-};
+}
