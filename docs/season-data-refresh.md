@@ -71,6 +71,7 @@ add/remove line, not a reshuffled roster.
 | `app:seed-reference-data [--fresh] [--country=]` | Seed competitions, teams, fixtures, templates from `data/{season}/`. |
 | `app:build-sofascore-id-map` | Rebuild the player-photo crosswalk `data/sofascore_ids.json` from `data/raw/people.csv` + `data/sofascore_ids_overrides.csv`. Season-independent — run it after editing the overrides, not every season. |
 | `app:list-unmapped-players [--season=] [--limit=] [--out=]` | Emit the players with no Sofascore id as JSON, to feed `scripts/sofascore-id-finder/`. |
+| `app:fetch-player-photos [--season=] [--force]` | Download player photos into the assets disk, keyed by Sofascore id. Sibling of `app:fetch-team-crests`. |
 
 ## Runbook (e.g. releasing 2026/27)
 
@@ -238,12 +239,19 @@ add/remove line, not a reshuffled roster.
    Re-run the `sofascore_ids` backfill migration afterwards to push the new ids
    into templates and existing saves.
 
-   Newly mapped players still need their image uploaded, or the CDN 404s and
-   they keep the default avatar. `scripts/sofascore-image-downloader/` produces
-   the files — it runs pasted into a DevTools console on a sofascore.com tab,
-   because the source CDN 403s every other origin. Feed it only the ids that are
-   missing, never the whole map, and extract the zip into `players/` on the
-   assets disk.
+   Newly mapped players still need their photo, or the CDN 404s and they keep
+   the default avatar:
+
+   ```bash
+   php artisan app:fetch-player-photos --season=2026
+   ```
+
+   Unlike the search API, the Sofascore *image* CDN answers ordinary server-side
+   requests, so this needs no browser. It writes `players/{sofascore_id}.webp`
+   into the assets disk, skips what is already there, and counts 404s — players
+   Sofascore has no photo for — separately from real failures.
+   `scripts/sofascore-image-downloader/` is now only for ids that aren't in the
+   database.
 
 7. **Seed a fresh database** (wipes prior reference data and games, then seeds
    2026 and auto-generates player templates for season 2026):
