@@ -18,16 +18,17 @@ use Illuminate\Support\Facades\DB;
  * reference was lost.
  *
  * The map is now season-independent (data/sofascore_ids.json). This fills the
- * gap it left behind, in two hops:
+ * gap it left behind, in two hops off that one crosswalk:
  *
- *   1. templates  — from the map, keyed on transfermarkt_id
- *   2. game_players — from the templates, for the saves already in progress
- *      that copied the column at setup time and so baked in the null
+ *   1. templates  — keyed on transfermarkt_id
+ *   2. game_players — for the saves already in progress that copied the column
+ *      at setup time and so baked in the null
  *
- * Both hops only ever fill NULLs, so this is safe to re-run — which matters
- * twice over: refreshing people.csv and rebuilding the map covers more players,
- * and a chunk that loses a lock race against live gameplay is simply left for
- * the next run.
+ * Both hops only ever fill NULLs, so this is safe to re-run and safe to kill
+ * mid-flight — which matters three times over: refreshing people.csv and
+ * rebuilding the map covers more players, a chunk that loses a lock race
+ * against live gameplay is left for the next run, and hop 2 walks every save,
+ * which takes long enough to outlive an ssh session.
  *
  * Deliberately a command and not a migration: it competes for row locks with
  * live gameplay, and as a migration a lost race failed `migrate --force` and so
@@ -59,13 +60,24 @@ class BackfillSofascoreIds extends Command
 
     public function handle(): int
     {
+        $path = base_path('data/sofascore_ids.json');
+        $map = file_exists($path)
+            ? json_decode((string) file_get_contents($path), true)
+            : null;
+
+        if (! is_array($map) || $map === []) {
+            $this->error("No usable crosswalk at {$path}.");
+
+            return self::FAILURE;
+        }
+
         // Fail a blocked chunk fast rather than queue behind a long-running
         // gameplay transaction while holding locks of our own.
         DB::statement("SET lock_timeout = '5s'");
 
         try {
-            $this->info('Templates: '.$this->backfillTemplates().' filled');
-            $this->info('Saves: '.$this->backfillGamePlayers().' players filled');
+            $this->info('Templates: '.$this->backfillTemplates($map).' filled');
+            $this->info('Saves: '.$this->backfillGamePlayers($map).' players filled');
         } finally {
             DB::statement('RESET lock_timeout');
         }
@@ -82,23 +94,11 @@ class BackfillSofascoreIds extends Command
      *
      * Only the templates actually missing an id are looked up, so the VALUES
      * list carries a few thousand pairs rather than the map's ~84k.
+     *
+     * @param  array<string, string|int>  $map
      */
-    private function backfillTemplates(): int
+    private function backfillTemplates(array $map): int
     {
-        $path = base_path('data/sofascore_ids.json');
-        if (! file_exists($path)) {
-            $this->warn("No crosswalk at {$path}; skipping templates.");
-
-            return 0;
-        }
-
-        $map = json_decode((string) file_get_contents($path), true);
-        if (! is_array($map) || $map === []) {
-            $this->warn('Crosswalk is empty; skipping templates.');
-
-            return 0;
-        }
-
         $pending = DB::table('game_player_templates')
             ->whereNull('sofascore_id')
             ->whereNotNull('transfermarkt_id')
@@ -115,17 +115,13 @@ class BackfillSofascoreIds extends Command
         $filled = 0;
 
         foreach (array_chunk($pairs, self::CHUNK) as $chunk) {
-            $placeholders = implode(',', array_fill(0, count($chunk), '(?,?)'));
-            $bindings = array_merge(...$chunk);
-
-            $filled += $this->retrying(fn () => DB::update(
-                "UPDATE game_player_templates t
-                 SET sofascore_id = v.sofascore_id
-                 FROM (VALUES {$placeholders}) AS v(transfermarkt_id, sofascore_id)
-                 WHERE t.transfermarkt_id = v.transfermarkt_id
-                   AND t.sofascore_id IS NULL",
-                $bindings,
-            ));
+            $filled += $this->update(
+                'game_player_templates t',
+                '(?,?)',
+                'v(transfermarkt_id, sofascore_id)',
+                't.transfermarkt_id = v.transfermarkt_id AND t.sofascore_id IS NULL',
+                $chunk,
+            );
         }
 
         return $filled;
@@ -134,41 +130,77 @@ class BackfillSofascoreIds extends Command
     /**
      * Propagate into saves already in progress.
      *
-     * sofascore_id is a pure function of transfermarkt_id, so the several
-     * template rows a player can have across seasons all carry the same value
-     * and which one the LIMIT 1 picks does not matter.
+     * Keyed on the primary key rather than looked up per row against the
+     * templates: sofascore_id is a pure function of transfermarkt_id and the
+     * crosswalk is already in memory, so resolving it here turns what was a
+     * subquery scan of game_player_templates for every single game_players row
+     * into one hash join per chunk.
+     *
+     * @param  array<string, string|int>  $map
      */
-    private function backfillGamePlayers(): int
+    private function backfillGamePlayers(array $map): int
     {
         $filled = 0;
+        $games = $this->affectedGameIds();
+        $bar = $this->output->createProgressBar(count($games));
 
-        foreach ($this->affectedGameIds() as $gameId) {
+        foreach ($games as $gameId) {
             // One save's rows reach through the game_id index and fit in memory
             // (a squad database is a few thousand players), which keeps this off
             // a full-table scan of what is by far the largest table here.
-            $ids = DB::table('game_players')
+            $pairs = [];
+
+            DB::table('game_players')
                 ->where('game_id', $gameId)
                 ->whereNull('sofascore_id')
                 ->whereNotNull('transfermarkt_id')
-                ->pluck('id');
+                ->select('id', 'transfermarkt_id')
+                ->orderBy('id')
+                ->each(function ($row) use ($map, &$pairs) {
+                    if (isset($map[$row->transfermarkt_id])) {
+                        $pairs[] = [(string) $row->id, (string) $map[$row->transfermarkt_id]];
+                    }
+                });
 
-            foreach ($ids->chunk(self::CHUNK) as $chunk) {
-                $filled += $this->retrying(fn () => DB::table('game_players')
-                    ->whereIn('id', $chunk)
-                    ->whereNull('sofascore_id')
-                    ->update([
-                        'sofascore_id' => DB::raw(
-                            '(SELECT t.sofascore_id
-                                FROM game_player_templates t
-                               WHERE t.transfermarkt_id = game_players.transfermarkt_id
-                                 AND t.sofascore_id IS NOT NULL
-                               LIMIT 1)'
-                        ),
-                    ]));
+            foreach (array_chunk($pairs, self::CHUNK) as $chunk) {
+                $filled += $this->update(
+                    'game_players p',
+                    '(?::uuid,?)',
+                    'v(id, sofascore_id)',
+                    'p.id = v.id AND p.sofascore_id IS NULL',
+                    $chunk,
+                );
             }
+
+            $bar->advance();
         }
 
+        $bar->finish();
+        $this->newLine();
+
         return $filled;
+    }
+
+    /**
+     * Fill one chunk's worth of NULLs from an inline VALUES list.
+     *
+     * The WHERE has to qualify sofascore_id: the VALUES alias carries a column
+     * of that name too, so an unqualified reference is ambiguous.
+     *
+     * @param  list<array{string, string}>  $chunk
+     */
+    private function update(string $table, string $row, string $columns, string $where, array $chunk): int
+    {
+        $values = implode(',', array_fill(0, count($chunk), $row));
+        $bindings = array_merge(...$chunk);
+
+        return $this->retrying(fn () => DB::update(
+            "UPDATE {$table}
+             SET sofascore_id = v.sofascore_id
+             FROM (VALUES {$values}) AS {$columns}
+             WHERE {$where}",
+            $bindings,
+        ));
     }
 
     /**
