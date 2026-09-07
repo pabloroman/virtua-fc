@@ -5,12 +5,15 @@ namespace Tests\Feature\Console;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class BackfillSofascoreIdsCommandTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** A transfermarkt id the shipped crosswalk actually covers. */
     private string $transfermarktId;
 
@@ -58,17 +61,11 @@ class BackfillSofascoreIdsCommandTest extends TestCase
 
     private function template(Team $team): int
     {
-        $playerId = Str::uuid()->toString();
-
-        DB::table('players')->insert([
-            'id' => $playerId,
-            'transfermarkt_id' => $this->transfermarktId,
-            'name' => 'Crosswalked Player',
-        ]);
-
         return DB::table('game_player_templates')->insertGetId([
             'season' => '2026',
-            'player_id' => $playerId,
+            // A soft identity column post-Phase-7: no FK, and no players table
+            // behind it any more.
+            'player_id' => Str::uuid()->toString(),
             'team_id' => $team->id,
             'transfermarkt_id' => $this->transfermarktId,
             'position' => 'Central Midfield',
