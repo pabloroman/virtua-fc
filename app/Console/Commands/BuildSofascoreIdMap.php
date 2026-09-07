@@ -21,7 +21,9 @@ class BuildSofascoreIdMap extends Command
             return CommandAlias::FAILURE;
         }
 
-        $handle = fopen($sourcePath, 'r');
+        // Silenced: Laravel promotes the fopen warning to an ErrorException, which
+        // would bypass the graceful failure right below it.
+        $handle = @fopen($sourcePath, 'r');
         if ($handle === false) {
             $this->error("Could not open {$sourcePath}");
 
