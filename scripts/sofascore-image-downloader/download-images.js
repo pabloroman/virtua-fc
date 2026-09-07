@@ -4,13 +4,16 @@
  * Takes a list of Sofascore player IDs and downloads their avatars from
  * https://img.sofascore.com/api/v1/player/{ID}/image, bundled into a .zip.
  *
- * WHY THIS RUNS IN THE BROWSER (and only on sofascore.com):
- * The image CDN sends `access-control-allow-origin: *`, so JS is allowed to read
- * the bytes -- BUT it 403s any request whose origin/referer isn't sofascore.com
- * (bot protection). A standalone HTML file, a file:// page, or a fetch from any
- * other site all get 403. The same fetch from a tab already on sofascore.com
- * returns 200. So: open https://www.sofascore.com, then paste this script into the
- * DevTools console (see README.md for the exact steps / a bookmarklet variant).
+ * PREFER `php artisan app:fetch-player-photos`.
+ * This tool was written believing the image CDN 403s anything that isn't a
+ * sofascore.com tab. That turned out to be wrong (re-tested 2026-09-07): the
+ * endpoint returns 200 to plain curl with no headers, so the artisan command
+ * fetches photos server-side straight from game_player_templates and this script
+ * is only worth reaching for when the ids you want are NOT in the database.
+ *
+ * The 403 is real for the *search* API, which is why the sibling
+ * scripts/sofascore-id-finder/ genuinely does still need a console on
+ * sofascore.com. Images do not.
  *
  * The output files are named `{sofascore_id}.webp` because the game reads player
  * avatars from the assets disk at `players/{sofascore_id}.webp`

@@ -9,21 +9,33 @@ The game self-hosts avatars: `GamePlayer::getImageUrlAttribute()`
 the `assets` disk (rendered by `resources/views/components/player-banner.blade.php`,
 with a fallback avatar when the file is missing). This tool produces those files.
 
-## Why it runs in the browser (and only on sofascore.com)
+## Prefer `app:fetch-player-photos`
 
-The CDN returns `access-control-allow-origin: *`, so JavaScript is *allowed* to read the
-image bytes — **but** it responds `403` to any request whose referer/origin isn't
-sofascore.com (bot protection). That means:
+**The normal way to get photos is the artisan command:**
 
-- A standalone `.html` file, a `file://` page, `curl`, or a fetch from any other site → **403**.
-- The identical `fetch` run **from a tab already on sofascore.com → 200** with real bytes.
+```bash
+php artisan app:fetch-player-photos            # current season
+php artisan app:fetch-player-photos --season=2026 --force
+```
 
-So the tool is a script you run inside a sofascore.com tab. Missing IDs return a clean
-`404` (skipped and logged, never a hard failure).
+It reads the Sofascore ids straight from `game_player_templates`, writes
+`players/{sofascore_id}.webp` into the assets disk, skips what is already there
+and counts 404s (players Sofascore has no photo for) separately from real
+failures. It is the sibling of `app:fetch-team-crests`.
 
-The zip is assembled in-page with a tiny built-in STORE-only zip writer (no compression —
-the images are already compressed). We deliberately don't pull in JSZip: loading a script
-from a CDN would be blocked by sofascore.com's Content-Security-Policy.
+This browser tool remains only for the case the command cannot serve: fetching
+photos for a list of ids that is **not** in the database.
+
+## About the 403 (this tool used to be the only option)
+
+The image CDN was believed to reject anything that was not a sofascore.com tab.
+**That is not true** — re-tested 2026-09-07, `https://img.sofascore.com/api/v1/player/{ID}/image`
+returns `200` to plain `curl` with no headers at all, which is why the artisan
+command works server-side.
+
+The 403 is real for the **search** API (`/api/v1/search/...`), which is why
+[`../sofascore-id-finder/`](../sofascore-id-finder/) genuinely does still have to
+run in a console on sofascore.com. Images do not.
 
 ## How to run (console — recommended)
 
