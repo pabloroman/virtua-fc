@@ -11,6 +11,7 @@
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.43",
+        "laravel/nightwatch": "^1.30",
         "laravel/octane": "^2.13",
         "laravel/pulse": "^1.7",
         "symfony/http-client": "^8.1"
