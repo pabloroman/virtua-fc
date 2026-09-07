@@ -1,5 +1,7 @@
 key_transfermarkt,key_sofascore,name
-# Manual Transfermarkt-id -> Sofascore-id overrides for season 2025.
+# Manual Transfermarkt-id -> Sofascore-id overrides. Not season-scoped: both ids
+# are permanent, so one file serves every season.
+# Generate candidates with scripts/sofascore-id-finder/ (see its README).
 # This file is TRACKED in git and is NOT touched by the people.csv provider import,
 # so mappings here survive every re-import. Values here WIN over people.csv.
 # The `name` column is for humans only; app:build-sofascore-id-map ignores it.

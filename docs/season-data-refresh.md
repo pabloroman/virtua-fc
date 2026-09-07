@@ -70,6 +70,7 @@ add/remove line, not a reshuffled roster.
 | `app:diff-season {season} [--from=] [--format=md]` | Report signings, departures, and club movements vs a previous season. |
 | `app:seed-reference-data [--fresh] [--country=]` | Seed competitions, teams, fixtures, templates from `data/{season}/`. |
 | `app:build-sofascore-id-map` | Rebuild the player-photo crosswalk `data/sofascore_ids.json` from `data/raw/people.csv` + `data/sofascore_ids_overrides.csv`. Season-independent — run it after editing the overrides, not every season. |
+| `app:list-unmapped-players [--season=] [--limit=] [--out=]` | Emit the players with no Sofascore id as JSON, to feed `scripts/sofascore-id-finder/`. |
 
 ## Runbook (e.g. releasing 2026/27)
 
@@ -215,15 +216,27 @@ add/remove line, not a reshuffled roster.
 
    ### Closing the gap
 
-   Hand-map into `data/sofascore_ids_overrides.csv` (tracked, layered on top,
-   wins over the base map, survives every re-import), then rebuild:
+   Uncovered players are mapped in `data/sofascore_ids_overrides.csv` (tracked,
+   layered on top, wins over the base map, survives every re-import).
+   `scripts/sofascore-id-finder/` does the lookup rather than you doing it by
+   hand — it searches Sofascore for each name and confirms the hit by exact date
+   of birth, so a same-name player can't be matched by mistake:
 
    ```bash
+   php artisan app:list-unmapped-players --out=unmapped.json   # --limit=25 to trial it
+   # paste scripts/sofascore-id-finder/find-ids.js into a DevTools console on
+   # sofascore.com, then paste unmapped.json into its panel (see its README)
+   cat sofascore_ids_overrides_additions.csv >> data/sofascore_ids_overrides.csv
    php artisan app:build-sofascore-id-map
    ```
 
-   Find a player's id from their Sofascore profile URL —
-   `sofascore.com/player/{slug}/{id}` — the trailing number is `key_sofascore`.
+   It resolved 10 of a 15-player sample of the real 2026 gap; the rest were
+   genuinely absent from Sofascore. Whatever it can't confirm comes back as
+   commented rows to fill in by hand — the id is the trailing number in a
+   Sofascore profile URL, `sofascore.com/player/{slug}/{id}`.
+
+   Re-run the `sofascore_ids` backfill migration afterwards to push the new ids
+   into templates and existing saves.
 
    Newly mapped players still need their image uploaded, or the CDN 404s and
    they keep the default avatar. `scripts/sofascore-image-downloader/` produces
