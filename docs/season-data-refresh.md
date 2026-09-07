@@ -258,13 +258,23 @@ add/remove line, not a reshuffled roster.
    publish them:
 
    ```bash
-   export R2_ACCOUNT_ID=... R2_ACCESS_KEY_ID=... R2_SECRET_ACCESS_KEY=...
+   export R2_ACCOUNT_ID=...
+   # either the S3 pair the dashboard shows when the token is created:
+   export R2_ACCESS_KEY_ID=... R2_SECRET_ACCESS_KEY=...
+   # or just the token, and the script derives that pair:
+   export R2_TOKEN_ID=... R2_API_TOKEN=...
+
    scripts/upload-assets-to-r2.sh players --dry-run   # check first
    scripts/upload-assets-to-r2.sh players
    ```
 
-   Use an R2 API token scoped to *Object Read & Write* on that one bucket. The
-   script's header has the details, and it also handles `crests`.
+   Use an R2 API token scoped to *Object Read & Write* on that one bucket. Note
+   this has to go over R2's S3-compatible API: Cloudflare's REST API covers R2
+   bucket management only and does not support object writes, so a bearer token
+   alone cannot upload. An R2 token converts to the S3 pair — access key id is
+   the token's id, secret access key is the SHA-256 of the token value — which is
+   what `R2_TOKEN_ID`/`R2_API_TOKEN` do for you. The script's header has the
+   details, and it also handles `crests`.
 
 7. **Seed a fresh database** (wipes prior reference data and games, then seeds
    2026 and auto-generates player templates for season 2026):
