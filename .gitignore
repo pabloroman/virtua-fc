@@ -43,7 +43,9 @@ frankenphp-worker.php
 /public/vendor/telescope
 
 # Raw Transfermarkt→external-id crosswalk source (large). The slim, committed
-# data/{season}/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
+# data/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
+# data/raw/ is the current home; data/*/raw/ is kept for older season folders.
+data/raw/*
 data/*/raw/*
 
 # Generated per refresh by app:list-missing-positions; the durable record is
