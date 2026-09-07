@@ -19,9 +19,24 @@
 #   Cloudflare dashboard -> R2 -> Manage API tokens -> Create API token
 #
 #   export R2_ACCOUNT_ID=...          # R2 -> Overview, right-hand sidebar
+#   export R2_BUCKET=virtua-fc        # optional, this is the default
+#
+# Then EITHER the S3 pair the dashboard shows you when the token is created:
+#
 #   export R2_ACCESS_KEY_ID=...
 #   export R2_SECRET_ACCESS_KEY=...
-#   export R2_BUCKET=virtua-fc        # optional, this is the default
+#
+# OR, if you kept only the API token itself, its id and value — the S3 pair is
+# derived from them below:
+#
+#   export R2_TOKEN_ID=...            # the token's id, shown in the token list
+#   export R2_API_TOKEN=...           # the token value, shown once at creation
+#
+# Note there is no way to avoid S3 here: Cloudflare's REST API covers R2 *bucket*
+# management only, and its docs state that Object Read & Write "[is] only
+# supported by the S3-compatible API, not the Cloudflare REST API". Object uploads
+# have to go over S3, which is why this needs a key pair rather than a bearer
+# token.
 #
 # --size-only is deliberate: local mtimes never match R2's, so the default
 # timestamp comparison re-uploads the entire directory every run. These objects
@@ -47,13 +62,32 @@ command -v aws >/dev/null 2>&1 || {
     exit 1
 }
 
+# Derive the S3 pair from a raw R2 API token when the pair itself wasn't kept.
+# Cloudflare defines it as: access key id = the token's id, secret access key =
+# the SHA-256 of the token's value.
+if [ -z "${R2_ACCESS_KEY_ID:-}" ] && [ -n "${R2_TOKEN_ID:-}" ] && [ -n "${R2_API_TOKEN:-}" ]; then
+    if command -v shasum >/dev/null 2>&1; then
+        # printf, not echo: a trailing newline would be hashed too and the
+        # resulting secret would be silently wrong (a 401 with no clue why).
+        R2_SECRET_ACCESS_KEY="$(printf '%s' "$R2_API_TOKEN" | shasum -a 256 | cut -d' ' -f1)"
+    elif command -v sha256sum >/dev/null 2>&1; then
+        R2_SECRET_ACCESS_KEY="$(printf '%s' "$R2_API_TOKEN" | sha256sum | cut -d' ' -f1)"
+    else
+        echo "Need shasum or sha256sum to derive the secret from R2_API_TOKEN." >&2
+        exit 1
+    fi
+    R2_ACCESS_KEY_ID="$R2_TOKEN_ID"
+fi
+
 missing=""
 for var in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
     [ -n "${!var:-}" ] || missing="$missing $var"
 done
 if [ -n "$missing" ]; then
     echo "Missing required environment variable(s):$missing" >&2
-    echo "See the header of $0 for how to create a scoped R2 token." >&2
+    echo >&2
+    echo "Set R2_ACCOUNT_ID plus EITHER R2_ACCESS_KEY_ID + R2_SECRET_ACCESS_KEY," >&2
+    echo "OR R2_TOKEN_ID + R2_API_TOKEN to derive them. See the header of $0." >&2
     exit 1
 fi
 
