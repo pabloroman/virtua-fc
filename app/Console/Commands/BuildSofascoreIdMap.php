@@ -5,6 +5,19 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
+/**
+ * Build the Transfermarkt→Sofascore crosswalk that player photos key off.
+ *
+ * Source is data/raw/people.csv: the **Reep v0** football entity register
+ * (github.com/withqwerty/reep, CC0), whose key_transfermarkt/key_sofascore
+ * columns carry the pairing. That register is frozen at data version 2026.25
+ * (21 June 2026) and Reep v1 dropped Sofascore from its public release, so the
+ * base map cannot gain coverage any more — re-downloading people.csv yields
+ * zero new pairs. Players it never covered are mapped by hand in
+ * data/sofascore_ids_overrides.csv, which is layered on top here.
+ *
+ * Deliberately not season-scoped: see GamePlayerTemplateService::loadSofascoreIdMap.
+ */
 class BuildSofascoreIdMap extends Command
 {
     protected $signature = 'app:build-sofascore-id-map';

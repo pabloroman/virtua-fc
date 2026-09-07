@@ -526,11 +526,16 @@ class ValidateSeason extends Command
      * avatar — there is no error anywhere, which is exactly how the 2026 refresh
      * shipped with the file missing entirely and *every* player photo gone.
      *
-     * Warn-only, and one line: a fresh season legitimately adds players the last
-     * people.csv export predates, and low coverage means "re-export people.csv
-     * and rerun app:build-sofascore-id-map", not "don't seed". Kept to a summary
-     * for the reason warnUnprofiledClubs() gives — a wall of warnings just trains
-     * people to ignore the validator.
+     * Warn-only, and one line: a fresh season legitimately adds players the
+     * crosswalk has never covered, and that is a reason to top up the overrides
+     * file, not to block seeding. Kept to a summary for the reason
+     * warnUnprofiledClubs() gives — a wall of warnings just trains people to
+     * ignore the validator.
+     *
+     * Note the fix is NOT "re-import people.csv": its upstream (Reep v0) froze at
+     * data version 2026.25, and Reep v1 dropped Sofascore ids from its public
+     * release entirely, so the base map cannot gain coverage any more. Uncovered
+     * players are mapped by hand in data/sofascore_ids_overrides.csv.
      *
      * @param  array<int, array{code: string, type: string}>  $competitions
      */
@@ -539,7 +544,7 @@ class ValidateSeason extends Command
         $path = base_path('data/sofascore_ids.json');
         if (!file_exists($path)) {
             $this->warnings[] = 'data/sofascore_ids.json is missing — every player will fall back to the '
-                . 'default avatar. Build it with `php artisan app:build-sofascore-id-map`.';
+                . 'default avatar. Rebuild it with `php artisan app:build-sofascore-id-map`.';
 
             return;
         }
@@ -575,8 +580,10 @@ class ValidateSeason extends Command
 
         if ($coverage < self::PHOTO_COVERAGE_WARN_PCT) {
             $this->warnings[] = sprintf(
-                'Player-photo crosswalk covers only %.1f%% of squads (%d of %d players unmapped). '
-                . 'Re-export people.csv to data/raw/ and rerun `php artisan app:build-sofascore-id-map`.',
+                'Player-photo crosswalk covers only %.1f%% of squads (%d of %d players unmapped) — '
+                . 'those players show the default avatar. The upstream crosswalk is frozen, so close '
+                . 'the gap in data/sofascore_ids_overrides.csv and rerun '
+                . '`php artisan app:build-sofascore-id-map`.',
                 $coverage,
                 $missing,
                 $total,
