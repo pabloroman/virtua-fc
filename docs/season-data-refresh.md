@@ -253,6 +253,19 @@ add/remove line, not a reshuffled roster.
    `scripts/sofascore-image-downloader/` is now only for ids that aren't in the
    database.
 
+   That only puts the files on the machine you ran it on. `public/players/` is
+   gitignored — the photos live in the Cloudflare R2 bucket the CDN serves — so
+   publish them:
+
+   ```bash
+   export R2_ACCOUNT_ID=... R2_ACCESS_KEY_ID=... R2_SECRET_ACCESS_KEY=...
+   scripts/upload-assets-to-r2.sh players --dry-run   # check first
+   scripts/upload-assets-to-r2.sh players
+   ```
+
+   Use an R2 API token scoped to *Object Read & Write* on that one bucket. The
+   script's header has the details, and it also handles `crests`.
+
 7. **Seed a fresh database** (wipes prior reference data and games, then seeds
    2026 and auto-generates player templates for season 2026):
 
