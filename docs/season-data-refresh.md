@@ -69,7 +69,8 @@ add/remove line, not a reshuffled roster.
 | `app:validate-season {season}` | Read-only completeness/correctness gate (non-zero exit on any problem). Database-free, so CI can run it without Postgres. |
 | `app:diff-season {season} [--from=] [--format=md]` | Report signings, departures, and club movements vs a previous season. |
 | `app:seed-reference-data [--fresh] [--country=]` | Seed competitions, teams, fixtures, templates from `data/{season}/`. |
-| `app:build-sofascore-id-map` | Rebuild the player-photo crosswalk `data/sofascore_ids.json` from `data/raw/people.csv`. Season-independent — run it when players are missing photos, not every season. |
+| `app:build-sofascore-id-map` | Rebuild the player-photo crosswalk `data/sofascore_ids.json` from `data/raw/people.csv` + `data/sofascore_ids_overrides.csv`. Season-independent — run it after editing the overrides, not every season. |
+| `app:list-unmapped-players [--season=] [--limit=] [--out=]` | Emit the players with no Sofascore id as JSON, to feed `scripts/sofascore-id-finder/`. |
 
 ## Runbook (e.g. releasing 2026/27)
 
@@ -185,18 +186,57 @@ add/remove line, not a reshuffled roster.
    ids are permanent, and a per-season copy is exactly how the 2026 refresh
    shipped with no map at all and lost every player photo silently.
 
-   So there is nothing to do here per season *unless* the validator says squad
-   coverage dropped, which means the new season added players the last export
-   predates:
+   So there is normally nothing to do here per season. When the validator says
+   coverage dropped, the new season added players the crosswalk has never
+   covered — see below for what that does and doesn't mean.
+
+   ### Where the crosswalk comes from, and why it can't be refreshed
+
+   `data/raw/people.csv` (untracked, ~63 MB) is the **Reep v0** register —
+   <https://github.com/withqwerty/reep>, `data/people.csv`, CC0. Its
+   `key_transfermarkt` + `key_sofascore` columns are the whole basis of the map.
+
+   **That source is frozen.** Reep v0 stopped at data version `2026.25`
+   (21 June 2026) and its README states the data files no longer change. The
+   living **Reep v1** (<https://data.reep.football/releases/latest.json>, weekly)
+   replaced the wide table with a long `bridges.csv.gz`
+   — and **dropped Sofascore ids from the public release entirely**. Its provider
+   list is opta, wyscout, transfermarkt, api_football, skillcorner, sportmonks,
+   fm, espn, fifa, scisports, eafc, besoccer, fbref_dsg, uefa, capology,
+   soccerdonna, statsbomb, jleague, fbref, national_football_teams,
+   second_spectrum, understat, rsssf, clubelo. No Sofascore.
+
+   The copy in `data/raw/` is already the final v0 content — re-downloading it
+   yields **zero** new pairs. Re-importing is not the fix for low coverage.
+
+   Reep's Sofascore ids come from Wikidata (property `P12302`), so an uncovered
+   player is one Wikidata hasn't linked. As of the 2026 dataset that's 1,835 of
+   7,424: 615 are in `people.csv` with a blank `key_sofascore`, and 1,220 aren't
+   in the register at all (lower divisions and youth, mostly).
+
+   ### Closing the gap
+
+   Uncovered players are mapped in `data/sofascore_ids_overrides.csv` (tracked,
+   layered on top, wins over the base map, survives every re-import).
+   `scripts/sofascore-id-finder/` does the lookup rather than you doing it by
+   hand — it searches Sofascore for each name and confirms the hit by exact date
+   of birth, so a same-name player can't be matched by mistake:
 
    ```bash
-   # people.csv is the untracked ~65 MB provider crosswalk
-   cp /path/to/people.csv data/raw/people.csv
+   php artisan app:list-unmapped-players --out=unmapped.json   # --limit=25 to trial it
+   # paste scripts/sofascore-id-finder/find-ids.js into a DevTools console on
+   # sofascore.com, then paste unmapped.json into its panel (see its README)
+   cat sofascore_ids_overrides_additions.csv >> data/sofascore_ids_overrides.csv
    php artisan app:build-sofascore-id-map
    ```
 
-   Hand-mapped corrections live in `data/sofascore_ids_overrides.csv` (tracked,
-   layered on top) and survive every re-import.
+   It resolved 10 of a 15-player sample of the real 2026 gap; the rest were
+   genuinely absent from Sofascore. Whatever it can't confirm comes back as
+   commented rows to fill in by hand — the id is the trailing number in a
+   Sofascore profile URL, `sofascore.com/player/{slug}/{id}`.
+
+   Re-run the `sofascore_ids` backfill migration afterwards to push the new ids
+   into templates and existing saves.
 
    Newly mapped players still need their image uploaded, or the CDN 404s and
    they keep the default avatar. `scripts/sofascore-image-downloader/` produces
