@@ -42,6 +42,12 @@ frankenphp-worker.php
 # `php artisan telescope:publish` regenerates these.
 /public/vendor/telescope
 
+# Player photos live in the R2 bucket the CDN serves, not in the repo: there are
+# thousands of them and git cannot delta-compress them. Fetch with
+# `app:fetch-player-photos`, publish with scripts/upload-assets-to-r2.sh.
+# (Crests predate this and are tracked; they are a fraction of the size.)
+/public/players
+
 # Raw Transfermarkt→external-id crosswalk source (large). The slim, committed
 # data/sofascore_ids.json is built from it via `app:build-sofascore-id-map`.
 # data/raw/ is the current home; data/*/raw/ is kept for older season folders.
