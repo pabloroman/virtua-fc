@@ -184,11 +184,13 @@ class NegotiatePreContract
             'clause' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        // Salary cap: block the offer before the player can accept it.
-        if (! $this->salaryCapService->canCommitWage($game, $validated['wage'] * 100)) {
+        // Salary cap: block the offer before the player can accept it. A
+        // pre-contract wage starts next season, so it is gated on next
+        // season's bill (see SalaryCapService::canCommitNextSeasonWage).
+        if (! $this->salaryCapService->canCommitNextSeasonWage($game, $validated['wage'] * 100)) {
             return response()->json([
                 'status' => 'error',
-                'message' => $this->salaryCapService->blockMessage($game, $player->name, $validated['wage'] * 100),
+                'message' => $this->salaryCapService->nextSeasonBlockMessage($game, $player->name, $validated['wage'] * 100),
             ], 422);
         }
 
@@ -206,7 +208,9 @@ class NegotiatePreContract
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'offering_team_id' => $game->team_id,
-                'selling_team_id' => $player->team_id,
+                // The owning club, not the player's current location — see
+                // TransferService::submitPreContractOffer.
+                'selling_team_id' => $player->owningTeamId(),
                 'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
                 'direction' => TransferOffer::DIRECTION_INCOMING,
                 'transfer_fee' => 0,
@@ -287,10 +291,10 @@ class NegotiatePreContract
         }
 
         // Salary cap: re-check against the wage the player is holding out for.
-        if (! $this->salaryCapService->canCommitWage($game, (int) $offer->wage_counter_offer)) {
+        if (! $this->salaryCapService->canCommitNextSeasonWage($game, (int) $offer->wage_counter_offer)) {
             return response()->json([
                 'status' => 'error',
-                'message' => $this->salaryCapService->blockMessage($game, $player->name, (int) $offer->wage_counter_offer),
+                'message' => $this->salaryCapService->nextSeasonBlockMessage($game, $player->name, (int) $offer->wage_counter_offer),
             ], 422);
         }
 

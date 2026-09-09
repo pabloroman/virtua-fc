@@ -41,6 +41,10 @@ class TransferHeaderService
     {
         return TransferOffer::where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_PENDING)
+            // Only offers from *other* clubs are departures. A player loaned in
+            // to the user sits at the user's team_id, so a pre-contract the user
+            // himself made for that player would otherwise inflate this badge.
+            ->where('offering_team_id', '!=', $game->team_id)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })

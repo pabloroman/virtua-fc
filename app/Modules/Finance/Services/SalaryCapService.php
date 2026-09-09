@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TeamReputation;
 use App\Models\TransferOffer;
+use App\Modules\Squad\Services\NextSeasonProjectionService;
 use App\Support\Money;
 
 /**
@@ -34,6 +35,7 @@ class SalaryCapService
 
     public function __construct(
         private readonly BudgetProjectionService $budgetProjectionService,
+        private readonly NextSeasonProjectionService $nextSeasonProjectionService,
     ) {}
 
     /**
@@ -77,18 +79,22 @@ class SalaryCapService
     }
 
     /**
-     * The total annual wage the club is *committed* to, in cents.
+     * The total annual wage the club is *committed* to this season, in cents.
      *
      * Counts every player currently on the roster (including loaned-in players,
      * whose full wage the borrowing club pays — there is no loan subsidy) plus
      * any wages already agreed but not yet applied:
      *  - players with a pending renewal are counted at their pending wage;
-     *  - agreed-but-uncompleted incoming signings (free agents, pre-contracts,
-     *    transfers parked as AGREED) are counted at their offered wage.
+     *  - agreed-but-uncompleted incoming signings (free agents, transfers
+     *    parked as AGREED, loan-ins) are counted at their offered wage.
      *
      * Counting agreed-but-pending commitments stops a manager from stacking
      * several signings/renewals in one window that each fit individually but
-     * blow past the cap once they all apply.
+     * blow past the cap once they all apply. That reasoning holds only for
+     * deals that land *this* season, which is why pre-contracts are absent:
+     * they are explicitly held back from mid-season completion
+     * (TransferService::completeAgreedTransfers) and arrive at the season
+     * boundary, so they are charged to nextSeasonCommittedWageBill() instead.
      */
     public function committedWageBill(Game $game): int
     {
@@ -105,15 +111,36 @@ class SalaryCapService
             ->where('status', TransferOffer::STATUS_AGREED)
             ->whereIn('offer_type', [
                 TransferOffer::TYPE_USER_BID,
-                TransferOffer::TYPE_PRE_CONTRACT,
                 // Loaned-in players are paid in full, so an agreed-but-pending
                 // loan-in is a committed wage too (LoanService::requestLoanIn
                 // stamps offered_wage with the player's annual_wage).
                 TransferOffer::TYPE_LOAN_IN,
             ])
+            // A player already on the roster is in $squadWages at the wage he
+            // is actually being paid, so his agreed deal must not be added on
+            // top. This happens when the club buys a player it currently has
+            // on loan: a loaned-in player's team_id is the borrowing club
+            // (LoanService::completeLoanIn), so both halves would match him.
+            ->whereDoesntHave('gamePlayer', function ($query) use ($game) {
+                $query->where('team_id', $game->team_id);
+            })
             ->sum('offered_wage');
 
         return $squadWages + $agreedIncoming;
+    }
+
+    /**
+     * The total annual wage the club is committed to for the *start of next
+     * season*, in cents. Delegates to the squad planner's projection so the
+     * number always agrees with the roster the user is shown there.
+     *
+     * This is what a pre-contract must be measured against: its wage does not
+     * start until the season boundary, by which point contracts have run out,
+     * borrowed players have gone home and retirements have taken effect.
+     */
+    public function nextSeasonCommittedWageBill(Game $game): int
+    {
+        return $this->nextSeasonProjectionService->nextSeasonWageBill($game);
     }
 
     /**
@@ -181,6 +208,55 @@ class SalaryCapService
         }
 
         return ($committed - $freedWage + $newWage) <= $cap;
+    }
+
+    /**
+     * Whether committing $newWage *for next season* would keep the club within
+     * its cap — the gate for pre-contracts, whose wages start at the season
+     * boundary rather than now.
+     *
+     * Measured against the current cap because next season's revenue has not
+     * been projected yet: the pre-contract window runs January–May, and
+     * BudgetProjectionService only generates the new season's numbers during
+     * setup. The current ceiling is the honest available proxy, and a club
+     * that grows its revenue simply finds it has more room than it planned for.
+     *
+     * The over-the-cap freeze still applies. A club that has blown this
+     * season's bill cannot go on signing free agents for next season while
+     * the market is locked — the recovery path is selling, as it is everywhere
+     * else (see canCommitWage).
+     */
+    public function canCommitNextSeasonWage(Game $game, int $newWage): bool
+    {
+        if ($this->isOverCap($game)) {
+            return false;
+        }
+
+        return ($this->nextSeasonCommittedWageBill($game) + $newWage) <= $this->cap($game);
+    }
+
+    /**
+     * Localised "this would breach next season's cap" message for a blocked
+     * pre-contract. Mirrors blockMessage() but spells out that the shortfall is
+     * against next season's wage bill, so the number can be reconciled with the
+     * squad planner rather than with the current-season meter.
+     */
+    public function nextSeasonBlockMessage(Game $game, string $playerName, int $newWage): string
+    {
+        if ($this->isOverCap($game)) {
+            return __('messages.salary_cap_locked');
+        }
+
+        $projectedBill = $this->nextSeasonCommittedWageBill($game) + $newWage;
+        $cap = $this->cap($game);
+
+        return __('messages.pre_contract_exceeds_salary_cap', [
+            'player' => $playerName,
+            'wage' => Money::format($newWage),
+            'total' => Money::format($projectedBill),
+            'cap' => Money::format($cap),
+            'shortfall' => Money::format(max(0, $projectedBill - $cap)),
+        ]);
     }
 
     /**

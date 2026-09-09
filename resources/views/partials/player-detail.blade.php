@@ -15,7 +15,7 @@
         && !$gamePlayer->isRetiring()
         && ($isCalledUpFromReserve || !$gamePlayer->isLoanedIn($game->team_id))
         && !$gamePlayer->isLoanedOut($game->team_id)
-        && !$gamePlayer->hasPreContractAgreement()
+        && !$gamePlayer->hasAgreedPreContractDeparture()
         && !$gamePlayer->hasAgreedTransfer()
         && !$gamePlayer->hasActiveLoanSearch();
     $canSell = $canManage && !$gamePlayer->isInSaleCooldown($game);

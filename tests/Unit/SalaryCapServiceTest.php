@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
+use App\Models\Loan;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Models\User;
@@ -189,6 +190,139 @@ class SalaryCapServiceTest extends TestCase
         $this->assertSame(280_000_000, $this->service->tradingAllowanceRoom($game));
     }
 
+    // ── Pre-contracts: charged to next season, not this one ───────────────
+
+    public function test_pre_contract_does_not_move_the_current_season_bill(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+        $this->squadPlayer($game, annualWage: 100_000_000); // €1M
+
+        // A pre-contract's wage does not start until the season boundary, so
+        // it must not consume this season's room.
+        $target = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => Team::factory()->create()->id,
+            'annual_wage' => 30_000_000,
+        ]);
+        $this->agreedPreContract($game, $target, offeredWage: 200_000_000);
+
+        $this->assertSame(100_000_000, $this->service->committedWageBill($game));
+        // …and it is charged to next season instead: €1M staying + €2M arriving
+        $this->assertSame(300_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
+    public function test_pre_contracting_a_loaned_in_player_counts_his_wage_once(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+
+        // A player borrowed from another club sits at the user's team_id and
+        // the user pays his wage in full, then signs him on a pre-contract for
+        // next season. Both halves of the bill can see him — he must still be
+        // charged once, at the wage that actually applies in each season.
+        $loanee = $this->loanedInPlayer($game, annualWage: 300_000_000); // €3M
+        $this->agreedPreContract($game, $loanee, offeredWage: 400_000_000); // €4M
+
+        $this->assertSame(300_000_000, $this->service->committedWageBill($game));
+        $this->assertSame(400_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
+    public function test_next_season_bill_drops_departing_loanees_and_expiring_contracts(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+
+        $this->squadPlayer($game, annualWage: 100_000_000); // €1M, under contract
+        // Contract runs out at the season boundary with no renewal agreed.
+        $this->squadPlayer($game, annualWage: 200_000_000, contractUntil: '2025-06-30');
+        // Borrowed and going home at the boundary.
+        $this->loanedInPlayer($game, annualWage: 300_000_000);
+
+        $this->assertSame(600_000_000, $this->service->committedWageBill($game));
+        $this->assertSame(100_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
+    public function test_next_season_bill_keeps_a_loan_that_runs_past_the_boundary(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+        $this->loanedInPlayer($game, annualWage: 300_000_000, returnAt: '2026-06-30');
+
+        // Still at the club next season, still paid in full by the borrower.
+        $this->assertSame(300_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
+    public function test_next_season_bill_uses_the_agreed_renewal_wage(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+        $this->squadPlayer(
+            $game,
+            annualWage: 100_000_000,
+            pendingWage: 250_000_000,
+            contractUntil: '2025-06-30',
+        );
+
+        // The renewal keeps him past the boundary, at the wage he agreed.
+        $this->assertSame(250_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
+    public function test_can_commit_next_season_wage_measures_next_season_room(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M
+
+        $this->squadPlayer($game, annualWage: 300_000_000); // €3M, staying
+        // €3M of wage that expires at the boundary: it eats this season's room
+        // but leaves next season's untouched.
+        $this->squadPlayer($game, annualWage: 300_000_000, contractUntil: '2025-06-30');
+
+        $this->assertSame(600_000_000, $this->service->committedWageBill($game));
+        $this->assertSame(300_000_000, $this->service->nextSeasonCommittedWageBill($game));
+
+        // The old gate would have allowed only €1M; next season has €4M free.
+        $this->assertFalse($this->service->canCommitWage($game, 400_000_000));
+        $this->assertTrue($this->service->canCommitNextSeasonWage($game, 400_000_000));
+        $this->assertFalse($this->service->canCommitNextSeasonWage($game, 400_000_001));
+    }
+
+    public function test_next_season_gate_stays_locked_while_over_the_current_cap(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000); // cap €7M
+        // €8M committed this season, all of it expiring at the boundary — the
+        // freeze still applies, or an over-cap club could keep signing frees.
+        $this->squadPlayer($game, annualWage: 800_000_000, contractUntil: '2025-06-30');
+
+        $this->assertTrue($this->service->isOverCap($game));
+        $this->assertSame(0, $this->service->nextSeasonCommittedWageBill($game));
+        $this->assertFalse($this->service->canCommitNextSeasonWage($game, 1));
+        $this->assertSame(
+            __('messages.salary_cap_locked'),
+            $this->service->nextSeasonBlockMessage($game, 'Some Player', 100_000_000),
+        );
+    }
+
+    public function test_buying_a_loaned_in_player_does_not_double_count_him(): void
+    {
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+
+        // Same shape as the pre-contract case but a permanent bid: the player
+        // is already on the roster, so his agreed wage must replace — not
+        // stack on top of — the wage he is being paid today.
+        $loanee = $this->loanedInPlayer($game, annualWage: 300_000_000);
+        TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $loanee->id,
+            'offering_team_id' => $game->team_id,
+            'offer_type' => TransferOffer::TYPE_USER_BID,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'offered_wage' => 450_000_000,
+            'status' => TransferOffer::STATUS_AGREED,
+            'expires_at' => $game->current_date,
+            'game_date' => $game->current_date,
+            'resolved_at' => $game->current_date,
+        ]);
+
+        $this->assertSame(300_000_000, $this->service->committedWageBill($game));
+        $this->assertSame(450_000_000, $this->service->nextSeasonCommittedWageBill($game));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private function makeGame(int $projectedRevenue, int $carriedSurplus = 0): Game
@@ -215,13 +349,67 @@ class SalaryCapServiceTest extends TestCase
         return $game;
     }
 
-    private function squadPlayer(Game $game, int $annualWage, ?int $pendingWage = null): GamePlayer
-    {
+    private function squadPlayer(
+        Game $game,
+        int $annualWage,
+        ?int $pendingWage = null,
+        string $contractUntil = '2027-06-30',
+    ): GamePlayer {
         return GamePlayer::factory()->create([
             'game_id' => $game->id,
             'team_id' => $game->team_id,
             'annual_wage' => $annualWage,
             'pending_annual_wage' => $pendingWage,
+            'contract_until' => $contractUntil,
+        ]);
+    }
+
+    /**
+     * A player borrowed from another club. A loan rewrites team_id to the
+     * borrowing club (LoanService::completeLoanIn), so he is indistinguishable
+     * from an owned player by team_id alone — which is exactly what makes the
+     * double-counting cases above possible.
+     */
+    private function loanedInPlayer(
+        Game $game,
+        int $annualWage,
+        string $returnAt = '2025-06-30',
+    ): GamePlayer {
+        $player = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'annual_wage' => $annualWage,
+            'contract_until' => '2027-06-30',
+        ]);
+
+        Loan::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => Team::factory()->create()->id,
+            'loan_team_id' => $game->team_id,
+            'started_at' => '2024-08-01',
+            'return_at' => $returnAt,
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        return $player;
+    }
+
+    private function agreedPreContract(Game $game, GamePlayer $player, int $offeredWage): TransferOffer
+    {
+        return TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => $player->owningTeamId(),
+            'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'offered_wage' => $offeredWage,
+            'status' => TransferOffer::STATUS_AGREED,
+            'expires_at' => $game->current_date,
+            'game_date' => $game->current_date,
+            'resolved_at' => $game->current_date,
         ]);
     }
 

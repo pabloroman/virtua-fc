@@ -137,6 +137,103 @@ class NextSeasonProjectionService
     }
 
     /**
+     * The annual wage the club is committed to for the *start of next season*,
+     * in cents.
+     *
+     * The current-season bill (SalaryCapService::committedWageBill) answers a
+     * different question: what the club pays right now. The two diverge sharply
+     * during the January–May pre-contract window, because most of what changes
+     * at the season boundary is already known — contracts run out, borrowed
+     * players go home, players retire, and pre-contracts arrive. Gating a
+     * next-season commitment on the current-season bill therefore charges a
+     * wage against liabilities that will not exist when that wage starts.
+     *
+     * Counts, using the same staying/outgoing/incoming classification the
+     * squad planner shows the user:
+     *  - owned players still on the books, at their agreed renewal wage where
+     *    one is pending — minus anyone loaned out across the boundary, whose
+     *    wage the borrowing club carries while he is away;
+     *  - borrowed players whose loan runs past next-season kickoff (the
+     *    borrowing club pays in full — there is no loan subsidy). Loans that
+     *    end at the boundary are excluded: that freed wage is precisely what
+     *    makes room for next season;
+     *  - reserve players who age out of the filial and move up automatically;
+     *  - agreed incoming pre-contracts and transfers, at the wage agreed
+     *    rather than the wage the player earns at his current club.
+     *
+     * Agreed loan-ins are deliberately absent: a loan returns at season end, so
+     * it is a current-season cost, not a next-season commitment.
+     */
+    public function nextSeasonWageBill(Game $game): int
+    {
+        $seasonEndDate = $game->getSeasonEndDate();
+
+        $agreedIncoming = TransferOffer::query()
+            ->where('game_id', $game->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->whereIn('offer_type', [
+                TransferOffer::TYPE_USER_BID,
+                TransferOffer::TYPE_PRE_CONTRACT,
+            ])
+            ->get(['game_player_id', 'offered_wage']);
+
+        // A player can be both on the roster and the subject of an agreed
+        // incoming deal — signing someone the club currently has on loan. The
+        // deal supersedes his present wage, so charge the agreed wage only.
+        $agreedPlayerIds = $agreedIncoming->pluck('game_player_id')->flip();
+
+        $total = (int) $agreedIncoming->sum('offered_wage');
+
+        foreach ($this->loadOwnedPlayers($game) as $player) {
+            if (isset($agreedPlayerIds[$player->id])) {
+                continue;
+            }
+
+            $verdict = $this->classifyOwned($player, $seasonEndDate);
+
+            if ($verdict['status'] !== self::STATUS_STAYING
+                || $verdict['reason'] === self::REASON_STILL_ON_LOAN) {
+                continue;
+            }
+
+            $total += $this->nextSeasonWageFor($player);
+        }
+
+        foreach ($this->loadLoanedInPlayers($game) as $player) {
+            if (isset($agreedPlayerIds[$player->id])) {
+                continue;
+            }
+
+            if ($this->classifyLoanedIn($player, $game, $seasonEndDate) === self::REASON_LOAN_ENDING) {
+                continue;
+            }
+
+            $total += $this->nextSeasonWageFor($player);
+        }
+
+        foreach ($this->loadIncomingReservePromotions($game) as $player) {
+            if (isset($agreedPlayerIds[$player->id])) {
+                continue;
+            }
+
+            $total += $this->nextSeasonWageFor($player);
+        }
+
+        return $total;
+    }
+
+    /**
+     * What a player already on the books will earn next season: the wage agreed
+     * in a pending renewal if there is one, otherwise his current wage.
+     */
+    private function nextSeasonWageFor(GamePlayer $player): int
+    {
+        return $player->pending_annual_wage ?? $player->annual_wage ?? 0;
+    }
+
+    /**
      * Players the user owns: physically at the user's team (and not loaned-in
      * from elsewhere), or loaned-out from the user's team to another club.
      */
@@ -268,11 +365,11 @@ class NextSeasonProjectionService
             return ['status' => self::STATUS_OUTGOING, 'reason' => self::REASON_RETIRING];
         }
 
-        if ($player->hasAgreedTransfer() && ! $player->hasPreContractAgreement()) {
+        if ($player->hasAgreedTransfer() && ! $player->hasAgreedPreContractDeparture()) {
             return ['status' => self::STATUS_OUTGOING, 'reason' => self::REASON_TRANSFER_AGREED];
         }
 
-        if ($player->hasPreContractAgreement()) {
+        if ($player->hasAgreedPreContractDeparture()) {
             return ['status' => self::STATUS_OUTGOING, 'reason' => self::REASON_PRE_CONTRACT_DEPARTING];
         }
 
