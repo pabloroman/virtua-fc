@@ -17,6 +17,10 @@ class ShowSquad
 
         $data = $this->squadService->buildSquadOverview($game);
 
-        return view('squad', ['game' => $game, ...$data]);
+        return view('squad', [
+            'game' => $game,
+            'medicalTier' => $game->currentInvestment?->medical_tier ?? 0,
+            ...$data,
+        ]);
     }
 }

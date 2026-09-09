@@ -213,7 +213,7 @@ return [
     'welcome_step_matches' => 'Play matches',
     'welcome_step_matches_desc' => 'Choose your lineup, formation and mentality before each match. Watch the live match and make tactical substitutions.',
     'welcome_step_squad' => 'Manage your squad',
-    'welcome_step_squad_desc' => 'Monitor energy, development and morale. The youth academy produces young talents every season.',
+    'welcome_step_squad_desc' => 'Monitor energy, development and morale. The youth academy produces young talents throughout the season.',
     'welcome_step_transfers' => 'Sign and sell players',
     'welcome_step_transfers_desc' => 'Use scouts to find talent, negotiate transfers during summer and winter windows, and manage loans.',
     'welcome_step_finances' => 'Manage finances',

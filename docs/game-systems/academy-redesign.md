@@ -5,11 +5,17 @@ The youth academy functions as a B team, producing homegrown talent calibrated t
 ## Season Rhythm
 
 ```
-Season start → New batch arrives (all stats visible)
-Throughout    → Players develop each matchday
+Throughout    → Prospects arrive sporadically (year-round) + develop each matchday
 Any time      → Promote / loan / dismiss
 Season end    → Mandatory evaluation: keep / promote / loan / dismiss
 ```
+
+Prospects are not handed out in a season-start batch. Instead, each
+career-action tick rolls for a new arrival with a per-tick probability
+calibrated so the *expected* number of prospects over a season matches the
+academy tier's average (see `YouthAcademyService::maybeGenerateProspect`,
+called from `CareerActionProcessor`). The academy therefore starts empty and
+fills gradually, and each arrival fires its own notification.
 
 ## Quality Distribution (Normal / Gaussian)
 
@@ -25,9 +31,9 @@ This produces realistic clustering: most prospects are average for their tier, w
 
 ## Tiers
 
-Academy tier (from budget allocation) determines batch size, base quality mean, and potential upside. The academy has no capacity limit.
+Academy tier (from budget allocation) determines the expected number of arrivals per season, base quality mean, and potential upside. The academy has no capacity limit.
 
-| Tier | Arrivals | Base Quality Mean | Potential Upside Mean |
+| Tier | Expected arrivals / season | Base Quality Mean | Potential Upside Mean |
 |------|----------|-------------------|----------------------|
 | 1 — Basic | 2-3 | 45 | +10 |
 | 2 — Good | 3-5 | 52 | +12 |

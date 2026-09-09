@@ -54,6 +54,21 @@ return [
     'staged_cancel' => 'Cancelar',
     'adjust_allocation' => 'Ajustar Asignación',
 
+    // Investment-area nudge banners (shown on the pages each area affects)
+    'invest_notice_cta' => 'Ajustar inversión',
+    'invest_notice_youth_academy_title' => 'Haz crecer tu cantera',
+    'invest_notice_youth_academy_body' => 'Una mayor inversión en cantera trae más promesas — y mejores — a lo largo de la temporada.',
+    'invest_notice_youth_academy_maxed_title' => 'Cantera de clase mundial',
+    'invest_notice_youth_academy_maxed_body' => 'Tu cantera está al máximo — las mejores promesas llegan a lo largo de la temporada.',
+    'invest_notice_medical_title' => 'Refuerza tu servicio médico',
+    'invest_notice_medical_body' => 'Una mayor inversión médica acelera la recuperación de lesiones y reduce su frecuencia.',
+    'invest_notice_medical_maxed_title' => 'Servicio médico de clase mundial',
+    'invest_notice_medical_maxed_body' => 'Tu servicio médico está al máximo — recuperación más rápida y prevención activa de lesiones.',
+    'invest_notice_scouting_title' => 'Amplía tu red de ojeadores',
+    'invest_notice_scouting_body' => 'Una mayor inversión en ojeadores amplía tu alcance y ofrece más informes — y más precisos.',
+    'invest_notice_scouting_maxed_title' => 'Red de ojeadores global',
+    'invest_notice_scouting_maxed_body' => 'Tu red de ojeadores está al máximo — alcance global con las búsquedas más rápidas y precisas.',
+
     // Tiers
     'youth_academy' => 'Cantera',
 
