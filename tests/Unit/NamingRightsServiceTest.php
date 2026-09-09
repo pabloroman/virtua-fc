@@ -12,7 +12,6 @@ use App\Models\GameStadium;
 use App\Models\GameStadiumNamingDeal;
 use App\Models\Team;
 use App\Models\TeamReputation;
-use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Finance\Services\SalaryCapService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Stadium\Services\FanLoyaltyService;
@@ -260,7 +259,7 @@ class NamingRightsServiceTest extends TestCase
         $offer = $this->seedOffer($game, status: GameStadiumNamingDeal::STATUS_PENDING, value: 1_000_000_00);
 
         config()->set('finances.wage_cap_ratio', 0.70);
-        $salaryCap = new SalaryCapService(Mockery::mock(BudgetProjectionService::class));
+        $salaryCap = app(SalaryCapService::class);
 
         $capBefore = $salaryCap->cap($game);
         $this->service->acceptOffer($game, $offer->id);
