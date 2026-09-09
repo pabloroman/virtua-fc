@@ -31,11 +31,13 @@ class SubmitPreContractOffer
 
         $offeredWageCents = (int) ($validated['offered_wage'] * 100);
 
-        // Salary cap: a pre-contract is a free signing — block it if the
-        // committed wage bill would breach the cap.
-        if (! $this->salaryCapService->canCommitWage($game, $offeredWageCents)) {
+        // Salary cap: a pre-contract is a free signing whose wage starts next
+        // season, so it is gated on next season's committed bill — not this
+        // season's, which still carries contracts and loans that expire before
+        // the new wage ever begins.
+        if (! $this->salaryCapService->canCommitNextSeasonWage($game, $offeredWageCents)) {
             return redirect()->route('game.transfers', $gameId)
-                ->with('error', $this->salaryCapService->blockMessage($game, $player->name, $offeredWageCents));
+                ->with('error', $this->salaryCapService->nextSeasonBlockMessage($game, $player->name, $offeredWageCents));
         }
 
         try {

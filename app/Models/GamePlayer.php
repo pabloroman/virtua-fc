@@ -460,6 +460,26 @@ class GamePlayer extends Model
      * Loaned-out players (gone elsewhere but parent-owned by the user) count.
      * Loaned-in players from a third-party club do not.
      */
+    /**
+     * The id of the club that actually owns the player's contract.
+     *
+     * A loan rewrites team_id to wherever the player is playing (see
+     * LoanService::completeLoanOut / completeLoanIn), so for anyone on loan
+     * team_id is a location, not an owner. Any deal negotiated with the
+     * selling club must be recorded against this id: record the location
+     * instead and completion stops recognising the seller the moment the loan
+     * ends, because TransferCompletionService re-asserts that the player is
+     * still at the club that agreed to sell him.
+     */
+    public function owningTeamId(): ?string
+    {
+        $loan = $this->relationLoaded('activeLoan')
+            ? $this->activeLoan
+            : $this->activeLoan()->first();
+
+        return $loan?->parent_team_id ?? $this->team_id;
+    }
+
     public function isUserOwned(Game $game): bool
     {
         $teamIds = $game->userTeamIds();
@@ -550,7 +570,44 @@ class GamePlayer extends Model
     }
 
     /**
-     * Check if player has an agreed pre-contract (leaving on free transfer at end of season).
+     * Whether the player has agreed a pre-contract that takes him *away* from
+     * the club he currently sits at — i.e. he leaves on a free at season end.
+     *
+     * A pre-contract whose buying club is the club the player is already at is
+     * not a departure: that is a club signing a player it currently holds on
+     * loan, who joins permanently instead of going back to his parent club.
+     * Without the distinction such a signing reads as "leaving on a free"
+     * across the squad and transfer surfaces, because a loaned-in player's
+     * team_id is the borrowing club (see LoanService::completeLoanIn).
+     */
+    public function hasAgreedPreContractDeparture(): bool
+    {
+        // A free agent has no club to leave.
+        if ($this->team_id === null) {
+            return false;
+        }
+
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->contains(function ($offer) {
+                return $offer->status === TransferOffer::STATUS_AGREED
+                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
+                    && $offer->offering_team_id !== $this->team_id;
+            });
+        }
+
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('offering_team_id', '!=', $this->team_id)
+            ->exists();
+    }
+
+    /**
+     * Check if player has any agreed pre-contract, in either direction.
+     *
+     * Use this where the question is "is this player's contract situation
+     * already settled" (so he should receive no further offers). Where the
+     * question is "is he leaving", use hasAgreedPreContractDeparture().
      */
     public function hasPreContractAgreement(): bool
     {
@@ -606,7 +663,7 @@ class GamePlayer extends Model
             return false;
         }
 
-        if ($this->hasRenewalAgreed() || $this->hasPreContractAgreement()) {
+        if ($this->hasRenewalAgreed() || $this->hasAgreedPreContractDeparture()) {
             return false;
         }
 
@@ -757,7 +814,7 @@ class GamePlayer extends Model
         }
 
         // Already agreed to leave on pre-contract
-        if ($this->hasPreContractAgreement()) {
+        if ($this->hasAgreedPreContractDeparture()) {
             return false;
         }
 

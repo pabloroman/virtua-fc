@@ -46,11 +46,17 @@ class ShowOutgoingTransfers
         $unsolicitedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_UNSOLICITED);
         $listedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_LISTED);
 
-        // Pre-contract offers (players being poached)
+        // Pre-contract offers (players being poached).
+        //
+        // The offering_team_id guard keeps the user's *own* incoming deals out
+        // of the departures list. A player the user has loaned in sits at the
+        // user's team_id, so without it a pre-contract the user himself signed
+        // renders here as one of his players leaving on a free.
         $preContractOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('offering_team_id', '!=', $game->team_id)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })
@@ -63,6 +69,7 @@ class ShowOutgoingTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('offering_team_id', '!=', $game->team_id)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })
@@ -73,6 +80,7 @@ class ShowOutgoingTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('offering_team_id', '!=', $game->team_id)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })

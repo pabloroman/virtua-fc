@@ -1523,7 +1523,10 @@ class TransferService
             'game_id' => $game->id,
             'game_player_id' => $player->id,
             'offering_team_id' => $game->team_id,
-            'selling_team_id' => $player->team_id,
+            // The owning club, not the player's current location: a player on
+            // loan is sold by his parent club, and the deal only completes
+            // after LoanReturnProcessor has sent him back there.
+            'selling_team_id' => $player->owningTeamId(),
             'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
             'direction' => TransferOffer::DIRECTION_INCOMING,
             'transfer_fee' => 0,

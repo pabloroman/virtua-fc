@@ -136,25 +136,32 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->whereNull('pending_annual_wage')
             ->pluck('id');
 
-        // Players with agreed outgoing pre-contracts stay on their team
-        // until the pre-contract transfer processor moves them — skip them.
+        // Players with an agreed pre-contract stay at their club until
+        // PreContractTransferProcessor (priority 30) moves them — skip them
+        // here, in *both* directions and at every club, not just the user's.
+        //
+        // Outgoing: the player must still be at the user's club for
+        // completePreContractTransfers to find him.
+        //
+        // Incoming: the deal only completes while the player is still at the
+        // club that agreed to sell him — TransferCompletionService re-asserts
+        // that before moving him. Freeing him here sets team_id = null, so the
+        // signing the user negotiated is rejected as "transfer fell through".
+        // That is not an edge case: a club declining to renew is precisely why
+        // a pre-contract exists, so the ordinary Bosman signing was the one
+        // failing, and silently.
         $preContractPlayerIds = TransferOffer::where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where(function ($query) {
-                $query->whereNull('direction')
-                    ->orWhere('direction', '!=', TransferOffer::DIRECTION_INCOMING);
-            })
             ->pluck('game_player_id')
             ->flip()
             ->all();
 
-        $userTeamFreeAgentIds = $userTeamExpiredIds
-            ->reject(fn ($id) => isset($preContractPlayerIds[$id]))
-            ->all();
-
         // Bulk operations
-        $freeAgentIds = array_merge($userTeamFreeAgentIds, $veteranFreeAgentIds, $nonVeteranFreeAgentIds);
+        $freeAgentIds = array_values(array_filter(
+            array_merge($userTeamExpiredIds->all(), $veteranFreeAgentIds, $nonVeteranFreeAgentIds),
+            fn ($id) => ! isset($preContractPlayerIds[$id]),
+        ));
         if (!empty($freeAgentIds)) {
             // A release clause is a contract attribute: non-null ⟺ under
             // contract. Becoming a free agent nulls it (harmless no-op for saves

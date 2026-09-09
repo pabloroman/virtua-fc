@@ -23,6 +23,7 @@ return [
     'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
     'signing_exceeds_salary_cap' => 'Fichar a :player por :wage/año elevaría tu masa salarial a :total, por encima de tu límite salarial de :cap. Libera :shortfall vendiendo jugadores primero.',
     'salary_cap_locked' => 'Estás por encima de tu límite salarial. Vende jugadores para volver por debajo del límite antes de fichar o renovar.',
+    'pre_contract_exceeds_salary_cap' => 'Fichar a :player por :wage/año elevaría tu masa salarial de la próxima temporada a :total, por encima de tu límite salarial de :cap. Te faltan :shortfall.',
 
     // Bid/loan submission confirmations
     'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',

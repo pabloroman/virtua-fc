@@ -89,7 +89,7 @@ class ShowPlayerDetail
             && $gamePlayer->isUserOwned($game)
             && in_array($gamePlayer->team_id, $game->userTeamIds(), true)
             && !$gamePlayer->isRetiring()
-            && !$gamePlayer->hasPreContractAgreement()
+            && !$gamePlayer->hasAgreedPreContractDeparture()
             && !$gamePlayer->hasRenewalAgreed()
             && !$gamePlayer->hasAgreedTransfer()
             && !$gamePlayer->hasActiveLoanSearch();
