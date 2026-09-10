@@ -110,7 +110,7 @@ class NegotiateFreeAgent
         $hasPending = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
+            ->ofType(TransferOffer::TYPE_USER_BID)
             ->where('transfer_fee', 0)
             ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
             ->exists();
@@ -301,7 +301,7 @@ class NegotiateFreeAgent
         $query = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_USER_BID)
+            ->ofType(TransferOffer::TYPE_USER_BID)
             ->where('transfer_fee', 0)
             ->where('status', TransferOffer::STATUS_PENDING);
 

@@ -16,6 +16,7 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
+use App\Modules\Transfer\Exceptions\LockedPlayerMovedException;
 use Carbon\Carbon;
 
 /**
@@ -226,6 +227,16 @@ class TransferCompletionService
         // and the user is told why. Free-agent signings (no selling club) take a
         // different completion path, so selling_team_id is always set here.
         if ($offer->selling_team_id !== null && $player->team_id !== $offer->selling_team_id) {
+            // For an ordinary agreed bid this is a legitimate race the market is
+            // allowed to win. For a locking deal it is not: every path that moves
+            // players is required to skip TransferOffer::locksPlayer() players,
+            // so reaching here means one of them did not. Report it so the
+            // offending path is visible instead of surfacing months later as a
+            // support ticket; the user-facing handling below is unchanged.
+            if ($offer->locksPlayer()) {
+                report(LockedPlayerMovedException::forOffer($offer, $player->team_id));
+            }
+
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
             $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam, $offer->isPreContract());
             return false;

@@ -377,15 +377,11 @@ class DispositionService
         }
 
         if ($player->relationLoaded('transferOffers')) {
-            $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
-                return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                    && $offer->status === TransferOffer::STATUS_PENDING;
-            });
+            $hasPreContractOffer = $player->transferOffers->contains(
+                fn (TransferOffer $offer) => $offer->isPreContract() && $offer->isPending(),
+            );
         } else {
-            $hasPreContractOffer = $player->transferOffers()
-                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                ->where('status', TransferOffer::STATUS_PENDING)
-                ->exists();
+            $hasPreContractOffer = $player->transferOffers()->preContract()->pending()->exists();
         }
 
         return $hasPreContractOffer ? -0.15 : -0.08;

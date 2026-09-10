@@ -1443,34 +1443,17 @@ class AITransferMarketService
             ->get(['id', 'game_id', 'game_player_id', 'from_team_id', 'to_team_id', 'transfer_fee', 'window']);
         $alreadyTransferredSet = array_flip($seasonTransfers->pluck('game_player_id')->all());
 
-        // Players the user has locked in must not be sold out from under them by
-        // AI churn. Folding their ids into $alreadyTransferredSet excludes them
-        // from every AI sell path that already honours that set (buildSellOffers
-        // etc.). Two kinds of lock-in qualify:
-        //
-        //  - a paid release clause, which is non-refusable;
-        //  - an agreed pre-contract, which only completes while the player is
-        //    still at the club that agreed to sell him — TransferCompletionService
-        //    re-asserts that at season end, so an AI club buying him mid-season
-        //    silently kills a signing the user has already committed wages to.
+        // Players held in place by a locking deal (TransferOffer::locksPlayer())
+        // must not be sold out from under the user by AI churn. Folding their
+        // ids into $alreadyTransferredSet excludes them from every AI sell path
+        // that already honours that set (buildSellOffers etc.).
         //
         // Pre-contracts need the protection most: one can only target a player in
         // his final contract year, and that is precisely what scoreClearingCandidate
         // ranks highest (a +6 contract bonus, and the "never clear a core player"
         // rule is lifted for them). Without this the AI is most motivated to sell
         // exactly the players the user has locked in.
-        $lockedIds = TransferOffer::where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->whereIn('status', [TransferOffer::STATUS_FEE_AGREED, TransferOffer::STATUS_AGREED])
-            ->where(function ($query) {
-                $query->where('triggered_release_clause', true)
-                    ->orWhere('offer_type', TransferOffer::TYPE_PRE_CONTRACT);
-            })
-            ->pluck('game_player_id')
-            ->all();
-        foreach ($lockedIds as $lockedId) {
-            $alreadyTransferredSet[$lockedId] = true;
-        }
+        $alreadyTransferredSet += TransferOffer::lockedPlayerIds($game->id);
 
         $windowTransfers = $seasonTransfers->where('window', $window);
         $completedFinancials = $this->buildCompletedFinancials($windowTransfers, $game->team_id);

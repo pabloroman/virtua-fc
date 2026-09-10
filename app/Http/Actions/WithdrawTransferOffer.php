@@ -16,7 +16,7 @@ class WithdrawTransferOffer
         $offer = TransferOffer::with(['gamePlayer'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->incoming()
             ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED])
             ->firstOrFail();
 

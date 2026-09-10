@@ -8,6 +8,7 @@ use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TeamReputation;
+use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
@@ -130,6 +131,12 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             ->groupBy('team_id');
 
         $aiTeamIds = $playersByTeam->keys()->reject(fn ($id) => $id === $game->team_id)->values();
+
+        // Never trim a player held in place by a locking deal
+        // (TransferOffer::locksPlayer()): releasing him to free agency would
+        // fail the deal at completion. By this priority every such deal has
+        // normally completed, but the invariant belongs at the mutation site.
+        $lockedPlayerIds = TransferOffer::lockedPlayerIds($game->id);
         $reputationLevels = TeamReputation::resolveLevels($game->id, $aiTeamIds->all());
 
         foreach ($aiTeamIds as $teamId) {
@@ -159,7 +166,11 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             $projectedSize = $currentSquadSize + $youthCount;
             $toRelease = max(0, $projectedSize - self::YOUTH_INTAKE_SQUAD_CAP);
             if ($toRelease > 0) {
-                $candidates = $this->getReleaseCandidates($players, $game->current_date, $toRelease);
+                $candidates = $this->getReleaseCandidates(
+                    $players->reject(fn ($p) => isset($lockedPlayerIds[$p->id])),
+                    $game->current_date,
+                    $toRelease,
+                );
                 $releaseIds = array_merge($releaseIds, $candidates);
             }
 

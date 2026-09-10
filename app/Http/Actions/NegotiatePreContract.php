@@ -88,8 +88,8 @@ class NegotiatePreContract
         $existing = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->preContract()
+            ->pending()
             ->where('terms_status', 'countered')
             ->first();
 
@@ -127,8 +127,8 @@ class NegotiatePreContract
         $hasPending = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
+            ->preContract()
+            ->active()
             ->exists();
 
         if ($hasPending) {
@@ -198,8 +198,8 @@ class NegotiatePreContract
         $offer = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->preContract()
+            ->pending()
             ->first();
 
         if (!$offer) {
@@ -276,8 +276,8 @@ class NegotiatePreContract
         $offer = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
             ->where('offering_team_id', $game->team_id)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->preContract()
+            ->pending()
             ->where('terms_status', 'countered')
             ->first();
 

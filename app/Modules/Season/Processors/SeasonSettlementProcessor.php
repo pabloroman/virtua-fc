@@ -303,7 +303,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
         $transferDates = TransferOffer::where('game_id', $game->id)
             ->whereIn('game_player_id', $playerIds)
             ->where('status', TransferOffer::STATUS_COMPLETED)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->incoming()
             ->whereBetween('resolved_at', [$seasonStart, $seasonEnd])
             ->pluck('resolved_at', 'game_player_id');
 

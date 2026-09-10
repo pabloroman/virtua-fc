@@ -86,9 +86,9 @@ class LoanService
         // Pre-load players that already have pending loan-out offers so we don't
         // generate a second batch while the user is still deciding on the first.
         $playersWithPendingOffers = TransferOffer::where('game_id', $game->id)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->outgoing()
+            ->pending()
             ->whereIn('game_player_id', $searching->pluck('id'))
             ->pluck('game_player_id')
             ->unique()
@@ -356,9 +356,9 @@ class LoanService
     {
         TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $gamePlayerId)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->outgoing()
+            ->pending()
             ->update([
                 'status' => TransferOffer::STATUS_EXPIRED,
                 'resolved_at' => $game->current_date,
@@ -475,9 +475,9 @@ class LoanService
     {
         $pendingLoans = TransferOffer::with(['gamePlayer.team'])
             ->where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->incoming()
+            ->ofType(TransferOffer::TYPE_LOAN_IN)
+            ->pending()
             ->whereNull('resolved_at')
             ->get();
 
@@ -668,9 +668,9 @@ class LoanService
         // Reject sibling offers for the same player
         TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $offer->game_player_id)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->outgoing()
+            ->pending()
             ->where('id', '!=', $offer->id)
             ->update([
                 'status' => TransferOffer::STATUS_REJECTED,

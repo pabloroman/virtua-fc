@@ -106,16 +106,15 @@ class SalaryCapService
 
         $agreedIncoming = (int) TransferOffer::query()
             ->where('game_id', $game->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->whereIn('offer_type', [
+            ->incomingFor($game->team_id)
+            ->agreed()
+            ->ofType(
                 TransferOffer::TYPE_USER_BID,
                 // Loaned-in players are paid in full, so an agreed-but-pending
                 // loan-in is a committed wage too (LoanService::requestLoanIn
                 // stamps offered_wage with the player's annual_wage).
                 TransferOffer::TYPE_LOAN_IN,
-            ])
+            )
             // A player already on the roster is in $squadWages at the wage he
             // is actually being paid, so his agreed deal must not be added on
             // top. This happens when the club buys a player it currently has

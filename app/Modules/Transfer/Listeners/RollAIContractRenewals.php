@@ -116,10 +116,9 @@ class RollAIContractRenewals
         // Renewing them would rug-pull an active user (or AI) negotiation —
         // the existing pre-contract flow has earned priority. Fetch once and
         // hash for O(1) lookup.
-        $blockedIds = DB::table('transfer_offers')
-            ->where('game_id', $game->id)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
+        $blockedIds = TransferOffer::where('game_id', $game->id)
+            ->preContract()
+            ->active()
             ->pluck('game_player_id')
             ->flip()
             ->all();

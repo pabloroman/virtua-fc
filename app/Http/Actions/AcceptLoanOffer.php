@@ -22,9 +22,9 @@ class AcceptLoanOffer
         $offer = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->outgoing()
+            ->pending()
             ->firstOrFail();
 
         // Verify the player belongs to the user's organization (first team or reserve team)

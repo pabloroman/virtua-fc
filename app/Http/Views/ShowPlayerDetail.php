@@ -32,10 +32,8 @@ class ShowPlayerDetail
                     ->orWhereHas('activeLoan', fn ($loan) => $loan->whereIn('parent_team_id', $userTeamIds))
                     ->orWhereHas('transferOffers', fn ($offer) => $offer
                         ->where('game_id', $game->id)
-                        ->where('offering_team_id', $game->team_id)
-                        ->where('direction', TransferOffer::DIRECTION_INCOMING)
-                        ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                        ->where('status', TransferOffer::STATUS_AGREED));
+                        ->incomingFor($game->team_id)
+                        ->agreedPreContract());
             })
             ->findOrFail($playerId);
 
@@ -43,11 +41,9 @@ class ShowPlayerDetail
         // pre-contract — drives the banner in the detail modal so the user
         // sees at a glance "this isn't mine yet, but they're coming".
         $incomingPreContract = TransferOffer::where('game_id', $game->id)
-            ->where('offering_team_id', $game->team_id)
             ->where('game_player_id', $gamePlayer->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_AGREED)
+            ->incomingFor($game->team_id)
+            ->agreedPreContract()
             ->exists();
 
         $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);

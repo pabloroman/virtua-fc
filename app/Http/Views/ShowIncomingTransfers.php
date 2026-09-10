@@ -23,21 +23,21 @@ class ShowIncomingTransfers
         $activeNegotiations = TransferOffer::with(['gamePlayer.team', 'sellingTeam'])
             ->where('game_id', $gameId)
             ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED])
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->incoming()
             ->orderByDesc('game_date')
             ->get();
 
         $recentSignings = TransferOffer::with(['gamePlayer.team', 'sellingTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->incoming()
             ->orderByDesc('resolved_at')
             ->get();
 
         $incomingAgreedTransfers = TransferOffer::with(['gamePlayer.team', 'sellingTeam'])
             ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->agreed()
+            ->incoming()
             ->orderByDesc('game_date')
             ->get();
 

@@ -550,12 +550,10 @@ class GamePlayer extends Model
     public function hasAgreedTransfer(): bool
     {
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains('status', TransferOffer::STATUS_AGREED);
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isAgreed());
         }
 
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->exists();
+        return $this->transferOffers()->agreed()->exists();
     }
 
     /**
@@ -563,10 +561,12 @@ class GamePlayer extends Model
      */
     public function agreedTransfer(): ?TransferOffer
     {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->first(fn (TransferOffer $offer) => $offer->isAgreed());
+        }
+
         /** @var TransferOffer|null */
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->first();
+        return $this->transferOffers()->agreed()->first();
     }
 
     /**
@@ -588,16 +588,13 @@ class GamePlayer extends Model
         }
 
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains(function ($offer) {
-                return $offer->status === TransferOffer::STATUS_AGREED
-                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                    && $offer->offering_team_id !== $this->team_id;
-            });
+            return $this->transferOffers->contains(
+                fn (TransferOffer $offer) => $offer->isAgreedPreContract() && $offer->offering_team_id !== $this->team_id,
+            );
         }
 
         return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->agreedPreContract()
             ->where('offering_team_id', '!=', $this->team_id)
             ->exists();
     }
@@ -612,16 +609,10 @@ class GamePlayer extends Model
     public function hasPreContractAgreement(): bool
     {
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains(function ($offer) {
-                return $offer->status === TransferOffer::STATUS_AGREED
-                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT;
-            });
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isAgreedPreContract());
         }
 
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->exists();
+        return $this->transferOffers()->agreedPreContract()->exists();
     }
 
     /**

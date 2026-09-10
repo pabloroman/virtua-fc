@@ -136,31 +136,21 @@ class ContractExpirationProcessor implements SeasonProcessor
             ->whereNull('pending_annual_wage')
             ->pluck('id');
 
-        // Players with an agreed pre-contract stay at their club until
-        // PreContractTransferProcessor (priority 30) moves them — skip them
-        // here, in *both* directions and at every club, not just the user's.
-        //
-        // Outgoing: the player must still be at the user's club for
-        // completePreContractTransfers to find him.
-        //
-        // Incoming: the deal only completes while the player is still at the
-        // club that agreed to sell him — TransferCompletionService re-asserts
-        // that before moving him. Freeing him here sets team_id = null, so the
-        // signing the user negotiated is rejected as "transfer fell through".
-        // That is not an edge case: a club declining to renew is precisely why
-        // a pre-contract exists, so the ordinary Bosman signing was the one
-        // failing, and silently.
-        $preContractPlayerIds = TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->pluck('game_player_id')
-            ->flip()
-            ->all();
+        // Players held in place by a locking deal (an agreed pre-contract in
+        // either direction, or a paid release clause) stay at their club until
+        // the processor that completes the deal moves them. Freeing one here
+        // sets team_id = null, and the deal is then rejected as "transfer fell
+        // through" because completion re-asserts the player is still at the
+        // club that agreed to sell him. That is the ordinary Bosman case, not
+        // an edge case: a club declining to renew is precisely why a
+        // pre-contract exists. The definition of "locked" lives in one place,
+        // TransferOffer::locksPlayer(), so every mutation site agrees.
+        $lockedPlayerIds = TransferOffer::lockedPlayerIds($game->id);
 
         // Bulk operations
         $freeAgentIds = array_values(array_filter(
             array_merge($userTeamExpiredIds->all(), $veteranFreeAgentIds, $nonVeteranFreeAgentIds),
-            fn ($id) => ! isset($preContractPlayerIds[$id]),
+            fn ($id) => ! isset($lockedPlayerIds[$id]),
         ));
         if (!empty($freeAgentIds)) {
             // A release clause is a contract attribute: non-null ⟺ under
