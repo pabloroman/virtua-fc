@@ -56,7 +56,7 @@ class ReservePlayerDealCompletionTest extends TestCase
         $player = $this->reservePlayer();
         $this->outgoingDeal($player, TransferOffer::TYPE_PRE_CONTRACT, fee: 0);
 
-        $data = $this->run(PreContractTransferProcessor::class);
+        $data = $this->runProcessor(PreContractTransferProcessor::class);
 
         $this->assertSame($this->buyer->id, $player->fresh()->team_id, 'A reserve player\'s pre-contract must deliver him.');
         $this->assertSame(
@@ -71,7 +71,7 @@ class ReservePlayerDealCompletionTest extends TestCase
         $player = $this->reservePlayer();
         $this->outgoingDeal($player, TransferOffer::TYPE_LISTED, fee: 500_000_000);
 
-        $this->run(AgreedTransferCompletionProcessor::class);
+        $this->runProcessor(AgreedTransferCompletionProcessor::class);
 
         $this->assertSame($this->buyer->id, $player->fresh()->team_id, 'A reserve player\'s agreed sale must complete.');
         $this->assertSame(
@@ -99,7 +99,7 @@ class ReservePlayerDealCompletionTest extends TestCase
 
     // ── Helpers ───────────────────────────────────────────────────────────
 
-    private function run(string $processor): SeasonTransitionData
+    private function runProcessor(string $processor): SeasonTransitionData
     {
         return app($processor)->process($this->game, new SeasonTransitionData(
             oldSeason: $this->game->season,
