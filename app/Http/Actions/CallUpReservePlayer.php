@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadFullException;
+use App\Modules\ReserveTeam\Exceptions\PlayerHasCommittedDealException;
 use App\Modules\ReserveTeam\Exceptions\ReserveSquadMinimumException;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 
@@ -29,6 +30,9 @@ class CallUpReservePlayer
 
         try {
             $this->reserveTeamService->callUpToFirstTeam($player, $game);
+        } catch (PlayerHasCommittedDealException $e) {
+            return redirect()->route('game.squad.reserve', $gameId)
+                ->with('error', __('messages.reserve_move_blocked_by_deal', ['player' => $playerName]));
         } catch (FirstTeamSquadFullException $e) {
             return redirect()->route('game.squad.reserve', $gameId)
                 ->with('error', __('messages.reserve_player_call_up_blocked_full'));

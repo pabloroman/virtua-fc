@@ -15,10 +15,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * Generates simulated standings for non-played leagues at season end.
  *
- * Runs before PromotionRelegationProcessor (priority 26) so that
- * simulated results are available for promotion/relegation decisions.
- *
- * Priority: 24
+ * Runs before PromotionRelegationProcessor so that simulated results are
+ * available for promotion/relegation decisions.
  */
 class SeasonSimulationProcessor implements SeasonProcessor
 {

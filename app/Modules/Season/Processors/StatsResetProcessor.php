@@ -14,7 +14,7 @@ use Carbon\Carbon;
 
 /**
  * Resets player and game stats for the new season.
- * Priority: 20 (runs second)
+ * Runs after the archive, settlement and career snapshot have read them.
  */
 class StatsResetProcessor implements SeasonProcessor
 {

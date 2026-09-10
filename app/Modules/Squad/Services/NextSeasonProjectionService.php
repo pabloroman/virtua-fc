@@ -170,13 +170,9 @@ class NextSeasonProjectionService
 
         $agreedIncoming = TransferOffer::query()
             ->where('game_id', $game->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->whereIn('offer_type', [
-                TransferOffer::TYPE_USER_BID,
-                TransferOffer::TYPE_PRE_CONTRACT,
-            ])
+            ->incomingFor($game->team_id)
+            ->agreed()
+            ->ofType(TransferOffer::TYPE_USER_BID, TransferOffer::TYPE_PRE_CONTRACT)
             ->get(['game_player_id', 'offered_wage']);
 
         // A player can be both on the roster and the subject of an agreed
@@ -287,10 +283,8 @@ class NextSeasonProjectionService
             'gamePlayer.latestRenewalNegotiation',
         ])
             ->where('game_id', $game->id)
-            ->where('offering_team_id', $game->team_id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_AGREED)
+            ->incomingFor($game->team_id)
+            ->agreedPreContract()
             ->get();
 
         return $offers->map(fn (TransferOffer $offer) => $offer->gamePlayer)->filter()->values();

@@ -16,9 +16,10 @@ use Carbon\Carbon;
  * after qualification processors have determined the new season's participants.
  *
  * Also finalizes current_date to the earliest fixture across all competitions
- * (league fixtures are already created by LeagueFixtureProcessor at priority 30).
+ * (league fixtures are already created by LeagueFixtureProcessor).
  *
- * Priority: 106 (runs after UefaQualificationProcessor at 105)
+ * Runs in the setup pipeline after LeagueFixtureProcessor; the closing
+ * pipeline's UefaQualificationProcessor has already settled the entrants.
  */
 class ContinentalAndCupInitProcessor implements SeasonProcessor
 {

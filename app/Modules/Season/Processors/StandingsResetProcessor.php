@@ -13,7 +13,7 @@ use App\Models\GameStanding;
 /**
  * Resets league standings for the new season (or creates them for initial season).
  * Preserves team positions from previous season for initial ordering.
- * Priority: 40 (runs last)
+ * Runs after LeagueFixtureProcessor.
  */
 class StandingsResetProcessor implements SeasonProcessor
 {

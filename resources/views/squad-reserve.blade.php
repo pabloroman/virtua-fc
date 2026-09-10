@@ -120,7 +120,9 @@
                                         </div>
                                         <x-rating-badge :value="$player->effective_rating" class="shrink-0" />
                                     </div>
-                                    @if($isCalledUp)
+                                    @if(isset($committedPlayerIds[$player->id]))
+                                        {{-- A committed deal completes from where he sits; no squad moves until then. --}}
+                                    @elseif($isCalledUp)
                                         <form method="POST" action="{{ route('game.reserve.send-back', [$game->id, $player->id]) }}" onsubmit="return confirm('{{ __('squad.send_back_to_reserve') }}?')">
                                             @csrf
                                             <button type="submit" class="text-amber-400 hover:text-amber-300 px-2" title="{{ __('squad.send_back_to_reserve') }}">↓</button>

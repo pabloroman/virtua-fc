@@ -35,8 +35,8 @@ class NegotiateCounterOffer
         $offer = TransferOffer::with(['gamePlayer.team', 'offeringTeam'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
-            ->whereIn('offer_type', [TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_LISTED])
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_LISTED)
+            ->pending()
             ->firstOrFail();
 
         // Verify the player belongs to the user's organization (first team or reserve team)

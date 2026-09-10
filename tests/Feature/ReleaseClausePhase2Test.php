@@ -10,9 +10,11 @@ use App\Models\GamePlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Models\User;
+use App\Modules\Transfer\Exceptions\LockedPlayerMovedException;
 use App\Modules\Transfer\Services\TransferCompletionService;
 use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Exceptions;
 use Tests\TestCase;
 
 /**
@@ -162,6 +164,14 @@ class ReleaseClausePhase2Test extends TestCase
 
     public function test_completion_rejects_when_the_seller_no_longer_owns_the_player(): void
     {
+        // A triggered-clause offer locks the player (TransferOffer::locksPlayer()),
+        // so finding him moved here is the exact invariant violation
+        // LockedPlayerMovedException exists to surface — normally fatal under
+        // test (see the base TestCase), but this test deliberately manufactures
+        // it to prove completion still fails the deal gracefully rather than
+        // conjuring the player, so it opts out instead of asserting a crash.
+        Exceptions::fake([LockedPlayerMovedException::class]);
+
         $player = $this->aiPlayerWithClause();
         $otherTeam = Team::factory()->create(['name' => 'Third Club']);
 

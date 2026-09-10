@@ -160,12 +160,11 @@ class TransferService
         TransferListing::where('game_player_id', $player->id)->delete();
 
         // Expire any pending offers
-        $player->transferOffers()
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->update([
-                'status' => TransferOffer::STATUS_EXPIRED,
-                'resolved_at' => $player->game->current_date,
-            ]);
+        TransferOffer::transitionAll(
+            $player->transferOffers()->pending(),
+            TransferOffer::STATUS_EXPIRED,
+            $player->game->current_date,
+        );
     }
 
     /**
@@ -201,18 +200,14 @@ class TransferService
                 : $player->transferOffers()->get();
 
             // Skip if player already has an agreed transfer (waiting for window)
-            $hasAgreedTransfer = $playerOffers
-                ->where('status', TransferOffer::STATUS_AGREED)
-                ->isNotEmpty();
-
-            if ($hasAgreedTransfer) {
+            if ($playerOffers->contains(fn (TransferOffer $offer) => $offer->isAgreed())) {
                 continue;
             }
 
             // Check how many pending offers the player already has
-            $pendingOffers = $playerOffers
-                ->where('offer_type', TransferOffer::TYPE_LISTED)
-                ->where('status', TransferOffer::STATUS_PENDING);
+            $pendingOffers = $playerOffers->filter(
+                fn (TransferOffer $offer) => $offer->isListed() && $offer->isPending(),
+            );
 
             // Skip if player already has 3+ pending offers
             if ($pendingOffers->count() >= 3) {
@@ -224,7 +219,7 @@ class TransferService
 
                 // Exclude teams that already made offers
                 $existingOfferTeamIds = $playerOffers
-                    ->where('status', TransferOffer::STATUS_PENDING)
+                    ->filter(fn (TransferOffer $offer) => $offer->isPending())
                     ->pluck('offering_team_id')
                     ->toArray();
 
@@ -280,9 +275,9 @@ class TransferService
 
         // Collect team IDs that already have a pending unsolicited offer for any player on the user's squad
         $excludedBuyerTeamIds = TransferOffer::where('game_id', $game->id)
-            ->where('offer_type', TransferOffer::TYPE_UNSOLICITED)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->ofType(TransferOffer::TYPE_UNSOLICITED)
+            ->pending()
+            ->departingFrom($game->userTeamIds())
             ->pluck('offering_team_id')
             ->toArray();
 
@@ -299,12 +294,7 @@ class TransferService
                 : $player->transferOffers()->get();
 
             // Skip if player already has a pending unsolicited offer
-            $hasPendingOffer = $playerOffers
-                ->where('offer_type', TransferOffer::TYPE_UNSOLICITED)
-                ->where('status', TransferOffer::STATUS_PENDING)
-                ->isNotEmpty();
-
-            if ($hasPendingOffer) {
+            if ($playerOffers->contains(fn (TransferOffer $offer) => $offer->isUnsolicited() && $offer->isPending())) {
                 continue;
             }
 
@@ -376,13 +366,7 @@ class TransferService
         foreach ($candidates as $player) {
             // Exclusivity: never clause-trigger a player who already has a live
             // deal in flight (a pending bid, an agreed sale, or a prior clause).
-            $hasLiveOffer = $player->transferOffers
-                ->whereIn('status', [
-                    TransferOffer::STATUS_PENDING,
-                    TransferOffer::STATUS_FEE_AGREED,
-                    TransferOffer::STATUS_AGREED,
-                ])
-                ->isNotEmpty();
+            $hasLiveOffer = $player->transferOffers->contains(fn (TransferOffer $offer) => $offer->isActive());
 
             if ($hasLiveOffer) {
                 continue;
@@ -436,9 +420,11 @@ class TransferService
             $offer = DB::transaction(function () use ($game, $player, $buyer, $clauseCents) {
                 // Replicate acceptOffer's sibling-rejection so no stale pending
                 // offer survives the forced sale.
-                TransferOffer::where('game_player_id', $player->id)
-                    ->where('status', TransferOffer::STATUS_PENDING)
-                    ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+                TransferOffer::transitionAll(
+                    TransferOffer::where('game_player_id', $player->id)->pending(),
+                    TransferOffer::STATUS_REJECTED,
+                    $game->current_date,
+                );
 
                 // Deliberately skip squadMinimumService->validateRemoval: a paid
                 // clause is non-refusable, so the user can't block it on
@@ -600,18 +586,11 @@ class TransferService
                     return false;
                 }
                 // Use pre-loaded transferOffers to check for existing agreements
+                // (any agreed deal, pre-contract or otherwise, settles him)
                 $playerOffers = $player->relationLoaded('transferOffers')
                     ? $player->transferOffers
                     : collect();
-                $hasPreContract = $playerOffers
-                    ->where('status', TransferOffer::STATUS_AGREED)
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->isNotEmpty();
-                $hasAgreedTransfer = $playerOffers
-                    ->where('status', TransferOffer::STATUS_AGREED)
-                    ->isNotEmpty();
-
-                if ($hasPreContract || $hasAgreedTransfer) {
+                if ($playerOffers->contains(fn (TransferOffer $offer) => $offer->isAgreed())) {
                     return false;
                 }
 
@@ -638,12 +617,7 @@ class TransferService
                 : $player->transferOffers()->get();
 
             // Skip if player already has a pending pre-contract offer
-            $hasPendingOffer = $playerOffers
-                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                ->where('status', TransferOffer::STATUS_PENDING)
-                ->isNotEmpty();
-
-            if ($hasPendingOffer) {
+            if ($playerOffers->contains(fn (TransferOffer $offer) => $offer->isPreContract() && $offer->isPending())) {
                 continue;
             }
 
@@ -673,6 +647,9 @@ class TransferService
             'game_id' => $player->game_id,
             'game_player_id' => $player->id,
             'offering_team_id' => $offeringTeam->id,
+            // The club he leaves — first team or reserve — so the season
+            // summary can name it after he has gone.
+            'selling_team_id' => $player->owningTeamId(),
             'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
             'transfer_fee' => 0, // Free transfer
             'status' => TransferOffer::STATUS_PENDING,
@@ -690,15 +667,8 @@ class TransferService
     {
         $agreedPreContracts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where(function ($query) {
-                $query->whereNull('direction')
-                    ->orWhere('direction', '!=', TransferOffer::DIRECTION_INCOMING);
-            })
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->agreedPreContract()
+            ->departingFrom($game->userTeamIds())
             ->get();
 
         $completedTransfers = collect();
@@ -719,9 +689,8 @@ class TransferService
     {
         $agreedIncoming = TransferOffer::with(['gamePlayer', 'sellingTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->agreedPreContract()
+            ->incoming()
             ->get();
 
         $completedTransfers = collect();
@@ -744,9 +713,9 @@ class TransferService
 
         $pendingOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->incoming()
+            ->preContract()
+            ->pending()
             ->where('game_date', '<=', $responseDate)
             ->get();
 
@@ -756,10 +725,10 @@ class TransferService
             $demand = $this->contractService->calculateWageDemand($offer->gamePlayer, NegotiationScenario::PRE_CONTRACT, $offer->offeringTeam);
             $evaluation = $this->dispositionService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $demand['wage'], $game->team);
 
-            $offer->update([
-                'status' => $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
-                'resolved_at' => $game->current_date,
-            ]);
+            $offer->transitionTo(
+                $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
+                $game->current_date,
+            );
 
             $resolvedOffers->push([
                 'offer' => $offer,
@@ -802,12 +771,13 @@ class TransferService
         }
 
         // Reject all other pending offers for this player
-        TransferOffer::where('game_player_id', $player->id)
-            ->where('id', '!=', $offer->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+        TransferOffer::transitionAll(
+            TransferOffer::where('game_player_id', $player->id)->where('id', '!=', $offer->id)->pending(),
+            TransferOffer::STATUS_REJECTED,
+            $game->current_date,
+        );
 
-        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_AGREED, $game->current_date);
         return false;
     }
 
@@ -829,11 +799,9 @@ class TransferService
         // same filter) correctly waits until summer.
         $agreedOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->agreed()
+            ->notOfType(TransferOffer::TYPE_PRE_CONTRACT)
+            ->departingFrom($game->userTeamIds())
             ->orderBy('game_player_id')
             ->get();
 
@@ -860,10 +828,7 @@ class TransferService
      */
     public function rejectOffer(TransferOffer $offer): void
     {
-        $offer->update([
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $offer->game->current_date,
-        ]);
+        $offer->transitionTo(TransferOffer::STATUS_REJECTED, $offer->game->current_date);
     }
 
     /**
@@ -871,10 +836,11 @@ class TransferService
      */
     public function expireOffers(Game $game): int
     {
-        return TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('expires_at', '<', $game->current_date)
-            ->update(['status' => TransferOffer::STATUS_EXPIRED, 'resolved_at' => $game->current_date]);
+        return TransferOffer::transitionAll(
+            TransferOffer::where('game_id', $game->id)->pending()->where('expires_at', '<', $game->current_date),
+            TransferOffer::STATUS_EXPIRED,
+            $game->current_date,
+        );
     }
 
     /**
@@ -913,9 +879,11 @@ class TransferService
                 return DB::transaction(function () use ($game, $player, $offeringTeam, $offerType, $clauseCents, $expiryDays) {
                     // Replicate acceptOffer's sibling-rejection so no stale pending
                     // offer survives the forced sale.
-                    TransferOffer::where('game_player_id', $player->id)
-                        ->where('status', TransferOffer::STATUS_PENDING)
-                        ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+                    TransferOffer::transitionAll(
+                        TransferOffer::where('game_player_id', $player->id)->pending(),
+                        TransferOffer::STATUS_REJECTED,
+                        $game->current_date,
+                    );
 
                     return TransferOffer::create([
                         'id' => Str::uuid()->toString(),
@@ -1278,17 +1246,17 @@ class TransferService
         // across concurrent writers — see completeAgreedTransfers().
         $agreedIncoming = TransferOffer::with(['gamePlayer', 'sellingTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
+            ->agreed()
+            ->incoming()
+            ->notOfType(TransferOffer::TYPE_PRE_CONTRACT)
             ->orderBy('game_player_id')
             ->get();
 
         // Also get loan-out agreements
         $agreedLoanOuts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->agreed()
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
             ->orderBy('game_player_id')
             ->get();
 
@@ -1362,8 +1330,70 @@ class TransferService
         // CompleteAgreedTransfersOnWindowOpen (cross-window) so that newly
         // signed players never become available for the matchday they were
         // signed during.
-        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_AGREED, $game->current_date);
         return false;
+    }
+
+    /**
+     * The pending sync free-agent negotiation between the user and $player,
+     * opened on the first round. Shape matters: isFreeAgentOffer() (no
+     * selling club, no fee, user bid) is what routes completion to
+     * completeFreeAgentSigning().
+     */
+    public function openFreeAgentNegotiation(Game $game, GamePlayer $player): TransferOffer
+    {
+        $existing = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->ofType(TransferOffer::TYPE_USER_BID)
+            ->where('transfer_fee', 0)
+            ->pending()
+            ->first();
+
+        return $existing ?? TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => null,
+            'offer_type' => TransferOffer::TYPE_USER_BID,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'status' => TransferOffer::STATUS_PENDING,
+            'expires_at' => $game->current_date->addDays(14),
+            'game_date' => $game->current_date,
+            'negotiation_round' => 1,
+        ]);
+    }
+
+    /**
+     * The pending sync pre-contract negotiation between the user and $player,
+     * opened on the first round. The async path (an offer the player answers
+     * after PRE_CONTRACT_RESPONSE_DAYS) is submitPreContractOffer().
+     */
+    public function openPreContractNegotiation(Game $game, GamePlayer $player): TransferOffer
+    {
+        $existing = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->preContract()
+            ->pending()
+            ->first();
+
+        return $existing ?? TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            // The owning club, not the player's current location — see
+            // submitPreContractOffer.
+            'selling_team_id' => $player->owningTeamId(),
+            'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'status' => TransferOffer::STATUS_PENDING,
+            'expires_at' => $game->current_date->addDays(TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
+            'game_date' => $game->current_date,
+            'negotiation_round' => 1, // Mark as sync-negotiated
+        ]);
     }
 
     /**
@@ -1404,16 +1434,13 @@ class TransferService
 
         $committedAwayIds = TransferOffer::where('game_id', $game->id)
             ->where('selling_team_id', $sellingTeamId)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->whereIn('offer_type', [
+            ->incoming()
+            ->ofType(
                 TransferOffer::TYPE_USER_BID,
                 TransferOffer::TYPE_LISTED,
                 TransferOffer::TYPE_UNSOLICITED,
-            ])
-            ->whereIn('status', [
-                TransferOffer::STATUS_FEE_AGREED,
-                TransferOffer::STATUS_AGREED,
-            ])
+            )
+            ->committed()
             ->where('game_player_id', '!=', $player->id)
             ->pluck('game_player_id')
             ->all();
@@ -1510,9 +1537,9 @@ class TransferService
 
         $existingOffer = TransferOffer::where('game_id', $game->id)
             ->where('game_player_id', $player->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereIn('status', [TransferOffer::STATUS_AGREED, TransferOffer::STATUS_PENDING])
+            ->incoming()
+            ->preContract()
+            ->active()
             ->exists();
 
         if ($existingOffer) {
@@ -1590,14 +1617,9 @@ class TransferService
             // expired and replaced below, so it must not count against this buy.
             $existingReservation = (int) TransferOffer::where('game_id', $game->id)
                 ->where('game_player_id', $player->id)
-                ->where('offering_team_id', $game->team_id)
-                ->where('direction', TransferOffer::DIRECTION_INCOMING)
-                ->whereIn('offer_type', [TransferOffer::TYPE_USER_BID, TransferOffer::TYPE_LOAN_IN])
-                ->whereIn('status', [
-                    TransferOffer::STATUS_PENDING,
-                    TransferOffer::STATUS_FEE_AGREED,
-                    TransferOffer::STATUS_AGREED,
-                ])
+                ->incomingFor($game->team_id)
+                ->ofType(TransferOffer::TYPE_USER_BID, TransferOffer::TYPE_LOAN_IN)
+                ->active()
                 ->get()
                 ->sum(fn (TransferOffer $o) => $o->committedAmount());
 
@@ -1614,15 +1636,14 @@ class TransferService
             // FEE_AGREED clause offer is the single negotiation handleStart()/
             // handleStartTerms resolve — they fetch with ->first() and a
             // duplicate would shadow it.
-            TransferOffer::where('game_id', $game->id)
-                ->where('game_player_id', $player->id)
-                ->where('offering_team_id', $game->team_id)
-                ->whereIn('status', [
-                    TransferOffer::STATUS_PENDING,
-                    TransferOffer::STATUS_FEE_AGREED,
-                    TransferOffer::STATUS_AGREED,
-                ])
-                ->update(['status' => TransferOffer::STATUS_EXPIRED, 'resolved_at' => $game->current_date]);
+            TransferOffer::transitionAll(
+                TransferOffer::where('game_id', $game->id)
+                    ->where('game_player_id', $player->id)
+                    ->where('offering_team_id', $game->team_id)
+                    ->active(),
+                TransferOffer::STATUS_EXPIRED,
+                $game->current_date,
+            );
 
             // Defensive: an AI player won't carry a user renewal negotiation, but
             // cancel one if it somehow exists so no stale negotiation lingers.
@@ -1751,10 +1772,8 @@ class TransferService
         }
 
         if ($evaluation['result'] === 'accepted') {
-            $offer->update([
-                'status' => TransferOffer::STATUS_FEE_AGREED,
+            $offer->transitionTo(TransferOffer::STATUS_FEE_AGREED, $game->current_date, [
                 'asking_price' => $evaluation['asking_price'],
-                'resolved_at' => $game->current_date,
             ]);
             return ['result' => 'accepted', 'offer' => $offer->fresh()];
         }
@@ -1767,10 +1786,8 @@ class TransferService
         }
 
         // Rejected (or countered but at max rounds)
-        $offer->update([
-            'status' => TransferOffer::STATUS_REJECTED,
+        $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date, [
             'asking_price' => $evaluation['asking_price'],
-            'resolved_at' => $game->current_date,
         ]);
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
@@ -1796,10 +1813,8 @@ class TransferService
         // tabled, in which case they can no longer commit to selling.
         $this->assertSellerCanPartWith($offer->gamePlayer, $game);
 
-        $offer->update([
+        $offer->transitionTo(TransferOffer::STATUS_FEE_AGREED, $game->current_date, [
             'transfer_fee' => $counterAmount,
-            'status' => TransferOffer::STATUS_FEE_AGREED,
-            'resolved_at' => $game->current_date,
         ]);
 
         return $offer->fresh();
@@ -1842,10 +1857,7 @@ class TransferService
         }
 
         // Rejected (or countered but at max rounds)
-        $offer->update([
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $game->current_date,
-        ]);
+        $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
 

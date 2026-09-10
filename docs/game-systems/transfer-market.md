@@ -123,6 +123,16 @@ When no domestic buyer is found, there's a 50% chance of a foreign departure (pl
 
 See `AITransferMarketService` for the full algorithm.
 
+## Locked Players
+
+Some deals hold a player at his current club until they complete: an **agreed pre-contract** (either direction) and a **paid release clause** (fee agreed or agreed). Both only complete if the player is still where the deal found him — `TransferCompletionService` re-asserts the selling club before moving anyone — so any other code path that relocates him (contract expiry freeing him to the pool, AI-to-AI churn, squad trimming) silently kills a signing the user has already committed wages or a fee to.
+
+The definition lives in one place, `TransferOffer::locksPlayer()` (with `TransferOffer::lockedPlayerIds()` for bulk processors), and every path that moves players for a reason other than completing their own deal consults it. If a locked player is nevertheless found moved at completion, the deal still fails gracefully for the user but a `LockedPlayerMovedException` is reported — and thrown under test — so the offending path is visible.
+
+Offer state more generally is expressed through the scopes on `TransferOffer` (`incoming()`, `departingFrom()`, `agreedPreContract()`, `committed()`, …), and status is only ever changed through `TransferOffer::transitionTo()` (one row) or `transitionAll()` (a sweep), which check the move against the transition table — pending → fee agreed / agreed / rejected / expired, fee agreed → agreed / rejected / expired, agreed → completed / rejected / expired, and nothing leaves a terminal state — and stamp `resolved_at`. `TransferOfferQueryVocabularyTest` fails the build if a raw `offer_type` / `direction` / `triggered_release_clause` predicate, or a status written through `update()`, appears outside the model.
+
+A player with any committed deal (`GamePlayer::hasCommittedDeal()`) cannot be moved between a filial's first team and reserve until it completes, and the outgoing completion queries cover both squads (`departingFrom(Game::userTeamIds())`), so a reserve player's deal completes from the reserve.
+
 ## Season-End Processing
 
 Four processors handle transfer-related transitions:

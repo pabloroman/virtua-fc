@@ -220,8 +220,8 @@ class CareerActionProcessor
         $currentDate = $game->current_date;
         $expiringOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->pending()
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>', $currentDate)
             ->where('expires_at', '<=', $currentDate->copy()->addDays(7))
             ->get();
@@ -260,10 +260,7 @@ class CareerActionProcessor
             ->whereNull('retiring_at_season') // retiring players can't be renewed — don't nag
             ->where('contract_until', '<=', $sixMonthsOut)
             ->where('contract_until', '>', $currentDate)
-            ->whereDoesntHave('transferOffers', function ($q) {
-                $q->where('status', TransferOffer::STATUS_AGREED)
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT);
-            })
+            ->whereDoesntHave('transferOffers', fn ($q) => $q->agreedPreContract())
             ->whereDoesntHave('latestRenewalNegotiation', function ($q) {
                 $q->where('status', RenewalNegotiation::STATUS_CLUB_DECLINED);
             })

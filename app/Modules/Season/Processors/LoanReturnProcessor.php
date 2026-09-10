@@ -11,7 +11,9 @@ use App\Models\Game;
 
 /**
  * Returns all loaned players to their parent teams at end of season.
- * Priority: 3 (runs before pre-contract transfers at 5 and contract expiration)
+ * Runs before contract expiration and before the pre-contract / agreed
+ * transfer completions, so every player is back at his owner when those
+ * look him up by team.
  */
 class LoanReturnProcessor implements SeasonProcessor
 {

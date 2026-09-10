@@ -34,32 +34,22 @@ class ShowOutgoingTransfers
         // Get all pending offers for user's players
         $pendingOffers = TransferOffer::with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam', 'offeringTeam'])
             ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->pending()
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('transfer_fee')
             ->get();
 
         // Separate by offer type
-        $unsolicitedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_UNSOLICITED);
-        $listedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_LISTED);
+        $unsolicitedOffers = $pendingOffers->filter(fn (TransferOffer $offer) => $offer->isUnsolicited());
+        $listedOffers = $pendingOffers->filter(fn (TransferOffer $offer) => $offer->isListed());
 
-        // Pre-contract offers (players being poached).
-        //
-        // The offering_team_id guard keeps the user's *own* incoming deals out
-        // of the departures list. A player the user has loaned in sits at the
-        // user's team_id, so without it a pre-contract the user himself signed
-        // renders here as one of his players leaving on a free.
+        // Pre-contract offers (players being poached)
         $preContractOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('offering_team_id', '!=', $game->team_id)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->pending()
+            ->preContract()
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('game_date')
             ->get();
@@ -67,23 +57,16 @@ class ShowOutgoingTransfers
         // Agreed pre-contracts (players leaving at end of season)
         $agreedPreContracts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('offering_team_id', '!=', $game->team_id)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->agreedPreContract()
+            ->departingFrom($game->userTeamIds())
             ->get();
 
         // Get agreed outgoing transfers (waiting for window) - exclude pre-contracts
         $agreedTransfers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('offering_team_id', '!=', $game->team_id)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->agreed()
+            ->notOfType(TransferOffer::TYPE_PRE_CONTRACT)
+            ->departingFrom($game->userTeamIds())
             ->orderByDesc('transfer_fee')
             ->get();
 
@@ -102,7 +85,7 @@ class ShowOutgoingTransfers
         $recentTransfers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
-            ->where('direction', '!=', TransferOffer::DIRECTION_INCOMING)
+            ->outgoing()
             ->orderByDesc('resolved_at')
             ->get();
 
@@ -120,10 +103,9 @@ class ShowOutgoingTransfers
         // Each offer is a separate card, same UX as sale offers.
         $loanOffers = TransferOffer::with(['offeringTeam', 'gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
             ->where('game_id', $gameId)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->pending()
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('game_date')
             ->get()

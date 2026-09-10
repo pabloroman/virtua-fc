@@ -4,11 +4,16 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\TransferOffer;
+use App\Modules\Transfer\Services\TransferService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class WithdrawTransferOffer
 {
+    public function __construct(
+        private readonly TransferService $transferService,
+    ) {}
+
     public function __invoke(Request $request, string $gameId, string $offerId): RedirectResponse
     {
         $game = Game::findOrFail($gameId);
@@ -16,7 +21,7 @@ class WithdrawTransferOffer
         $offer = TransferOffer::with(['gamePlayer'])
             ->where('id', $offerId)
             ->where('game_id', $gameId)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->incoming()
             ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED])
             ->firstOrFail();
 
@@ -27,10 +32,7 @@ class WithdrawTransferOffer
 
         $playerName = $offer->gamePlayer->name;
 
-        $offer->update([
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $game->current_date,
-        ]);
+        $this->transferService->rejectOffer($offer);
 
         return redirect()
             ->back()

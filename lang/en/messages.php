@@ -112,6 +112,7 @@ return [
     'reserve_player_promoted' => ':player has been promoted to the first team.',
     'player_sent_down_to_reserve' => ':player has been sent down to the reserve team.',
     'send_down_not_allowed' => 'This player cannot be sent down to the reserve team.',
+    'reserve_move_blocked_by_deal' => ':player has an agreed transfer or pre-contract and cannot be moved between squads until it completes.',
     'send_down_squad_too_small' => 'Cannot send down — the first team must have at least :min players.',
     'send_down_position_minimum' => 'Cannot send down — the first team needs at least :min :group.',
 

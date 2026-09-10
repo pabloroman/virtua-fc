@@ -32,10 +32,8 @@ class ShowPlayerDetail
                     ->orWhereHas('activeLoan', fn ($loan) => $loan->whereIn('parent_team_id', $userTeamIds))
                     ->orWhereHas('transferOffers', fn ($offer) => $offer
                         ->where('game_id', $game->id)
-                        ->where('offering_team_id', $game->team_id)
-                        ->where('direction', TransferOffer::DIRECTION_INCOMING)
-                        ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                        ->where('status', TransferOffer::STATUS_AGREED));
+                        ->incomingFor($game->team_id)
+                        ->agreedPreContract());
             })
             ->findOrFail($playerId);
 
@@ -43,11 +41,9 @@ class ShowPlayerDetail
         // pre-contract — drives the banner in the detail modal so the user
         // sees at a glance "this isn't mine yet, but they're coming".
         $incomingPreContract = TransferOffer::where('game_id', $game->id)
-            ->where('offering_team_id', $game->team_id)
             ->where('game_player_id', $gamePlayer->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->where('status', TransferOffer::STATUS_AGREED)
+            ->incomingFor($game->team_id)
+            ->agreedPreContract()
             ->exists();
 
         $isCalledUpFromReserve = $gamePlayer->isCalledUpFromReserve($game);
@@ -69,6 +65,12 @@ class ShowPlayerDetail
         $isOnReserve = $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->reserve_team_id;
 
+        // A player with a committed deal completes it from wherever he sits
+        // now, so ReserveTeamService refuses to move him; don't offer it.
+        $canMoveBetweenSquads = ! $gamePlayer->hasCommittedDeal();
+        $canCallUpToFirstTeam = $isOnReserve && $canMoveBetweenSquads;
+        $canSendBackToReserve = $isCalledUpFromReserve && $canMoveBetweenSquads;
+
         // U23 first-team players (not currently called up from the reserve)
         // can be sent down to the reserve squad for development. Players on
         // an active call-up loan have their own "send back" path which closes
@@ -77,6 +79,7 @@ class ShowPlayerDetail
             && $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->team_id
             && !$isCalledUpFromReserve
+            && $canMoveBetweenSquads
             && $gamePlayer->date_of_birth !== null
             && $gamePlayer->date_of_birth >= $game->getU23BirthCutoff();
 
@@ -106,6 +109,8 @@ class ShowPlayerDetail
             'severance' => $severance,
             'isOnReserve' => $isOnReserve,
             'isCalledUpFromReserve' => $isCalledUpFromReserve,
+            'canCallUpToFirstTeam' => $canCallUpToFirstTeam,
+            'canSendBackToReserve' => $canSendBackToReserve,
             'canSendDownToReserve' => $canSendDownToReserve,
             'incomingPreContract' => $incomingPreContract,
         ]);

@@ -319,10 +319,9 @@ class MatchNarrativeService
 
         $offers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
-            ->where('offering_team_id', '!=', $game->team_id)
-            ->whereIn('offer_type', [TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_PRE_CONTRACT])
-            ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_FEE_AGREED, TransferOffer::STATUS_AGREED])
-            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
+            ->ofType(TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_PRE_CONTRACT)
+            ->active()
+            ->departingFrom($game->userTeamIds())
             ->orderByDesc('transfer_fee')
             ->get();
 

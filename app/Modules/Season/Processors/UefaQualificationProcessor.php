@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
  * Determines which teams qualify for UEFA competitions
  * based on league final standings and cup winner, driven by country config.
  *
- * Priority: 105 (runs after SupercupQualificationProcessor)
+ * Runs last in the closing pipeline, after SupercupQualificationProcessor.
  *
  * Qualification slots are defined in config/countries.php under
  * each country's 'continental_slots' and 'cup_winner_slot' keys.

@@ -10,7 +10,7 @@ use App\Models\Game;
 /**
  * Applies pending contract renewals at end of season.
  * Players who renewed their contracts get their new wages applied.
- * Priority: 6 (runs early, after pre-contract transfers but before development)
+ * Runs after the pre-contract completions and before player development.
  */
 class ContractRenewalProcessor implements SeasonProcessor
 {

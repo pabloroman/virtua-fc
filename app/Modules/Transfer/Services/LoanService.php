@@ -86,9 +86,9 @@ class LoanService
         // Pre-load players that already have pending loan-out offers so we don't
         // generate a second batch while the user is still deciding on the first.
         $playersWithPendingOffers = TransferOffer::where('game_id', $game->id)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->ofType(TransferOffer::TYPE_LOAN_OUT)
+            ->outgoing()
+            ->pending()
             ->whereIn('game_player_id', $searching->pluck('id'))
             ->pluck('game_player_id')
             ->unique()
@@ -354,15 +354,15 @@ class LoanService
      */
     private function expirePendingLoanOutOffers(Game $game, string $gamePlayerId): void
     {
-        TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $gamePlayerId)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->update([
-                'status' => TransferOffer::STATUS_EXPIRED,
-                'resolved_at' => $game->current_date,
-            ]);
+        TransferOffer::transitionAll(
+            TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $gamePlayerId)
+                ->ofType(TransferOffer::TYPE_LOAN_OUT)
+                ->outgoing()
+                ->pending(),
+            TransferOffer::STATUS_EXPIRED,
+            $game->current_date,
+        );
     }
 
     /**
@@ -427,6 +427,24 @@ class LoanService
      */
     public function requestLoanIn(Game $game, GamePlayer $player): TransferOffer
     {
+        return $this->createLoanInOffer($game, $player);
+    }
+
+    /**
+     * Open a sync-negotiated loan-in (the user is in the chat with the
+     * lending club right now). Same offer as requestLoanIn() plus the
+     * negotiation markers, so completeSyncLoan() can park it as agreed.
+     */
+    public function openLoanNegotiation(Game $game, GamePlayer $player, float $disposition): TransferOffer
+    {
+        return $this->createLoanInOffer($game, $player, [
+            'negotiation_round' => 1,
+            'disposition' => $disposition,
+        ]);
+    }
+
+    private function createLoanInOffer(Game $game, GamePlayer $player, array $extra = []): TransferOffer
+    {
         if ($player->team_id === null) {
             throw new \InvalidArgumentException('Cannot loan a free agent — no parent team.');
         }
@@ -445,7 +463,7 @@ class LoanService
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => $game->current_date->addDays(30),
             'game_date' => $game->current_date,
-        ]);
+        ] + $extra);
     }
 
     /**
@@ -475,9 +493,9 @@ class LoanService
     {
         $pendingLoans = TransferOffer::with(['gamePlayer.team'])
             ->where('game_id', $game->id)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
-            ->where('status', TransferOffer::STATUS_PENDING)
+            ->incoming()
+            ->ofType(TransferOffer::TYPE_LOAN_IN)
+            ->pending()
             ->whereNull('resolved_at')
             ->get();
 
@@ -490,20 +508,14 @@ class LoanService
                 // Park as agreed; the loan completes via
                 // CompleteAgreedTransfersOnMatchPlayed (next match) or
                 // CompleteAgreedTransfersOnWindowOpen (next window).
-                $offer->update([
-                    'status' => TransferOffer::STATUS_AGREED,
-                    'resolved_at' => $game->current_date,
-                ]);
+                $offer->transitionTo(TransferOffer::STATUS_AGREED, $game->current_date);
                 $resolvedOffers->push([
                     'offer' => $offer->fresh(),
                     'result' => 'accepted',
                     'completed' => false,
                 ]);
             } else {
-                $offer->update([
-                    'status' => TransferOffer::STATUS_REJECTED,
-                    'resolved_at' => $game->current_date,
-                ]);
+                $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
 
                 $resolvedOffers->push([
                     'offer' => $offer->fresh(),
@@ -525,7 +537,7 @@ class LoanService
         $parentTeamId = $offer->selling_team_id ?? $player->team_id;
 
         if ($parentTeamId === null) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
             return;
         }
 
@@ -558,7 +570,7 @@ class LoanService
             window: TransferWindowType::currentValue($game->current_date),
         );
 
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
 
         // Record the loan salary as a financial transaction
         $parentTeam = Team::find($parentTeamId);
@@ -616,7 +628,7 @@ class LoanService
             window: TransferWindowType::currentValue($game->current_date),
         );
 
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
     }
 
     /**
@@ -628,10 +640,7 @@ class LoanService
      */
     public function completeSyncLoan(TransferOffer $offer, Game $game): array
     {
-        $offer->update([
-            'status' => TransferOffer::STATUS_AGREED,
-            'resolved_at' => $game->current_date,
-        ]);
+        $offer->transitionTo(TransferOffer::STATUS_AGREED, $game->current_date);
         return ['result' => 'accepted', 'offer' => $offer->fresh()];
     }
 
@@ -666,23 +675,20 @@ class LoanService
         }
 
         // Reject sibling offers for the same player
-        TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $offer->game_player_id)
-            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
-            ->where('direction', TransferOffer::DIRECTION_OUTGOING)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('id', '!=', $offer->id)
-            ->update([
-                'status' => TransferOffer::STATUS_REJECTED,
-                'resolved_at' => $game->current_date,
-            ]);
+        TransferOffer::transitionAll(
+            TransferOffer::where('game_id', $game->id)
+                ->where('game_player_id', $offer->game_player_id)
+                ->ofType(TransferOffer::TYPE_LOAN_OUT)
+                ->outgoing()
+                ->pending()
+                ->where('id', '!=', $offer->id),
+            TransferOffer::STATUS_REJECTED,
+            $game->current_date,
+        );
 
         // TransferService::completeIncomingTransfers() (invoked via the
         // match-played or window-open listener) finalises the move.
-        $offer->update([
-            'status' => TransferOffer::STATUS_AGREED,
-            'resolved_at' => $game->current_date,
-        ]);
+        $offer->transitionTo(TransferOffer::STATUS_AGREED, $game->current_date);
         TransferListing::where('game_player_id', $offer->game_player_id)->delete();
     }
 

@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Modules\Transfer\Exceptions\IllegalOfferTransitionException;
 use App\Support\Money;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * @property string $id
@@ -33,10 +37,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read string|null $selling_team_name
  * @property-read \App\Models\Team $offeringTeam
  * @property-read \App\Models\Team|null $sellingTeam
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer active()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer agreed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer agreedPreContract()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer canReach(string $to)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer committed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer departingFrom(string|array $teamIds)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer incoming()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer incomingFor(string $teamId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer locksPlayer()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer notOfType(string ...$types)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer ofType(string ...$types)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer outgoing()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer preContract()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereAskingPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereDirection($value)
@@ -126,6 +142,23 @@ class TransferOffer extends Model
     public const STATUS_EXPIRED = 'expired';
     public const STATUS_COMPLETED = 'completed';    // Transfer finalized at window
 
+    /**
+     * Legal status moves, keyed by the status an offer is leaving. Rejected,
+     * expired and completed are terminal: nothing leaves them, so no code
+     * path can resurrect a dead offer or re-complete a finished one. See
+     * transitionTo() / transitionAll(), the only places status is written.
+     *
+     * @var array<string, list<string>>
+     */
+    private const TRANSITIONS = [
+        self::STATUS_PENDING => [self::STATUS_FEE_AGREED, self::STATUS_AGREED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_FEE_AGREED => [self::STATUS_AGREED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_AGREED => [self::STATUS_COMPLETED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_REJECTED => [],
+        self::STATUS_EXPIRED => [],
+        self::STATUS_COMPLETED => [],
+    ];
+
     // Timing constants
     public const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
     public const PRE_CONTRACT_RESPONSE_DAYS = 7;
@@ -171,6 +204,14 @@ class TransferOffer extends Model
     }
 
     /**
+     * Check if this is an outgoing transfer (user selling or lending).
+     */
+    public function isOutgoing(): bool
+    {
+        return $this->direction === self::DIRECTION_OUTGOING;
+    }
+
+    /**
      * Check if this is a user bid.
      */
     public function isUserBid(): bool
@@ -184,6 +225,22 @@ class TransferOffer extends Model
     public function isLoanIn(): bool
     {
         return $this->offer_type === self::TYPE_LOAN_IN;
+    }
+
+    /**
+     * Check if this is a loan-out offer.
+     */
+    public function isLoanOut(): bool
+    {
+        return $this->offer_type === self::TYPE_LOAN_OUT;
+    }
+
+    /**
+     * Check if this is an offer for a transfer-listed player.
+     */
+    public function isListed(): bool
+    {
+        return $this->offer_type === self::TYPE_LISTED;
     }
 
     /**
@@ -216,6 +273,39 @@ class TransferOffer extends Model
     public function isAgreed(): bool
     {
         return $this->status === self::STATUS_AGREED;
+    }
+
+    /**
+     * Instance form of committed(): fee agreed or fully agreed.
+     */
+    public function isCommitted(): bool
+    {
+        return $this->status === self::STATUS_FEE_AGREED || $this->status === self::STATUS_AGREED;
+    }
+
+    /**
+     * Instance form of active(): pending, fee agreed or agreed.
+     */
+    public function isActive(): bool
+    {
+        return $this->isPending() || $this->isCommitted();
+    }
+
+    /**
+     * Instance form of agreedPreContract().
+     */
+    public function isAgreedPreContract(): bool
+    {
+        return $this->isAgreed() && $this->isPreContract();
+    }
+
+    /**
+     * Instance form of locksPlayer(): this deal holds the player at his
+     * current club until it completes.
+     */
+    public function locksPlayer(): bool
+    {
+        return $this->isCommitted() && ($this->triggered_release_clause || $this->isPreContract());
     }
 
     /**
@@ -265,6 +355,21 @@ class TransferOffer extends Model
         return Money::format($this->transfer_fee);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Query vocabulary
+    |--------------------------------------------------------------------------
+    |
+    | Every question the app asks about offer state is answered by a scope
+    | here, so a concept such as "an agreed pre-contract" or "a player the
+    | user has locked in" has exactly one definition. Do not re-derive these
+    | as inline where('offer_type' / 'direction' / 'triggered_release_clause')
+    | chains elsewhere — tests/Unit/Architecture/TransferOfferQueryVocabularyTest
+    | fails the build if one appears. Each scope has a matching instance
+    | predicate (isAgreed() ↔ agreed(), locksPlayer() ↔ locksPlayer(), …) for
+    | use on already-loaded collections.
+    */
+
     /**
      * Scope for pending offers.
      */
@@ -282,15 +387,220 @@ class TransferOffer extends Model
     }
 
     /**
+     * Offers whose terms are settled and only completion remains: the club
+     * fee is agreed (personal terms may still be open) or the whole deal is.
+     * This is the set that reserves budget and, for lock-in deals, holds the
+     * player in place — see locksPlayer().
+     */
+    public function scopeCommitted($query)
+    {
+        return $query->whereIn('status', [self::STATUS_FEE_AGREED, self::STATUS_AGREED]);
+    }
+
+    /**
+     * Offers still alive: under negotiation or waiting to complete.
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', [
+            self::STATUS_PENDING,
+            self::STATUS_FEE_AGREED,
+            self::STATUS_AGREED,
+        ]);
+    }
+
+    /**
+     * Offers where the user is the buyer.
+     */
+    public function scopeIncoming($query)
+    {
+        return $query->where('direction', self::DIRECTION_INCOMING);
+    }
+
+    /**
+     * Offers where the user is the seller (or lender).
+     */
+    public function scopeOutgoing($query)
+    {
+        return $query->where('direction', self::DIRECTION_OUTGOING);
+    }
+
+    /**
+     * Offers of any of the given types (TYPE_* constants).
+     */
+    public function scopeOfType($query, string ...$types)
+    {
+        return count($types) === 1
+            ? $query->where('offer_type', $types[0])
+            : $query->whereIn('offer_type', $types);
+    }
+
+    /**
+     * Offers of any type but the given ones (TYPE_* constants).
+     */
+    public function scopeNotOfType($query, string ...$types)
+    {
+        return count($types) === 1
+            ? $query->where('offer_type', '!=', $types[0])
+            : $query->whereNotIn('offer_type', $types);
+    }
+
+    public function scopePreContract($query)
+    {
+        return $query->where('offer_type', self::TYPE_PRE_CONTRACT);
+    }
+
+    /**
+     * An agreed pre-contract, in either direction: the player leaves his
+     * current club for the offering club on a free at season end.
+     */
+    public function scopeAgreedPreContract($query)
+    {
+        return $query->agreed()->preContract();
+    }
+
+    /**
+     * Incoming offers made by the given (user) team.
+     */
+    public function scopeIncomingFor($query, string $teamId)
+    {
+        return $query->incoming()->where('offering_team_id', $teamId);
+    }
+
+    /**
+     * Offers that would take a player *away* from the given team(s): made by
+     * a club outside them, for a player currently sitting at one of them.
+     * Pass Game::userTeamIds() so a filial's reserve players count too —
+     * their deals complete from the reserve like any other.
+     *
+     * The offering_team_id guard matters because a loaned-in player sits at
+     * the borrowing club's team_id (LoanService::completeLoanIn). Without it,
+     * a deal the user made for a player he holds on loan reads as one of his
+     * own players leaving.
+     *
+     * @param  string|list<string>  $teamIds
+     */
+    public function scopeDepartingFrom($query, string|array $teamIds)
+    {
+        $teamIds = (array) $teamIds;
+
+        return $query
+            ->whereNotIn('offering_team_id', $teamIds)
+            ->whereHas('gamePlayer', fn ($player) => $player->whereIn('team_id', $teamIds));
+    }
+
+    /**
+     * Deals that hold the player at his current club until they complete.
+     *
+     * Two kinds of commitment qualify, in either direction:
+     *
+     *  - an agreed pre-contract, which only completes while the player is
+     *    still at the club that agreed to sell him (PreContractTransferProcessor
+     *    and TransferCompletionService re-assert that at season end);
+     *  - a paid release clause, whose fee is escrowed the moment it is
+     *    triggered and which is non-refusable.
+     *
+     * Any code that moves a player for a reason other than completing his
+     * own deal — contract expiry, AI churn, squad trimming — must skip the
+     * players this scope names (see lockedPlayerIds()). Moving one silently
+     * kills a deal the user has already committed to, and the failure only
+     * surfaces months later as "the transfer fell through".
+     */
+    public function scopeLocksPlayer($query)
+    {
+        return $query->committed()->where(function ($q) {
+            $q->where('triggered_release_clause', true)
+                ->orWhere('offer_type', self::TYPE_PRE_CONTRACT);
+        });
+    }
+
+    /**
+     * Ids of every player in the game held in place by a locking deal, as a
+     * set (id => true) for O(1) lookup in bulk processors.
+     *
+     * @return array<string, true>
+     */
+    public static function lockedPlayerIds(string $gameId): array
+    {
+        $ids = static::where('game_id', $gameId)
+            ->locksPlayer()
+            ->pluck('game_player_id')
+            ->all();
+
+        return array_fill_keys($ids, true);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status transitions
+    |--------------------------------------------------------------------------
+    |
+    | Status is only ever written here (creates aside, which set the initial
+    | status). Every move is checked against TRANSITIONS and stamps
+    | resolved_at, which is what every non-pending status means: the offer
+    | has been decided. A pending offer never carries resolved_at —
+    | LoanService::resolveIncomingLoanRequests uses that as its work queue.
+    */
+
+    public static function canTransition(string $from, string $to): bool
+    {
+        return in_array($to, self::TRANSITIONS[$from] ?? [], true);
+    }
+
+    /**
+     * Statuses from which $to is a legal move.
+     *
+     * @return list<string>
+     */
+    public static function statusesThatCanReach(string $to): array
+    {
+        return array_keys(array_filter(self::TRANSITIONS, fn (array $targets) => in_array($to, $targets, true)));
+    }
+
+    /**
+     * Move this offer to $to, stamping resolved_at and any accompanying
+     * columns ($extra, e.g. terms_status or asking_price) in one write.
+     *
+     * @throws IllegalOfferTransitionException when TRANSITIONS forbids the move
+     */
+    public function transitionTo(string $to, Carbon $on, array $extra = []): void
+    {
+        if (! self::canTransition($this->status, $to)) {
+            throw IllegalOfferTransitionException::forOffer($this, $to);
+        }
+
+        $this->update(['status' => $to, 'resolved_at' => $on] + $extra);
+    }
+
+    /**
+     * Offers that may legally move to $to.
+     */
+    public function scopeCanReach($query, string $to)
+    {
+        return $query->whereIn('status', self::statusesThatCanReach($to));
+    }
+
+    /**
+     * Bulk form of transitionTo() for sweeps (sibling rejection, expiry).
+     * Rows that cannot legally reach $to are left alone rather than failing
+     * the whole sweep — a completed sibling in a rejection pass is not an
+     * error, it is simply not the sweep's business. Returns the rows moved.
+     */
+    public static function transitionAll(Builder|Relation $query, string $to, Carbon $on, array $extra = []): int
+    {
+        return $query->canReach($to)->update(['status' => $to, 'resolved_at' => $on] + $extra);
+    }
+
+    /**
      * Calculate total committed budget: sum of transfer fees for pending + agreed incoming offers.
      * For counter-offers (asking_price > transfer_fee), uses asking_price since that's what will be paid.
      */
     public static function committedBudget(string $gameId): int
     {
         return (int) static::where('game_id', $gameId)
-            ->where('direction', self::DIRECTION_INCOMING)
-            ->whereIn('offer_type', [self::TYPE_USER_BID, self::TYPE_LOAN_IN])
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_FEE_AGREED, self::STATUS_AGREED])
+            ->incoming()
+            ->ofType(self::TYPE_USER_BID, self::TYPE_LOAN_IN)
+            ->active()
             ->selectRaw('COALESCE(SUM(CASE WHEN asking_price > transfer_fee THEN asking_price ELSE transfer_fee END), 0) as total')
             ->value('total');
     }
@@ -332,8 +642,7 @@ class TransferOffer extends Model
     {
         return static::where('game_id', $gameId)
             ->where('game_player_id', $playerId)
-            ->where('offering_team_id', $teamId)
-            ->where('direction', self::DIRECTION_INCOMING)
+            ->incomingFor($teamId)
             ->where('status', self::STATUS_REJECTED)
             ->where('resolved_at', '>=', $currentDate)
             ->exists();
@@ -351,9 +660,9 @@ class TransferOffer extends Model
         }
 
         $offers = static::where('game_id', $gameId)
-            ->where('direction', self::DIRECTION_INCOMING)
+            ->incoming()
             ->whereIn('game_player_id', $playerIds)
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_FEE_AGREED, self::STATUS_AGREED])
+            ->active()
             ->get(['game_player_id', 'status', 'offer_type', 'asking_price', 'transfer_fee']);
 
         $statuses = [];
@@ -377,7 +686,7 @@ class TransferOffer extends Model
 
             if (!empty($cooldownPlayerIds)) {
                 $cooldownIds = static::where('game_id', $gameId)
-                    ->where('direction', self::DIRECTION_INCOMING)
+                    ->incoming()
                     ->whereIn('game_player_id', $cooldownPlayerIds)
                     ->where('status', self::STATUS_REJECTED)
                     ->where('resolved_at', '>=', $currentDate)
@@ -414,10 +723,9 @@ class TransferOffer extends Model
         }
 
         $offers = static::where('game_id', $gameId)
-            ->where('offering_team_id', $teamId)
-            ->where('direction', self::DIRECTION_INCOMING)
-            ->where('offer_type', self::TYPE_PRE_CONTRACT)
-            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_AGREED])
+            ->incomingFor($teamId)
+            ->preContract()
+            ->active()
             ->whereIn('game_player_id', $playerIds)
             ->get(['game_player_id', 'status']);
 

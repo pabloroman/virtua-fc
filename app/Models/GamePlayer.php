@@ -550,12 +550,26 @@ class GamePlayer extends Model
     public function hasAgreedTransfer(): bool
     {
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains('status', TransferOffer::STATUS_AGREED);
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isAgreed());
         }
 
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->exists();
+        return $this->transferOffers()->agreed()->exists();
+    }
+
+    /**
+     * Whether any deal for the player has its terms settled and is only
+     * waiting to complete (fee agreed or agreed, in either direction). Such a
+     * player is spoken for: moving him between the first team and the
+     * reserve, or anywhere else, would pull the deal out from under whoever
+     * agreed it. Superset of TransferOffer::locksPlayer().
+     */
+    public function hasCommittedDeal(): bool
+    {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isCommitted());
+        }
+
+        return $this->transferOffers()->committed()->exists();
     }
 
     /**
@@ -563,10 +577,12 @@ class GamePlayer extends Model
      */
     public function agreedTransfer(): ?TransferOffer
     {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->first(fn (TransferOffer $offer) => $offer->isAgreed());
+        }
+
         /** @var TransferOffer|null */
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->first();
+        return $this->transferOffers()->agreed()->first();
     }
 
     /**
@@ -588,16 +604,13 @@ class GamePlayer extends Model
         }
 
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains(function ($offer) {
-                return $offer->status === TransferOffer::STATUS_AGREED
-                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                    && $offer->offering_team_id !== $this->team_id;
-            });
+            return $this->transferOffers->contains(
+                fn (TransferOffer $offer) => $offer->isAgreedPreContract() && $offer->offering_team_id !== $this->team_id,
+            );
         }
 
         return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->agreedPreContract()
             ->where('offering_team_id', '!=', $this->team_id)
             ->exists();
     }
@@ -612,16 +625,10 @@ class GamePlayer extends Model
     public function hasPreContractAgreement(): bool
     {
         if ($this->relationLoaded('transferOffers')) {
-            return $this->transferOffers->contains(function ($offer) {
-                return $offer->status === TransferOffer::STATUS_AGREED
-                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT;
-            });
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isAgreedPreContract());
         }
 
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->exists();
+        return $this->transferOffers()->agreedPreContract()->exists();
     }
 
     /**

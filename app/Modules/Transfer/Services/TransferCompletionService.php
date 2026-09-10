@@ -16,6 +16,7 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\Services\SquadNumberService;
 use App\Modules\Transfer\Enums\TransferWindowType;
+use App\Modules\Transfer\Exceptions\LockedPlayerMovedException;
 use Carbon\Carbon;
 
 /**
@@ -44,6 +45,10 @@ class TransferCompletionService
         $buyerNameWithA = $buyer->nameWithA();
         $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
 
+        // Where he is leaving from: the first team or, in a filial, the
+        // reserve. A loan returns him there, and the transfer record names it.
+        $fromTeamId = $player->team_id;
+
         // Transfer player to the buying team
         TransferListing::where('game_player_id', $player->id)->delete();
         $player->update([
@@ -67,7 +72,7 @@ class TransferCompletionService
             Loan::create([
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
-                'parent_team_id' => $game->team_id,
+                'parent_team_id' => $fromTeamId,
                 'loan_team_id' => $offer->offering_team_id,
                 'started_at' => $effectiveStart,
                 'return_at' => $game->getSeasonEndDateFor($effectiveStart),
@@ -78,7 +83,7 @@ class TransferCompletionService
         GameTransfer::record(
             gameId: $game->id,
             gamePlayerId: $player->id,
-            fromTeamId: $game->team_id,
+            fromTeamId: $fromTeamId,
             toTeamId: $offer->offering_team_id,
             transferFee: $offer->transfer_fee,
             type: $isLoan ? GameTransfer::TYPE_LOAN : GameTransfer::TYPE_TRANSFER,
@@ -109,7 +114,7 @@ class TransferCompletionService
         }
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
 
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
@@ -179,7 +184,7 @@ class TransferCompletionService
         );
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
 
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
@@ -206,7 +211,7 @@ class TransferCompletionService
         // path does leave the buyer short, surface it loudly rather than
         // dropping an agreed deal in silence.
         if ($investment && $offer->transfer_fee > $investment->transfer_budget) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
             $this->notificationService->notifyTransferFellThrough($game, $offer->gamePlayer, $offer->sellingTeam, $offer->isPreContract());
             return false;
         }
@@ -226,7 +231,17 @@ class TransferCompletionService
         // and the user is told why. Free-agent signings (no selling club) take a
         // different completion path, so selling_team_id is always set here.
         if ($offer->selling_team_id !== null && $player->team_id !== $offer->selling_team_id) {
-            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            // For an ordinary agreed bid this is a legitimate race the market is
+            // allowed to win. For a locking deal it is not: every path that moves
+            // players is required to skip TransferOffer::locksPlayer() players,
+            // so reaching here means one of them did not. Report it so the
+            // offending path is visible instead of surfacing months later as a
+            // support ticket; the user-facing handling below is unchanged.
+            if ($offer->locksPlayer()) {
+                report(LockedPlayerMovedException::forOffer($offer, $player->team_id));
+            }
+
+            $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
             $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam, $offer->isPreContract());
             return false;
         }
@@ -287,7 +302,7 @@ class TransferCompletionService
             );
         }
 
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
 
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
@@ -328,10 +343,7 @@ class TransferCompletionService
             originOverride: UserSquadCareerRecord::ORIGIN_FREE_AGENT,
         );
 
-        $offer->update([
-            'status' => TransferOffer::STATUS_COMPLETED,
-            'resolved_at' => $game->current_date,
-        ]);
+        $offer->transitionTo(TransferOffer::STATUS_COMPLETED, $game->current_date);
 
         GameTransfer::record(
             gameId: $game->id,

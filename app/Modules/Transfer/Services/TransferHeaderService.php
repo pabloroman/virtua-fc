@@ -40,20 +40,14 @@ class TransferHeaderService
     private function getSalidaBadgeCount(Game $game): int
     {
         return TransferOffer::where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            // Only offers from *other* clubs are departures. A player loaned in
-            // to the user sits at the user's team_id, so a pre-contract the user
-            // himself made for that player would otherwise inflate this badge.
-            ->where('offering_team_id', '!=', $game->team_id)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
+            ->pending()
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
-            ->whereIn('offer_type', [
+            ->ofType(
                 TransferOffer::TYPE_UNSOLICITED,
                 TransferOffer::TYPE_LISTED,
                 TransferOffer::TYPE_PRE_CONTRACT,
-            ])
+            )
             ->count();
     }
 

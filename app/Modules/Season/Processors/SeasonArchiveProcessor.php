@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Archives season data before stats are reset.
- * Priority: 5 (runs first, before development and stats reset)
+ * Runs before player development and the stats reset, so the archive
+ * captures the season as it was played.
  */
 class SeasonArchiveProcessor implements SeasonProcessor
 {

@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Models\User;
 use App\Modules\Finance\Services\SalaryCapService;
+use App\Modules\Transfer\Services\LoanService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -84,6 +85,26 @@ class SalaryCapServiceTest extends TestCase
         ]);
 
         // €1M squad + €0.8M agreed loan-in = €1.8M
+        $this->assertSame(180_000_000, $this->service->committedWageBill($game));
+    }
+
+    public function test_a_sync_negotiated_loan_in_commits_the_players_wage(): void
+    {
+        // The chat path used to create its offer without offered_wage, so an
+        // agreed loan-in negotiated in the UI never reached the bill.
+        $game = $this->makeGame(projectedRevenue: 1_000_000_000);
+        $this->squadPlayer($game, annualWage: 100_000_000); // €1M
+
+        $target = GamePlayer::factory()->create([
+            'game_id' => $game->id,
+            'team_id' => Team::factory()->create()->id,
+            'annual_wage' => 80_000_000,
+        ]);
+
+        $loanService = app(LoanService::class);
+        $offer = $loanService->openLoanNegotiation($game, $target, disposition: 0.5);
+        $loanService->completeSyncLoan($offer, $game);
+
         $this->assertSame(180_000_000, $this->service->committedWageBill($game));
     }
 
