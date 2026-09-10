@@ -422,13 +422,23 @@ class NotificationService
      * or a budget guard fired). The reserved budget is released by rejecting the
      * offer; this tells the user why the signing did not go through.
      */
-    public function notifyTransferFellThrough(Game $game, GamePlayer $player, ?Team $seller = null): GameNotification
-    {
+    public function notifyTransferFellThrough(
+        Game $game,
+        GamePlayer $player,
+        ?Team $seller = null,
+        bool $wasPreContract = false,
+    ): GameNotification {
+        // A pre-contract gets its own wording. The generic "agreed move" text
+        // lands months after the deal was struck and never names the mechanic,
+        // so a failed pre-contract read as an unrelated transfer and the player
+        // simply appeared never to arrive.
+        $key = $wasPreContract ? 'pre_contract' : 'transfer';
+
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_TRANSFER_FAILED,
-            title: __('notifications.transfer_failed_title', ['player' => $player->name]),
-            message: __('notifications.transfer_failed_message', [
+            title: __("notifications.{$key}_failed_title", ['player' => $player->name]),
+            message: __("notifications.{$key}_failed_message", [
                 'player' => $player->name,
                 'team' => $seller?->name ?? '',
             ]),

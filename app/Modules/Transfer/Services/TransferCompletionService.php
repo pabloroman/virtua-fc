@@ -207,7 +207,7 @@ class TransferCompletionService
         // dropping an agreed deal in silence.
         if ($investment && $offer->transfer_fee > $investment->transfer_budget) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            $this->notificationService->notifyTransferFellThrough($game, $offer->gamePlayer, $offer->sellingTeam);
+            $this->notificationService->notifyTransferFellThrough($game, $offer->gamePlayer, $offer->sellingTeam, $offer->isPreContract());
             return false;
         }
 
@@ -227,7 +227,7 @@ class TransferCompletionService
         // different completion path, so selling_team_id is always set here.
         if ($offer->selling_team_id !== null && $player->team_id !== $offer->selling_team_id) {
             $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
-            $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam);
+            $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam, $offer->isPreContract());
             return false;
         }
 

@@ -67,6 +67,8 @@ return [
     'transfer_complete_outgoing_message' => ':player ha sido traspasado :team_a por :fee.',
     'transfer_failed_title' => 'Fichaje frustrado: :player',
     'transfer_failed_message' => 'El traspaso acordado de :player no pudo completarse y se ha liberado el presupuesto reservado.',
+    'pre_contract_failed_title' => 'Precontrato frustrado: :player',
+    'pre_contract_failed_message' => 'El precontrato que acordaste con :player no pudo completarse: ya no estaba en :team al final de la temporada. No se incorpora a tu plantilla.',
     'loan_out_complete_title' => ':player cedido',
     'loan_out_complete_message' => ':player ha sido cedido :team_a hasta final de temporada.',
 
