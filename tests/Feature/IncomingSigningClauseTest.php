@@ -186,6 +186,10 @@ class IncomingSigningClauseTest extends TestCase
     {
         $player = $this->targetPlayer($this->sellerTeam);
         $offer = $this->feeAgreedOffer($player, [
+            // Completion only ever runs on an agreed deal in production —
+            // personal-terms acceptance (acceptIncomingOffer) always parks
+            // the offer at agreed first.
+            'status' => TransferOffer::STATUS_AGREED,
             'transfer_fee' => 1_000_000_000,
             'offered_wage' => 2_000_000_000,
             'offered_years' => 4,
@@ -203,6 +207,7 @@ class IncomingSigningClauseTest extends TestCase
     {
         $player = $this->targetPlayer($this->sellerTeam);
         $offer = $this->feeAgreedOffer($player, [
+            'status' => TransferOffer::STATUS_AGREED,
             'transfer_fee' => 1_000_000_000,
             'offered_wage' => 2_000_000_000,
             'offered_years' => 4,
@@ -220,6 +225,7 @@ class IncomingSigningClauseTest extends TestCase
     {
         $player = $this->targetPlayer($this->sellerTeam);
         $offer = $this->feeAgreedOffer($player, [
+            'status' => TransferOffer::STATUS_AGREED,
             'transfer_fee' => 1_000_000_000,
             'offered_wage' => 2_000_000_000,
             'offered_years' => 4,
