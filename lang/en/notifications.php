@@ -67,6 +67,8 @@ return [
     'transfer_complete_outgoing_message' => ':player has been transferred :team_a for :fee.',
     'transfer_failed_title' => 'Transfer fell through: :player',
     'transfer_failed_message' => 'The agreed move for :player could not be completed and any reserved budget has been released.',
+    'pre_contract_failed_title' => 'Pre-contract fell through: :player',
+    'pre_contract_failed_message' => 'The pre-contract you agreed with :player could not be completed: he was no longer at :team at the end of the season. He does not join your squad.',
     'loan_out_complete_title' => ':player loaned out',
     'loan_out_complete_message' => ':player has been loaned :team_a until the end of the season.',
 
