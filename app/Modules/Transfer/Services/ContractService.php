@@ -1405,17 +1405,13 @@ class ContractService
      * Apply a wage evaluation result to a TransferOffer's terms fields.
      *
      * @param  array  $evaluation  Result from WageNegotiationEvaluator::evaluate()
-     * @param  array  $extraStatusUpdates  Context-specific status updates keyed by result ('accepted'/'rejected')
+     * @param  string|null  $acceptedStatus  Offer status that accepted terms settle the deal into (NegotiationScenario::acceptedStatus())
      * @return array{result: string, offer: TransferOffer}
      */
-    private function applyTermsEvaluation(TransferOffer $offer, array $evaluation, array $extraStatusUpdates = []): array
+    private function applyTermsEvaluation(TransferOffer $offer, array $evaluation, ?string $acceptedStatus = null): array
     {
         if ($evaluation['result'] === 'accepted') {
-            $updates = ['terms_status' => 'accepted'];
-            if (isset($extraStatusUpdates['accepted'])) {
-                $updates = array_merge($updates, $extraStatusUpdates['accepted']);
-            }
-            $offer->update($updates);
+            $this->settleTerms($offer, $acceptedStatus, ['terms_status' => 'accepted']);
 
             return ['result' => 'accepted', 'offer' => $offer->fresh()];
         }
@@ -1429,16 +1425,7 @@ class ContractService
             return ['result' => 'countered', 'offer' => $offer->fresh()];
         }
 
-        // Rejected
-        $updates = [
-            'terms_status' => 'rejected',
-            'status' => TransferOffer::STATUS_REJECTED,
-            'resolved_at' => $offer->game->current_date,
-        ];
-        if (isset($extraStatusUpdates['rejected'])) {
-            $updates = array_merge($updates, $extraStatusUpdates['rejected']);
-        }
-        $offer->update($updates);
+        $offer->transitionTo(TransferOffer::STATUS_REJECTED, $offer->game->current_date, ['terms_status' => 'rejected']);
 
         return ['result' => 'rejected', 'offer' => $offer->fresh()];
     }
@@ -1446,19 +1433,34 @@ class ContractService
     /**
      * Accept a player's counter-offer on personal terms.
      */
-    private function acceptTermsCounter(TransferOffer $offer, array $extraUpdates = []): TransferOffer
+    private function acceptTermsCounter(TransferOffer $offer, ?string $acceptedStatus = null): TransferOffer
     {
         if ($offer->terms_status !== 'countered') {
             throw new \InvalidArgumentException(__('messages.transfer_failed'));
         }
 
-        $offer->update(array_merge([
+        $this->settleTerms($offer, $acceptedStatus, [
             'offered_wage' => $offer->wage_counter_offer,
             'offered_years' => $offer->preferred_years,
             'terms_status' => 'accepted',
-        ], $extraUpdates));
+        ]);
 
         return $offer->fresh();
+    }
+
+    /**
+     * Record accepted personal terms and, where the scenario says terms alone
+     * settle the deal (pre-contracts, free agents), move the offer there.
+     */
+    private function settleTerms(TransferOffer $offer, ?string $acceptedStatus, array $terms): void
+    {
+        if ($acceptedStatus === null) {
+            $offer->update($terms);
+
+            return;
+        }
+
+        $offer->transitionTo($acceptedStatus, $offer->game->current_date, $terms);
     }
 
     // =========================================
@@ -1477,11 +1479,7 @@ class ContractService
         $reputationModifier = $this->dispositionService->reputationModifier($buyingClubGame->team, $player);
 
         if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
-            $offer->update([
-                'terms_status' => 'rejected',
-                'status' => TransferOffer::STATUS_REJECTED,
-                'resolved_at' => $buyingClubGame->current_date,
-            ]);
+            $offer->transitionTo(TransferOffer::STATUS_REJECTED, $buyingClubGame->current_date, ['terms_status' => 'rejected']);
 
             return ['willing' => false, 'offer' => $offer->fresh()];
         }
@@ -1563,13 +1561,7 @@ class ContractService
             flexibilityRatio: $scenario->flexibilityRatio($player->tier),
         );
 
-        $extraStatusUpdates = [];
-        $acceptedStatus = $scenario->acceptedStatusUpdates($buyingClubGame->current_date);
-        if (!empty($acceptedStatus)) {
-            $extraStatusUpdates['accepted'] = $acceptedStatus;
-        }
-
-        return $this->applyTermsEvaluation($offer, $evaluation, $extraStatusUpdates);
+        return $this->applyTermsEvaluation($offer, $evaluation, $scenario->acceptedStatus());
     }
 
     /**
@@ -1577,9 +1569,6 @@ class ContractService
      */
     public function acceptTermsCounterForScenario(TransferOffer $offer, NegotiationScenario $scenario): TransferOffer
     {
-        return $this->acceptTermsCounter(
-            $offer,
-            $scenario->acceptedStatusUpdates($offer->game->current_date),
-        );
+        return $this->acceptTermsCounter($offer, $scenario->acceptedStatus());
     }
 }

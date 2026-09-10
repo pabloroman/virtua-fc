@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadMinimumException;
+use App\Modules\ReserveTeam\Exceptions\PlayerHasCommittedDealException;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 
 class SendBackReservePlayer
@@ -29,6 +30,9 @@ class SendBackReservePlayer
 
         try {
             $this->reserveTeamService->sendBackToReserve($player, $game);
+        } catch (PlayerHasCommittedDealException $e) {
+            return redirect()->route('game.squad.reserve', $gameId)
+                ->with('error', __('messages.reserve_move_blocked_by_deal', ['player' => $playerName]));
         } catch (FirstTeamSquadMinimumException $e) {
             return redirect()->route('game.squad.reserve', $gameId)
                 ->with('error', $this->formatBreachMessage($e));

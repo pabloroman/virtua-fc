@@ -65,6 +65,12 @@ class ShowPlayerDetail
         $isOnReserve = $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->reserve_team_id;
 
+        // A player with a committed deal completes it from wherever he sits
+        // now, so ReserveTeamService refuses to move him; don't offer it.
+        $canMoveBetweenSquads = ! $gamePlayer->hasCommittedDeal();
+        $canCallUpToFirstTeam = $isOnReserve && $canMoveBetweenSquads;
+        $canSendBackToReserve = $isCalledUpFromReserve && $canMoveBetweenSquads;
+
         // U23 first-team players (not currently called up from the reserve)
         // can be sent down to the reserve squad for development. Players on
         // an active call-up loan have their own "send back" path which closes
@@ -73,6 +79,7 @@ class ShowPlayerDetail
             && $game->reserve_team_id !== null
             && $gamePlayer->team_id === $game->team_id
             && !$isCalledUpFromReserve
+            && $canMoveBetweenSquads
             && $gamePlayer->date_of_birth !== null
             && $gamePlayer->date_of_birth >= $game->getU23BirthCutoff();
 
@@ -102,6 +109,8 @@ class ShowPlayerDetail
             'severance' => $severance,
             'isOnReserve' => $isOnReserve,
             'isCalledUpFromReserve' => $isCalledUpFromReserve,
+            'canCallUpToFirstTeam' => $canCallUpToFirstTeam,
+            'canSendBackToReserve' => $canSendBackToReserve,
             'canSendDownToReserve' => $canSendDownToReserve,
             'incomingPreContract' => $incomingPreContract,
         ]);

@@ -56,7 +56,7 @@ Teams cannot drop more than **2 tiers** below their seeded base reputation. This
 
 ### Season End Processor
 
-`ReputationUpdateProcessor` (priority 27) runs after `PromotionRelegationProcessor` (26) and before `LeagueFixtureProcessor` (30) / `BudgetProjectionProcessor` (50). It:
+`ReputationUpdateProcessor` (closing pipeline, priority 90) runs after `PromotionRelegationProcessor` (85), and therefore ahead of the setup pipeline's `LeagueFixtureProcessor` (30) and `BudgetProjectionProcessor` (107). It:
 
 1. Iterates all league competitions in the game
 2. Reads final positions from `GameStanding` (played leagues) or `SimulatedSeason` (AI leagues)

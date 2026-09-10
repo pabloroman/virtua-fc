@@ -557,6 +557,22 @@ class GamePlayer extends Model
     }
 
     /**
+     * Whether any deal for the player has its terms settled and is only
+     * waiting to complete (fee agreed or agreed, in either direction). Such a
+     * player is spoken for: moving him between the first team and the
+     * reserve, or anywhere else, would pull the deal out from under whoever
+     * agreed it. Superset of TransferOffer::locksPlayer().
+     */
+    public function hasCommittedDeal(): bool
+    {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->contains(fn (TransferOffer $offer) => $offer->isCommitted());
+        }
+
+        return $this->transferOffers()->committed()->exists();
+    }
+
+    /**
      * Get the agreed transfer offer (if any).
      */
     public function agreedTransfer(): ?TransferOffer

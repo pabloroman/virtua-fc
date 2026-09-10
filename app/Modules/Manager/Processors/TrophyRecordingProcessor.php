@@ -14,7 +14,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 
 /**
  * Records trophies won by the player during the closing season.
- * Priority: 4 (runs before SeasonArchiveProcessor at 5, so cup_ties data still exists)
+ * Runs before SeasonArchiveProcessor, so cup_ties data still exists.
  */
 class TrophyRecordingProcessor implements SeasonProcessor
 {

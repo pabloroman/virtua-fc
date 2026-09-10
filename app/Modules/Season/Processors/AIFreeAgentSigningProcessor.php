@@ -8,13 +8,11 @@ use App\Modules\Transfer\Services\AITransferMarketService;
 use App\Models\Game;
 
 /**
- * Signs free agents to AI teams before squad replenishment generates new players.
+ * Signs free agents to AI teams at season end.
  *
- * Runs after contract expirations (4) and retirements (7), but before
- * SquadReplenishmentProcessor (9). This ensures AI teams fill roster gaps
- * from the free agent pool first, with generated players as a last resort.
- *
- * Priority: 8
+ * Runs after contract expirations and retirements have emptied roster slots,
+ * and after SquadReplenishmentProcessor has generated its youth intake, so
+ * it fills whatever gaps remain from the free-agent pool.
  */
 class AIFreeAgentSigningProcessor implements SeasonProcessor
 {

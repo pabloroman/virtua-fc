@@ -10,6 +10,7 @@ use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Transfer\Enums\NegotiationScenario;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\DispositionService;
+use App\Modules\Transfer\Services\TransferService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class NegotiatePreContract
 
     public function __construct(
         private readonly ContractService $contractService,
+        private readonly TransferService $transferService,
         private readonly NotificationService $notificationService,
         private readonly DispositionService $dispositionService,
         private readonly SalaryCapService $salaryCapService,
@@ -194,32 +196,7 @@ class NegotiatePreContract
             ], 422);
         }
 
-        // Find or create the pre-contract offer
-        $offer = TransferOffer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->where('offering_team_id', $game->team_id)
-            ->preContract()
-            ->pending()
-            ->first();
-
-        if (!$offer) {
-            // Create on first round
-            $offer = TransferOffer::create([
-                'game_id' => $game->id,
-                'game_player_id' => $player->id,
-                'offering_team_id' => $game->team_id,
-                // The owning club, not the player's current location — see
-                // TransferService::submitPreContractOffer.
-                'selling_team_id' => $player->owningTeamId(),
-                'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
-                'direction' => TransferOffer::DIRECTION_INCOMING,
-                'transfer_fee' => 0,
-                'status' => TransferOffer::STATUS_PENDING,
-                'expires_at' => $game->current_date->addDays(TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
-                'game_date' => $game->current_date,
-                'negotiation_round' => 1, // Mark as sync-negotiated
-            ]);
-        }
+        $offer = $this->transferService->openPreContractNegotiation($game, $player);
 
         $offerWageCents = $validated['wage'] * 100;
         $offeredYears = $validated['years'];

@@ -221,7 +221,7 @@ class CareerActionProcessor
         $expiringOffers = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->pending()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>', $currentDate)
             ->where('expires_at', '<=', $currentDate->copy()->addDays(7))
             ->get();

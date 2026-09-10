@@ -9,7 +9,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 
 /**
  * Increments the seasons_completed counter on the user's leaderboard stats.
- * Priority: 4 (runs early in the closing pipeline).
+ * Runs early in the closing pipeline.
  */
 class LeaderboardStatsProcessor implements SeasonProcessor
 {

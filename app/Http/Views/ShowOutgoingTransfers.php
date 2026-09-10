@@ -35,7 +35,7 @@ class ShowOutgoingTransfers
         $pendingOffers = TransferOffer::with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->pending()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('transfer_fee')
             ->get();
@@ -49,7 +49,7 @@ class ShowOutgoingTransfers
             ->where('game_id', $gameId)
             ->pending()
             ->preContract()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('game_date')
             ->get();
@@ -58,7 +58,7 @@ class ShowOutgoingTransfers
         $agreedPreContracts = TransferOffer::with(['gamePlayer', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->agreedPreContract()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->get();
 
         // Get agreed outgoing transfers (waiting for window) - exclude pre-contracts
@@ -66,7 +66,7 @@ class ShowOutgoingTransfers
             ->where('game_id', $gameId)
             ->agreed()
             ->notOfType(TransferOffer::TYPE_PRE_CONTRACT)
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->orderByDesc('transfer_fee')
             ->get();
 
@@ -105,7 +105,7 @@ class ShowOutgoingTransfers
             ->where('game_id', $gameId)
             ->ofType(TransferOffer::TYPE_LOAN_OUT)
             ->pending()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->orderByDesc('game_date')
             ->get()

@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Modules\Transfer\Exceptions\IllegalOfferTransitionException;
 use App\Support\Money;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * @property string $id
@@ -36,8 +40,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer active()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer agreed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer agreedPreContract()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer canReach(string $to)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer committed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer departingFrom(string $teamId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer departingFrom(string|array $teamIds)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer incoming()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer incomingFor(string $teamId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer locksPlayer()
@@ -136,6 +141,23 @@ class TransferOffer extends Model
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_EXPIRED = 'expired';
     public const STATUS_COMPLETED = 'completed';    // Transfer finalized at window
+
+    /**
+     * Legal status moves, keyed by the status an offer is leaving. Rejected,
+     * expired and completed are terminal: nothing leaves them, so no code
+     * path can resurrect a dead offer or re-complete a finished one. See
+     * transitionTo() / transitionAll(), the only places status is written.
+     *
+     * @var array<string, list<string>>
+     */
+    private const TRANSITIONS = [
+        self::STATUS_PENDING => [self::STATUS_FEE_AGREED, self::STATUS_AGREED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_FEE_AGREED => [self::STATUS_AGREED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_AGREED => [self::STATUS_COMPLETED, self::STATUS_REJECTED, self::STATUS_EXPIRED],
+        self::STATUS_REJECTED => [],
+        self::STATUS_EXPIRED => [],
+        self::STATUS_COMPLETED => [],
+    ];
 
     // Timing constants
     public const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
@@ -446,19 +468,25 @@ class TransferOffer extends Model
     }
 
     /**
-     * Offers that would take a player *away* from the given team: made by
-     * another club, for a player currently sitting at that team.
+     * Offers that would take a player *away* from the given team(s): made by
+     * a club outside them, for a player currently sitting at one of them.
+     * Pass Game::userTeamIds() so a filial's reserve players count too —
+     * their deals complete from the reserve like any other.
      *
      * The offering_team_id guard matters because a loaned-in player sits at
      * the borrowing club's team_id (LoanService::completeLoanIn). Without it,
      * a deal the user made for a player he holds on loan reads as one of his
      * own players leaving.
+     *
+     * @param  string|list<string>  $teamIds
      */
-    public function scopeDepartingFrom($query, string $teamId)
+    public function scopeDepartingFrom($query, string|array $teamIds)
     {
+        $teamIds = (array) $teamIds;
+
         return $query
-            ->where('offering_team_id', '!=', $teamId)
-            ->whereHas('gamePlayer', fn ($player) => $player->where('team_id', $teamId));
+            ->whereNotIn('offering_team_id', $teamIds)
+            ->whereHas('gamePlayer', fn ($player) => $player->whereIn('team_id', $teamIds));
     }
 
     /**
@@ -500,6 +528,67 @@ class TransferOffer extends Model
             ->all();
 
         return array_fill_keys($ids, true);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status transitions
+    |--------------------------------------------------------------------------
+    |
+    | Status is only ever written here (creates aside, which set the initial
+    | status). Every move is checked against TRANSITIONS and stamps
+    | resolved_at, which is what every non-pending status means: the offer
+    | has been decided. A pending offer never carries resolved_at —
+    | LoanService::resolveIncomingLoanRequests uses that as its work queue.
+    */
+
+    public static function canTransition(string $from, string $to): bool
+    {
+        return in_array($to, self::TRANSITIONS[$from] ?? [], true);
+    }
+
+    /**
+     * Statuses from which $to is a legal move.
+     *
+     * @return list<string>
+     */
+    public static function statusesThatCanReach(string $to): array
+    {
+        return array_keys(array_filter(self::TRANSITIONS, fn (array $targets) => in_array($to, $targets, true)));
+    }
+
+    /**
+     * Move this offer to $to, stamping resolved_at and any accompanying
+     * columns ($extra, e.g. terms_status or asking_price) in one write.
+     *
+     * @throws IllegalOfferTransitionException when TRANSITIONS forbids the move
+     */
+    public function transitionTo(string $to, Carbon $on, array $extra = []): void
+    {
+        if (! self::canTransition($this->status, $to)) {
+            throw IllegalOfferTransitionException::forOffer($this, $to);
+        }
+
+        $this->update(['status' => $to, 'resolved_at' => $on] + $extra);
+    }
+
+    /**
+     * Offers that may legally move to $to.
+     */
+    public function scopeCanReach($query, string $to)
+    {
+        return $query->whereIn('status', self::statusesThatCanReach($to));
+    }
+
+    /**
+     * Bulk form of transitionTo() for sweeps (sibling rejection, expiry).
+     * Rows that cannot legally reach $to are left alone rather than failing
+     * the whole sweep — a completed sibling in a rejection pass is not an
+     * error, it is simply not the sweep's business. Returns the rows moved.
+     */
+    public static function transitionAll(Builder|Relation $query, string $to, Carbon $on, array $extra = []): int
+    {
+        return $query->canReach($to)->update(['status' => $to, 'resolved_at' => $on] + $extra);
     }
 
     /**

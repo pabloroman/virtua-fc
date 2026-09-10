@@ -11,7 +11,7 @@ use App\Modules\Transfer\Services\TransferService;
  * Completes agreed non-pre-contract transfers at end of season.
  * Transfers agreed outside the transfer window are deferred until the next
  * window opens; if the season ends first, this processor finalises them.
- * Priority: 35 (after PreContractTransferProcessor, before TransferMarketResetProcessor)
+ * Runs after PreContractTransferProcessor and before TransferMarketResetProcessor.
  */
 class AgreedTransferCompletionProcessor implements SeasonProcessor
 {
@@ -32,7 +32,9 @@ class AgreedTransferCompletionProcessor implements SeasonProcessor
         $outgoingData = $outgoing->map(fn ($offer) => [
             'playerId' => $offer->game_player_id,
             'playerName' => $offer->gamePlayer->name,
-            'fromTeamId' => $game->team_id,
+            // The player has already moved; the offer names the club he left
+            // (first team or reserve). Older offers without it were first-team.
+            'fromTeamId' => $offer->selling_team_id ?? $game->team_id,
             'toTeamId' => $offer->offering_team_id,
             'toTeamName' => $offer->offeringTeam->name,
             'transferFee' => $offer->transfer_fee,

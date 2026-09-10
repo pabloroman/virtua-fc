@@ -321,7 +321,7 @@ class MatchNarrativeService
             ->where('game_id', $game->id)
             ->ofType(TransferOffer::TYPE_UNSOLICITED, TransferOffer::TYPE_PRE_CONTRACT)
             ->active()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->orderByDesc('transfer_fee')
             ->get();
 

@@ -176,23 +176,7 @@ class NegotiateFreeAgent
             ], 422);
         }
 
-        $offer = $this->findPendingFreeAgentOffer($game, $player);
-
-        if (!$offer) {
-            $offer = TransferOffer::create([
-                'game_id' => $game->id,
-                'game_player_id' => $player->id,
-                'offering_team_id' => $game->team_id,
-                'selling_team_id' => null,
-                'offer_type' => TransferOffer::TYPE_USER_BID,
-                'direction' => TransferOffer::DIRECTION_INCOMING,
-                'transfer_fee' => 0,
-                'status' => TransferOffer::STATUS_PENDING,
-                'expires_at' => $game->current_date->addDays(14),
-                'game_date' => $game->current_date,
-                'negotiation_round' => 1,
-            ]);
-        }
+        $offer = $this->transferService->openFreeAgentNegotiation($game, $player);
 
         $requestedClauseCents = $this->contractService->resolveRequestedClauseCents($validated['clause'] ?? null, $game);
 
@@ -203,7 +187,7 @@ class NegotiateFreeAgent
         $offer = $result['offer'];
 
         return match ($result['result']) {
-            'accepted' => $this->completeFreeAgentSigning($offer, $game, $player),
+            'accepted' => $this->completeFreeAgentSigning($offer, $player),
             'countered' => response()->json([
                 'status' => 'ok',
                 'negotiation_status' => 'terms_open',
@@ -266,19 +250,18 @@ class NegotiateFreeAgent
         $this->contractService->acceptTermsCounterForScenario($offer, NegotiationScenario::FREE_AGENT);
         $offer->refresh();
 
-        return $this->completeFreeAgentSigning($offer, $game, $player);
+        return $this->completeFreeAgentSigning($offer, $player);
     }
 
-    private function completeFreeAgentSigning(TransferOffer $offer, Game $game, GamePlayer $player): JsonResponse
+    /**
+     * The offer is already parked as agreed by the time we get here —
+     * NegotiationScenario::FREE_AGENT->acceptedStatus() had ContractService
+     * settle it when the terms were accepted. The player joins after the
+     * next match (CompleteAgreedTransfersOnMatchPlayed) or when the window
+     * opens (CompleteAgreedTransfersOnWindowOpen); this only tells the user.
+     */
+    private function completeFreeAgentSigning(TransferOffer $offer, GamePlayer $player): JsonResponse
     {
-        // Park the agreement; the player joins after the next match
-        // (CompleteAgreedTransfersOnMatchPlayed) or when the window opens
-        // (CompleteAgreedTransfersOnWindowOpen).
-        $offer->update([
-            'status' => TransferOffer::STATUS_AGREED,
-            'resolved_at' => $game->current_date,
-        ]);
-
         return response()->json([
             'status' => 'ok',
             'negotiation_status' => 'completed',

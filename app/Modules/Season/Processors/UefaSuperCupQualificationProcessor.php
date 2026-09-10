@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Log;
  * processor is a no-op in that case — same seed-data-first pattern used
  * by every other cup.
  *
- * Priority 85: runs next to SupercupQualificationProcessor (80) and well
- * before ContinentalAndCupInitProcessor (106) so the entries are in place
- * by the time the draw runs.
+ * Runs in the setup pipeline (SupercupQualificationProcessor is its closing
+ * pipeline counterpart) and before ContinentalAndCupInitProcessor, so the
+ * entries are in place by the time the draw runs.
  */
 class UefaSuperCupQualificationProcessor implements SeasonProcessor
 {

@@ -6,9 +6,11 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
+use App\Models\TransferOffer;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadFullException;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadMinimumException;
+use App\Modules\ReserveTeam\Exceptions\PlayerHasCommittedDealException;
 use App\Modules\ReserveTeam\Exceptions\ReserveSquadMinimumException;
 use App\Modules\Squad\Services\SquadMinimumService;
 use App\Modules\Squad\Services\SquadNumberService;
@@ -65,6 +67,7 @@ class ReserveTeamService
     public function callUpToFirstTeam(GamePlayer $player, Game $game): void
     {
         $this->assertFilial($game);
+        $this->assertNoCommittedDeal($player);
 
         if ($player->team_id !== $game->reserve_team_id) {
             throw new \DomainException('Player is not currently registered to the reserve team.');
@@ -133,6 +136,7 @@ class ReserveTeamService
     public function sendBackToReserve(GamePlayer $player, Game $game): void
     {
         $this->assertFilial($game);
+        $this->assertNoCommittedDeal($player);
 
         $loan = Loan::where('game_player_id', $player->id)
             ->where('status', Loan::STATUS_ACTIVE)
@@ -173,6 +177,7 @@ class ReserveTeamService
     public function sendDownToReserve(GamePlayer $player, Game $game): void
     {
         $this->assertFilial($game);
+        $this->assertNoCommittedDeal($player);
 
         if ($player->team_id !== $game->team_id) {
             throw new \DomainException('Player is not currently registered to the first team.');
@@ -252,9 +257,15 @@ class ReserveTeamService
         // U-23) under next season's rule must move up to the first team now.
         $nextSeasonU23Cutoff = $game->getU23BirthCutoff((int) $game->season + 1);
 
+        // A player held in place by a locking deal (TransferOffer::locksPlayer())
+        // completes that deal from the reserve; promoting him first would
+        // move him out from under it.
+        $lockedPlayerIds = TransferOffer::lockedPlayerIds($game->id);
+
         $candidates = GamePlayer::ownedByTeam($reserveTeamId)
             ->where('game_id', $game->id)
             ->where('date_of_birth', '<', $nextSeasonU23Cutoff)
+            ->whereNotIn('id', array_keys($lockedPlayerIds))
             ->with(['activeLoan'])
             ->get();
 
@@ -457,10 +468,15 @@ class ReserveTeamService
         // already moved age-24+ players up at priority 4.
         $nextSeasonU23Cutoff = $game->getU23BirthCutoff((int) $game->season + 1);
 
+        // Same lock as the overage promotion: never move a player whose deal
+        // will complete from the reserve.
+        $lockedPlayerIds = TransferOffer::lockedPlayerIds($game->id);
+
         $candidates = GamePlayer::ownedByTeam($reserveTeamId)
             ->where('game_id', $game->id)
             ->where('date_of_birth', '>=', $nextSeasonU23Cutoff)
             ->whereNotNull('overall_score')
+            ->whereNotIn('id', array_keys($lockedPlayerIds))
             ->with(['activeLoan'])
             ->get();
 
@@ -540,6 +556,19 @@ class ReserveTeamService
     {
         if ($game->reserve_team_id === null) {
             throw new \DomainException('Reserve team operations require a filial game.');
+        }
+    }
+
+    /**
+     * A player with a committed deal completes it from wherever he was when
+     * it was agreed (TransferService::completePreContractTransfers and
+     * completeAgreedTransfers look him up by team), so he must not be
+     * shuffled between the first team and the reserve in the meantime.
+     */
+    private function assertNoCommittedDeal(GamePlayer $player): void
+    {
+        if ($player->hasCommittedDeal()) {
+            throw PlayerHasCommittedDealException::forPlayer($player->name ?? $player->id);
         }
     }
 }

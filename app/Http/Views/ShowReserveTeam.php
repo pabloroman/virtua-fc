@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
+use App\Models\TransferOffer;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 use App\Support\PositionMapper;
 
@@ -28,6 +29,16 @@ class ShowReserveTeam
         $avgAge = $count > 0 ? round($squad->avg(fn ($p) => $p->age($game->current_date)), 1) : 0;
         $avgOverall = $count > 0 ? (int) round($squad->avg(fn ($p) => $p->effective_rating)) : 0;
 
+        // Players with a committed deal cannot be moved between squads
+        // (ReserveTeamService refuses), so the call-up / send-back controls
+        // are withheld for them.
+        $committedPlayerIds = TransferOffer::where('game_id', $game->id)
+            ->committed()
+            ->whereIn('game_player_id', $squad->pluck('id'))
+            ->pluck('game_player_id')
+            ->flip()
+            ->all();
+
         return view('squad-reserve', [
             'game' => $game,
             'reserveTeam' => $game->reserveTeam,
@@ -38,6 +49,7 @@ class ShowReserveTeam
             'reserveCount' => $count,
             'avgAge' => $avgAge,
             'avgOverall' => $avgOverall,
+            'committedPlayerIds' => $committedPlayerIds,
         ]);
     }
 }

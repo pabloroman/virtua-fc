@@ -41,7 +41,7 @@ class TransferHeaderService
     {
         return TransferOffer::where('game_id', $game->id)
             ->pending()
-            ->departingFrom($game->team_id)
+            ->departingFrom($game->userTeamIds())
             ->where('expires_at', '>=', $game->current_date)
             ->ofType(
                 TransferOffer::TYPE_UNSOLICITED,

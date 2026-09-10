@@ -4,7 +4,6 @@ namespace App\Modules\Transfer\Enums;
 
 use App\Models\TransferOffer;
 use App\Modules\Player\PlayerAge;
-use Carbon\Carbon;
 
 enum NegotiationScenario: string
 {
@@ -84,17 +83,19 @@ enum NegotiationScenario: string
     }
 
     /**
-     * Status updates to apply on the TransferOffer when terms are accepted.
+     * The offer status that accepting personal terms settles the deal into,
+     * or null when terms alone do not settle it (a transfer still needs the
+     * club fee side to move it to agreed; a renewal has no offer at all).
      */
-    public function acceptedStatusUpdates(Carbon $currentDate): array
+    public function acceptedStatus(): ?string
     {
         return match ($this) {
-            self::TRANSFER => [],
-            self::PRE_CONTRACT => ['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $currentDate],
+            self::TRANSFER => null,
+            self::PRE_CONTRACT => TransferOffer::STATUS_AGREED,
             // Free-agent signings are parked as agreed; they join the squad
             // after the next match via CompleteAgreedTransfersOnMatchPlayed.
-            self::FREE_AGENT => ['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $currentDate],
-            self::RENEWAL => [],
+            self::FREE_AGENT => TransferOffer::STATUS_AGREED,
+            self::RENEWAL => null,
         };
     }
 

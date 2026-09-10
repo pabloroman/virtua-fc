@@ -21,8 +21,9 @@ use App\Models\GameNotification;
  * SimulatedSeason (AI leagues), awards/deducts points, applies
  * regression toward base tier, and recalculates effective tiers.
  *
- * Priority: 27 (after PromotionRelegation so we know final positions,
- * before LeagueFixture/BudgetProjection so new tiers affect next season)
+ * Runs after PromotionRelegationProcessor so final positions are known, and
+ * ahead of the setup pipeline's LeagueFixtureProcessor / BudgetProjectionProcessor
+ * so the new tiers shape next season.
  */
 class ReputationUpdateProcessor implements SeasonProcessor
 {

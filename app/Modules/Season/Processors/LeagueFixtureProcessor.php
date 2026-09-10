@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\DB;
 /**
  * Cleans up old matches/cup ties and generates league fixtures for the new season.
  *
- * current_date is finalized later by ContinentalAndCupInitProcessor (priority 106)
- * after all competitions (league, Swiss, cups) have their fixtures.
+ * current_date is finalized later by ContinentalAndCupInitProcessor after all
+ * competitions (league, Swiss, cups) have their fixtures.
  *
- * Priority: 30 (runs after promotion/relegation at 26)
+ * Runs in the setup pipeline, so the closing pipeline's promotion/relegation
+ * has already placed every team in its new division.
  */
 class LeagueFixtureProcessor implements SeasonProcessor
 {

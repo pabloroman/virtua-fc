@@ -129,7 +129,9 @@ Some deals hold a player at his current club until they complete: an **agreed pr
 
 The definition lives in one place, `TransferOffer::locksPlayer()` (with `TransferOffer::lockedPlayerIds()` for bulk processors), and every path that moves players for a reason other than completing their own deal consults it. If a locked player is nevertheless found moved at completion, the deal still fails gracefully for the user but a `LockedPlayerMovedException` is reported — and thrown under test — so the offending path is visible.
 
-Offer state more generally is expressed through the scopes on `TransferOffer` (`incoming()`, `departingFrom()`, `agreedPreContract()`, `committed()`, …); `TransferOfferQueryVocabularyTest` fails the build if a raw `offer_type` / `direction` / `triggered_release_clause` predicate appears outside the model.
+Offer state more generally is expressed through the scopes on `TransferOffer` (`incoming()`, `departingFrom()`, `agreedPreContract()`, `committed()`, …), and status is only ever changed through `TransferOffer::transitionTo()` (one row) or `transitionAll()` (a sweep), which check the move against the transition table — pending → fee agreed / agreed / rejected / expired, fee agreed → agreed / rejected / expired, agreed → completed / rejected / expired, and nothing leaves a terminal state — and stamp `resolved_at`. `TransferOfferQueryVocabularyTest` fails the build if a raw `offer_type` / `direction` / `triggered_release_clause` predicate, or a status written through `update()`, appears outside the model.
+
+A player with any committed deal (`GamePlayer::hasCommittedDeal()`) cannot be moved between a filial's first team and reserve until it completes, and the outgoing completion queries cover both squads (`departingFrom(Game::userTeamIds())`), so a reserve player's deal completes from the reserve.
 
 ## Season-End Processing
 

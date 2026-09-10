@@ -10,7 +10,9 @@ use App\Models\Game;
 /**
  * Completes pre-contract transfers at end of season.
  * Players who agreed to leave on a free transfer move to their new team.
- * Priority: 5 (runs before player development so new team benefits from development)
+ * Runs after ContractExpirationProcessor (which must leave these players in
+ * place — see TransferOffer::locksPlayer()) and before player development,
+ * so the new club benefits from the off-season progression.
  */
 class PreContractTransferProcessor implements SeasonProcessor
 {
@@ -31,7 +33,10 @@ class PreContractTransferProcessor implements SeasonProcessor
         $outgoingData = $outgoingTransfers->map(fn ($offer) => [
             'playerId' => $offer->game_player_id,
             'playerName' => $offer->gamePlayer->name,
-            'fromTeamId' => $game->team_id,
+            // The player has already moved, so read the club he left from the
+            // offer. Offers agreed before selling_team_id was stamped on AI
+            // pre-contracts fall back to the first team.
+            'fromTeamId' => $offer->selling_team_id ?? $game->team_id,
             'toTeamId' => $offer->offering_team_id,
             'toTeamName' => $offer->offeringTeam->name,
         ])->toArray();

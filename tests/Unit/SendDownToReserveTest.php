@@ -8,7 +8,9 @@ use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\Team;
+use App\Models\TransferOffer;
 use App\Modules\ReserveTeam\Exceptions\FirstTeamSquadMinimumException;
+use App\Modules\ReserveTeam\Exceptions\PlayerHasCommittedDealException;
 use App\Modules\ReserveTeam\Services\ReserveTeamService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -126,6 +128,30 @@ class SendDownToReserveTest extends TestCase
 
         $this->expectException(\DomainException::class);
         $this->expectExceptionMessage('Only U23 players');
+
+        $this->service->sendDownToReserve($player, $this->game);
+    }
+
+    public function test_refuses_when_player_has_a_committed_deal(): void
+    {
+        // An agreed sale completes from the first team; sending him down
+        // would move him out from under the deal.
+        $player = $this->u23FirstTeamPlayer();
+        TransferOffer::create([
+            'game_id' => $this->game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => Team::factory()->create()->id,
+            'selling_team_id' => $this->firstTeam->id,
+            'offer_type' => TransferOffer::TYPE_LISTED,
+            'direction' => TransferOffer::DIRECTION_OUTGOING,
+            'transfer_fee' => 500_000_000,
+            'status' => TransferOffer::STATUS_AGREED,
+            'expires_at' => $this->game->current_date->copy()->addDays(14),
+            'game_date' => $this->game->current_date,
+            'resolved_at' => $this->game->current_date,
+        ]);
+
+        $this->expectException(PlayerHasCommittedDealException::class);
 
         $this->service->sendDownToReserve($player, $this->game);
     }

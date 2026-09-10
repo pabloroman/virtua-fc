@@ -4,6 +4,8 @@
 
     $isCareerMode = $game->isCareerMode();
     $isCalledUpFromReserve = $isCalledUpFromReserve ?? false;
+    $canCallUpToFirstTeam = $canCallUpToFirstTeam ?? false;
+    $canSendBackToReserve = $canSendBackToReserve ?? false;
     $canSendDownToReserve = $canSendDownToReserve ?? false;
     $incomingPreContract = $incomingPreContract ?? false;
 
@@ -296,9 +298,9 @@
 @endif
 
 {{-- Actions --}}
-@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || ($isOnReserve ?? false) || $isCalledUpFromReserve || $canSendDownToReserve)
+@if($showActions || $canRenew || $renewalNegotiation || $renewalCooldown || $canCallUpToFirstTeam || $canSendBackToReserve || $canSendDownToReserve)
     <div class="px-5 py-4 border-t border-border-default flex flex-wrap items-center gap-2">
-        @if(($isOnReserve ?? false) && $isCareerMode)
+        @if($canCallUpToFirstTeam && $isCareerMode)
             <form method="POST" action="{{ route('game.reserve.call-up', [$game->id, $gamePlayer->id]) }}">
                 @csrf
                 <x-action-button color="blue">
@@ -309,7 +311,7 @@
                 </x-action-button>
             </form>
         @endif
-        @if($isCalledUpFromReserve && $isCareerMode)
+        @if($canSendBackToReserve && $isCareerMode)
             <form method="POST" action="{{ route('game.reserve.send-back', [$game->id, $gamePlayer->id]) }}">
                 @csrf
                 <x-action-button color="violet">
