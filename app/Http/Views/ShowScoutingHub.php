@@ -33,7 +33,7 @@ class ShowScoutingHub
             ->with(['gamePlayer.team', 'gamePlayer.activeLoan.parentTeam'])
             ->get()
             ->map(fn (ShortlistedPlayer $entry) => $entry->gamePlayer)
-            ->filter(fn (?GamePlayer $gp) => $gp && $gp->team_id !== $game->team_id)
+            ->filter(fn (?GamePlayer $gp) => $gp && ! $gp->isUserOwned($game))
             ->values();
 
         $shortlistedPlayerIds = $shortlistedPlayers->pluck('id')->all();

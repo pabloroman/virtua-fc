@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
+use App\Models\Team;
 use App\Models\TransferListing;
 use App\Models\TransferOffer;
 use App\Models\UserSquadCareerRecord;
@@ -32,6 +33,7 @@ class TransferCompletionService
         private readonly SquadNumberService $squadNumberService,
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
+        private readonly LoanService $loanService,
     ) {}
     /**
      * Complete an outgoing transfer (user's player sold to AI team).
@@ -47,7 +49,16 @@ class TransferCompletionService
 
         // Where he is leaving from: the first team or, in a filial, the
         // reserve. A loan returns him there, and the transfer record names it.
-        $fromTeamId = $player->team_id;
+        // The owner rather than team_id, so selling a player who is himself out
+        // on loan credits the club that owns him and not his borrower.
+        $fromTeamId = $player->owningTeamId();
+
+        // A permanent sale ends any loan he is on — otherwise he arrives at the
+        // buyer still carrying an active loan from his former parent. A loan-out
+        // is the opposite case and creates one below.
+        if (! $isLoan) {
+            $this->loanService->endLoanOnOwnershipChange($player);
+        }
 
         // Transfer player to the buying team
         TransferListing::where('game_player_id', $player->id)->delete();
@@ -137,8 +148,18 @@ class TransferCompletionService
         $buyerName = $buyer->name;
         $buyerNameWithA = $buyer->nameWithA();
         $game = $player->game;
-        $fromTeamId = $player->team_id;
-        $fromTeamName = $player->team->name ?? null;
+        $fromTeamId = $player->owningTeamId();
+        // Name the club he is actually leaving. $player->team is his location,
+        // which is the borrowing club while he is out on loan; the offer's
+        // sellingTeam is the owner (stamped by TransferService), with a lookup
+        // for offers agreed before that was recorded.
+        $fromTeamName = $fromTeamId === $player->team_id
+            ? ($player->team->name ?? null)
+            : ($offer->sellingTeam?->name ?? Team::find($fromTeamId)?->name);
+
+        // He may still be out on loan when his pre-contract lands — completion
+        // no longer relies on LoanReturnProcessor having run first.
+        $this->loanService->endLoanOnOwnershipChange($player);
 
         // Transfer player to the buying team
         TransferListing::where('game_player_id', $player->id)->delete();
@@ -221,7 +242,7 @@ class TransferCompletionService
         $sellerTeam = $offer->sellingTeam ?? $player->team;
         $sellerName = $sellerTeam->name ?? 'Unknown';
         $sellerNameWithDe = $sellerTeam?->nameWithDe() ?? 'de Unknown';
-        $fromTeamId = $offer->selling_team_id ?? $player->team_id;
+        $fromTeamId = $offer->selling_team_id ?? $player->owningTeamId();
 
         // Re-assert ownership before mutating: between agreement and completion
         // an AI-to-AI move (or a parallel deal) could have relocated the player.
@@ -230,7 +251,19 @@ class TransferCompletionService
         // escrowed fee is released (rejected offers drop out of committedBudget())
         // and the user is told why. Free-agent signings (no selling club) take a
         // different completion path, so selling_team_id is always set here.
-        if ($offer->selling_team_id !== null && $player->team_id !== $offer->selling_team_id) {
+        //
+        // Owner against owner. selling_team_id records the club that agreed to
+        // sell — his owner, not wherever he was sitting (GamePlayer::owningTeamId).
+        // Comparing it to team_id compared an owner to a location, which matched
+        // only once the loan had ended, and held solely because LoanReturnProcessor
+        // runs at priority 5 and the transfer processors at 30 and 35. Any
+        // processor added between them would have broken agreed deals silently,
+        // and mid-season completions had no such ordering to rely on at all.
+        // A null owner (a loanee whose parent club has left the game) matches
+        // nobody and correctly fails here.
+        $currentOwnerId = $player->owningTeamId();
+
+        if ($offer->selling_team_id !== null && $currentOwnerId !== $offer->selling_team_id) {
             // For an ordinary agreed bid this is a legitimate race the market is
             // allowed to win. For a locking deal it is not: every path that moves
             // players is required to skip TransferOffer::locksPlayer() players,
@@ -238,13 +271,20 @@ class TransferCompletionService
             // offending path is visible instead of surfacing months later as a
             // support ticket; the user-facing handling below is unchanged.
             if ($offer->locksPlayer()) {
-                report(LockedPlayerMovedException::forOffer($offer, $player->team_id));
+                report(LockedPlayerMovedException::forOffer($offer, $currentOwnerId));
             }
 
             $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
             $this->notificationService->notifyTransferFellThrough($game, $player, $sellerTeam, $offer->isPreContract());
             return false;
         }
+
+        // Ownership has passed to the buyer, so any loan he is on is over —
+        // including the loan-to-buy case, where the club completing the deal is
+        // the one currently borrowing him. Without this he would keep an active
+        // loan row naming his former parent and read as loaned-in to his own
+        // new club.
+        $this->loanService->endLoanOnOwnershipChange($player);
 
         // Transfer player to user's team
         $age = $player->age($game->current_date);
@@ -253,7 +293,11 @@ class TransferCompletionService
         $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
         TransferListing::where('game_player_id', $player->id)->delete();
-        $previousTeamId = $player->team_id;
+        // The club he came from is the seller resolved above, not his location:
+        // the two differ when the user buys a player he already holds on loan,
+        // where team_id is the user's own club. $sellerName is passed alongside
+        // as previousTeamName, so both must name the same club.
+        $previousTeamId = $fromTeamId;
         $player->update([
             'team_id' => $game->team_id,
             'number' => $this->squadNumberService->assignNumberForNewPlayer($game, $player),

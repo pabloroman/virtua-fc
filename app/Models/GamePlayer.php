@@ -344,10 +344,7 @@ class GamePlayer extends Model
      */
     public function isLoanedOut(string $userTeamId): bool
     {
-        return Loan::where('game_player_id', $this->id)
-            ->where('parent_team_id', $userTeamId)
-            ->where('status', Loan::STATUS_ACTIVE)
-            ->exists();
+        return $this->resolvedActiveLoan()?->parent_team_id === $userTeamId;
     }
 
     /**
@@ -356,14 +353,7 @@ class GamePlayer extends Model
      */
     public function isLoanedIn(string $userTeamId): bool
     {
-        if ($this->relationLoaded('activeLoan')) {
-            return $this->activeLoan !== null && $this->activeLoan->loan_team_id === $userTeamId;
-        }
-
-        return Loan::where('game_player_id', $this->id)
-            ->where('loan_team_id', $userTeamId)
-            ->where('status', Loan::STATUS_ACTIVE)
-            ->exists();
+        return $this->resolvedActiveLoan()?->loan_team_id === $userTeamId;
     }
 
     /**
@@ -421,24 +411,21 @@ class GamePlayer extends Model
      */
     public function scopeOwnedByTeam($query, string $teamId)
     {
-        return $query->where(function ($q) use ($teamId) {
-            $q->where(function ($present) use ($teamId) {
-                $present->where('team_id', $teamId)
-                    ->whereDoesntHave('activeLoan');
-            })->orWhereHas('activeLoan', fn ($loanQuery) => $loanQuery->where('parent_team_id', $teamId));
-        });
+        return $query->ownedByAny([$teamId]);
     }
 
     /**
-     * Limit a query to players owned by the user in the given game — i.e.,
-     * by the first team or the reserve team. Generalizes scopeOwnedByTeam
-     * across the user's whole organization, including filial call-ups (which
-     * appear loaned-in to the first team but are still user-owned through
-     * the reserve as parent).
+     * Scope: players owned by any of the given teams.
+     *
+     * The one definition of ownership as a query. scopeOwnedByTeam and
+     * scopeUserOwned are both this scope with a different team list, so the
+     * "present and not borrowed, or lent out from here" rule is stated once.
+     *
+     * @param  list<string>  $teamIds
      */
-    public function scopeUserOwned($query, Game $game)
+    public function scopeOwnedByAny($query, array $teamIds)
     {
-        $teamIds = $game->userTeamIds();
+        $teamIds = array_values(array_filter($teamIds));
 
         if (empty($teamIds)) {
             return $query->whereRaw('1 = 0');
@@ -453,13 +440,31 @@ class GamePlayer extends Model
     }
 
     /**
-     * Whether this player is part of the user's organization in the given
-     * game — owned by the first team or the reserve team, including filial
-     * call-ups loaned internally between them.
-     *
-     * Loaned-out players (gone elsewhere but parent-owned by the user) count.
-     * Loaned-in players from a third-party club do not.
+     * Limit a query to players owned by the user in the given game — i.e.,
+     * by the first team or the reserve team. Generalizes scopeOwnedByTeam
+     * across the user's whole organization, including filial call-ups (which
+     * appear loaned-in to the first team but are still user-owned through
+     * the reserve as parent).
      */
+    public function scopeUserOwned($query, Game $game)
+    {
+        return $query->ownedByAny($game->userTeamIds());
+    }
+
+    /**
+     * The active loan for this player, honouring an already-loaded relation.
+     *
+     * Every ownership predicate below goes through here. An unloaded relation
+     * costs one query per player, so callers that iterate a collection should
+     * eager load with('activeLoan') rather than let this fall through in a loop.
+     */
+    private function resolvedActiveLoan(): ?Loan
+    {
+        return $this->relationLoaded('activeLoan')
+            ? $this->activeLoan
+            : $this->activeLoan()->first();
+    }
+
     /**
      * The id of the club that actually owns the player's contract.
      *
@@ -470,33 +475,34 @@ class GamePlayer extends Model
      * instead and completion stops recognising the seller the moment the loan
      * ends, because TransferCompletionService re-asserts that the player is
      * still at the club that agreed to sell him.
+     *
+     * Null means nobody owns him. That is a free agent (team_id null), but
+     * also a loanee whose parent club is not in the game: loans.parent_team_id
+     * is nullable and such a player is freed rather than returned when the
+     * loan ends. An active loan therefore answers with its parent even when
+     * that parent is null — falling back to team_id there would name the
+     * borrowing club as owner, which is the very confusion this resolves.
      */
     public function owningTeamId(): ?string
     {
-        $loan = $this->relationLoaded('activeLoan')
-            ? $this->activeLoan
-            : $this->activeLoan()->first();
+        $loan = $this->resolvedActiveLoan();
 
-        return $loan?->parent_team_id ?? $this->team_id;
+        return $loan !== null ? $loan->parent_team_id : $this->team_id;
     }
 
+    /**
+     * Whether this player is part of the user's organization in the given
+     * game — owned by the first team or the reserve team, including filial
+     * call-ups loaned internally between them.
+     *
+     * Loaned-out players (gone elsewhere but parent-owned by the user) count.
+     * Loaned-in players from a third-party club do not.
+     */
     public function isUserOwned(Game $game): bool
     {
-        $teamIds = $game->userTeamIds();
+        $owner = $this->owningTeamId();
 
-        if (empty($teamIds)) {
-            return false;
-        }
-
-        $loan = $this->relationLoaded('activeLoan')
-            ? $this->activeLoan
-            : $this->activeLoan()->first();
-
-        if ($loan) {
-            return in_array($loan->parent_team_id, $teamIds, true);
-        }
-
-        return in_array($this->team_id, $teamIds, true);
+        return $owner !== null && in_array($owner, $game->userTeamIds(), true);
     }
 
     /**
@@ -511,9 +517,7 @@ class GamePlayer extends Model
             return false;
         }
 
-        $loan = $this->relationLoaded('activeLoan')
-            ? $this->activeLoan
-            : $this->activeLoan()->first();
+        $loan = $this->resolvedActiveLoan();
 
         return $loan !== null
             && $loan->parent_team_id === $game->reserve_team_id
@@ -595,6 +599,13 @@ class GamePlayer extends Model
      * Without the distinction such a signing reads as "leaving on a free"
      * across the squad and transfer surfaces, because a loaned-in player's
      * team_id is the borrowing club (see LoanService::completeLoanIn).
+     *
+     * Deliberately keyed on location, not owningTeamId(): this answers "is the
+     * player I am looking at about to leave me", and the surfaces that ask it
+     * list players by where they sit. Keyed on the owner, a loanee the user is
+     * signing permanently would show the departure badge on the user's own
+     * squad page — the #1364 bug. The owner's side of the question is a query
+     * over his whole club, and belongs to TransferOffer::scopeDepartingFrom().
      */
     public function hasAgreedPreContractDeparture(): bool
     {
@@ -750,9 +761,7 @@ class GamePlayer extends Model
      */
     public function ownerCountry(): ?string
     {
-        $loan = $this->relationLoaded('activeLoan')
-            ? $this->activeLoan
-            : $this->activeLoan()->first();
+        $loan = $this->resolvedActiveLoan();
 
         if ($loan) {
             $parent = $loan->relationLoaded('parentTeam')

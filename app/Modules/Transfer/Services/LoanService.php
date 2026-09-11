@@ -121,7 +121,9 @@ class LoanService
                         'game_id' => $game->id,
                         'game_player_id' => $player->id,
                         'offering_team_id' => $destination->id,
-                        'selling_team_id' => $game->team_id,
+                        // The club lending him out is the one that owns him —
+                        // the reserve, in a filial, not always the first team.
+                        'selling_team_id' => $player->owningTeamId(),
                         'offer_type' => TransferOffer::TYPE_LOAN_OUT,
                         'direction' => TransferOffer::DIRECTION_OUTGOING,
                         'transfer_fee' => 0,
@@ -423,6 +425,30 @@ class LoanService
     }
 
     /**
+     * Close any active loan because the player has changed owner, without
+     * moving him.
+     *
+     * returnLoan() is the wrong tool here: it sends the player back to his
+     * parent and assigns him a squad number there, both of which the caller
+     * immediately undoes when it moves him to his new club. This only retires
+     * the loan row.
+     *
+     * Completion used to get this for free from ordering — LoanReturnProcessor
+     * (priority 5) had already ended every loan before the transfer processors
+     * (30 and 35) ran. Mid-season completions never had that, and a new
+     * processor between the two would have taken it away, leaving a bought
+     * player looking loaned-in to his buyer from his former parent.
+     */
+    public function endLoanOnOwnershipChange(GamePlayer $player): void
+    {
+        Loan::where('game_player_id', $player->id)
+            ->where('status', Loan::STATUS_ACTIVE)
+            ->update(['status' => Loan::STATUS_COMPLETED]);
+
+        $player->unsetRelation('activeLoan');
+    }
+
+    /**
      * Create a pending loan-in request (user-initiated).
      */
     public function requestLoanIn(Game $game, GamePlayer $player): TransferOffer
@@ -445,7 +471,13 @@ class LoanService
 
     private function createLoanInOffer(Game $game, GamePlayer $player, array $extra = []): TransferOffer
     {
-        if ($player->team_id === null) {
+        // The club that can lend him is the one that owns him. Read as team_id
+        // this would name his current borrower when he is already out on loan —
+        // a club with no right to lend him on — and completeLoanIn reads this
+        // value straight back as the new loan's parent_team_id.
+        $lenderTeamId = $player->owningTeamId();
+
+        if ($lenderTeamId === null) {
             throw new \InvalidArgumentException('Cannot loan a free agent — no parent team.');
         }
 
@@ -453,7 +485,7 @@ class LoanService
             'game_id' => $game->id,
             'game_player_id' => $player->id,
             'offering_team_id' => $game->team_id,
-            'selling_team_id' => $player->team_id,
+            'selling_team_id' => $lenderTeamId,
             'offer_type' => TransferOffer::TYPE_LOAN_IN,
             'direction' => TransferOffer::DIRECTION_INCOMING,
             'transfer_fee' => 0,
@@ -476,8 +508,21 @@ class LoanService
             ->where('status', Loan::STATUS_ACTIVE)
             ->get();
 
-        $loansIn = $allLoans->filter(fn ($loan) => $loan->loan_team_id === $game->team_id);
-        $loansOut = $allLoans->filter(fn ($loan) => $loan->parent_team_id === $game->team_id);
+        // The user's club is both its teams, so a loan into or out of the
+        // reserve is still his. Internal call-ups (ReserveTeamService creates a
+        // loan with the reserve as parent and the first team as borrower) sit
+        // inside the club at both ends and are not market loans — they have
+        // their own surfaces, so they belong on neither list.
+        $teamIds = $game->userTeamIds();
+        $isInternal = fn ($loan) => in_array($loan->parent_team_id, $teamIds, true)
+            && in_array($loan->loan_team_id, $teamIds, true);
+
+        $loansIn = $allLoans->filter(
+            fn ($loan) => in_array($loan->loan_team_id, $teamIds, true) && ! $isInternal($loan),
+        );
+        $loansOut = $allLoans->filter(
+            fn ($loan) => in_array($loan->parent_team_id, $teamIds, true) && ! $isInternal($loan),
+        );
 
         return [
             'in' => $loansIn,
@@ -534,7 +579,7 @@ class LoanService
     public function completeLoanIn(TransferOffer $offer, Game $game): void
     {
         $player = $offer->gamePlayer;
-        $parentTeamId = $offer->selling_team_id ?? $player->team_id;
+        $parentTeamId = $offer->selling_team_id ?? $player->owningTeamId();
 
         if ($parentTeamId === null) {
             $offer->transitionTo(TransferOffer::STATUS_REJECTED, $game->current_date);
@@ -598,13 +643,17 @@ class LoanService
     {
         $player = $offer->gamePlayer;
         $destinationTeamId = $offer->offering_team_id;
+        // The club lending him out — the reserve for a filial player, and never
+        // simply the first team. Recorded on the loan so returnLoan() sends him
+        // back to the squad he actually came from.
+        $parentTeamId = $player->owningTeamId() ?? $game->team_id;
         $effectiveStart = $game->getLoanEffectiveStartDate();
         $returnDate = $game->getSeasonEndDateFor($effectiveStart);
 
         Loan::create([
             'game_id' => $game->id,
             'game_player_id' => $player->id,
-            'parent_team_id' => $game->team_id,
+            'parent_team_id' => $parentTeamId,
             'loan_team_id' => $destinationTeamId,
             'started_at' => $effectiveStart,
             'return_at' => $returnDate,
@@ -620,7 +669,7 @@ class LoanService
         GameTransfer::record(
             gameId: $game->id,
             gamePlayerId: $player->id,
-            fromTeamId: $game->team_id,
+            fromTeamId: $parentTeamId,
             toTeamId: $destinationTeamId,
             transferFee: 0,
             type: GameTransfer::TYPE_LOAN,

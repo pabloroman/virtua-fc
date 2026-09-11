@@ -433,7 +433,10 @@ class TransferService
                     'game_id' => $game->id,
                     'game_player_id' => $player->id,
                     'offering_team_id' => $buyer->id,
-                    'selling_team_id' => $game->team_id,
+                    // The owning club. $game->team_id named the first team even
+                    // for a reserve player, and would name the wrong club again
+                    // for anyone the user has out on loan.
+                    'selling_team_id' => $player->owningTeamId(),
                     'offer_type' => TransferOffer::TYPE_UNSOLICITED,
                     'direction' => TransferOffer::DIRECTION_OUTGOING,
                     'transfer_fee' => $clauseCents,
@@ -890,7 +893,9 @@ class TransferService
                         'game_id' => $player->game_id,
                         'game_player_id' => $player->id,
                         'offering_team_id' => $offeringTeam->id,
-                        'selling_team_id' => $player->team_id,
+                        // The owning club, not his location — a player the user
+                        // has loaned out sits at the borrower's team_id.
+                        'selling_team_id' => $player->owningTeamId(),
                         'offer_type' => $offerType,
                         'direction' => TransferOffer::DIRECTION_OUTGOING,
                         'transfer_fee' => $clauseCents,
@@ -1661,7 +1666,9 @@ class TransferService
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'offering_team_id' => $game->team_id,
-                'selling_team_id' => $player->team_id,
+                // The owning club, not his location: a loaned-out player's
+                // team_id is his borrower, who cannot sell him.
+                'selling_team_id' => $player->owningTeamId(),
                 'offer_type' => TransferOffer::TYPE_USER_BID,
                 'direction' => TransferOffer::DIRECTION_INCOMING,
                 'transfer_fee' => $clauseCents,
@@ -1741,7 +1748,8 @@ class TransferService
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
                 'offering_team_id' => $game->team_id,
-                'selling_team_id' => $player->team_id,
+                // The owning club, not his location — see submitPreContractOffer.
+                'selling_team_id' => $player->owningTeamId(),
                 'offer_type' => TransferOffer::TYPE_USER_BID,
                 'direction' => TransferOffer::DIRECTION_INCOMING,
                 'transfer_fee' => $bidCents,

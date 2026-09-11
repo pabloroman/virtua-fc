@@ -469,7 +469,7 @@ class TransferOffer extends Model
 
     /**
      * Offers that would take a player *away* from the given team(s): made by
-     * a club outside them, for a player currently sitting at one of them.
+     * a club outside them, for a player one of them owns.
      * Pass Game::userTeamIds() so a filial's reserve players count too —
      * their deals complete from the reserve like any other.
      *
@@ -477,6 +477,11 @@ class TransferOffer extends Model
      * the borrowing club's team_id (LoanService::completeLoanIn). Without it,
      * a deal the user made for a player he holds on loan reads as one of his
      * own players leaving.
+     *
+     * The player side matches on ownership rather than team_id for the mirror
+     * case: a player the club owns but has lent out sits at the borrower's
+     * team_id, so a location match dropped him from the departures list of the
+     * one club that is about to lose him.
      *
      * @param  string|list<string>  $teamIds
      */
@@ -486,7 +491,7 @@ class TransferOffer extends Model
 
         return $query
             ->whereNotIn('offering_team_id', $teamIds)
-            ->whereHas('gamePlayer', fn ($player) => $player->whereIn('team_id', $teamIds));
+            ->whereHas('gamePlayer', fn ($player) => $player->ownedByAny($teamIds));
     }
 
     /**

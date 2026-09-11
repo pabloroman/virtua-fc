@@ -49,6 +49,19 @@ Buyer selection is weighted: younger players attract stronger teams, older playe
 
 See `LoanService` for destination scoring logic.
 
+### Ownership vs. location
+
+A loan rewrites the player's `team_id` to the borrowing club. For anyone on loan, `team_id` therefore answers **where he plays**, not **who owns him** — the owner is the active loan's `parent_team_id`. The same split applies to a filial: a called-up reserve player sits on the first team via an internal loan while the reserve still owns him.
+
+Two questions, two vocabularies on `GamePlayer`:
+
+- **Ownership** — `owningTeamId()`, `isUserOwned()`, and the `ownedByTeam()` / `ownedByAny()` / `userOwned()` scopes. Use for anything to do with the contract: transfers, pre-contracts, renewals, release clauses, squad value, whether a player is the user's at all. `owningTeamId()` returns `null` when nobody owns him — a free agent, or a loanee whose parent club is not in the save (`loans.parent_team_id` is nullable), and such a player never matches a team id.
+- **Location** — a plain `team_id` read. Use for what follows the body rather than the contract: squad lists, lineups, match eligibility, squad registration and minimums, shirt numbers, and the wage *bill* (a club pays whoever trains with it).
+
+Deals record the owner. `transfer_offers.selling_team_id` is the club that agreed to sell, and `TransferCompletionService` re-asserts ownership against it at completion — owner against owner, so a deal survives the player's loan ending, or not ending, at any point. Completion also retires any active loan it supersedes rather than relying on `LoanReturnProcessor` having run first.
+
+Note that several season processors still split the world on `team_id` (`ContractExpirationProcessor`, for one). That is correct only because `LoanReturnProcessor` runs at priority 5 and has already sent every loaned player home before they run. It is a real ordering dependency, not an accident — keep it in mind before reordering the closing pipeline.
+
 ## Contracts
 
 ### Wages

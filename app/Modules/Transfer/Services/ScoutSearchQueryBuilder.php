@@ -24,10 +24,13 @@ class ScoutSearchQueryBuilder
      */
     public function buildCandidateQuery(Game $game, array $filters, array $positions): Builder
     {
+        // Excluded by ownership, not location: a player the user has loaned out
+        // sits at the borrowing club's team_id, and filtering on that alone
+        // offered his own player back to him as a scouting target to bid for.
         $query = GamePlayer::with(['team'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
-            ->whereNotIn('team_id', $game->userTeamIds());
+            ->whereNot(fn ($q) => $q->userOwned($game));
 
         $this->applyPositionFilter($query, $positions);
 
