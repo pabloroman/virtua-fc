@@ -52,9 +52,10 @@ class LoanReturnProcessor implements SeasonProcessor
             'loanTeamName' => $loan->loanTeam->name,
         ])->toArray();
 
-        // Create notifications for players returning to user's team
+        // Create notifications for players returning to the user's club —
+        // either of his teams, since a filial's reserve lends players out too.
         foreach ($returnedLoans as $loan) {
-            if ($loan->parent_team_id === $game->team_id) {
+            if (in_array($loan->parent_team_id, $game->userTeamIds(), true)) {
                 $this->notificationService->notifyLoanReturn(
                     $game,
                     $loan->gamePlayer,

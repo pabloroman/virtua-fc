@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GamePlayerMatchState;
+use App\Models\Loan;
 use App\Models\Team;
 use App\Modules\Player\Services\PlayerTierService;
 use Carbon\Carbon;
@@ -146,6 +147,37 @@ class GamePlayerFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'retiring_at_season' => $season,
         ]);
+    }
+
+    /**
+     * On loan at $borrower, owned by $parent.
+     *
+     * Encodes the invariant that trips people up: a loan rewrites team_id to
+     * the borrowing club (LoanService::completeLoanIn / completeLoanOut), so
+     * the player's location is $borrower while his contract still belongs to
+     * $parent. Pass a null $parent for a loan whose owning club is not in the
+     * game — such a player is owned by nobody and is freed when it ends.
+     */
+    public function onLoan(Game $game, Team $borrower, ?Team $parent): static
+    {
+        return $this
+            ->state(fn (array $attributes) => [
+                'game_id' => $game->id,
+                'team_id' => $borrower->id,
+            ])
+            ->afterCreating(function (GamePlayer $player) use ($game, $borrower, $parent) {
+                Loan::create([
+                    'game_id' => $game->id,
+                    'game_player_id' => $player->id,
+                    'parent_team_id' => $parent?->id,
+                    'loan_team_id' => $borrower->id,
+                    'started_at' => $game->getLoanEffectiveStartDate(),
+                    'return_at' => $game->getSeasonEndDate(),
+                    'status' => Loan::STATUS_ACTIVE,
+                ]);
+
+                $player->unsetRelation('activeLoan');
+            });
     }
 
     /**

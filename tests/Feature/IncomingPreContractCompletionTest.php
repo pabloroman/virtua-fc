@@ -111,6 +111,47 @@ class IncomingPreContractCompletionTest extends TestCase
         );
     }
 
+    public function test_pre_contract_for_a_loanee_completes_without_the_loan_return_processor(): void
+    {
+        // The same signing as above, with LoanReturnProcessor left out of the
+        // run. Completion used to depend on it: the offer recorded the owning
+        // club, the guard compared that to the player's location, and only a
+        // loan return at priority 5 made the two agree before the transfer
+        // processors ran at 30 and 35. Nothing declares that dependency, so any
+        // processor inserted between them would have broken agreed deals
+        // silently — and a mid-season completion never had the ordering at all.
+        //
+        // Ordering is now an optimisation, not a correctness requirement, and
+        // this test fails if that regresses.
+        $this->forceAiRenewal();
+
+        $player = $this->expiringPlayerAt($this->userTeam);
+        Loan::create([
+            'game_id' => $this->game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => $this->sellingTeam->id,
+            'loan_team_id' => $this->userTeam->id,
+            'started_at' => '2026-08-01',
+            'return_at' => '2027-06-30',
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        $this->agreedPreContractFor($player, $player->owningTeamId());
+
+        $this->runClosing(ContractExpirationProcessor::class, PreContractTransferProcessor::class);
+
+        $this->assertSame(
+            $this->userTeam->id,
+            $player->fresh()->team_id,
+            'Completion must not depend on LoanReturnProcessor having run first.',
+        );
+        $this->assertSame(
+            Loan::STATUS_COMPLETED,
+            Loan::where('game_player_id', $player->id)->value('status'),
+            'Completion owns retiring the loan it supersedes, rather than inheriting it from the pipeline.',
+        );
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     /**

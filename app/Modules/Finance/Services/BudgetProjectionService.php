@@ -466,11 +466,18 @@ class BudgetProjectionService
 
     /**
      * Calculate total squad market value.
+     *
+     * By ownership, unlike calculateProjectedWages() above, and the difference
+     * is deliberate: wages are what the club pays, so they follow whoever
+     * trains there and exclude a loanee's parent-paid portion; value is what
+     * the club holds, so it follows the contract. Read by location this counted
+     * a borrowed player's full market value as the club's own asset while
+     * omitting the player it owns but has lent out.
      */
     public function calculateSquadValue(Game $game): int
     {
         return GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
+            ->ownedByTeam($game->team_id)
             ->sum('market_value_cents');
     }
 
