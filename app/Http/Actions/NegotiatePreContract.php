@@ -59,6 +59,17 @@ class NegotiatePreContract
             ], 422);
         }
 
+        // Free agents are signed through NegotiateFreeAgent, not here — that
+        // action carries the mirror-image guard. A pre-contract on a club-less
+        // player would stamp selling_team_id = null and leave a committed deal
+        // on a row the season-close free-agent sweep is entitled to delete.
+        if ($player->team_id === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('messages.pre_contract_not_available'),
+            ], 422);
+        }
+
         // Validate pre-contract eligibility
         if (!$game->isPreContractPeriod()) {
             return response()->json([

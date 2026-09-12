@@ -43,9 +43,20 @@ class ContractExpirationProcessor implements SeasonProcessor
         // Clean up any stale renewal negotiations
         $this->contractService->expireStaleNegotiations($game);
 
-        // Clean up unsigned free agents from the previous season
+        // Clean up unsigned free agents from the previous season.
+        //
+        // This is a hard delete, and transfer_offers.game_player_id is
+        // ON DELETE CASCADE, so destroying a player here takes any deal
+        // attached to him with it: no offer left to complete at priority
+        // 30/35, no "transfer fell through" notification, no trace at all.
+        // Anyone the user has a committed deal for therefore survives the
+        // sweep — his deal is allowed to fail, but only visibly, through the
+        // completion path that tells him why.
+        $committedPlayerIds = array_keys(TransferOffer::committedPlayerIds($game->id));
+
         GamePlayer::where('game_id', $game->id)
             ->whereNull('team_id')
+            ->when($committedPlayerIds !== [], fn ($query) => $query->whereNotIn('id', $committedPlayerIds))
             ->delete();
 
         // Season ends on June 30 of the season year

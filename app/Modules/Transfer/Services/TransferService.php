@@ -1524,6 +1524,15 @@ class TransferService
             throw new \InvalidArgumentException(__('messages.pre_contract_not_available'));
         }
 
+        // A free agent has no club to pre-contract around, and the offer would
+        // record selling_team_id = null. The dossier UI already routes him to
+        // the free-agent flow; this is the server-side half of that rule, and
+        // it also keeps a committed deal off a player the season-close
+        // free-agent sweep would otherwise have deleted.
+        if ($player->team_id === null) {
+            throw new \InvalidArgumentException(__('messages.pre_contract_not_available'));
+        }
+
         $seasonEnd = $game->getSeasonEndDate();
         if (!$player->contract_until || !$player->contract_until->lte($seasonEnd)) {
             throw new \InvalidArgumentException(__('messages.player_not_expiring'));

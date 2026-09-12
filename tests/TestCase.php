@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Modules\Transfer\Exceptions\AgreedOfferDiscardedException;
 use App\Modules\Transfer\Exceptions\LockedPlayerMovedException;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -24,6 +25,14 @@ abstract class TestCase extends BaseTestCase
         // with Exceptions::fake([LockedPlayerMovedException::class]).
         $this->app->make(ExceptionHandler::class)->reportable(
             fn (LockedPlayerMovedException $e) => throw $e,
+        );
+
+        // Same contract for a deal that reached the season-close market reset
+        // still agreed: in production it is reported so the save survives, but
+        // under test a stranded agreed offer is a pipeline bug and must fail
+        // the run. Opt out with Exceptions::fake([AgreedOfferDiscardedException::class]).
+        $this->app->make(ExceptionHandler::class)->reportable(
+            fn (AgreedOfferDiscardedException $e) => throw $e,
         );
     }
 }
