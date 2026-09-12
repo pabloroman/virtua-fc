@@ -57,9 +57,25 @@ class StatsResetProcessor implements SeasonProcessor
             'morale' => 80,
         ]);
 
-        // Mark all previous-season notifications as read so the new season starts clean
+        // Mark last season's notifications as read so the new season starts clean.
+        //
+        // Scoped to notifications raised BEFORE this transition. current_date
+        // does not move during the closing pipeline, so everything the
+        // transition itself raises carries exactly that date — and some of it
+        // is the transition's report to the manager, not last season's
+        // chatter: a pre-contract that fell through
+        // (TransferCompletionService::completeIncomingTransfer, priority 30/35),
+        // a loan coming home, a reserve player promoted. Sweeping those too
+        // meant the only explanation for a signing that never arrived was
+        // marked read before the user could open the new season's inbox.
+        //
+        // Legacy rows with no game_date keep the old behaviour and are swept.
         GameNotification::where('game_id', $game->id)
             ->unread()
+            ->where(function ($query) use ($game) {
+                $query->whereNull('game_date')
+                    ->orWhere('game_date', '<', $game->current_date);
+            })
             ->update(['read_at' => now()]);
 
         $this->notifyCarriedOverInjuries($game, $data);

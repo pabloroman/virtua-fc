@@ -515,6 +515,29 @@ class TransferOffer extends Model
     }
 
     /**
+     * Ids of every player in the game who is the subject of a committed deal
+     * (fee agreed or fully agreed, in either direction), as a set
+     * (id => true) for O(1) lookup in bulk processors.
+     *
+     * Wider than lockedPlayerIds(): that set answers "may the market move
+     * him?", which an ordinary agreed bid does not forbid. This one answers
+     * "may we destroy him?", which nothing does — a delete leaves the user no
+     * notification, no offer and no player, so a deal in any committed state
+     * must outlive a cleanup sweep even if it is later allowed to fail.
+     *
+     * @return array<string, true>
+     */
+    public static function committedPlayerIds(string $gameId): array
+    {
+        $ids = static::where('game_id', $gameId)
+            ->committed()
+            ->pluck('game_player_id')
+            ->all();
+
+        return array_fill_keys($ids, true);
+    }
+
+    /**
      * Ids of every player in the game held in place by a locking deal, as a
      * set (id => true) for O(1) lookup in bulk processors.
      *

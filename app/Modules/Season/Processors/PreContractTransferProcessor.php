@@ -6,6 +6,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
+use App\Models\TransferOffer;
 
 /**
  * Completes pre-contract transfers at end of season.
@@ -41,19 +42,41 @@ class PreContractTransferProcessor implements SeasonProcessor
             'toTeamName' => $offer->offeringTeam->name,
         ])->toArray();
 
-        // Process incoming pre-contracts (user signed players on free transfers)
+        // Process incoming pre-contracts (user signed players on free transfers).
+        // completeIncomingTransfer re-asserts the player is still at the club
+        // that agreed to sell him and rejects the deal when he is not, so the
+        // returned offers are a mix of completed and rejected — split on the
+        // status it left behind rather than reporting every attempt to the
+        // season summary as a signing the user actually got.
         $incomingTransfers = $this->transferService->completeIncomingPreContracts($game);
 
-        $incomingData = $incomingTransfers->map(fn ($offer) => [
+        [$incomingCompleted, $incomingFailed] = $incomingTransfers->partition(
+            fn (TransferOffer $offer) => $offer->status === TransferOffer::STATUS_COMPLETED,
+        );
+
+        $incomingData = $incomingCompleted->map(fn ($offer) => [
             'playerId' => $offer->game_player_id,
             'playerName' => $offer->gamePlayer->name,
             'fromTeamId' => $offer->selling_team_id,
             'fromTeamName' => $offer->sellingTeam->name ?? 'Unknown',
             'toTeamId' => $game->team_id,
-        ])->toArray();
+        ])->values()->toArray();
 
         $allTransfers = array_merge($outgoingData, $incomingData);
 
-        return $data->setMetadata('preContractTransfers', $allTransfers);
+        // Failures are published separately and, unlike the success list, are
+        // NOT stripped from the archived transition_log (see
+        // ProcessSeasonTransition). A signing that never arrived leaves no
+        // GameTransfer row and no offer once the market resets at priority 70,
+        // so without this there is nothing left to diagnose it with.
+        return $data
+            ->setMetadata('preContractTransfers', $allTransfers)
+            ->setMetadata('preContractTransfersFailed', $incomingFailed->map(fn ($offer) => [
+                'playerId' => $offer->game_player_id,
+                'playerName' => $offer->gamePlayer->name,
+                'expectedSellerId' => $offer->selling_team_id,
+                'playerTeamId' => $offer->gamePlayer->team_id,
+                'status' => $offer->status,
+            ])->values()->toArray());
     }
 }

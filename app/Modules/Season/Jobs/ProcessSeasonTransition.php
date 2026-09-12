@@ -112,7 +112,13 @@ class ProcessSeasonTransition implements ShouldQueue, ShouldBeUnique
         $game->refresh()->setRelations([]);
         $setupPipeline->run($game, $data, $closingProcessorCount, $lastStep);
 
-        // Archive transition log for debugging (exclude bulky/irrelevant keys)
+        // Archive transition log for debugging (exclude bulky/irrelevant keys).
+        //
+        // The success lists are excluded because they are bulky and already
+        // reconstructable from game_transfers. Do NOT add the *Failed keys
+        // here: a deal that did not complete leaves no game_transfers row and
+        // no transfer_offers row (the market resets at closing priority 70),
+        // so this log is the only surviving record of it.
         $excludeKeys = [
             'loanReturns', 'preContractTransfers', 'agreedTransfers',
             'contractRenewals', 'retiredPlayers', 'retirementAnnouncements',
